@@ -57,8 +57,14 @@ class AST(abc.ABC):
         """返回当前节点的原始语句代码"""
         return self._origin
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return self.source
+
+    def __repr__(self) -> str:
+        if len(self.children) > 0:
+            return f"<{self.__class__.__name__} children={self.children}>"
+        else:
+            return f"<{self.__class__.__name__} source={self.source}>"
 
     def equals(self, other: str) -> bool:
         """判断当前 AST 节点是否与一段源代码相同"""
