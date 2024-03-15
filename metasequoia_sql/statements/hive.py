@@ -73,5 +73,4 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
                 partition_columns.append(column.source())
             partition_str = ", ".join(partition_columns)
             result += f" PARTITIONED BY ({partition_str})"
-        result += ";"
         return result
