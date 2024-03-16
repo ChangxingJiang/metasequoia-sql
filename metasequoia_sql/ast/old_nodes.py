@@ -34,8 +34,6 @@ class ASTLeaf(AST, abc.ABC):
             obj = object.__new__(ASTLiteralFloat)  # 字面值浮点数
         elif (origin.startswith("\"") and origin.endswith("\"")) or (origin.startswith("'") and origin.endswith("'")):
             obj = object.__new__(ASTLiteralString)  # 字面值字符串
-        elif origin.startswith("`") and origin.endswith("`"):
-            obj = object.__new__(ASTIdentifier)  # 显式标识符
         elif origin.startswith("/*") and origin.endswith("*/"):
             obj = object.__new__(ASTMultiLineComment)  # 多行注释
         else:
@@ -122,7 +120,7 @@ class ASTParser:
             AST 根节点
         """
         last_ch = None  # 上一个字符
-        stack: List[List[Union[Tuple[int, int, int], AST]]] = [[]]
+        stack: List[List[Union[int, AST]]] = [[]]
         skip = False
         for i, (ch, idx, lineno, col_offset) in enumerate(self.array):
             if skip is True:
@@ -136,119 +134,110 @@ class ASTParser:
                 if ch == " ":
                     stack[-1].append(ASTSpace(self.source[idx:idx + 1]))
                 elif ch == "\n":
-                    stack[-1].append(
-                        ASTLineBreak(self.source[idx:idx + 1]))
+                    stack[-1].append(ASTLineBreak(self.source[idx:idx + 1]))
                 elif ch == "\"":
-                    stack[-1].append((idx, lineno, col_offset))
+                    stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_DOUBLE_QUOTE
                 elif ch == "'":
-                    stack[-1].append((idx, lineno, col_offset))
+                    stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_SINGLE_QUOTE
                 elif ch == "`":
-                    stack[-1].append((idx, lineno, col_offset))
+                    stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_BACK_QUOTE
                 elif ch == "#":
-                    stack[-1].append((idx, lineno, col_offset))
+                    stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_EXPLAIN_1
                 elif ch == "/":
                     if next_ch == "*":
-                        stack[-1].append((idx, lineno, col_offset))
+                        stack[-1].append(idx)
                         self.status = ParseStatus.IS_IN_EXPLAIN_2
                     else:
-                        stack[-1].append((idx, lineno, col_offset))
+                        stack[-1].append(idx)
                         self.status = ParseStatus.IS_IN_NORMAL
                 elif ch == "(":
-                    stack[-1].append((idx, lineno, col_offset))  # 插入语的语法树
+                    stack[-1].append(idx)  # 插入语的语法树
                     stack.append([])
                     self.status = ParseStatus.WAIT_TOKEN
                 elif ch == ")":
                     if len(stack) > 1:
                         tokens = stack.pop()
-                        start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                        stack[-1].append(
-                            ASTParenthesis(self.source[start_idx: idx + 1], tokens))
+                        start_idx = stack[-1].pop()
+                        stack[-1].append(ASTParenthesis(self.source[start_idx: idx + 1], tokens))
                         self.status = ParseStatus.WAIT_TOKEN
                     else:
                         raise AstParseError("')' 数量大于 '('")
                 else:
-                    stack[-1].append((idx, lineno, col_offset))
+                    stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_NORMAL
             elif self.status == ParseStatus.IS_IN_DOUBLE_QUOTE:
                 if ch == "\"" and last_ch != "\\" and next_ch == "\"":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1]))
+                    start_idx = stack[-1].pop()
+                    stack[-1].append(ASTLeaf(self.source[start_idx: idx + 1]))
                     self.status = ParseStatus.WAIT_TOKEN
                 elif ch == "\"" and last_ch != "\\":  # 满足 (last_ch == "\"" and stack[-1][-1][0] + 1 == idx and next_ch == "\"")
                     skip = True
             elif self.status == ParseStatus.IS_IN_SINGLE_QUOTE:
                 if ch == "'" and last_ch != "\\" and not next_ch == "'":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1]))
+                    start_idx = stack[-1].pop()
+                    stack[-1].append(ASTLeaf(self.source[start_idx: idx + 1]))
                     self.status = ParseStatus.WAIT_TOKEN
                 elif ch == "'" and last_ch != "\\":  # 满足 (last_ch == "'" and not stack[-1][-1][0] + 1 == idx and next_ch == "'")
                     skip = True
             elif self.status == ParseStatus.IS_IN_BACK_QUOTE:
                 if ch == "`":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1]))
+                    start_idx = stack[-1].pop()
+                    stack[-1].append(ASTIdentifier(self.source[start_idx: idx + 1]))
                     self.status = ParseStatus.WAIT_TOKEN
             elif self.status == ParseStatus.IS_IN_EXPLAIN_1:
                 if ch == "\n":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1]))
+                    start_idx = stack[-1].pop()
+                    stack[-1].append(ASTLeaf(self.source[start_idx: idx + 1]))
                     self.status = ParseStatus.WAIT_TOKEN
             elif self.status == ParseStatus.IS_IN_EXPLAIN_2:
                 if ch == "/" and last_ch == "*":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1]))
+                    start_idx = stack[-1].pop()
+                    stack[-1].append(ASTLeaf(self.source[start_idx: idx + 1]))
                     self.status = ParseStatus.WAIT_TOKEN
             elif self.status == ParseStatus.IS_IN_NORMAL:
                 if ch in {" ", "\n", ",", ";", "+", "-", "*", "/", "="}:
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                    start_idx = stack[-1].pop()
                     stack[-1].append(ASTLeaf(self.source[start_idx: idx]))
-                    stack[-1].append(
-                        ASTLeaf(self.source[idx:idx + 1]))
+                    stack[-1].append(ASTLeaf(self.source[idx:idx + 1]))
                     self.status = ParseStatus.WAIT_TOKEN
                 elif ch == "\"":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                    start_idx = stack[-1].pop()
                     if start_idx + 1 == idx and self.source[start_idx: idx] == "b":  # 兼容类似字符串 b'0'
-                        stack[-1].append((start_idx, start_lineno, start_col_offset))  # 将 b 视作字符串的一部分
+                        stack[-1].append(start_idx)  # 将 b 视作字符串的一部分
                     else:
                         stack[-1].append(ASTLeaf(self.source[start_idx: idx]))
-                        stack[-1].append((idx, lineno, col_offset))
+                        stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_DOUBLE_QUOTE
                 elif ch == "'":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                    start_idx = stack[-1].pop()
                     if start_idx + 1 == idx and self.source[start_idx: idx] == "b":  # 兼容类似字符串 b'0'
-                        stack[-1].append((start_idx, start_lineno, start_col_offset))  # 将 b 视作字符串的一部分
+                        stack[-1].append(start_idx)  # 将 b 视作字符串的一部分
                     else:
                         stack[-1].append(ASTLeaf(self.source[start_idx: idx]))
-                        stack[-1].append((idx, lineno, col_offset))
+                        stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_SINGLE_QUOTE
                 elif ch == "`":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                    start_idx = stack[-1].pop()
                     stack[-1].append(ASTLeaf(self.source[start_idx: idx]))
-                    stack[-1].append((idx, lineno, col_offset))
+                    stack[-1].append(idx)
                     self.status = ParseStatus.IS_IN_BACK_QUOTE
                 elif ch == "(":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                    start_idx = stack[-1].pop()
                     stack[-1].append(ASTLeaf(self.source[start_idx: idx]))
-                    stack[-1].append((idx, lineno, col_offset))  # 插入语的语法树
+                    stack[-1].append(idx)  # 插入语的语法树
                     stack.append([])
                     self.status = ParseStatus.WAIT_TOKEN
                 elif ch == ")":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                    start_idx = stack[-1].pop()
                     stack[-1].append(ASTLeaf(self.source[start_idx: idx]))
                     if len(stack) > 1:
                         tokens = stack.pop()
-                        start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                        stack[-1].append(
-                            ASTParenthesis(self.source[start_idx: idx + 1], tokens))
+                        start_idx = stack[-1].pop()
+                        stack[-1].append(ASTParenthesis(self.source[start_idx: idx + 1], tokens))
                         self.status = ParseStatus.WAIT_TOKEN
                     else:
                         raise AstParseError("')' 数量大于 '('")
@@ -261,7 +250,7 @@ class ASTParser:
             raise AstParseError("'(' 数量大于 ')'")
         else:
             if self.status == ParseStatus.IS_IN_NORMAL:  # 末尾没有分号的情况
-                start_idx, start_lineno, start_col_offset = stack[-1].pop()
+                start_idx = stack[-1].pop()
                 stack[-1].append(ASTLeaf(self.source[start_idx: self.array[-1][1] + 1]))
             return ASTStatement(self.source, stack[0])
 
