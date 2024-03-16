@@ -102,7 +102,7 @@ class SelectParseStage(enum.StrEnum):
 class SelectParser(SqlParser):
     """Hive 的 SELECT 语句解析器"""
 
-    def __init__(self, root: ast.ASTInternal):
+    def __init__(self, root: ast.AST):
         pass
 
 

@@ -19,7 +19,7 @@ class MySQLCreateTableParser(SqlParser):
     当前已知不支持的场景：虚拟列 GENERATED ALWAYS AS（RDS427.prism1.oned_topic_kafka）
     """
 
-    def __init__(self, root: ast.ASTInternal):
+    def __init__(self, root: ast.AST):
         # 过滤 statement 中的空白字符
         self.tokens: List[ast.AST] = [token for token in root.children if token.is_whitespace is False]
         self.n_token = len(self.tokens)
@@ -90,7 +90,7 @@ class MySQLCreateTableParser(SqlParser):
 
         # 过滤插入语中的空白字符
         inner_tokens: List[ast.AST] = [token for token in outer_token.children if
-                                       token.is_whitespace is False and not isinstance(token, ast.ASTComment)]
+                                       token.is_whitespace is False and not isinstance(token, ast.ASTMultiLineComment)]
 
         # 根据逗号拆分插入语中的内容
         column_group_tokens: List[List[ast.AST]] = [[]]
@@ -192,7 +192,7 @@ class MySQLCreateTableParser(SqlParser):
             tokens.pop()
         i = 0
         while i < len(tokens):
-            if isinstance(tokens[i], ast.ASTComment):
+            if isinstance(tokens[i], ast.ASTMultiLineComment):
                 i += 1
             elif tokens[i].equals("ENGINE"):
                 if i + 2 < len(tokens) and tokens[i + 1].equals("="):

@@ -2,6 +2,10 @@
 《MySQL 必知必会》样例 SQL
 """
 
+DEMO_MYSQL_MCC_3_2 = """
+USE crashhouse;
+"""
+
 DEMO_MYSQL_MCC_15_2_3_1 = """
 SELECT prod_name, vend_name, prod_price, quantity
 FROM orderitems, products, vendors
