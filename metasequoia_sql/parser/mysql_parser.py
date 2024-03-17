@@ -144,7 +144,7 @@ class MySQLCreateTableParser(SqlParser):
                     ))
             else:
                 position = self.create_token_scanner(column_group)
-                column_name = position.move_as_source()
+                column_name = position.pop_as_source()
                 column_type = position.match_function(DDLColumnTypeMySQL)
                 column = DDLColumnMySQL(column_name, column_type)
                 while not position.is_finish():
@@ -156,16 +156,16 @@ class MySQLCreateTableParser(SqlParser):
                         column.set_is_allow_null(True)
                     elif position.get().equals("CHARACTER"):
                         position.match_words(["CHARACTER", "SET"])
-                        column.set_character_set(position.move_as_source())
+                        column.set_character_set(position.pop_as_source())
                     elif position.get().equals("COLLATE"):
                         position.match_words(["COLLATE"])
-                        column.set_collate(position.move_as_source())
+                        column.set_collate(position.pop_as_source())
                     elif position.get().equals("DEFAULT"):
                         position.match_words(["DEFAULT"])
                         column.default = position.match_function(SqlFunction)
                     elif position.get().equals("COMMENT"):
                         position.match_words(["COMMENT"])
-                        column.set_comment(position.move_as_source())
+                        column.set_comment(position.pop_as_source())
                     elif position.get().equals("ON"):  # ON UPDATE
                         position.match_words(["ON", "UPDATE"])
                         column.on_update = position.match_function(SqlFunction)

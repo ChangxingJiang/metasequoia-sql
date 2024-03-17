@@ -43,6 +43,10 @@ class ASTLeaf(AST, abc.ABC):
 
 
 class ASTOtherLeaf(AST):
+    def __init__(self, origin: Optional[str]):
+        super().__init__(origin)
+        print(f"other leaf: {origin}")
+
     @property
     def source(self) -> str:
         return self._origin
@@ -108,8 +112,6 @@ class ASTParser:
         self.source: str = source.replace("\r\n", "\n")  # 将源码中的 \r\n 统一为 \n
         self.array: List[Tuple[str, int, int, int]] = text_to_char_array(self.source)
         self.status: ParseStatus = ParseStatus.WAIT_TOKEN
-        self.now_token_lineno: int = 1  # 当前段落词语开始位置的行数
-        self.now_token_offset: int = 0  # 当前段落词语开始位置的列号
 
     def parse(self) -> ASTStatement:
         """将 SQL 源码解析为 AST 节点
@@ -122,13 +124,13 @@ class ASTParser:
         last_ch = None  # 上一个字符
         stack: List[List[Union[int, AST]]] = [[]]
         skip = False
-        for i, (ch, idx, lineno, col_offset) in enumerate(self.array):
+        for i, (ch, idx, _, _) in enumerate(self.array):
             if skip is True:
                 skip = False
                 continue
 
-            # 计算当前行的下一个字符
-            next_ch = self.array[i + 1][0] if i + 1 < len(self.array) and self.array[i + 1][2] == lineno else None
+            # 计算下一个字符：如果是行末尾的化，下一个符号是换行符
+            next_ch = self.array[i + 1][0] if i + 1 < len(self.array) else None
 
             if self.status == ParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
                 if ch == " ":

@@ -35,20 +35,20 @@ class TokenScanner:
         self._check_has_next(1)
         return self._tokens[self._pos]
 
-    def move(self) -> ast.AST:
+    def pop(self) -> ast.AST:
         """将指针向后移动 1 个元素并返回当前元素"""
         self._check_has_next(1)
         result = self._tokens[self._pos]
         self._pos += 1
         return result
 
-    def move_as_source(self) -> str:
+    def pop_as_source(self) -> str:
         """将指针向后移动 1 个元素并返回当前元素的 source"""
-        return self.move().source
+        return self.pop().source
 
-    def move_as_parenthesis(self) -> ast.ASTParenthesis:
+    def pop_as_parenthesis(self) -> ast.ASTParenthesis:
         """将指针向后移动 1 个元素并返回当前元素（视作 ASTParenthesis 类型）"""
-        element = self.move()
+        element = self.pop()
         if isinstance(element, ast.ASTParenthesis):
             return element
         raise SqlParseError(f"element.__class__.__name__={element.__class__.__name__}")
@@ -60,14 +60,14 @@ class TokenScanner:
     def match_words(self, words: List[str]) -> None:
         """尝试从当前指针位置开始匹配 words，如果匹配失败则抛出异常"""
         for word in words:
-            if not self.move().equals(word):
+            if not self.pop().equals(word):
                 raise SqlParseError(f"tokens={self._tokens}, words={words}")
 
     def match_function(self, aim_class: Type[SqlFunction]) -> SqlFunction:
         """匹配 SQL 函数，构造并返回 aim_class 类型的函数对象，同时移动指针"""
-        function_name = self.move().source
+        function_name = self.pop().source
         if not self.is_finish() and isinstance(self.get(), ast.ASTParenthesis):  # 函数包含参数
-            function_param = [sub_node.source for sub_node in self.move_as_parenthesis().children]
+            function_param = [sub_node.source for sub_node in self.pop_as_parenthesis().children]
             return aim_class(function_name, function_param)
         else:
             return aim_class(function_name)

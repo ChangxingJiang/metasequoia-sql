@@ -13,7 +13,7 @@ CREATE TABLE `manual_annotation` (
   `video_deleted` tinyint(1) unsigned zerofill NOT NULL DEFAULT '0' COMMENT '视频是否已被删除：0没有删除，1已删除',
   `author_id` bigint unsigned DEFAULT NULL COMMENT '视频作者ID',
   `author_name` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '视频作者名称（仅标注作用）',
-  `series_id` bigint DEFAULT NULL COMMENT '视频所属系列ID',
+  `series_id` bigint DEFAULT NULL COMMENT '视频所属系列ID''',
   `series_name` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '视频所属系列名称（仅标注作用）',
   `video_index_in_series` int DEFAULT NULL COMMENT '视频在所属系列中的序号',
   `video_name_in_series` varchar(300) DEFAULT NULL COMMENT '视频在所属系列中的名称',

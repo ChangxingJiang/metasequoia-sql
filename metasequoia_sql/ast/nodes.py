@@ -12,6 +12,10 @@ class AST(abc.ABC):
         self._origin = origin
 
     @property
+    def origin(self) -> str:
+        return self._origin
+
+    @property
     @abc.abstractmethod
     def source(self) -> str:
         """返回当前节点的源代码

@@ -46,3 +46,17 @@ statement = ddl_create_table_statement_to_hive(
 
 **不同 DataSource 的 SQL 语句转换方法**： 先从特定 DataSource 的 SQL 转化为包含所有数据库特性的 FullStatement，然后再从
 FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
+
+## 修改记录
+
+##### 0.0.2
+
+- 重构：词法分析模块（在词法分析节点中不保留在源代码中的行列信息）
+- 优化：
+    - CREATE TABLE 相关的句法解析节点属性
+- 修复：
+    - 移除在 Hive 建表语句末尾的分号
+
+##### 0.0.1
+
+- 初始化
