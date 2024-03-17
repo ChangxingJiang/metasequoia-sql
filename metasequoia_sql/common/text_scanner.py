@@ -43,20 +43,20 @@ class TextScanner:
 
     @property
     def last(self) -> Optional[str]:
-        """当前指针位置的上一个元素"""
+        """当前指针位置的上一个字符"""
         return self._last
 
     @property
     def now(self) -> Optional[str]:
-        """当前指针位置的元素"""
-        return self.get()
+        """当前指针位置的字符"""
+        return self.top()
 
     @property
     def next(self) -> Optional[str]:
-        """当前指针位置的下一个元素"""
-        return self.get_next()
+        """当前指针位置的下一个字符"""
+        return self.top_next()
 
-    def get(self) -> Optional[str]:
+    def top(self) -> Optional[str]:
         """获取当前指针位置元素，但不移动指针
 
         - 如果指针已到达字符串末尾，则返回 None
@@ -68,7 +68,7 @@ class TextScanner:
             return None
         return self._text[self._pos]
 
-    def get_next(self) -> Optional[str]:
+    def top_next(self) -> Optional[str]:
         """获取当前指针下一个位置的元素，但不一定指针
 
         Returns
@@ -81,7 +81,7 @@ class TextScanner:
             return None
         return self._text[self._pos + 1]
 
-    def pop(self) -> str:
+    def get(self) -> str:
         """获取当前指针位置元素，并移动指针
 
         - 如果要移动到的指针位置超出字符串长度，则抛出异常
@@ -89,10 +89,14 @@ class TextScanner:
         if self._pos >= self._len:
             raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1}")
 
-        self._last = self.get()  # 更新上一个元素
+        self._last = self.top()  # 更新上一个元素
         result = self._text[self._pos]
         self._pos += 1  # 移动指针
         return result
+
+    def move(self) -> None:
+        """移动指针"""
+        self._pos += 1
 
     @property
     def is_finish(self) -> bool:

@@ -10,9 +10,6 @@ from metasequoia_sql.errors import SqlAstError
 class AST(abc.ABC):
     """AST 节点类的抽象基类"""
 
-    def __init__(self, origin: Optional[str] = None):
-        self._origin = origin
-
     @property
     @abc.abstractmethod
     def source(self) -> str:
@@ -25,7 +22,6 @@ class AST(abc.ABC):
         str
             当前 AST 节点的源代码
         """
-        return self._origin
 
     @property
     def children(self) -> List["AST"]:
@@ -44,7 +40,8 @@ class AST(abc.ABC):
         if len(self.children) > 0:
             return f"<{self.__class__.__name__} children={self.children}>"
         else:
-            return f"<{self.__class__.__name__} source={self.source}>"
+            format_source = self.source.replace("\n", r"\n")
+            return f"<{self.__class__.__name__} source={format_source}>"
 
     def equals(self, other: str) -> bool:
         """判断当前 AST 节点是否与一段源代码相同"""
@@ -102,7 +99,6 @@ class ASTLiteralInteger(AST):
     """字面值整数"""
 
     def __init__(self, origin: str):
-        super().__init__()
         self._value = int(origin)
 
     @property
@@ -114,7 +110,6 @@ class ASTLiteralFloat(AST):
     """字面值浮点数"""
 
     def __init__(self, origin: str):
-        super().__init__()
         self._value = float(origin)
 
     @property
@@ -126,7 +121,6 @@ class ASTLiteralString(AST):
     """字面值字符串"""
 
     def __init__(self, origin: str):
-        super().__init__()
         self._value = origin[1:-1]  # 不包含引号的部分
 
     @property
@@ -138,7 +132,6 @@ class ASTIdentifier(AST):
     """显式标识符"""
 
     def __init__(self, origin: str):
-        super().__init__()
         self._value = origin[1:-1]
 
     @property
@@ -150,7 +143,6 @@ class ASTMultiLineComment(AST):
     """多行注释"""
 
     def __init__(self, origin: str):
-        super().__init__()
         self._value = origin
 
     @property
@@ -162,7 +154,6 @@ class ASTParenthesis(AST):
     """插入语节点"""
 
     def __init__(self, tokens: List[AST], start_mark: str, end_mark: str):
-        super().__init__()
         self._tokens: List[AST] = tokens
         self.start_mark = start_mark
         self.end_mark = end_mark
@@ -180,7 +171,6 @@ class ASTStatement(AST):
     """【包含子节点的 AST 节点】完整 SQL 表达式"""
 
     def __init__(self, tokens: List[AST]):
-        super().__init__()
         self._tokens: List[AST] = tokens  # 下级节点列表
 
     @property
@@ -190,3 +180,15 @@ class ASTStatement(AST):
     @property
     def children(self) -> List["AST"]:
         return self._tokens
+
+
+class ASTOther(AST):
+    """未知节点"""
+
+    def __init__(self, origin: Optional[str]):
+        self._origin = origin
+        print(f"other AST: {origin}")
+
+    @property
+    def source(self) -> str:
+        return self._origin
