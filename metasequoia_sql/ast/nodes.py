@@ -3,6 +3,10 @@ from typing import List, Optional
 
 from metasequoia_sql.errors import AstParseError
 
+__all__ = ["AST", "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon", "ASTLiteralInteger", "ASTLiteralFloat",
+           "ASTLiteralString", "ASTIdentifier", "ASTSimpleLineComment", "ASTMultiLineComment", "ASTParenthesis",
+           "ASTStatement", "ASTOther"]
+
 
 # ------------------------------ 抽象节点类 ------------------------------
 
@@ -198,7 +202,6 @@ class ASTOther(AST):
 
     def __init__(self, origin: Optional[str]):
         self._origin = origin
-        print(f"other AST: {origin}")
 
     @property
     def source(self) -> str:

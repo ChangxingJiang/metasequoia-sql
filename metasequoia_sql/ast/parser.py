@@ -4,10 +4,11 @@ ast 的解析方法
 
 import enum
 import re
-from typing import List
+from typing import List, Optional
 
 from metasequoia_sql.ast.nodes import *
 from metasequoia_sql.common.text_scanner import TextScanner
+from metasequoia_sql.errors import AstParseError
 
 
 class ASTBuilder(AST):
@@ -176,7 +177,6 @@ class AstParseContext:
             self.stack[-1].append(ASTMultiLineComment(origin))  # 多行注释
         else:
             self.stack[-1].append(ASTOther(origin))
-        self.set_status(AstParseStatus.WAIT_TOKEN)
 
     def cache_add_and_handle_end_word(self) -> None:
         """【移动指针】先将当前指针位置的字符添加到缓存并移动指针位置，然后处理在刚缓存的字符结束的缓存词语（即调用时的指针位置为当前词语的最后一个字符）"""

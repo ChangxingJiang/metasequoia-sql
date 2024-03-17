@@ -198,7 +198,7 @@ class MySQLCreateTableParser(SqlParser):
                 if i + 2 < len(tokens) and tokens[i + 1].equals("="):
                     self.builder.set_engine(tokens[i + 2].source)
                 else:
-                    raise SqlParseError("unknown engine")
+                    raise SqlParseError(f"unknown engine: {tokens}")
                 i += 3
             elif tokens[i].equals("AUTO_INCREMENT"):
                 if i + 2 < len(tokens) and tokens[i + 1].equals("="):
