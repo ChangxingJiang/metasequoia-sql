@@ -8,9 +8,11 @@ from metasequoia_sql.ast.nodes import *
 from metasequoia_sql.ast.parser import AstParseContext, AstParseStatus
 from metasequoia_sql.errors import AstParseError
 
+__all__ = ["parse_as_tokens", "parse_as_statements", "iter_child_nodes", "dump"]
 
-def parse(text: str) -> List[AST]:
-    """把源码解析为 AST 节点"""
+
+def parse_as_tokens(text: str) -> List[AST]:
+    """把源码解析为 AST 节点列表"""
     context = AstParseContext(text)
     while not context.is_finish:
         if context.status == AstParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
@@ -98,13 +100,31 @@ def parse(text: str) -> List[AST]:
         else:
             context.cache_add()
 
+    # 处理最后一个词语
+    if context.status == AstParseStatus.IN_WORD:
+        context.handle_end_word()
+        context.set_status(AstParseStatus.WAIT_TOKEN)
+
     if len(context.stack) > 1:
         raise AstParseError("'(' 数量大于 ')'")
-    else:
-        if context.status == AstParseStatus.IN_WORD:  # 末尾没有分号的情况
-            context.handle_end_word()
-            context.set_status(AstParseStatus.WAIT_TOKEN)
-        return [ASTStatement(context.stack[0])]
+
+    return context.stack[0]
+
+
+def parse_as_statements(text: str) -> List[AST]:
+    """把源码解析为 AST 表达式节点列表"""
+    tokens = parse_as_tokens(text)
+    statement_list = []
+    now_statement = []
+    for token in tokens:
+        if token.is_semicolon is True:
+            if len(now_statement) > 0:
+                statement_list.append(ASTStatement(now_statement))
+        else:
+            now_statement.append(token)
+    if len(now_statement) > 0:
+        statement_list.append(ASTStatement(now_statement))
+    return statement_list
 
 
 def iter_child_nodes(node: AST) -> List[AST]:

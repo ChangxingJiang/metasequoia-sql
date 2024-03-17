@@ -45,6 +45,11 @@ class AST(abc.ABC):
         """当前节点是否为空格（包括空格、换行符等）"""
         return False
 
+    @property
+    def is_semicolon(self) -> bool:
+        """当前节点是否为分号"""
+        return False
+
     def __str__(self) -> str:
         return self.source
 
@@ -101,6 +106,11 @@ class ASTComma(AST):
 
 class ASTSemicolon(AST):
     """分号"""
+
+    @property
+    def is_semicolon(self) -> bool:
+        """当前节点是否为分号"""
+        return True
 
     @property
     def source(self) -> str:

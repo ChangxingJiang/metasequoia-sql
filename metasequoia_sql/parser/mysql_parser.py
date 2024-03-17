@@ -253,5 +253,5 @@ class MySQLCreateTableParser(SqlParser):
 
 def parse_mysql_create_table_statement(sql: str) -> DDLCreateTableStatementMySQL:
     # 将 sql 解析为多个表达式，并检查是否有且只有 1 个表达式
-    root: ast.AST = ast.parse(sql)[0]
+    root: ast.AST = ast.parse_as_statements(sql)[0]
     return MySQLCreateTableParser(root).builder

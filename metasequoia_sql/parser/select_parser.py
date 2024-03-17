@@ -109,5 +109,5 @@ class SelectParser(SqlParser):
 if __name__ == "__main__":
     from demo_sql import *
 
-    result: ast.AST = ast.parse(DEMO_MYSQL_MCC_15_2_3_1)
+    result: ast.AST = ast.parse_as_statements(DEMO_MYSQL_MCC_15_2_3_1)
     print(result.__repr__())
