@@ -22,7 +22,3 @@ class UnSupportDataSourceError(Exception):
 
     def __init__(self, reason: str):
         self.reason = reason
-
-
-class SqlAstError(Exception):
-    """AST 构造异常"""

@@ -1,7 +1,7 @@
 import abc
 from typing import List, Optional
 
-from metasequoia_sql.errors import SqlAstError
+from metasequoia_sql.errors import AstParseError
 
 
 # ------------------------------ 抽象节点类 ------------------------------
@@ -49,7 +49,7 @@ class AST(abc.ABC):
 
     def append(self, ch: str) -> None:
         """节点构造器的方法，用于向节点中添加一个字符"""
-        raise SqlAstError("已构造完成的 AST 节点不允许修改")
+        raise AstParseError("已构造完成的 AST 节点不允许修改")
 
 
 # ------------------------------ 具体节点类 ------------------------------
@@ -137,6 +137,17 @@ class ASTIdentifier(AST):
     @property
     def source(self) -> str:
         return f"`{self._value}`"
+
+
+class ASTSimpleLineComment(AST):
+    """单行注释"""
+
+    def __init__(self, origin: str):
+        self._value = origin
+
+    @property
+    def source(self) -> str:
+        return self._value
 
 
 class ASTMultiLineComment(AST):

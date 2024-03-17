@@ -4,7 +4,7 @@ ast 的解析方法
 
 import enum
 import re
-from typing import List, Optional
+from typing import List
 
 from metasequoia_sql.ast.nodes import *
 from metasequoia_sql.common.text_scanner import TextScanner
@@ -35,8 +35,8 @@ class AstParseStatus(enum.Enum):
     IN_DOUBLE_QUOTE = enum.auto()  # 当前正在双引号 " 中
     IN_SINGLE_QUOTE = enum.auto()  # 当前正在单引号 ' 中
     IN_BACK_QUOTE = enum.auto()  # 当前正在反引号 ` 中
-    IN_EXPLAIN_1 = enum.auto()  # 当前在 # 标记的注释中
-    IN_EXPLAIN_2 = enum.auto()  # 当前在 /* 和 */ 标注的注释中
+    IN_EXPLAIN_1 = enum.auto()  # 当前在 # 或 -- 标记的单行注释中
+    IN_EXPLAIN_2 = enum.auto()  # 当前在 /* 和 */ 标注的多行注释中
 
 
 class AstParseContext:
@@ -92,42 +92,59 @@ class AstParseContext:
         """当前指针位置的下一个字符"""
         return self._scanner.next
 
+    @property
+    def is_finish(self) -> bool:
+        """若当前上下文已匹配结束则返回 True，否则返回 False"""
+        return self._scanner.is_finish
+
+    def check_last_now(self, last_ch: str, now_ch: str) -> bool:
+        """检查当前指针位置的上一个字符和当前字符是否为 last_ch 和 now_ch，如果是则返回 True，否则返回 False"""
+        return self.last_ch == last_ch and self.now_ch == now_ch
+
+    def check_last_now_next(self, last_ch: str, now_ch: str, next_ch: str) -> bool:
+        """检查当前指针位置的上一个字符、当前字符和下一个字符是否为 last_ch、now_ch 和 next_ch，如果是则返回 True，否则返回 False"""
+        return self.last_ch == last_ch and self.now_ch == now_ch and self.next_ch == next_ch
+
     # ------------------------------ 当前缓存词语的相关方法 ------------------------------
 
-    def stand_cache_get(self) -> str:
+    def cache_get(self) -> str:
         """获取当前正在缓存的词语"""
         return "".join(self._cache)
 
-    def stand_cache_reset(self) -> None:
+    def cache_reset(self) -> None:
         """重置当前正在缓存的词语"""
         self._cache = []
 
-    def move_cache_add(self) -> None:
+    def cache_add(self) -> None:
         """将当前指针位置的字符添加到缓存，并移动指针位置"""
         self._cache.append(self._scanner.get())
 
-    def move_cache_reset_and_add(self) -> None:
+    def cache_reset_and_add(self) -> None:
         """重置当前正在缓存的词语，然后将当前指针位置的字符添加到缓存，并移动指针位置"""
-        self.stand_cache_reset()
-        self.move_cache_add()
+        self.cache_reset()
+        self.cache_add()
 
-    def stand_cache_get_and_reset(self) -> str:
+    def cache_get_and_reset(self) -> str:
         """获取当前正在缓存的词语，并重置词语缓存"""
-        result = self.stand_cache_get()
-        self.stand_cache_reset()
+        result = self.cache_get()
+        self.cache_reset()
         return result
 
     # ------------------------------ 状态变化方法 ------------------------------
 
-    def move_handle_space(self) -> None:
-        """【移动指针】处理当前指针位置的空格"""
-        self._scanner.move()
-        self._stack[-1].append(ASTSpace())
+    def handle_left_parenthesis(self) -> None:
+        """【移动指针】处理当前指针位置的左括号"""
+        self.scanner.move()
+        self.stack.append([])
 
-    def move_handle_line_break(self) -> None:
-        """【移动指针】处理当前指针位置的换行符"""
-        self._scanner.move()
-        self._stack[-1].append(ASTLineBreak())
+    def handle_right_parenthesis(self) -> None:
+        """【移动指针】处理当前指针位置的右括号"""
+        if len(self.stack) <= 1:
+            raise AstParseError(f"当前 ')' 数量大于 '(': pos={self.scanner.pos}")
+
+        self.scanner.move()
+        tokens = self.stack.pop()
+        self.stack[-1].append(ASTParenthesis(tokens, "(", ")"))
 
     def handle_end_word(self) -> None:
         """【不移动指针】处理在当前指针位置的前一个字符结束的缓存词语（即当前指针位置是下一个词语的第一个字符）
@@ -136,31 +153,38 @@ class AstParseContext:
         2. 解析缓存词语并更新到节点树中
         3. 将状态更新为等待下一个节点
         """
-        origin = self.stand_cache_get_and_reset()
+        origin = self.cache_get_and_reset()
         if origin == " ":
-            self._stack[-1].append(ASTSpace())  # 空格
+            self.stack[-1].append(ASTSpace())  # 空格
         elif origin == "\n":
-            self._stack[-1].append(ASTLineBreak())  # 换行符
+            self.stack[-1].append(ASTLineBreak())  # 换行符
         elif origin == ",":
-            self._stack[-1].append(ASTComma())  # 逗号
+            self.stack[-1].append(ASTComma())  # 逗号
         elif origin == ";":
-            self._stack[-1].append(ASTSemicolon())  # 分号
+            self.stack[-1].append(ASTSemicolon())  # 分号
         elif re.match(r"^\d+$", origin):
-            self._stack[-1].append(ASTLiteralInteger(origin))  # 字面值整数
+            self.stack[-1].append(ASTLiteralInteger(origin))  # 字面值整数
         elif re.match(r"^\d+.\d+$", origin):
-            self._stack[-1].append(ASTLiteralFloat(origin))  # 字面值浮点数
+            self.stack[-1].append(ASTLiteralFloat(origin))  # 字面值浮点数
         elif (origin.startswith("\"") and origin.endswith("\"")) or (origin.startswith("'") and origin.endswith("'")):
-            self._stack[-1].append(ASTLiteralString(origin))  # 字面值字符串
+            self.stack[-1].append(ASTLiteralString(origin))  # 字面值字符串
         elif origin.startswith("`") and origin.endswith("`"):
-            self._stack[-1].append(ASTIdentifier(origin))  # 显式标识符
+            self.stack[-1].append(ASTIdentifier(origin))  # 显式标识符
+        elif origin.startswith("#") and origin.startswith("--"):
+            self.stack[-1].append(ASTSimpleLineComment(origin))  # 单行注释
         elif origin.startswith("/*") and origin.endswith("*/"):
-            self._stack[-1].append(ASTMultiLineComment(origin))  # 多行注释
+            self.stack[-1].append(ASTMultiLineComment(origin))  # 多行注释
         else:
-            self._stack[-1].append(ASTOther(origin))
-        self._stand_set_status(AstParseStatus.WAIT_TOKEN)
+            self.stack[-1].append(ASTOther(origin))
+        self.set_status(AstParseStatus.WAIT_TOKEN)
+
+    def cache_add_and_handle_end_word(self) -> None:
+        """【移动指针】先将当前指针位置的字符添加到缓存并移动指针位置，然后处理在刚缓存的字符结束的缓存词语（即调用时的指针位置为当前词语的最后一个字符）"""
+        self.cache_add()
+        self.handle_end_word()
 
     # ------------------------------ 私有处理方法 ------------------------------
 
-    def _stand_set_status(self, status: AstParseStatus) -> None:
+    def set_status(self, status: AstParseStatus) -> None:
         """设置状态"""
         self._status = status

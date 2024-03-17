@@ -11,106 +11,70 @@ def parse(text: str) -> List[AST]:
     """把源码解析为 AST 节点"""
     context = AstParseContext(text)
     scanner = context.scanner
-    while not scanner.is_finish:
+    while not context.is_finish:
         if context.status == AstParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
-            if context.now_ch == " ":
-                context.move_handle_space()
-            elif context.now_ch == "\n":
-                context.move_handle_line_break()
+            if context.now_ch in {" ", "\n", ",", ";"}:
+                context.cache_reset_and_add()
+                context.handle_end_word()
             elif context.now_ch == "\"":
-                context.move_cache_reset_and_add()
-                context._stand_set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+                context.cache_reset_and_add()
+                context.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
             elif context.now_ch == "'":
-                context.move_cache_reset_and_add()
-                context._stand_set_status(AstParseStatus.IN_SINGLE_QUOTE)
+                context.cache_reset_and_add()
+                context.set_status(AstParseStatus.IN_SINGLE_QUOTE)
             elif context.now_ch == "`":
-                context.move_cache_reset_and_add()
-                context._stand_set_status(AstParseStatus.IN_BACK_QUOTE)
-            elif context.now_ch == "#":
-                context.move_cache_reset_and_add()
-                context._stand_set_status(AstParseStatus.IN_EXPLAIN_1)
-            elif context.now_ch == "/":
-                if context.next_ch == "*":
-                    context.move_cache_reset_and_add()
-                    context._stand_set_status(AstParseStatus.IN_EXPLAIN_2)
-                else:
-                    context.move_cache_reset_and_add()
-                    context._stand_set_status(AstParseStatus.IN_WORD)
+                context.cache_reset_and_add()
+                context.set_status(AstParseStatus.IN_BACK_QUOTE)
+            elif context.now_ch == "#" or (context.now_ch == "-" and context.next_ch == "-"):
+                context.cache_reset_and_add()
+                context.set_status(AstParseStatus.IN_EXPLAIN_1)
+            elif context.now_ch == "/" and context.next_ch == "*":
+                context.cache_reset_and_add()
+                context.set_status(AstParseStatus.IN_EXPLAIN_2)
             elif context.now_ch == "(":
-                context.stack.append([])
-                scanner.move()
-                context._stand_set_status(AstParseStatus.WAIT_TOKEN)
+                context.handle_left_parenthesis()  # 【移动指针】处理当前指针位置的左括号
             elif context.now_ch == ")":
-                print(context.stack)
-                if len(context.stack) > 1:
-                    tokens = context.stack.pop()
-                    context.stack[-1].append(ASTParenthesis(tokens, "(", ")"))
-                    context._stand_set_status(AstParseStatus.WAIT_TOKEN)
-                    scanner.move()
-                else:
-                    raise AstParseError("')' 数量大于 '('")
+                context.handle_right_parenthesis()  # 【移动指针】处理当前指针位置的右括号
             else:
-                context.move_cache_reset_and_add()
-                context._stand_set_status(AstParseStatus.IN_WORD)
-        elif context.status == AstParseStatus.IN_DOUBLE_QUOTE:
-            if context.last_ch != "\\" and context.now_ch == "\"" and not context.next_ch == "\"":
-                context.move_cache_add()
-                context.handle_end_word()
-            else:
-                context.move_cache_add()
-        elif context.status == AstParseStatus.IN_SINGLE_QUOTE:
-            if context.last_ch != "\\" and context.now_ch == "'" and not context.next_ch == "'":
-                context.move_cache_add()
-                context.handle_end_word()
-            else:
-                context.move_cache_add()
-        elif context.status == AstParseStatus.IN_BACK_QUOTE:
-            if context.now_ch == "`":
-                context.move_cache_add()
-                context.handle_end_word()
-            else:
-                context.move_cache_add()
+                context.cache_reset_and_add()
+                context.set_status(AstParseStatus.IN_WORD)
+        elif (context.status == AstParseStatus.IN_DOUBLE_QUOTE and
+              context.last_ch != "\\" and context.now_ch == "\"" and not context.next_ch == "\""):
+            context.cache_add_and_handle_end_word()
+        elif (context.status == AstParseStatus.IN_SINGLE_QUOTE and
+              context.last_ch != "\\" and context.now_ch == "'" and not context.next_ch == "'"):
+            context.cache_add_and_handle_end_word()
+        elif context.status == AstParseStatus.IN_BACK_QUOTE and context.now_ch == "`":
+            context.cache_add_and_handle_end_word()
         elif context.status == AstParseStatus.IN_EXPLAIN_1 and context.now_ch == "\n":
             context.handle_end_word()
-        elif context.status == AstParseStatus.IN_EXPLAIN_2:
-            if context.now_ch == "/" and context.last_ch == "*":
-                context.move_cache_add()
-                context.handle_end_word()
-            else:
-                context.move_cache_add()
+        elif context.status == AstParseStatus.IN_EXPLAIN_2 and context.last_ch == "*" and context.now_ch == "/":
+            context.cache_add_and_handle_end_word()
         elif context.status == AstParseStatus.IN_WORD:
-            if context.now_ch in {" ", "\n", ",", ";", "+", "-", "*", "/", "="}:
+            if context.now_ch in {" ", "\n", ",", ";", "+", "-", "*", "/", "=", "`"}:
                 context.handle_end_word()
             elif context.now_ch == "\"":
-                if context.stack[-1][-1].source == "b":  # 兼容类似字符串 b'0'
-                    context.move_cache_add()
-                    context._stand_set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+                if context.cache_get() == "b":  # 兼容类似字符串 b'0'
+                    context.cache_add()
+                    context.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
                 else:
                     context.handle_end_word()
             elif context.now_ch == "'":
-                if context.stack[-1][-1].source == "b":  # 兼容类似字符串 b'0'
-                    context.move_cache_add()
-                    context._stand_set_status(AstParseStatus.IN_SINGLE_QUOTE)
+                if context.cache_get() == "b":  # 兼容类似字符串 b'0'
+                    context.cache_add()
+                    context.set_status(AstParseStatus.IN_SINGLE_QUOTE)
                 else:
                     context.handle_end_word()
-            elif context.now_ch == "`":
-                context.handle_end_word()
             elif context.now_ch == "(":
                 context.handle_end_word()
-                context.stack.append([])
-                scanner.move()
+                context.handle_left_parenthesis()  # 【移动指针】处理当前指针位置的左括号
             elif context.now_ch == ")":
                 context.handle_end_word()
-                if len(context.stack) > 1:
-                    tokens = context.stack.pop()
-                    context.stack[-1].append(ASTParenthesis(tokens, "(", ")"))
-                    scanner.move()
-                else:
-                    raise AstParseError("')' 数量大于 '('")
+                context.handle_right_parenthesis()  # 【移动指针】处理当前指针位置的右括号
             else:
-                context.move_cache_add()
+                context.cache_add()
         else:
-            context.move_cache_add()
+            context.cache_add()
 
     if len(context.stack) > 1:
         raise AstParseError("'(' 数量大于 ')'")
