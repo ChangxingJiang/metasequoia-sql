@@ -14,31 +14,31 @@ def parse(text: str) -> List[AST]:
     context = AstParseContext(text)
     while not context.is_finish:
         if context.status == AstParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
-            if context.now_ch in {" ", "\n", ",", ";", "+", "-", "="}:
-                context.cache_reset_and_add()
-                context.handle_end_word()
-            elif context.now_ch == "\"":
-                context.cache_reset_and_add()
-                context.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
-            elif context.now_ch == "'":
-                context.cache_reset_and_add()
-                context.set_status(AstParseStatus.IN_SINGLE_QUOTE)
-            elif context.now_ch == "`":
-                context.cache_reset_and_add()
-                context.set_status(AstParseStatus.IN_BACK_QUOTE)
-            elif context.now_ch == "#" or (context.now_ch == "-" and context.next_ch == "-"):
-                context.cache_reset_and_add()
-                context.set_status(AstParseStatus.IN_EXPLAIN_1)
-            elif context.now_ch == "/" and context.next_ch == "*":
-                context.cache_reset_and_add()
+            if context.now_ch == "/" and context.next_ch == "*":
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 context.cache_add()
                 context.set_status(AstParseStatus.IN_EXPLAIN_2)
+            elif context.now_ch in {" ", "\n", ",", ";", "=", "+", "-", "*", "/"}:
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                context.handle_end_word()
+            elif context.now_ch == "\"":
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                context.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+            elif context.now_ch == "'":
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                context.set_status(AstParseStatus.IN_SINGLE_QUOTE)
+            elif context.now_ch == "`":
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                context.set_status(AstParseStatus.IN_BACK_QUOTE)
+            elif context.now_ch == "#" or (context.now_ch == "-" and context.next_ch == "-"):
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                context.set_status(AstParseStatus.IN_EXPLAIN_1)
             elif context.now_ch == "(":
                 context.handle_left_parenthesis()  # 【移动指针】处理当前指针位置的左括号
             elif context.now_ch == ")":
                 context.handle_right_parenthesis()  # 【移动指针】处理当前指针位置的右括号
             else:
-                context.cache_reset_and_add()
+                context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 context.set_status(AstParseStatus.IN_WORD)
         elif (context.status == AstParseStatus.IN_DOUBLE_QUOTE and
               context.last_ch != "\\" and context.now_ch == "\"" and not context.next_ch == "\""):

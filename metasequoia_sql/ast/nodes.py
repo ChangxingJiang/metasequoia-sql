@@ -3,9 +3,17 @@ from typing import List, Optional
 
 from metasequoia_sql.errors import AstParseError
 
-__all__ = ["AST", "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon", "ASTLiteralInteger", "ASTLiteralFloat",
-           "ASTLiteralString", "ASTIdentifier", "ASTSimpleLineComment", "ASTMultiLineComment", "ASTParenthesis",
-           "ASTStatement", "ASTOther"]
+__all__ = [
+    "AST",
+    "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon", "ASTEqual",
+    "ASTComputeOperator",  # 计算运算符
+    "ASTCompareOperator",  # 比较运算符
+    "ASTLiteralInteger", "ASTLiteralFloat", "ASTLiteralString", "ASTIdentifier",
+    "ASTSimpleLineComment", "ASTMultiLineComment",
+    "ASTParenthesis",
+    "ASTStatement",
+    "ASTOther"
+]
 
 
 # ------------------------------ 抽象节点类 ------------------------------
@@ -97,6 +105,40 @@ class ASTSemicolon(AST):
     @property
     def source(self) -> str:
         return ";"
+
+
+class ASTEqual(AST):
+    """等号"""
+
+    @property
+    def source(self) -> str:
+        return "="
+
+
+class ASTComputeOperator(AST):
+    """算术操作符"""
+
+    def __init__(self, origin: str):
+        if origin not in {"+", "-", "*", "/"}:
+            raise AstParseError(f"初始化 ASTComputeOperator 节点失败: origin={origin}")
+        self._origin = origin
+
+    @property
+    def source(self) -> str:
+        return self._origin
+
+
+class ASTCompareOperator(AST):
+    """比较运算符（不含等号）"""
+
+    def __init__(self, origin: str):
+        if origin not in {"<>", "!=", "<", "<=", ">", ">="}:
+            raise AstParseError(f"初始化 ASTCompareOperator 节点失败: origin={origin}")
+        self._origin = origin
+
+    @property
+    def source(self) -> str:
+        return self._origin
 
 
 class ASTLiteralInteger(AST):

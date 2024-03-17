@@ -121,7 +121,7 @@ class AstParseContext:
         self._cache.append(self._scanner.get())
 
     def cache_reset_and_add(self) -> None:
-        """重置当前正在缓存的词语，然后将当前指针位置的字符添加到缓存，并移动指针位置"""
+        """【移动指针】重置当前正在缓存的词语，然后将当前指针位置的字符添加到缓存，并移动指针位置"""
         self.cache_reset()
         self.cache_add()
 
@@ -163,6 +163,12 @@ class AstParseContext:
             self.stack[-1].append(ASTComma())  # 逗号
         elif origin == ";":
             self.stack[-1].append(ASTSemicolon())  # 分号
+        elif origin == "=":
+            self.stack[-1].append(ASTEqual())  # 等号
+        elif origin in {"+", "-", "*", "/"}:
+            self.stack[-1].append(ASTComputeOperator(origin))  # 算术运算符
+        elif origin in {"<>", "!=", "<", "<=", ">", ">="}:
+            self.stack[-1].append(ASTCompareOperator(origin))  # 比较运算符
         elif re.match(r"^\d+$", origin):
             self.stack[-1].append(ASTLiteralInteger(origin))  # 字面值整数
         elif re.match(r"^\d+.\d+$", origin):
