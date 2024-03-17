@@ -74,8 +74,8 @@ class SelectParseStage(enum.StrEnum):
     # 状态：在 HAVING 关键字之后，在条件表达式之前
     # 目标匹配：条件表达式
     HAVING_WAIT_CONDITION_EXPRESSION_FIRST = "HAVING_WAIT_CONDITION_EXPRESSION_FIRST"  # 在 HAVING 关键字之后
-    HAVING_WAIT_CONDITION_EXPRESSION_OR = "HAVING_WAIT_CONDITION_EXPRESSION_FIRST"  # 在第一层的 OR 关键字之后
-    HAVING_WAIT_CONDITION_EXPRESSION_AND = "HAVING_WAIT_CONDITION_EXPRESSION_FIRST"  # 在第一层的 AND 关键字之后
+    HAVING_WAIT_CONDITION_EXPRESSION_OR = "HAVING_WAIT_CONDITION_EXPRESSION_OR"  # 在第一层的 OR 关键字之后
+    HAVING_WAIT_CONDITION_EXPRESSION_AND = "HAVING_WAIT_CONDITION_EXPRESSION_AND"  # 在第一层的 AND 关键字之后
 
     # 状态：在 HAVING 子句的条件表达式之后
     # 目标匹配：AND 关键字、OR 关键字；下一个子句的关键字；语句结束
@@ -109,5 +109,5 @@ class SelectParser(SqlParser):
 if __name__ == "__main__":
     from demo_sql import *
 
-    result: ast.ASTStatement = ast.ASTParser(DEMO_MYSQL_MCC_15_2_3_1).parse()
+    result: ast.AST = ast.parse(DEMO_MYSQL_MCC_15_2_3_1)
     print(result.__repr__())

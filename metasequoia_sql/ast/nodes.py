@@ -1,6 +1,8 @@
 import abc
 from typing import List, Optional
 
+from metasequoia_sql.errors import SqlAstError
+
 
 # ------------------------------ 抽象节点类 ------------------------------
 
@@ -8,12 +10,8 @@ from typing import List, Optional
 class AST(abc.ABC):
     """AST 节点类的抽象基类"""
 
-    def __init__(self, origin: Optional[str]):
+    def __init__(self, origin: Optional[str] = None):
         self._origin = origin
-
-    @property
-    def origin(self) -> str:
-        return self._origin
 
     @property
     @abc.abstractmethod
@@ -51,6 +49,10 @@ class AST(abc.ABC):
     def equals(self, other: str) -> bool:
         """判断当前 AST 节点是否与一段源代码相同"""
         return self.source.upper() == other.upper()
+
+    def append(self, ch: str) -> None:
+        """节点构造器的方法，用于向节点中添加一个字符"""
+        raise SqlAstError("已构造完成的 AST 节点不允许修改")
 
 
 # ------------------------------ 具体节点类 ------------------------------
@@ -100,7 +102,7 @@ class ASTLiteralInteger(AST):
     """字面值整数"""
 
     def __init__(self, origin: str):
-        super().__init__(origin)
+        super().__init__()
         self._value = int(origin)
 
     @property
@@ -112,7 +114,7 @@ class ASTLiteralFloat(AST):
     """字面值浮点数"""
 
     def __init__(self, origin: str):
-        super().__init__(origin)
+        super().__init__()
         self._value = float(origin)
 
     @property
@@ -124,7 +126,7 @@ class ASTLiteralString(AST):
     """字面值字符串"""
 
     def __init__(self, origin: str):
-        super().__init__(origin)
+        super().__init__()
         self._value = origin[1:-1]  # 不包含引号的部分
 
     @property
@@ -136,8 +138,8 @@ class ASTIdentifier(AST):
     """显式标识符"""
 
     def __init__(self, origin: str):
-        super().__init__(origin)
-        self._value = self._origin[1:-1]
+        super().__init__()
+        self._value = origin[1:-1]
 
     @property
     def source(self) -> str:
@@ -147,6 +149,44 @@ class ASTIdentifier(AST):
 class ASTMultiLineComment(AST):
     """多行注释"""
 
+    def __init__(self, origin: str):
+        super().__init__()
+        self._value = origin
+
     @property
     def source(self) -> str:
-        return self._origin
+        return self._value
+
+
+class ASTParenthesis(AST):
+    """插入语节点"""
+
+    def __init__(self, tokens: List[AST], start_mark: str, end_mark: str):
+        super().__init__()
+        self._tokens: List[AST] = tokens
+        self.start_mark = start_mark
+        self.end_mark = end_mark
+
+    @property
+    def children(self) -> List["AST"]:
+        return self._tokens
+
+    @property
+    def source(self):
+        return self.start_mark + "".join(token.source for token in self._tokens) + self.end_mark
+
+
+class ASTStatement(AST):
+    """【包含子节点的 AST 节点】完整 SQL 表达式"""
+
+    def __init__(self, tokens: List[AST]):
+        super().__init__()
+        self._tokens: List[AST] = tokens  # 下级节点列表
+
+    @property
+    def source(self):
+        return "".join(token.source for token in self._tokens)
+
+    @property
+    def children(self) -> List["AST"]:
+        return self._tokens

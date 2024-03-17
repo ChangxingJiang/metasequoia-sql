@@ -2,10 +2,10 @@
 解析 MySQL 建表语句
 """
 
-from metasequoia_sql.ast import ASTParser, dump
+from metasequoia_sql.ast.functions import parse, dump
 
 if __name__ == "__main__":
-    root = ASTParser("""
+    root = parse("""
 CREATE TABLE `manual_annotation` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `video_id` varchar(20) NOT NULL COMMENT '视频ID(B站ID)',
@@ -32,6 +32,9 @@ CREATE TABLE `manual_annotation` (
   KEY `index_start_date` (`start_date`),
   KEY `index_series_id` (`series_id`),
   FULLTEXT KEY `fulltext_video_name` (`video_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频'""").parse()
+) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频';
 
-    print(dump(root))
+SELECT * FROM manual_annotation;
+""")
+
+    print(dump(root[0]))
