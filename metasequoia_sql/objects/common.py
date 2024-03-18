@@ -28,35 +28,33 @@ class SqlBase(abc.ABC):
         """返回 SQL 源码"""
 
     def __str__(self) -> str:
-        return self.source()
+        return f"<{self.__class__.__name__} source={self.source()}>"
 
     def __repr__(self) -> str:
-        return self.source()
+        return f"<{self.__class__.__name__} source={self.source()}>"
 
 
 class SqlFunction(SqlBase, abc.ABC):
     """函数调用语句"""
 
-    def __init__(self, name: str, params: Optional[List[str]] = None):
-        if params is None:
-            params = []
+    def __init__(self, name: str, params: Optional[List["SQLColumnExpression"]] = None):
         self._name = name  # 函数名称
-        self._params = params  # 函数参数
+        self._params = params if params is not None else []  # 函数参数
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     @property
-    def params(self):
+    def params(self) -> Optional[List["SQLColumnExpression"]]:
         return self._params
 
     def source(self) -> str:
-        if len(self._params) > 0:
-            type_params = "(" + ", ".join(self._params) + ")"
-            return f"{self._name}{type_params}"
+        if len(self.params) > 0:
+            type_params = "(" + ", ".join([param.source() for param in self.params]) + ")"
+            return f"{self.name}{type_params}"
         else:
-            return self._name
+            return self.name
 
 
 class SqlExpression(SqlBase, abc.ABC):
@@ -77,7 +75,7 @@ class DDLColumnType(SqlFunction):
 class DDLColumn(SqlBase):
     """【DDL】建表语句中的字段信息"""
 
-    def __init__(self, column_name: str, column_type: "DDLColumnType", comment: Optional[str] = None):
+    def __init__(self, column_name: str, column_type: "SqlFunction", comment: Optional[str] = None):
         self._column_name = column_name.strip("`")
         self._column_type = column_type
         self._comment = comment
@@ -217,6 +215,13 @@ class DDLForeignKey(SqlBase):
 
 class SQLColumnExpression(SqlExpression):
     """字段表达式"""
+
+    def __init__(self, tokens: List[ast.AST], alias: Optional[str] = None):
+        super().__init__(tokens)
+        self._alias = alias
+
+    def alias(self) -> Optional[str]:
+        return self._alias
 
 
 # ------------------------------ 表达式层级 ------------------------------

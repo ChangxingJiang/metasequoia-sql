@@ -9,9 +9,9 @@ from typing import List
 
 from metasequoia_sql import ast
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.parser.common_parser import SqlParser
-from metasequoia_sql.objects.common import SqlFunction
 from metasequoia_sql.objects.mysql import *
+from metasequoia_sql.parser.common_parser import SqlParser
+from metasequoia_sql.parser.expression_parser import parse_function_call, parse_column_expression
 
 
 class MySQLCreateTableParser(SqlParser):
@@ -143,40 +143,40 @@ class MySQLCreateTableParser(SqlParser):
                         [node.source for node in column_group[7].children if not isinstance(node, ast.ASTComma)]
                     ))
             else:
-                position = self.create_token_scanner(column_group)
-                column_name = position.pop_as_source()
-                column_type = position.match_function(DDLColumnTypeMySQL)
+                scanner = self.create_token_scanner(column_group)
+                column_name = scanner.pop_as_source()
+                column_type = parse_function_call(scanner)
                 column = DDLColumnMySQL(column_name, column_type)
-                while not position.is_finish:
-                    if position.get().equals("NOT"):
-                        position.match_words(["NOT", "NULL"])
+                while not scanner.is_finish:
+                    if scanner.get().equals("NOT"):
+                        scanner.match_words(["NOT", "NULL"])
                         column.is_not_null = True
-                    elif position.get().equals("NULL"):
-                        position.match_words(["NULL"])
+                    elif scanner.get().equals("NULL"):
+                        scanner.match_words(["NULL"])
                         column.set_is_allow_null(True)
-                    elif position.get().equals("CHARACTER"):
-                        position.match_words(["CHARACTER", "SET"])
-                        column.set_character_set(position.pop_as_source())
-                    elif position.get().equals("COLLATE"):
-                        position.match_words(["COLLATE"])
-                        column.set_collate(position.pop_as_source())
-                    elif position.get().equals("DEFAULT"):
-                        position.match_words(["DEFAULT"])
-                        column.default = position.match_function(SqlFunction)
-                    elif position.get().equals("COMMENT"):
-                        position.match_words(["COMMENT"])
-                        column.set_comment(position.pop_as_source())
-                    elif position.get().equals("ON"):  # ON UPDATE
-                        position.match_words(["ON", "UPDATE"])
-                        column.on_update = position.match_function(SqlFunction)
-                    elif position.get().equals("AUTO_INCREMENT"):
-                        position.match_words(["AUTO_INCREMENT"])
+                    elif scanner.get().equals("CHARACTER"):
+                        scanner.match_words(["CHARACTER", "SET"])
+                        column.set_character_set(scanner.pop_as_source())
+                    elif scanner.get().equals("COLLATE"):
+                        scanner.match_words(["COLLATE"])
+                        column.set_collate(scanner.pop_as_source())
+                    elif scanner.get().equals("DEFAULT"):
+                        scanner.match_words(["DEFAULT"])
+                        column.default = parse_column_expression(scanner)
+                    elif scanner.get().equals("COMMENT"):
+                        scanner.match_words(["COMMENT"])
+                        column.set_comment(scanner.pop_as_source())
+                    elif scanner.get().equals("ON"):  # ON UPDATE
+                        scanner.match_words(["ON", "UPDATE"])
+                        column.on_update = parse_column_expression(scanner)
+                    elif scanner.get().equals("AUTO_INCREMENT"):
+                        scanner.match_words(["AUTO_INCREMENT"])
                         column.is_auto_increment = True
-                    elif position.get().equals("UNSIGNED"):
-                        position.match_words(["UNSIGNED"])
+                    elif scanner.get().equals("UNSIGNED"):
+                        scanner.match_words(["UNSIGNED"])
                         column.is_unsigned = True
-                    elif position.get().equals("ZEROFILL"):
-                        position.match_words(["ZEROFILL"])
+                    elif scanner.get().equals("ZEROFILL"):
+                        scanner.match_words(["ZEROFILL"])
                         column.is_zerofill = True
                     else:
                         raise SqlParseError(f"Cannot parse ddl column: {column_group}")

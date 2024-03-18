@@ -1,45 +1,89 @@
-from typing import List, Type
+from typing import List, Optional
 
 from metasequoia_sql import ast
+from metasequoia_sql.errors import ScannerError
 from metasequoia_sql.errors import TokenIdxOutOfRangeError, SqlParseError
-from metasequoia_sql.objects.common import SqlFunction
 
 
 class TokenScanner:
     """Token 扫描器"""
 
-    def __init__(self, tokens: List[ast.AST], pos: int = 0):
+    def __init__(self, elements: List[ast.AST], pos: int = 0):
         """
 
         Parameters
         ----------
-        tokens : List[ast.AST]
+        elements : List[ast.AST]
             当前层级的抽象语法树节点列表
         pos : int, default = 0
             当前正在处理的抽象语法树节点下标
         """
-        self._tokens = tokens
+        if pos < 0:
+            raise ScannerError(f"初始化的指针小于 0: pos={pos}")
+        if pos > len(elements):
+            raise ScannerError(f"初始化指针大于字符串长度: len(text)={len(elements)}, pos={pos}")
+
+        self._elements = elements
         self._pos = pos
-        self._n_token = len(self._tokens)
+        self._len = len(self._elements)
+
+        self._last = elements[pos - 1] if pos > 0 else None  # 上一个元素
 
     @property
-    def tokens(self) -> List[ast.AST]:
-        return self._tokens
+    def elements(self) -> List[ast.AST]:
+        return self._elements
 
     @property
     def pos(self) -> int:
         return self._pos
 
-    def get(self) -> ast.AST:
-        """返回当前元素但不移动指针"""
-        self._check_has_next(1)
-        return self._tokens[self._pos]
+    @property
+    def last(self) -> Optional[ast.AST]:
+        """当前指针位置的上一个字符"""
+        return self._last
+
+    @property
+    def now(self) -> Optional[ast.AST]:
+        """当前指针位置的字符"""
+        return self.get()
+
+    @property
+    def next(self) -> Optional[ast.AST]:
+        """当前指针位置的下一个字符"""
+        return self.get_next()
+
+    def get(self) -> Optional[ast.AST]:
+        """获取当前指针位置元素，但不移动指针
+
+        - 如果指针已到达字符串末尾，则返回 None
+        - 如果指针超出字符串长度，则抛出异常
+        """
+        if self._pos > self._len:
+            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos}")
+        if self._pos == self._len:
+            return None
+        return self._elements[self._pos]
+
+    def get_next(self) -> Optional[ast.AST]:
+        """获取当前指针下一个位置的元素，但不一定指针
+        """
+        if self._pos + 1 > self._len:
+            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos + 1}")
+        if self._pos + 1 == self._len:
+            return None
+        return self._elements[self._pos + 1]
 
     def pop(self) -> ast.AST:
-        """将指针向后移动 1 个元素并返回当前元素"""
-        self._check_has_next(1)
-        result = self._tokens[self._pos]
-        self._pos += 1
+        """获取当前指针位置元素，并移动指针
+
+        - 如果要移动到的指针位置超出字符串长度，则抛出异常
+        """
+        if self._pos >= self._len:
+            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1}")
+
+        self._last = self.get()  # 更新上一个元素
+        result = self._elements[self._pos]
+        self._pos += 1  # 移动指针
         return result
 
     def pop_as_source(self) -> str:
@@ -59,6 +103,8 @@ class TokenScanner:
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens))
                     tokens = []
+            else:
+                tokens.append(token)
         if len(tokens) > 0:
             result.append(TokenScanner(tokens))
         return result
@@ -67,26 +113,12 @@ class TokenScanner:
         """尝试从当前指针位置开始匹配 words，如果匹配失败则抛出异常"""
         for word in words:
             if not self.pop().equals(word):
-                raise SqlParseError(f"tokens={self._tokens}, words={words}")
-
-    def match_function(self, aim_class: Type[SqlFunction]) -> SqlFunction:
-        """匹配 SQL 函数，构造并返回 aim_class 类型的函数对象，同时移动指针"""
-        function_name = self.pop().source
-        if not self.is_finish and isinstance(self.get(), ast.ASTParenthesis):  # 函数包含参数
-            function_param = [sub_node.source for sub_node in self.pop().children]
-            return aim_class(function_name, function_param)
-        else:
-            return aim_class(function_name)
-
-    def _check_has_next(self, cnt: int) -> None:
-        """检查当前指针及之前之后是否包含大于等于 cnt 个元素，如果不存在则抛出异常"""
-        if self._pos + cnt > self._n_token:
-            raise TokenIdxOutOfRangeError(f"tokens={self._tokens}, pos={self._pos}, cnt={cnt}")
+                raise SqlParseError(f"tokens={self._elements}, words={words}")
 
     @property
     def is_finish(self) -> bool:
         """返回是否已匹配结束"""
-        return not self._pos < self._n_token
+        return not self._pos < self._len
 
     def __repr__(self):
-        return f"<TokenScanner tokens={self._tokens}, pos={self._pos}>"
+        return f"<TokenScanner tokens={self._elements}, pos={self._pos}>"

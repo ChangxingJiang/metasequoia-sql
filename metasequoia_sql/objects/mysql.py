@@ -18,7 +18,7 @@ class DDLColumnMySQL(DDLColumn):
     """【DDL】建表语句或修改表结构语句中的字段信息"""
 
     def __init__(self, column_name: str,
-                 column_type: DDLColumnTypeMySQL,
+                 column_type: SqlFunction,
                  is_unsigned: bool = False,
                  is_zerofill: bool = False,
                  character_set: Optional[str] = None,
