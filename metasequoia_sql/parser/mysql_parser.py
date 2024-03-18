@@ -8,13 +8,13 @@ import enum
 from typing import List
 
 from metasequoia_sql import ast
+from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.mysql import *
-from metasequoia_sql.parser.common_parser import SqlParser
-from metasequoia_sql.parser.expression_parser import parse_function_call, parse_column_expression
+from metasequoia_sql.parser.expression_parser import parse_sql_function, parse_simple_expression_or_case_expression
 
 
-class MySQLCreateTableParser(SqlParser):
+class MySQLCreateTableParser:
     """
     当前已知不支持的场景：虚拟列 GENERATED ALWAYS AS（RDS427.prism1.oned_topic_kafka）
     """
@@ -143,9 +143,9 @@ class MySQLCreateTableParser(SqlParser):
                         [node.source for node in column_group[7].children if not isinstance(node, ast.ASTComma)]
                     ))
             else:
-                scanner = self.create_token_scanner(column_group)
+                scanner = TokenScanner(column_group)
                 column_name = scanner.pop_as_source()
-                column_type = parse_function_call(scanner)
+                column_type = parse_sql_function(scanner)
                 column = DDLColumnMySQL(column_name, column_type)
                 while not scanner.is_finish:
                     if scanner.get().equals("NOT"):
@@ -162,13 +162,13 @@ class MySQLCreateTableParser(SqlParser):
                         column.set_collate(scanner.pop_as_source())
                     elif scanner.get().equals("DEFAULT"):
                         scanner.match_words(["DEFAULT"])
-                        column.default = parse_column_expression(scanner)
+                        column.default = parse_simple_expression_or_case_expression(scanner)
                     elif scanner.get().equals("COMMENT"):
                         scanner.match_words(["COMMENT"])
                         column.set_comment(scanner.pop_as_source())
                     elif scanner.get().equals("ON"):  # ON UPDATE
                         scanner.match_words(["ON", "UPDATE"])
-                        column.on_update = parse_column_expression(scanner)
+                        column.on_update = parse_simple_expression_or_case_expression(scanner)
                     elif scanner.get().equals("AUTO_INCREMENT"):
                         scanner.match_words(["AUTO_INCREMENT"])
                         column.is_auto_increment = True

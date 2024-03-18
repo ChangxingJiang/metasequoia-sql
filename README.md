@@ -20,6 +20,45 @@ root = parse_as_statements("your sql")
 
 ### 句法分析
 
+单项式级别：在当前层级，仅包含一个元素或两个相互依存的元素，其中不允许包含任何计算符。但是需要注意的是，函数调用虽然是单项式级别，但它可能包含一个或多个多项式级别的子节点。
+
+- `SQLFunction`：函数调用，包含参数插入语。
+- `SQLBareFunction`：函数，不包含插入语。例如 `CURRENT_DATE` 等。
+- `SQLLiteral`：字面值。没有依赖的列名。
+- `SQLColumn`：列名。
+- `SQLTable`：表名。
+
+多项式级别：
+
+- `SQLCaseExpression`：CASE 语句。包含一个完整的 CASE 语句。
+- `SQLSimpleExpression`：基础表达式。包含计算运算符的多项式，但在当前层级不包含别名、比较运算符。
+- `SQLColumnExpression`：字段表达式。包含计算运算符和别名的多项式，但在当前层级不包含比较运算符。
+- `SQLSoloConditionExpression`：单独比较表达式。包含计算运算符和一个比较运算符。
+- `SQLMultiConditionExpression`：组合比较表达式。即使用 OR 或 JOIN 进行组合的单独比较表达式。单独比较表达式也是一种组合比较表达式
+- `SQLBetweenExpression`：Between 语句。包含一个基础表达式及 BETWEEN ... AND ... 语句。在使用上等价于比较表达式。
+- `SQLWindowExpression`：窗口表达式。包含一个完整的窗口语句，但不包含别名。在使用上等价于基础表达式。
+
+子句级别：
+
+- `SQLFromClause`：FROM 子句。包含多个表名和别名的组合。
+- `SQLJoinClause`：JOIN 子句。包含一个表名、一个别名，以及一个与它对应的 ON 语句或 USING 函数。
+- `SQLWhereClause`：WHERE 子句。包含一个组合比较表达式。
+- `SQLGroupByClause`：GROUP BY 子句。包含多个分组字段（基础表达式）。
+- `SQLHavingClause`：HAVING 子句。包含一个组合比较表达式。
+- `SQLOrderByClause`：ORDER BY 子句。包含多个排序字段（基础表达式）。
+- `SQLLimitClause`：LIMIT 子句。包含一个开始位置和一个数量。
+- `SQLLateralViewCluatse`：LATERAL VIEW 子句。
+
+语句级别：
+
+- `SQLCreateTableStatement`：CREATE TABLE 语句
+- `SQLSelectStatement`：SELECT 语句
+
+联合级别：
+
+- `SQLUnionClause`：UNION 语句。包含多个 SELECT 语句。
+- `SQLUnionALLClause`：UNION ALL 语句。包含多个 SELECT 语句。
+
 对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
 
 ```python

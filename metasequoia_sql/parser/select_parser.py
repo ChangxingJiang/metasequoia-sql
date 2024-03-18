@@ -1,17 +1,10 @@
 """
 名词解释
-
-column expression (字段表达式)：在 SELECT 子句中字段的表达式，可能是字段名或计算函数（可能包含别名）
-table expression（表名表达式）：在 FROM 和 JOIN 子句中表示表的表达式，可能是表名或子表插入语（可能包含别名）
-join expression（关联表达式）：在 JOIN 子句中表示关联方式的表达式，可能是 ON 或 USING
-condition expression（条件表达式）：在 WHERE 子句中表示筛选条件的表达式，允许使用 OR 或 JOIN 拼接为新的条件表达式（可能为插入语）
-limit expression（限制表达式）：在 LIMIT 子句中的表达式，可能为 x,y 格式或 x OFFSET y 格式
 """
 
 import enum
 
 from metasequoia_sql import ast
-from metasequoia_sql.parser.common_parser import SqlParser
 
 
 @enum.unique
@@ -99,7 +92,7 @@ class SelectParseStage(enum.StrEnum):
     LIMIT_AFTER_LIMIT_EXPRESSION = "LIMIT_AFTER_LIMIT_EXPRESSION"
 
 
-class SelectParser(SqlParser):
+class SelectParser:
     """Hive 的 SELECT 语句解析器"""
 
     def __init__(self, root: ast.AST):

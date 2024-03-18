@@ -18,7 +18,7 @@ class DDLColumnMySQL(DDLColumn):
     """【DDL】建表语句或修改表结构语句中的字段信息"""
 
     def __init__(self, column_name: str,
-                 column_type: SqlFunction,
+                 column_type: SQLFunction,
                  is_unsigned: bool = False,
                  is_zerofill: bool = False,
                  character_set: Optional[str] = None,
@@ -26,8 +26,8 @@ class DDLColumnMySQL(DDLColumn):
                  is_allow_null: bool = False,
                  is_not_null: bool = False,
                  is_auto_increment: bool = False,
-                 default: Optional[SqlFunction] = None,
-                 on_update: Optional[SqlFunction] = None,
+                 default: Optional[SQLFunction] = None,
+                 on_update: Optional[SQLFunction] = None,
                  comment: Optional[str] = None
                  ):
         super().__init__(column_name, column_type, comment)
@@ -38,8 +38,8 @@ class DDLColumnMySQL(DDLColumn):
         self.is_allow_null: bool = is_allow_null  # 是否显式地允许 NULL 值
         self.is_not_null: bool = is_not_null
         self.is_auto_increment: bool = is_auto_increment
-        self.default: Optional[SqlFunction] = default
-        self.on_update: Optional[SqlFunction] = on_update
+        self.default: Optional[SQLFunction] = default
+        self.on_update: Optional[SQLFunction] = on_update
 
     def set_is_unsigned(self, is_unsigned: bool) -> None:
         self.is_unsigned = is_unsigned
@@ -67,9 +67,6 @@ class DDLColumnMySQL(DDLColumn):
 
     def set_on_update(self, on_update: Optional[str]):
         self.on_update = on_update
-
-    def change_to_data_source(self, data_source: DataSource, type_hash):
-        """转换为 DataSource 的类型的字段"""
 
     def source(self) -> str:
         res = f"{self._column_name} {self.column_type.source()}"

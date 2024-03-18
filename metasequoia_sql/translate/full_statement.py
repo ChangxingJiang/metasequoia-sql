@@ -40,8 +40,8 @@ class DDLColumnFull(FullBase):
                  is_allow_null: bool = False,
                  is_not_null: bool = False,
                  is_auto_increment: bool = False,
-                 default: Optional[SqlFunction] = None,
-                 on_update: Optional[SqlFunction] = None
+                 default: Optional[SQLFunction] = None,
+                 on_update: Optional[SQLFunction] = None
                  ):
         self.column_name = column_name
         self.column_type = column_type

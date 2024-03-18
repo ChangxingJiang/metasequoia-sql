@@ -8,9 +8,9 @@ from typing import List
 from metasequoia_sql.ast.functions import parse_as_tokens
 from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.objects.common import SQLColumnExpression, SqlFunction
+from metasequoia_sql.objects.common import SQLSimpleExpression, SQLFunction
 
-__all__ = ["parse_column_expression", "parse_function_call"]
+__all__ = ["parse_simple_expression_or_case_expression", "parse_sql_function"]
 
 
 class ParseColumnExpressionStatus(enum.Enum):
@@ -19,21 +19,21 @@ class ParseColumnExpressionStatus(enum.Enum):
     FINISH_EXPRESSION = 3  # 当前指针位置一定不属于当前表达式
 
 
-def parse_column_expression(scanner: TokenScanner):
+def parse_simple_expression_or_case_expression(scanner: TokenScanner):
     """解析字段表达式"""
     if scanner.get().equals("CASE"):
         return  # TODO 处理 case 语句
 
     status = ParseColumnExpressionStatus.BEFORE_EXPRESSION
     tokens = []
-    while status != ParseColumnExpressionStatus.FINISH_EXPRESSION and not scanner.is_finish:
+    while not scanner.is_finish:
         if status == ParseColumnExpressionStatus.BEFORE_EXPRESSION:
             # 当前指针位置是函数名
             if scanner.now.is_maybe_function_name and scanner.next is not None and scanner.next.is_parenthesis:
-                tokens.append(parse_function_call(scanner))
+                tokens.append(parse_sql_function(scanner))
             # 当前指针位置是插入语
             elif scanner.now.is_parenthesis:
-                tokens.append(parse_column_expression(scanner.pop_as_children_scanner()))
+                tokens.append(parse_simple_expression_or_case_expression(scanner.pop_as_children_scanner()))
             # 当前指针位置是其他元素
             else:
                 tokens.append(scanner.pop())
@@ -45,11 +45,13 @@ def parse_column_expression(scanner: TokenScanner):
                 status = ParseColumnExpressionStatus.AFTER_EXPRESSION
             else:
                 status = ParseColumnExpressionStatus.FINISH_EXPRESSION
+        elif status == ParseColumnExpressionStatus.FINISH_EXPRESSION:
+            break  # TODO 检查别名
 
-    return SQLColumnExpression(tokens)
+    return SQLSimpleExpression(tokens)
 
 
-def parse_function_call(scanner: TokenScanner) -> SqlFunction:
+def parse_sql_function(scanner: TokenScanner) -> SQLFunction:
     """解析函数调用：要求当前指针位置节点为函数名，下一个节点可能为函数参数，解析为 SQLFunction 对象"""
     # 解析函数名称
     name_node = scanner.pop()
@@ -58,22 +60,22 @@ def parse_function_call(scanner: TokenScanner) -> SqlFunction:
     function_name: str = name_node.source
 
     # 解析函数参数
-    function_params: List[SQLColumnExpression] = []
+    function_params: List[SQLSimpleExpression] = []
     if not scanner.is_finish and scanner.get().is_parenthesis:
         for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
-            function_params.append(parse_column_expression(param_scanner))
+            function_params.append(parse_simple_expression_or_case_expression(param_scanner))
 
     # 构造目标类
-    return SqlFunction(function_name, function_params)
+    return SQLFunction(function_name, function_params)
 
 
 if __name__ == "__main__":
-    print(parse_function_call(
+    print(parse_sql_function(
         TokenScanner([token for token in parse_as_tokens("trim(column1)") if token.is_space is False])))
 
     print(
-        parse_column_expression(TokenScanner([token for token in parse_as_tokens("a * b") if token.is_space is False])))
-    print(parse_column_expression(
+        parse_simple_expression_or_case_expression(TokenScanner([token for token in parse_as_tokens("a * b") if token.is_space is False])))
+    print(parse_simple_expression_or_case_expression(
         TokenScanner([token for token in parse_as_tokens("a * b * c") if token.is_space is False])))
     print(
-        parse_column_expression(TokenScanner([token for token in parse_as_tokens("a + b") if token.is_space is False])))
+        parse_simple_expression_or_case_expression(TokenScanner([token for token in parse_as_tokens("a + b") if token.is_space is False])))

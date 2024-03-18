@@ -3,20 +3,12 @@
 """
 
 import abc
-import enum
 from typing import Optional, List
 
 from metasequoia_sql import ast
 
-__all__ = ["DataSource", "SqlBase", "SqlFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKey", "DDLUniqueKey",
+__all__ = ["SqlBase", "SQLFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKey", "DDLUniqueKey",
            "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"]
-
-
-# ------------------------------ 数据源相关类 ------------------------------
-class DataSource(enum.Enum):
-    """数据源类型"""
-    MYSQL = enum.auto()
-    HIVE = enum.auto()
 
 
 # ------------------------------ 抽象基类 ------------------------------
@@ -34,10 +26,10 @@ class SqlBase(abc.ABC):
         return f"<{self.__class__.__name__} source={self.source()}>"
 
 
-class SqlFunction(SqlBase, abc.ABC):
+class SQLFunction(SqlBase, abc.ABC):
     """函数调用语句"""
 
-    def __init__(self, name: str, params: Optional[List["SQLColumnExpression"]] = None):
+    def __init__(self, name: str, params: Optional[List["SQLSimpleExpression"]] = None):
         self._name = name  # 函数名称
         self._params = params if params is not None else []  # 函数参数
 
@@ -46,7 +38,7 @@ class SqlFunction(SqlBase, abc.ABC):
         return self._name
 
     @property
-    def params(self) -> Optional[List["SQLColumnExpression"]]:
+    def params(self) -> Optional[List["SQLSimpleExpression"]]:
         return self._params
 
     def source(self) -> str:
@@ -68,14 +60,14 @@ class SqlExpression(SqlBase, abc.ABC):
 # ------------------------------ DDL 相关通用类 ------------------------------
 
 
-class DDLColumnType(SqlFunction):
+class DDLColumnType(SQLFunction):
     """【DDL】建表语句或修改表结构语句中的字段类型"""
 
 
 class DDLColumn(SqlBase):
     """【DDL】建表语句中的字段信息"""
 
-    def __init__(self, column_name: str, column_type: "SqlFunction", comment: Optional[str] = None):
+    def __init__(self, column_name: str, column_type: "SQLFunction", comment: Optional[str] = None):
         self._column_name = column_name.strip("`")
         self._column_type = column_type
         self._comment = comment
@@ -213,7 +205,7 @@ class DDLForeignKey(SqlBase):
 # ------------------------------ DSL 相关通用类 ------------------------------
 
 
-class SQLColumnExpression(SqlExpression):
+class SQLSimpleExpression(SqlExpression):
     """字段表达式"""
 
     def __init__(self, tokens: List[ast.AST], alias: Optional[str] = None):
