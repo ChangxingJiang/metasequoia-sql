@@ -41,13 +41,33 @@ class AST(abc.ABC):
         return []
 
     @property
-    def is_whitespace(self) -> bool:
+    def is_space(self) -> bool:
         """当前节点是否为空格（包括空格、换行符等）"""
+        return False
+
+    @property
+    def is_comma(self) -> bool:
+        """当前节点是否为逗号"""
         return False
 
     @property
     def is_semicolon(self) -> bool:
         """当前节点是否为分号"""
+        return False
+
+    @property
+    def is_maybe_function_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return False
+
+    @property
+    def is_parenthesis(self) -> bool:
+        """当前节点是否为插入语"""
+        return False
+
+    @property
+    def is_compute_operator(self) -> bool:
+        """当前节点是否为计算运算符"""
         return False
 
     def __str__(self) -> str:
@@ -76,19 +96,22 @@ class ASTSpace(AST):
     """空格符"""
 
     @property
-    def is_whitespace(self) -> bool:
+    def is_space(self) -> bool:
         return True
 
     @property
     def source(self) -> str:
         return " "
 
+    def __repr__(self) -> str:
+        return "<ASTSpace>"
+
 
 class ASTLineBreak(AST):
     """换行符"""
 
     @property
-    def is_whitespace(self) -> bool:
+    def is_space(self) -> bool:
         return True
 
     @property
@@ -98,6 +121,11 @@ class ASTLineBreak(AST):
 
 class ASTComma(AST):
     """逗号"""
+
+    @property
+    def is_comma(self) -> bool:
+        """当前节点是否为逗号"""
+        return True
 
     @property
     def source(self) -> str:
@@ -132,6 +160,11 @@ class ASTComputeOperator(AST):
         if origin not in {"+", "-", "*", "/"}:
             raise AstParseError(f"初始化 ASTComputeOperator 节点失败: origin={origin}")
         self._origin = origin
+
+    @property
+    def is_compute_operator(self) -> bool:
+        """当前节点是否为计算运算符"""
+        return True
 
     @property
     def source(self) -> str:
@@ -191,6 +224,11 @@ class ASTIdentifier(AST):
         self._value = origin[1:-1]
 
     @property
+    def is_maybe_function_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return True
+
+    @property
     def source(self) -> str:
         return f"`{self._value}`"
 
@@ -226,6 +264,11 @@ class ASTParenthesis(AST):
         self.end_mark = end_mark
 
     @property
+    def is_parenthesis(self) -> bool:
+        """当前节点是否为插入语"""
+        return True
+
+    @property
     def children(self) -> List["AST"]:
         return self._tokens
 
@@ -254,6 +297,11 @@ class ASTOther(AST):
 
     def __init__(self, origin: Optional[str]):
         self._origin = origin
+
+    @property
+    def is_maybe_function_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return True
 
     @property
     def source(self) -> str:

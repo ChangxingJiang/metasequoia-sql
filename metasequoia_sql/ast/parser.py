@@ -118,7 +118,7 @@ class AstParseContext:
 
     def cache_add(self) -> None:
         """将当前指针位置的字符添加到缓存，并移动指针位置"""
-        self._cache.append(self._scanner.get())
+        self._cache.append(self._scanner.pop())
 
     def cache_reset_and_add(self) -> None:
         """【移动指针】重置当前正在缓存的词语，然后将当前指针位置的字符添加到缓存，并移动指针位置"""

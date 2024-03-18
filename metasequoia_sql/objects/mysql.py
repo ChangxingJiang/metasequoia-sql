@@ -4,7 +4,7 @@ MySQL 专用的语法对象
 
 from typing import Optional, Dict, List
 
-from metasequoia_sql.statements.common import *
+from metasequoia_sql.objects.common import *
 
 __all__ = ["DDLColumnTypeMySQL", "DDLColumnMySQL", "DDLPrimaryKeyMySQL", "DDLUniqueKeyMySQL", "DDLKeyMySQL",
            "DDLForeignKeyMySQL", "DDLFulltextKeyMysql", "DDLCreateTableStatementMySQL"]

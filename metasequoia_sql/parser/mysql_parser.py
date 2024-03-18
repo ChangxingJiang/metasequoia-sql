@@ -10,8 +10,8 @@ from typing import List
 from metasequoia_sql import ast
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.parser.common_parser import SqlParser
-from metasequoia_sql.statements.common import SqlFunction
-from metasequoia_sql.statements.mysql import *
+from metasequoia_sql.objects.common import SqlFunction
+from metasequoia_sql.objects.mysql import *
 
 
 class MySQLCreateTableParser(SqlParser):
@@ -21,7 +21,7 @@ class MySQLCreateTableParser(SqlParser):
 
     def __init__(self, root: ast.AST):
         # 过滤 statement 中的空白字符
-        self.tokens: List[ast.AST] = [token for token in root.children if token.is_whitespace is False]
+        self.tokens: List[ast.AST] = [token for token in root.children if token.is_space is False]
         self.n_token = len(self.tokens)
 
         # 初始化自动机状态类
@@ -90,7 +90,7 @@ class MySQLCreateTableParser(SqlParser):
 
         # 过滤插入语中的空白字符
         inner_tokens: List[ast.AST] = [token for token in outer_token.children if
-                                       token.is_whitespace is False and not isinstance(token, ast.ASTMultiLineComment)]
+                                       token.is_space is False and not isinstance(token, ast.ASTMultiLineComment)]
 
         # 根据逗号拆分插入语中的内容
         column_group_tokens: List[List[ast.AST]] = [[]]
@@ -147,7 +147,7 @@ class MySQLCreateTableParser(SqlParser):
                 column_name = position.pop_as_source()
                 column_type = position.match_function(DDLColumnTypeMySQL)
                 column = DDLColumnMySQL(column_name, column_type)
-                while not position.is_finish():
+                while not position.is_finish:
                     if position.get().equals("NOT"):
                         position.match_words(["NOT", "NULL"])
                         column.is_not_null = True

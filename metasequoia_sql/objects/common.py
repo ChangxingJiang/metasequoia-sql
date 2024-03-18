@@ -6,6 +6,8 @@ import abc
 import enum
 from typing import Optional, List
 
+from metasequoia_sql import ast
+
 __all__ = ["DataSource", "SqlBase", "SqlFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKey", "DDLUniqueKey",
            "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"]
 
@@ -24,6 +26,12 @@ class SqlBase(abc.ABC):
     @abc.abstractmethod
     def source(self) -> str:
         """返回 SQL 源码"""
+
+    def __str__(self) -> str:
+        return self.source()
+
+    def __repr__(self) -> str:
+        return self.source()
 
 
 class SqlFunction(SqlBase, abc.ABC):
@@ -49,6 +57,14 @@ class SqlFunction(SqlBase, abc.ABC):
             return f"{self._name}{type_params}"
         else:
             return self._name
+
+
+class SqlExpression(SqlBase, abc.ABC):
+    def __init__(self, tokens: List[ast.AST]):
+        self._tokens = tokens
+
+    def source(self) -> str:
+        return " ".join(token.source for token in self._tokens)
 
 
 # ------------------------------ DDL 相关通用类 ------------------------------
@@ -194,6 +210,13 @@ class DDLForeignKey(SqlBase):
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
         return f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) REFERENCES {self.master_table_name}({master_columns_str})"
+
+
+# ------------------------------ DSL 相关通用类 ------------------------------
+
+
+class SQLColumnExpression(SqlExpression):
+    """字段表达式"""
 
 
 # ------------------------------ 表达式层级 ------------------------------
