@@ -7,14 +7,14 @@ from typing import Optional, List
 
 from metasequoia_sql import ast
 
-__all__ = ["SqlBase", "SQLFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKey", "DDLUniqueKey",
+__all__ = ["SQLBase", "SQLFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKey", "DDLUniqueKey",
            "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"]
 
 
 # ------------------------------ 抽象基类 ------------------------------
 
 
-class SqlBase(abc.ABC):
+class SQLBase(abc.ABC):
     @abc.abstractmethod
     def source(self) -> str:
         """返回 SQL 源码"""
@@ -26,19 +26,25 @@ class SqlBase(abc.ABC):
         return f"<{self.__class__.__name__} source={self.source()}>"
 
 
-class SQLFunction(SqlBase, abc.ABC):
+# ---------- 单项式级别类 ----------
+
+class SQLMonomial(SQLBase, abc.ABC):
+    """单项式级别抽象类"""
+
+
+class SQLFunction(SQLMonomial):
     """函数调用语句"""
 
-    def __init__(self, name: str, params: Optional[List["SQLSimpleExpression"]] = None):
+    def __init__(self, name: str, params: List["SQLSimpleExpression"]):
         self._name = name  # 函数名称
-        self._params = params if params is not None else []  # 函数参数
+        self._params = params  # 函数参数
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def params(self) -> Optional[List["SQLSimpleExpression"]]:
+    def params(self) -> List["SQLSimpleExpression"]:
         return self._params
 
     def source(self) -> str:
@@ -49,7 +55,7 @@ class SQLFunction(SqlBase, abc.ABC):
             return self.name
 
 
-class SqlExpression(SqlBase, abc.ABC):
+class SqlExpression(SQLBase, abc.ABC):
     def __init__(self, tokens: List[ast.AST]):
         self._tokens = tokens
 
@@ -64,7 +70,7 @@ class DDLColumnType(SQLFunction):
     """【DDL】建表语句或修改表结构语句中的字段类型"""
 
 
-class DDLColumn(SqlBase):
+class DDLColumn(SQLBase):
     """【DDL】建表语句中的字段信息"""
 
     def __init__(self, column_name: str, column_type: "SQLFunction", comment: Optional[str] = None):
@@ -106,7 +112,7 @@ class DDLColumn(SqlBase):
         return res
 
 
-class DDLPrimaryKey(SqlBase):
+class DDLPrimaryKey(SQLBase):
     def __init__(self, column: str):
         self._column: str = column
 
@@ -118,7 +124,7 @@ class DDLPrimaryKey(SqlBase):
         return f"PRIMARY KEY ({self._column})" if self._column is not None else ""
 
 
-class DDLUniqueKey(SqlBase):
+class DDLUniqueKey(SQLBase):
     def __init__(self, name: str, columns: List[str]):
         self._name = name
         self._columns = columns
@@ -137,7 +143,7 @@ class DDLUniqueKey(SqlBase):
             return f"UNIQUE KEY {self.name} ({columns_str})"
 
 
-class DDLKey(SqlBase):
+class DDLKey(SQLBase):
     def __init__(self, name: str, columns: List[str]):
         self._name: str = name
         self._columns: List[str] = columns
@@ -156,7 +162,7 @@ class DDLKey(SqlBase):
             return f"KEY {self.name} ({columns_str})"
 
 
-class DDLFulltextKey(SqlBase):
+class DDLFulltextKey(SQLBase):
     def __init__(self, name: str, columns: List[str]):
         self._name: str = name
         self._columns: List[str] = columns
@@ -175,7 +181,7 @@ class DDLFulltextKey(SqlBase):
             return f"FULLTEXT KEY {self.name} ({columns_str})"
 
 
-class DDLForeignKey(SqlBase):
+class DDLForeignKey(SQLBase):
     def __init__(self, constraint_name: str, slave_columns: List[str], master_table_name: str,
                  master_columns: List[str]):
         """
@@ -219,7 +225,7 @@ class SQLSimpleExpression(SqlExpression):
 # ------------------------------ 表达式层级 ------------------------------
 
 
-class DDLCreateTableStatement(SqlBase, abc.ABC):
+class DDLCreateTableStatement(SQLBase, abc.ABC):
     """【DDL】CREATE TABLE 语句"""
 
     def __init__(self,

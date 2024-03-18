@@ -20,13 +20,13 @@ class ParseColumnExpressionStatus(enum.Enum):
 
 
 def parse_simple_expression_or_case_expression(scanner: TokenScanner):
-    """解析字段表达式"""
+    """解析基础表达式"""
     if scanner.get().equals("CASE"):
         return  # TODO 处理 case 语句
 
     status = ParseColumnExpressionStatus.BEFORE_EXPRESSION
     tokens = []
-    while not scanner.is_finish:
+    while status != ParseColumnExpressionStatus.FINISH_EXPRESSION and not scanner.is_finish:
         if status == ParseColumnExpressionStatus.BEFORE_EXPRESSION:
             # 当前指针位置是函数名
             if scanner.now.is_maybe_function_name and scanner.next is not None and scanner.next.is_parenthesis:
@@ -42,11 +42,10 @@ def parse_simple_expression_or_case_expression(scanner: TokenScanner):
             # 当前指针元素是计算运算符
             if scanner.now.is_compute_operator:
                 tokens.append(scanner.pop())
+                tokens.append(scanner.pop())
                 status = ParseColumnExpressionStatus.AFTER_EXPRESSION
             else:
                 status = ParseColumnExpressionStatus.FINISH_EXPRESSION
-        elif status == ParseColumnExpressionStatus.FINISH_EXPRESSION:
-            break  # TODO 检查别名
 
     return SQLSimpleExpression(tokens)
 
@@ -74,8 +73,10 @@ if __name__ == "__main__":
         TokenScanner([token for token in parse_as_tokens("trim(column1)") if token.is_space is False])))
 
     print(
-        parse_simple_expression_or_case_expression(TokenScanner([token for token in parse_as_tokens("a * b") if token.is_space is False])))
+        parse_simple_expression_or_case_expression(
+            TokenScanner([token for token in parse_as_tokens("a * b") if token.is_space is False])))
     print(parse_simple_expression_or_case_expression(
         TokenScanner([token for token in parse_as_tokens("a * b * c") if token.is_space is False])))
     print(
-        parse_simple_expression_or_case_expression(TokenScanner([token for token in parse_as_tokens("a + b") if token.is_space is False])))
+        parse_simple_expression_or_case_expression(
+            TokenScanner([token for token in parse_as_tokens("a + b") if token.is_space is False])))
