@@ -1,3 +1,12 @@
+"""
+抽象语法树（AST）的节点类
+
+所有抽象语法树的节点类均继承自抽象基类 AST 类，除 AST 类外，其他节点可以分为如下三种类型：
+- 定值叶节点：不包含子节点，且 source 返回定值的对象
+- 非定值叶节点：不包含子节点，但 source 返回值不固定的对象
+- 中间节点（插入语节点）：包含子节点的节点
+"""
+
 import abc
 from typing import List, Optional
 
@@ -20,14 +29,15 @@ __all__ = [
 
 
 class AST(abc.ABC):
-    """AST 节点类的抽象基类"""
+    """抽象语法树（AST）节点类的抽象基类
+
+
+    """
 
     @property
     @abc.abstractmethod
     def source(self) -> str:
         """返回当前节点的源代码
-
-        TODO 子节点应该根据自己解析的源代码生成源代码，而不是直接返回原始源代码
 
         Returns
         -------
@@ -39,6 +49,32 @@ class AST(abc.ABC):
     def children(self) -> List["AST"]:
         """返回所有下游节点，若为叶子节点，则返回空列表"""
         return []
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        """AST 节点的对象描述
+
+        描述信息样式如下（其中第 3 中情况需要在子类中重写此方法）：
+        1. 中间节点：<{节点类名} children={子节点的对象描述}>
+        2. 非定值叶节点：<{节点类名} source={节点源码}>
+        3. 定值叶节点：<{节点类型}>
+        """
+        if len(self.children) > 0:
+            return f"<{self.__class__.__name__} children={self.children}>"
+        else:
+            format_source = self.source.replace("\n", r"\n")
+            return f"<{self.__class__.__name__} source={format_source}>"
+
+    def __hash__(self):
+        return hash(self.source)
+
+    def equals(self, other: str) -> bool:
+        """判断当前 AST 节点是否与一段源代码相同"""
+        return self.source.upper() == other.upper()
+
+    # ------------------------------ 获取查询是否属于某种类型节点的方法 ------------------------------
 
     @property
     def is_space(self) -> bool:
@@ -70,26 +106,8 @@ class AST(abc.ABC):
         """当前节点是否为计算运算符"""
         return False
 
-    def __str__(self) -> str:
-        return self.source
 
-    def __repr__(self) -> str:
-        if len(self.children) > 0:
-            return f"<{self.__class__.__name__} children={self.children}>"
-        else:
-            format_source = self.source.replace("\n", r"\n")
-            return f"<{self.__class__.__name__} source={format_source}>"
-
-    def equals(self, other: str) -> bool:
-        """判断当前 AST 节点是否与一段源代码相同"""
-        return self.source.upper() == other.upper()
-
-    def append(self, ch: str) -> None:
-        """节点构造器的方法，用于向节点中添加一个字符"""
-        raise AstParseError("已构造完成的 AST 节点不允许修改")
-
-
-# ------------------------------ 具体节点类 ------------------------------
+# ------------------------------ 定值叶节点类 ------------------------------
 
 
 class ASTSpace(AST):
@@ -118,6 +136,9 @@ class ASTLineBreak(AST):
     def source(self) -> str:
         return "\n"
 
+    def __repr__(self) -> str:
+        return "<ASTLineBreak>"
+
 
 class ASTComma(AST):
     """逗号"""
@@ -130,6 +151,9 @@ class ASTComma(AST):
     @property
     def source(self) -> str:
         return ","
+
+    def __repr__(self) -> str:
+        return "<ASTComma>"
 
 
 class ASTSemicolon(AST):
@@ -144,6 +168,9 @@ class ASTSemicolon(AST):
     def source(self) -> str:
         return ";"
 
+    def __repr__(self) -> str:
+        return "<ASTSemicolon>"
+
 
 class ASTEqual(AST):
     """等号"""
@@ -151,6 +178,12 @@ class ASTEqual(AST):
     @property
     def source(self) -> str:
         return "="
+
+    def __repr__(self) -> str:
+        return "<ASTEqual>"
+
+
+# ------------------------------ 非定值叶节点 ------------------------------
 
 
 class ASTComputeOperator(AST):
@@ -255,6 +288,27 @@ class ASTMultiLineComment(AST):
         return self._value
 
 
+class ASTOther(AST):
+    """未知节点"""
+
+    # TODO 子节点应该根据自己解析的源代码生成源代码，而不是直接返回原始源代码
+
+    def __init__(self, origin: Optional[str]):
+        self._origin = origin
+
+    @property
+    def is_maybe_function_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return True
+
+    @property
+    def source(self) -> str:
+        return self._origin
+
+
+# ------------------------------ 中间节点 ------------------------------
+
+
 class ASTParenthesis(AST):
     """插入语节点"""
 
@@ -290,19 +344,3 @@ class ASTStatement(AST):
     @property
     def children(self) -> List["AST"]:
         return self._tokens
-
-
-class ASTOther(AST):
-    """未知节点"""
-
-    def __init__(self, origin: Optional[str]):
-        self._origin = origin
-
-    @property
-    def is_maybe_function_name(self) -> bool:
-        """当前节点是否可能为函数名称"""
-        return True
-
-    @property
-    def source(self) -> str:
-        return self._origin

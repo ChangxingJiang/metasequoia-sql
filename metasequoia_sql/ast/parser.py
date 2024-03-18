@@ -4,29 +4,11 @@ ast 的解析方法
 
 import enum
 import re
-from typing import List, Optional
+from typing import List
 
 from metasequoia_sql.ast.nodes import *
 from metasequoia_sql.common.text_scanner import TextScanner
 from metasequoia_sql.errors import AstParseError
-
-
-class ASTBuilder(AST):
-    """构造中的 AST 节点"""
-
-    def __init__(self, text: Optional[List[str]] = None):
-        self._text = text if text is not None else []
-
-    @property
-    def source(self) -> str:
-        return "".join(self._text)
-
-    def append(self, ch: str):
-        """向构造中的 AST 节点添加一个文本元素"""
-        self._text.append(ch)
-
-    def __len__(self) -> int:
-        return len(self._text)
 
 
 class AstParseStatus(enum.Enum):
@@ -97,14 +79,6 @@ class AstParseContext:
     def is_finish(self) -> bool:
         """若当前上下文已匹配结束则返回 True，否则返回 False"""
         return self._scanner.is_finish
-
-    def check_last_now(self, last_ch: str, now_ch: str) -> bool:
-        """检查当前指针位置的上一个字符和当前字符是否为 last_ch 和 now_ch，如果是则返回 True，否则返回 False"""
-        return self.last_ch == last_ch and self.now_ch == now_ch
-
-    def check_last_now_next(self, last_ch: str, now_ch: str, next_ch: str) -> bool:
-        """检查当前指针位置的上一个字符、当前字符和下一个字符是否为 last_ch、now_ch 和 next_ch，如果是则返回 True，否则返回 False"""
-        return self.last_ch == last_ch and self.now_ch == now_ch and self.next_ch == next_ch
 
     # ------------------------------ 当前缓存词语的相关方法 ------------------------------
 
