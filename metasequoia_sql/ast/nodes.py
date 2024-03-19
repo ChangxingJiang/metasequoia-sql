@@ -8,7 +8,7 @@
 """
 
 import abc
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from metasequoia_sql.errors import AstParseError
 from metasequoia_sql.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
@@ -128,6 +128,11 @@ class AST(abc.ABC):
     def is_literal(self) -> bool:
         """当前节点是否为字面值"""
         return False
+
+    @property
+    def literal_value(self) -> Any:
+        """字面值的值"""
+        return None
 
 
 # ------------------------------ 定值叶节点类 ------------------------------
@@ -252,6 +257,10 @@ class ASTLiteralInteger(AST):
         return True
 
     @property
+    def literal_value(self) -> int:
+        return self._value
+
+    @property
     def source(self) -> str:
         return f"{self._value}"
 
@@ -268,6 +277,10 @@ class ASTLiteralFloat(AST):
         return True
 
     @property
+    def literal_value(self) -> float:
+        return self._value
+
+    @property
     def source(self) -> str:
         return f"{self._value}"
 
@@ -282,6 +295,10 @@ class ASTLiteralString(AST):
     def is_literal(self) -> bool:
         """当前节点是否为字面值"""
         return True
+
+    @property
+    def literal_value(self) -> str:
+        return self._value
 
     @property
     def source(self) -> str:
@@ -326,6 +343,10 @@ class ASTLiteralHex(AST):
         return True
 
     @property
+    def literal_value(self) -> str:
+        return self._value
+
+    @property
     def source(self) -> str:
         return f"x'{self._value}'"
 
@@ -334,7 +355,7 @@ class ASTLiteralBool(AST):
     """布尔字面值"""
 
     def __init__(self, origin: str):
-        self._value = origin.upper()
+        self._value: bool = (origin.upper() == "TRUE")
 
     @classmethod
     def check(cls, origin: str) -> bool:
@@ -346,8 +367,12 @@ class ASTLiteralBool(AST):
         return True
 
     @property
+    def literal_value(self) -> bool:
+        return self._value
+
+    @property
     def source(self) -> str:
-        return f"{self._value}"
+        return "TRUE" if self._value is True else "FALSE"
 
 
 class ASTLiteralBit(AST):
@@ -388,6 +413,10 @@ class ASTLiteralBit(AST):
         return True
 
     @property
+    def literal_value(self) -> str:
+        return self._value
+
+    @property
     def source(self) -> str:
         return f"b'{self._value}'"
 
@@ -403,6 +432,10 @@ class ASTLiteralNull(AST):
     def is_literal(self) -> bool:
         """当前节点是否为字面值"""
         return True
+
+    @property
+    def literal_value(self) -> None:
+        return None
 
     @property
     def source(self) -> str:

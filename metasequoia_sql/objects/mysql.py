@@ -10,7 +10,7 @@ __all__ = ["DDLColumnTypeMySQL", "DDLColumnMySQL", "DDLPrimaryKeyMySQL", "DDLUni
            "DDLForeignKeyMySQL", "DDLFulltextKeyMysql", "DDLCreateTableStatementMySQL"]
 
 
-class DDLColumnTypeMySQL(DDLColumnType):
+class DDLColumnTypeMySQL(SQLColumnType):
     """【DDL】MySQL 的字段类型对象"""
 
 

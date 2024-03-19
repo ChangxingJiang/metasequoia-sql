@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 from metasequoia_sql.objects.common import *
 
 
-class DDLColumnTypeHive(DDLColumnType):
+class DDLColumnTypeHive(SQLColumnType):
     """【DDL】Hive 的字段类型对象"""
 
 

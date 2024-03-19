@@ -7,15 +7,36 @@ from typing import Optional, List
 
 from metasequoia_sql import ast
 
-__all__ = ["SQLBase", "SQLFunction", "SQLVariable", "SQLColumnType", "SQLSimpleExpression", "DDLColumnType",
-           "DDLColumn",
-           "DDLPrimaryKey",
-           "DDLUniqueKey",
-           "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"]
+__all__ = [
+    # ---------- 抽象基类 ----------
+    "SQLBase",
+
+    # ---------- 单项式级别 ----------
+    # 单项式抽象基类
+    "SQLMonomial",
+
+    # 函数调用（及其子类字段类型）；变量引用
+    "SQLFunction", "SQLColumnType", "SQLVariable",
+
+    # 字面值：整型、浮点型、字符串、十六机制、布尔值、位值、空值
+    "SQLLiteralInteger", "SQLLiteralFloat", "SQLLiteralString", "SQLLiteralHex", "SQLLiteralBool", "SQLLiteralBit",
+    "SQLLiteralNull",
+
+    # 计算运算符：加法、减法、乘法、除法
+    "SQLPlus", "SQLSubtract", "SQLMultiple", "SQLDivide",
+
+    # ---------- 其他类型 ----------
+    "SQLSimpleExpression",
+    "DDLColumn",
+    "DDLPrimaryKey",
+    "DDLUniqueKey",
+    "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"
+]
 
 
 # ------------------------------ 抽象基类 ------------------------------
 
+# TODO 新增通配符节点
 
 class SQLBase(abc.ABC):
     @property
@@ -85,6 +106,112 @@ class SQLVariable(SQLMonomial):
         return self.name
 
 
+class SQLLiteralInteger(SQLMonomial):
+    """整数字面值"""
+
+    def __init__(self, value: int):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"{self._value}"
+
+
+class SQLLiteralFloat(SQLMonomial):
+    """浮点数字面值"""
+
+    def __init__(self, value: float):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"{self._value}"
+
+
+class SQLLiteralString(SQLMonomial):
+    """字符串字面值"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"'{self._value}'"
+
+
+class SQLLiteralHex(SQLMonomial):
+    """十六进制字面值"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"x'{self._value}'"
+
+
+class SQLLiteralBit(SQLMonomial):
+    """位值字面值"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"b'{self._value}'"
+
+
+class SQLLiteralBool(SQLMonomial):
+    """布尔值字面值"""
+
+    def __init__(self, value: bool):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return "TRUE" if self._value is True else "FALSE"
+
+
+class SQLLiteralNull(SQLMonomial):
+    """空值字面值"""
+
+    @property
+    def source(self) -> str:
+        return "NULL"
+
+
+class SQLPlus(SQLMonomial):
+    """加法运算符"""
+
+    @property
+    def source(self) -> str:
+        return "+"
+
+
+class SQLSubtract(SQLMonomial):
+    """减法运算符"""
+
+    @property
+    def source(self) -> str:
+        return "-"
+
+
+class SQLMultiple(SQLMonomial):
+    """乘法运算符"""
+
+    @property
+    def source(self) -> str:
+        return "*"
+
+
+class SQLDivide(SQLMonomial):
+    """除法运算符"""
+
+    @property
+    def source(self) -> str:
+        return "/"
+
+
 # ------------------------------ DDL 相关通用类 ------------------------------
 
 
@@ -95,10 +222,6 @@ class SqlExpression(SQLBase, abc.ABC):
     @property
     def source(self) -> str:
         return " ".join(token.source for token in self._tokens)
-
-
-class DDLColumnType(SQLFunction):
-    """【DDL】建表语句或修改表结构语句中的字段类型"""
 
 
 class DDLColumn(SQLBase):
@@ -130,7 +253,7 @@ class DDLColumn(SQLBase):
     def set_column_name(self, column_name: str) -> None:
         self._column_name = column_name
 
-    def set_column_type(self, column_type: "DDLColumnType") -> None:
+    def set_column_type(self, column_type: "SQLColumnType") -> None:
         self._column_type = column_type
 
     def set_comment(self, comment: Optional[str]) -> None:

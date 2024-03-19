@@ -2,13 +2,13 @@ from typing import List, Optional
 
 from metasequoia_sql import ast
 from metasequoia_sql.errors import ScannerError
-from metasequoia_sql.errors import TokenIdxOutOfRangeError, SqlParseError
+from metasequoia_sql.errors import SqlParseError
 
 
 class TokenScanner:
     """Token 扫描器"""
 
-    def __init__(self, elements: List[ast.AST], pos: int = 0):
+    def __init__(self, elements: List[ast.AST], pos: int = 0, ignore_space: bool = False):
         """
 
         Parameters
@@ -22,6 +22,9 @@ class TokenScanner:
             raise ScannerError(f"初始化的指针小于 0: pos={pos}")
         if pos > len(elements):
             raise ScannerError(f"初始化指针大于字符串长度: len(text)={len(elements)}, pos={pos}")
+
+        if ignore_space is True:  # 忽略空白字符的模式
+            elements = [element for element in elements if element.is_space is False]
 
         self._elements = elements
         self._pos = pos
@@ -94,19 +97,19 @@ class TokenScanner:
         """【移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
         return TokenScanner(self.pop().children)
 
-    def pop_as_children_scanner_list_split_by_comma(self) -> List["TokenScanner"]:
+    def pop_as_children_scanner_list_split_by_comma(self, ignore_space: bool = False) -> List["TokenScanner"]:
         """【移动指针】返回当前指针位置的插入语结点的子节点使用逗号分隔的扫描器列表"""
         result = []
         tokens = []
         for token in self.pop().children:
             if token.is_comma:
                 if len(tokens) > 0:
-                    result.append(TokenScanner(tokens))
+                    result.append(TokenScanner(tokens, ignore_space=ignore_space))
                     tokens = []
             else:
                 tokens.append(token)
         if len(tokens) > 0:
-            result.append(TokenScanner(tokens))
+            result.append(TokenScanner(tokens, ignore_space=ignore_space))
         return result
 
     def match_words(self, words: List[str]) -> None:
