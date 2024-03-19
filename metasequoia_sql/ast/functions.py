@@ -74,14 +74,14 @@ def parse_as_tokens(text: str) -> List[AST]:
                 context.handle_end_word()
                 context.set_status(AstParseStatus.WAIT_TOKEN)
             elif context.now_ch == "\"":
-                if context.cache_get() == "b":  # 兼容类似字符串 b'0'
+                if context.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
                     context.cache_add()
                     context.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
                 else:
                     context.handle_end_word()
                     context.set_status(AstParseStatus.WAIT_TOKEN)
             elif context.now_ch == "'":
-                if context.cache_get() == "b":  # 兼容类似字符串 b'0'
+                if context.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
                     context.cache_add()
                     context.set_status(AstParseStatus.IN_SINGLE_QUOTE)
                 else:

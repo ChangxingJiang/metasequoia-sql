@@ -11,13 +11,28 @@ import abc
 from typing import List, Optional
 
 from metasequoia_sql.errors import AstParseError
+from metasequoia_sql.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
 
 __all__ = [
     "AST",
+    # 固定值节点类
     "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon", "ASTEqual",
+
+    # 运算符节点类
     "ASTComputeOperator",  # 计算运算符
     "ASTCompareOperator",  # 比较运算符
-    "ASTLiteralInteger", "ASTLiteralFloat", "ASTLiteralString", "ASTIdentifier",
+
+    # 字面值节点类
+    "ASTLiteralInteger",
+    "ASTLiteralFloat",
+    "ASTLiteralString",
+    "ASTLiteralHex",
+    "ASTLiteralBool",
+    "ASTLiteralBit",
+    "ASTLiteralNull",
+
+    # 其他节点类
+    "ASTIdentifier",
     "ASTSimpleLineComment", "ASTMultiLineComment",
     "ASTParenthesis",
     "ASTStatement",
@@ -29,10 +44,13 @@ __all__ = [
 
 
 class AST(abc.ABC):
-    """抽象语法树（AST）节点类的抽象基类
+    """抽象语法树（AST）节点类的抽象基类"""
 
-
-    """
+    @classmethod
+    def check(cls, origin: str) -> bool:
+        """返回是否满足当前节点的格式要求"""
+        # TODO 待改为抽象方法
+        return True
 
     @property
     @abc.abstractmethod
@@ -268,6 +286,127 @@ class ASTLiteralString(AST):
     @property
     def source(self) -> str:
         return f"'{self._value}'"
+
+
+class ASTLiteralHex(AST):
+    """十六进制字面值"""
+
+    def __init__(self, origin: str):
+        self._value = self._get_value(origin)  # 获取十六进制字面值中的十六进制数值，如果格式不满足则返回 None
+        if self._value is None:
+            raise AstParseError(f"不满足格式要求的十六进制字面值: origin={origin}")
+
+    @classmethod
+    def check(cls, origin: str):
+        return cls._get_value(origin) is not None
+
+    @staticmethod
+    def _get_value(origin: str) -> Optional[str]:
+        """获取十六进制字面值中的十六进制数值，如果格式不满足则返回 None"""
+        # 检查是否满足如下 3 种字面值格式：x'01BF'、X'01BF'、0x01BF
+        if (origin.startswith("x'") or origin.startswith("X'")) and origin.endswith("'"):
+            value = origin[2:-1].upper()
+        elif (origin.startswith("x\"") or origin.startswith("X\"")) and origin.endswith("\""):
+            value = origin[2:-1].upper()
+        elif origin.startswith("0x"):
+            value = origin[2:].upper()
+        else:
+            return None
+
+        # 检查十六进制中的数值是否满足字符集要求
+        for ch in value:
+            if ch not in HEXADECIMAL_CHARACTER_SET:
+                return None
+
+        return value
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def source(self) -> str:
+        return f"x'{self._value}'"
+
+
+class ASTLiteralBool(AST):
+    """布尔字面值"""
+
+    def __init__(self, origin: str):
+        self._value = origin.upper()
+
+    @classmethod
+    def check(cls, origin: str) -> bool:
+        return origin.upper() in {"TRUE", "FALSE"}
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def source(self) -> str:
+        return f"{self._value}"
+
+
+class ASTLiteralBit(AST):
+    """位值字面值"""
+
+    def __init__(self, origin: str):
+        self._value = self._get_value(origin)  # 获取二进制字面值中的二进制数值，如果格式不满足则返回 None
+        if self._value:
+            raise AstParseError(f"不满足格式要求的二进制字面值: origin={origin}")
+
+    @classmethod
+    def check(cls, origin: str):
+        return cls._get_value(origin) is not None
+
+    @staticmethod
+    def _get_value(origin: str) -> Optional[str]:
+        """获取二进制字面值中的二进制数值，如果格式不满足则返回 None"""
+        # 检查是否满足如下 3 种字面值格式：b'01'、B'01'、0b01
+        if (origin.startswith("b'") or origin.startswith("B'")) and origin.endswith("'"):
+            value = origin[2:-1].upper()
+        elif (origin.startswith("b\"") or origin.startswith("B\"")) and origin.endswith("\""):
+            value = origin[2:-1].upper()
+        elif origin.startswith("0b"):
+            value = origin[2:].upper()
+        else:
+            return None
+
+        # 检查二进制中的数值是否满足字符集要求
+        for ch in value:
+            if ch not in BINARY_CHARACTER_SET:
+                return None
+
+        return value
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def source(self) -> str:
+        return f"b'{self._value}'"
+
+
+class ASTLiteralNull(AST):
+    """空值字面值"""
+
+    @classmethod
+    def check(cls, origin: str):
+        return origin.upper() == "NULL"
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def source(self) -> str:
+        return f"NULL"
 
 
 class ASTIdentifier(AST):

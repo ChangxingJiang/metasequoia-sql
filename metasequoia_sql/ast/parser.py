@@ -159,6 +159,18 @@ class AstParseContext:
         # 字面值字符串（包含字面值日期和时间）
         elif (origin.startswith("\"") and origin.endswith("\"")) or (origin.startswith("'") and origin.endswith("'")):
             self.stack[-1].append(ASTLiteralString(origin))
+        # 十六进制字面值节点
+        elif ASTLiteralHex.check(origin) is True:
+            self.stack[-1].append(ASTLiteralHex(origin))
+        # 布尔字面值节点
+        elif ASTLiteralBool.check(origin) is True:
+            self.stack[-1].append(ASTLiteralBool(origin))
+        # 位值字面值节点
+        elif ASTLiteralBit.check(origin) is True:
+            self.stack[-1].append(ASTLiteralBit(origin))
+        # 空值字面值节点
+        elif ASTLiteralNull.check(origin) is True:
+            self.stack[-1].append(ASTLiteralNull())
         # 显式标识符
         elif origin.startswith("`") and origin.endswith("`"):
             self.stack[-1].append(ASTIdentifier(origin))

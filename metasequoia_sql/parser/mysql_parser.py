@@ -10,9 +10,10 @@ from typing import List
 from metasequoia_sql import ast
 from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
+from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.objects.mysql import *
 from metasequoia_sql.parser.expression_parser import parse_sql_function, parse_simple_expression_or_case_expression
-from metasequoia_sql.objects.data_source import DataSource
+
 
 class MySQLCreateTableParser:
     """
