@@ -129,32 +129,45 @@ class AstParseContext:
         3. 将状态更新为等待下一个节点
         """
         origin = self.cache_get_and_reset()
+        # 空格
         if origin == " ":
-            self.stack[-1].append(ASTSpace())  # 空格
+            self.stack[-1].append(ASTSpace())
+        # 换行符
         elif origin == "\n":
-            self.stack[-1].append(ASTLineBreak())  # 换行符
+            self.stack[-1].append(ASTLineBreak())
+        # 逗号
         elif origin == ",":
-            self.stack[-1].append(ASTComma())  # 逗号
+            self.stack[-1].append(ASTComma())
+        # 分号
         elif origin == ";":
-            self.stack[-1].append(ASTSemicolon())  # 分号
+            self.stack[-1].append(ASTSemicolon())
+        # 等号
         elif origin == "=":
-            self.stack[-1].append(ASTEqual())  # 等号
+            self.stack[-1].append(ASTEqual())
+        # 算术运算符
         elif origin in {"+", "-", "*", "/"}:
-            self.stack[-1].append(ASTComputeOperator(origin))  # 算术运算符
+            self.stack[-1].append(ASTComputeOperator(origin))
+        # 比较运算符
         elif origin in {"<>", "!=", "<", "<=", ">", ">="}:
-            self.stack[-1].append(ASTCompareOperator(origin))  # 比较运算符
-        elif re.match(r"^\d+$", origin):
-            self.stack[-1].append(ASTLiteralInteger(origin))  # 字面值整数
-        elif re.match(r"^\d+.\d+$", origin):
-            self.stack[-1].append(ASTLiteralFloat(origin))  # 字面值浮点数
+            self.stack[-1].append(ASTCompareOperator(origin))
+        # 字面值整数
+        elif re.match(r"^[+-]?\d+$", origin):
+            self.stack[-1].append(ASTLiteralInteger(origin))
+        # 字面值小数或浮点数
+        elif re.match(r"^[+-]?\d+.\d+(E\d+)?$", origin):
+            self.stack[-1].append(ASTLiteralFloat(origin))
+        # 字面值字符串（包含字面值日期和时间）
         elif (origin.startswith("\"") and origin.endswith("\"")) or (origin.startswith("'") and origin.endswith("'")):
-            self.stack[-1].append(ASTLiteralString(origin))  # 字面值字符串
+            self.stack[-1].append(ASTLiteralString(origin))
+        # 显式标识符
         elif origin.startswith("`") and origin.endswith("`"):
-            self.stack[-1].append(ASTIdentifier(origin))  # 显式标识符
+            self.stack[-1].append(ASTIdentifier(origin))
+        # 单行注释
         elif origin.startswith("#") and origin.startswith("--"):
-            self.stack[-1].append(ASTSimpleLineComment(origin))  # 单行注释
+            self.stack[-1].append(ASTSimpleLineComment(origin))
+        # 多行注释
         elif origin.startswith("/*") and origin.endswith("*/"):
-            self.stack[-1].append(ASTMultiLineComment(origin))  # 多行注释
+            self.stack[-1].append(ASTMultiLineComment(origin))
         else:
             self.stack[-1].append(ASTOther(origin))
 
