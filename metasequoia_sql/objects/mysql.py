@@ -85,9 +85,9 @@ class DDLColumnMySQL(DDLColumn):
         if self.is_auto_increment is True:
             res += " AUTO_INCREMENT"
         if self.default is not None:
-            res += f" DEFAULT {self.default.source()}"
+            res += f" DEFAULT {self.default.source}"
         if self.on_update is not None:
-            res += f" ON UPDATE {self.on_update.source()}"
+            res += f" ON UPDATE {self.on_update.source}"
         if self.comment is not None:
             res += f" COMMENT {self.comment}"
         return res
@@ -240,15 +240,15 @@ class DDLCreateTableStatementMySQL(DDLCreateTableStatement):
         for column in self.columns:
             columns_and_keys.append(f"{indentation}{column.source()}")
         if self.primary_key is not None:
-            columns_and_keys.append(f"{indentation}{self.primary_key.source()}")
+            columns_and_keys.append(f"{indentation}{self.primary_key.source}")
         for unique_key in self.unique_key:
-            columns_and_keys.append(f"{indentation}{unique_key.source()}")
+            columns_and_keys.append(f"{indentation}{unique_key.source}")
         for key in self.key:
-            columns_and_keys.append(f"{indentation}{key.source()}")
+            columns_and_keys.append(f"{indentation}{key.source}")
         for fulltext_key in self.fulltext_key:
-            columns_and_keys.append(f"{indentation}{fulltext_key.source()}")
+            columns_and_keys.append(f"{indentation}{fulltext_key.source}")
         for foreign_key in self.foreign_key:
-            columns_and_keys.append(f"{indentation}{foreign_key.source()}")
+            columns_and_keys.append(f"{indentation}{foreign_key.source}")
         result += ",\n".join(columns_and_keys)
         result += "\n)"
         if self.engine is not None:

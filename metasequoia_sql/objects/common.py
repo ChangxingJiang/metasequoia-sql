@@ -7,7 +7,9 @@ from typing import Optional, List
 
 from metasequoia_sql import ast
 
-__all__ = ["SQLBase", "SQLFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKey", "DDLUniqueKey",
+__all__ = ["SQLBase", "SQLFunction", "SQLVariable", "SQLSimpleExpression", "DDLColumnType", "DDLColumn",
+           "DDLPrimaryKey",
+           "DDLUniqueKey",
            "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"]
 
 
@@ -15,18 +17,19 @@ __all__ = ["SQLBase", "SQLFunction", "DDLColumnType", "DDLColumn", "DDLPrimaryKe
 
 
 class SQLBase(abc.ABC):
+    @property
     @abc.abstractmethod
     def source(self) -> str:
         """返回 SQL 源码"""
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__} source={self.source()}>"
+        return f"<{self.__class__.__name__} source={self.source}>"
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} source={self.source()}>"
+        return f"<{self.__class__.__name__} source={self.source}>"
 
 
-# ---------- 单项式级别类 ----------
+# ------------------------------ 单项式级别类 ------------------------------
 
 class SQLMonomial(SQLBase, abc.ABC):
     """单项式级别抽象类"""
@@ -47,23 +50,40 @@ class SQLFunction(SQLMonomial):
     def params(self) -> List["SQLSimpleExpression"]:
         return self._params
 
+    @property
     def source(self) -> str:
         if len(self.params) > 0:
-            type_params = "(" + ", ".join([param.source() for param in self.params]) + ")"
+            type_params = "(" + ", ".join([param.source for param in self.params]) + ")"
             return f"{self.name}{type_params}"
         else:
             return self.name
+
+
+class SQLVariable(SQLMonomial):
+    """变量引用语句"""
+
+    def __init__(self, name: str):
+        self._name = name.upper()  # 变量名称
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def source(self) -> str:
+        return self.name
+
+
+# ------------------------------ DDL 相关通用类 ------------------------------
 
 
 class SqlExpression(SQLBase, abc.ABC):
     def __init__(self, tokens: List[ast.AST]):
         self._tokens = tokens
 
+    @property
     def source(self) -> str:
         return " ".join(token.source for token in self._tokens)
-
-
-# ------------------------------ DDL 相关通用类 ------------------------------
 
 
 class DDLColumnType(SQLFunction):
@@ -105,8 +125,9 @@ class DDLColumn(SQLBase):
     def set_comment(self, comment: Optional[str]) -> None:
         self._comment = comment
 
+    @property
     def source(self) -> str:
-        res = f"{self._column_name} {self.column_type.source()}"
+        res = f"{self._column_name} {self.column_type.source}"
         if self.comment is not None:
             res += f" COMMENT {self.comment}"
         return res
@@ -120,6 +141,7 @@ class DDLPrimaryKey(SQLBase):
     def column(self) -> str:
         return self._column
 
+    @property
     def source(self) -> str:
         return f"PRIMARY KEY ({self._column})" if self._column is not None else ""
 
@@ -137,6 +159,7 @@ class DDLUniqueKey(SQLBase):
     def columns(self) -> List[str]:
         return self._columns
 
+    @property
     def source(self) -> str:
         if len(self.columns) > 0:
             columns_str = ", ".join([f"{column}" for column in self.columns])
@@ -156,6 +179,7 @@ class DDLKey(SQLBase):
     def columns(self) -> List[str]:
         return self._columns
 
+    @property
     def source(self) -> str:
         if len(self.columns) > 0:
             columns_str = ", ".join([f"{column}" for column in self.columns])
@@ -175,6 +199,7 @@ class DDLFulltextKey(SQLBase):
     def columns(self) -> List[str]:
         return self._columns
 
+    @property
     def source(self) -> str:
         if len(self.columns) > 0:
             columns_str = ", ".join([f"{column}" for column in self.columns])
@@ -202,6 +227,7 @@ class DDLForeignKey(SQLBase):
         self.master_table_name = master_table_name
         self.master_columns = master_columns
 
+    @property
     def source(self) -> str:
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])

@@ -20,13 +20,49 @@ root = parse_as_statements("your sql")
 
 ### 句法分析
 
+对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
+
+```python
+from metasequoia_sql.parser.mysql_parser import parse_mysql_create_table_statement
+
+statement = parse_mysql_create_table_statement("your sql")
+```
+
+### 翻译工具
+
+将 MySQL 的 CREATE TABLE 语句转换为 Hive 的 CREATE TABLE 语句：
+
+```python
+from metasequoia_sql.parser.mysql_parser import parse_mysql_create_table_statement
+from metasequoia_sql.translate import *
+
+statement = ddl_create_table_statement_to_hive(
+    ddl_create_table_statement_from_mysql(parse_mysql_create_table_statement("your sql")))
+```
+
+## 实现原理
+
+**SQL 解析原理**：将词法分析与句法分析分离，对所有 SQL 语句进行词法分析，然后对不同的 SQL 语句类型使用不同的句法分析方法。
+
+**不同 DataSource 的 SQL 语句转换方法**： 先从特定 DataSource 的 SQL 转化为包含所有数据库特性的 FullStatement，然后再从
+FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
+
+### 词法分析
+
+字面值类型：[参考文档](https://deepinout.com/mysql/mysql-top-articles-mysql/1694052463_j_mysql-literals.html)
+
+- `ASTLiteralString`：字符串字面值
+
+### 句法分析
+
 单项式级别（`SQLMonomial`）：在当前层级，仅包含一个元素或两个相互依存的元素，其中不允许包含任何计算符。但是需要注意的是，函数调用虽然是单项式级别，但它可能包含一个或多个多项式级别的子节点。
 
-- `SQLFunction`：函数调用，包含参数插入语。
-- `SQLBareFunction`：函数，不包含插入语。例如 `CURRENT_DATE` 等。
+- `SQLFunction`：函数调用。包含参数插入语。
+- `SQLVariable`：变量引用。不包含插入语。例如 `CURRENT_DATE` 等。
 - `SQLLiteral`：字面值。没有依赖的列名。
 - `SQLColumn`：列名。
 - `SQLTable`：表名。
+- `SQLComputeOperator`：计算运算符。包含 `+`、`-`、`*`、`/`。
 
 多项式级别（`SQLPolynomial`）：
 
@@ -58,33 +94,6 @@ root = parse_as_statements("your sql")
 
 - `SQLUnionClause`：UNION 语句。包含多个 SELECT 语句。
 - `SQLUnionALLClause`：UNION ALL 语句。包含多个 SELECT 语句。
-
-对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
-
-```python
-from metasequoia_sql.parser.mysql_parser import parse_mysql_create_table_statement
-
-statement = parse_mysql_create_table_statement("your sql")
-```
-
-### 翻译工具
-
-将 MySQL 的 CREATE TABLE 语句转换为 Hive 的 CREATE TABLE 语句：
-
-```python
-from metasequoia_sql.parser.mysql_parser import parse_mysql_create_table_statement
-from metasequoia_sql.translate import *
-
-statement = ddl_create_table_statement_to_hive(
-    ddl_create_table_statement_from_mysql(parse_mysql_create_table_statement("your sql")))
-```
-
-## 实现原理
-
-**SQL 解析原理**：将词法分析与句法分析分离，对所有 SQL 语句进行词法分析，然后对不同的 SQL 语句类型使用不同的句法分析方法。
-
-**不同 DataSource 的 SQL 语句转换方法**： 先从特定 DataSource 的 SQL 转化为包含所有数据库特性的 FullStatement，然后再从
-FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
 
 ## 修改记录
 

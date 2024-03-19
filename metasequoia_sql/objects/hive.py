@@ -62,7 +62,7 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
         result += f"`{self._table_name}`(\n"
         columns_and_keys = []
         for column in self.columns:
-            columns_and_keys.append(f"{indentation}{column.source()}")
+            columns_and_keys.append(f"{indentation}{column.source}")
         result += ",\n".join(columns_and_keys)
         result += "\n)"
         if self._comment is not None:
@@ -70,7 +70,7 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
         if len(self.partition_by) > 0:
             partition_columns = []
             for column in self.partition_by:
-                partition_columns.append(column.source())
+                partition_columns.append(column.source)
             partition_str = ", ".join(partition_columns)
             result += f" PARTITIONED BY ({partition_str})"
         return result

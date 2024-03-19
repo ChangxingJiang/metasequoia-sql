@@ -106,6 +106,11 @@ class AST(abc.ABC):
         """当前节点是否为计算运算符"""
         return False
 
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return False
+
 
 # ------------------------------ 定值叶节点类 ------------------------------
 
@@ -224,6 +229,11 @@ class ASTLiteralInteger(AST):
         self._value = int(origin)
 
     @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
     def source(self) -> str:
         return f"{self._value}"
 
@@ -235,6 +245,11 @@ class ASTLiteralFloat(AST):
         self._value = float(origin)
 
     @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
     def source(self) -> str:
         return f"{self._value}"
 
@@ -244,6 +259,11 @@ class ASTLiteralString(AST):
 
     def __init__(self, origin: str):
         self._value = origin[1:-1]  # 不包含引号的部分
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
 
     @property
     def source(self) -> str:
