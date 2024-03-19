@@ -7,8 +7,7 @@ from typing import List
 
 from metasequoia_sql.ast.functions import parse_as_tokens
 from metasequoia_sql.common.token_scanner import TokenScanner
-from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.objects.common import SQLSimpleExpression, SQLFunction, SQLVariable
+from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.data_source import DataSource
 
 __all__ = ["parse_simple_expression_or_case_expression", "parse_sql_function"]
@@ -20,10 +19,7 @@ def check_sql_function(scanner: TokenScanner) -> bool:
 
 
 def parse_sql_function(scanner: TokenScanner, data_source: DataSource) -> SQLFunction:
-    """解析函数调用：要求当前指针位置节点为函数名，下一个节点可能为函数参数，解析为 SQLFunction 对象"""
-    if not check_sql_function(scanner):
-        raise SqlParseError(f"当前指针位置不满足解析函数调用: node={scanner}")
-
+    """解析函数调用：要求当前指针位置节点为函数名，下一个节点为函数参数，解析为 SQLFunction 对象"""
     # 解析函数名称
     function_name: str = scanner.pop().source
 
@@ -33,8 +29,27 @@ def parse_sql_function(scanner: TokenScanner, data_source: DataSource) -> SQLFun
         for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
             function_params.append(parse_simple_expression_or_case_expression(param_scanner, data_source))
 
-    # 构造目标类
     return SQLFunction(function_name, function_params)
+
+
+def check_column_type(scanner: TokenScanner) -> bool:
+    """判断 scanner 当前指针位置是否为字段类型"""
+    return scanner.now.is_maybe_function_name
+
+
+def parse_column_type(scanner: TokenScanner, data_source: DataSource) -> SQLColumnType:
+    """解析字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
+    # 解析字段类型名称
+    function_name: str = scanner.pop().source
+
+    # 解析字段类型参数
+    if not scanner.is_finish and scanner.get().is_parenthesis:
+        function_params: List[SQLSimpleExpression] = []
+        for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
+            function_params.append(parse_simple_expression_or_case_expression(param_scanner, data_source))
+        return SQLColumnType(function_name, function_params)
+    else:
+        return SQLColumnType(function_name)
 
 
 def check_sql_variable(scanner: TokenScanner, data_source: DataSource) -> bool:
@@ -47,9 +62,6 @@ def check_sql_variable(scanner: TokenScanner, data_source: DataSource) -> bool:
 
 def parse_sql_variable(scanner: TokenScanner, data_source: DataSource) -> SQLVariable:
     """解析变量引用"""
-    if not check_sql_variable(scanner, data_source):
-        raise SqlParseError(f"当前指针位置不满足解析变量引用: node={scanner}")
-
     return SQLVariable(scanner.pop().source)
 
 

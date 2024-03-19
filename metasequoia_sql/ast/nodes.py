@@ -355,7 +355,7 @@ class ASTLiteralBit(AST):
 
     def __init__(self, origin: str):
         self._value = self._get_value(origin)  # 获取二进制字面值中的二进制数值，如果格式不满足则返回 None
-        if self._value:
+        if self._value is None:
             raise AstParseError(f"不满足格式要求的二进制字面值: origin={origin}")
 
     @classmethod

@@ -7,7 +7,8 @@ from typing import Optional, List
 
 from metasequoia_sql import ast
 
-__all__ = ["SQLBase", "SQLFunction", "SQLVariable", "SQLSimpleExpression", "DDLColumnType", "DDLColumn",
+__all__ = ["SQLBase", "SQLFunction", "SQLVariable", "SQLColumnType", "SQLSimpleExpression", "DDLColumnType",
+           "DDLColumn",
            "DDLPrimaryKey",
            "DDLUniqueKey",
            "DDLKey", "DDLForeignKey", "DDLFulltextKey", "DDLCreateTableStatement"]
@@ -57,6 +58,16 @@ class SQLFunction(SQLMonomial):
             return f"{self.name}{type_params}"
         else:
             return self.name
+
+
+class SQLColumnType(SQLFunction):
+    """DDL 中的字段类型
+
+    以是类型名称或函数调用（类型的注释）。因为在其他场景下，类型名称均不允许单独使用，所以在这里额外处理。
+    """
+
+    def __init__(self, name: str, params: Optional[List["SQLSimpleExpression"]] = None):
+        super().__init__(name, params if params is not None else [])
 
 
 class SQLVariable(SQLMonomial):

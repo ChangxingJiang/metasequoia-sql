@@ -12,7 +12,7 @@ from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.objects.mysql import *
-from metasequoia_sql.parser.expression_parser import parse_sql_function, parse_simple_expression_or_case_expression
+from metasequoia_sql.parser.expression_parser import parse_simple_expression_or_case_expression, parse_column_type
 
 
 class MySQLCreateTableParser:
@@ -146,7 +146,7 @@ class MySQLCreateTableParser:
             else:
                 scanner = TokenScanner(column_group)
                 column_name = scanner.pop_as_source()
-                column_type = parse_sql_function(scanner, DataSource.MYSQL)
+                column_type = parse_column_type(scanner, DataSource.MYSQL)
                 column = DDLColumnMySQL(column_name, column_type)
                 while not scanner.is_finish:
                     if scanner.get().equals("NOT"):
