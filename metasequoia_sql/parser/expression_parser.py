@@ -11,7 +11,19 @@ from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.data_source import DataSource
 
-__all__ = ["parse_simple_expression_or_case_expression", "parse_sql_function"]
+__all__ = [
+    # 识别和解析函数调用节点（SQLFunction）
+    "check_sql_function", "parse_sql_function",
+
+    # 识别和解析字段类型节点（SQLColumnType）
+    "check_sql_column_type", "parse_sql_column_type",
+
+    # 识别和解析变量引用节点（SQLVariable）
+    "check_sql_variable", "parse_sql_variable",
+
+    # 识别和解析字面值节点
+    "check_sql_literal", "parse_sql_literal",
+]
 
 
 def check_sql_function(scanner: TokenScanner) -> bool:
@@ -33,12 +45,12 @@ def parse_sql_function(scanner: TokenScanner, data_source: DataSource) -> SQLFun
     return SQLFunction(function_name, function_params)
 
 
-def check_column_type(scanner: TokenScanner) -> bool:
+def check_sql_column_type(scanner: TokenScanner) -> bool:
     """判断 scanner 当前指针位置是否为字段类型"""
     return scanner.now.is_maybe_function_name
 
 
-def parse_column_type(scanner: TokenScanner, data_source: DataSource) -> SQLColumnType:
+def parse_sql_column_type(scanner: TokenScanner, data_source: DataSource) -> SQLColumnType:
     """解析字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
     # 解析字段类型名称
     function_name: str = scanner.pop().source
@@ -91,6 +103,11 @@ def parse_sql_literal(scanner: TokenScanner) -> SQLMonomial:
     raise SqlParseError(f"未知的字面值类型: type(ast_node)={type(ast_node)}")
 
 
+def check_sql_column_name(scanner: TokenScanner) -> bool:
+    """判断 scanner 当前指针位置是否为列名"""
+
+
+
 class ParseColumnExpressionStatus(enum.Enum):
     BEFORE_EXPRESSION = 1  # 当前指针位置一定属于当前表达式
     AFTER_EXPRESSION = 2  # 不确定当前指针位置是否属于当前表达式
@@ -137,6 +154,9 @@ def parse_simple_expression_or_case_expression(scanner: TokenScanner, data_sourc
 
 if __name__ == "__main__":
     print(parse_sql_function(TokenScanner(ast.parse_as_tokens("trim(column1)"), ignore_space=True), DataSource.MYSQL))
-    print(parse_simple_expression_or_case_expression(TokenScanner(ast.parse_as_tokens("a * b"), ignore_space=True), DataSource.MYSQL))
-    print(parse_simple_expression_or_case_expression(TokenScanner(ast.parse_as_tokens("a * b * c"), ignore_space=True), DataSource.MYSQL))
-    print(parse_simple_expression_or_case_expression(TokenScanner(ast.parse_as_tokens("CONCAT('b', 'c')"), ignore_space=True), DataSource.MYSQL))
+    print(parse_simple_expression_or_case_expression(TokenScanner(ast.parse_as_tokens("a * b"), ignore_space=True),
+                                                     DataSource.MYSQL))
+    print(parse_simple_expression_or_case_expression(TokenScanner(ast.parse_as_tokens("a * b * c"), ignore_space=True),
+                                                     DataSource.MYSQL))
+    print(parse_simple_expression_or_case_expression(
+        TokenScanner(ast.parse_as_tokens("CONCAT('b', 'c')"), ignore_space=True), DataSource.MYSQL))

@@ -180,6 +180,17 @@ class SQLLiteralNull(SQLMonomial):
         return "NULL"
 
 
+class SQLColumnName(SQLMonomial):
+    """字段名"""
+
+    def __init__(self, column_name: str):
+        self._column_name = column_name
+
+    @property
+    def source(self) -> str:
+        return f"'{self._column_name}'"
+
+
 class SQLPlus(SQLMonomial):
     """加法运算符"""
 

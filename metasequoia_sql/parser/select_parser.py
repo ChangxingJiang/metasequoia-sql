@@ -13,6 +13,8 @@ class SelectParseStage(enum.StrEnum):
     状态命名规则：{子句名}_{位置描述}
     """
 
+    # TODO DISTINCT 关键字
+
     # 状态：在 SELECT 关键字之前
     # 目标匹配：SELECT 关键字
     STATEMENT_BEFORE = "STATEMENT_BEFORE"
