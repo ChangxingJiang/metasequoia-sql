@@ -14,19 +14,12 @@ __all__ = [
     # ---------- 元素层级 ----------
     "SQLElement",
 
-    # 字面值：整型、浮点型、字符串、十六机制、布尔值、位值、空值
-    "SQLLiteralInteger", "SQLLiteralFloat", "SQLLiteralString", "SQLLiteralHex", "SQLLiteralBool", "SQLLiteralBit",
-    "SQLLiteralNull",
-
     # ---------- 单项式级别 ----------
     # 单项式抽象基类
     "SQLMonomial",
 
     # 函数调用（及其子类字段类型）；变量引用
     "SQLFunction", "SQLColumnType", "SQLVariable",
-
-    # 计算运算符：加法、减法、乘法、除法
-    "SQLPlus", "SQLSubtract", "SQLMultiple", "SQLDivide",
 
     # ---------- 其他类型 ----------
     "SQLSimpleExpression",
@@ -61,80 +54,6 @@ class SQLBase(abc.ABC):
 
 class SQLElement(SQLBase, abc.ABC):
     """元素层级"""
-
-
-class SQLLiteralInteger(SQLElement):
-    """整数字面值"""
-
-    def __init__(self, value: int):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"{self._value}"
-
-
-class SQLLiteralFloat(SQLElement):
-    """浮点数字面值"""
-
-    def __init__(self, value: float):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"{self._value}"
-
-
-class SQLLiteralString(SQLElement):
-    """字符串字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"'{self._value}'"
-
-
-class SQLLiteralHex(SQLElement):
-    """十六进制字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"x'{self._value}'"
-
-
-class SQLLiteralBit(SQLElement):
-    """位值字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"b'{self._value}'"
-
-
-class SQLLiteralBool(SQLElement):
-    """布尔值字面值"""
-
-    def __init__(self, value: bool):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return "TRUE" if self._value is True else "FALSE"
-
-
-class SQLLiteralNull(SQLElement):
-    """空值字面值"""
-
-    @property
-    def source(self) -> str:
-        return "NULL"
 
 
 # ------------------------------ 单项式级别类 ------------------------------
@@ -201,38 +120,6 @@ class SQLColumnName(SQLMonomial):
     @property
     def source(self) -> str:
         return f"'{self._column_name}'"
-
-
-class SQLPlus(SQLMonomial):
-    """加法运算符"""
-
-    @property
-    def source(self) -> str:
-        return "+"
-
-
-class SQLSubtract(SQLMonomial):
-    """减法运算符"""
-
-    @property
-    def source(self) -> str:
-        return "-"
-
-
-class SQLMultiple(SQLMonomial):
-    """乘法运算符"""
-
-    @property
-    def source(self) -> str:
-        return "*"
-
-
-class SQLDivide(SQLMonomial):
-    """除法运算符"""
-
-    @property
-    def source(self) -> str:
-        return "/"
 
 
 # ------------------------------ DDL 相关通用类 ------------------------------
