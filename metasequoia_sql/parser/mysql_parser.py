@@ -12,7 +12,7 @@ from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.objects.mysql import *
-from metasequoia_sql.parser.expression_parser import parse_simple_expression_or_case_expression, parse_sql_column_type
+from metasequoia_sql.parser.sentence_parser import parse_sentence, parse_sql_column_type
 
 
 class MySQLCreateTableParser:
@@ -150,34 +150,34 @@ class MySQLCreateTableParser:
                 column = DDLColumnMySQL(column_name, column_type)
                 while not scanner.is_finish:
                     if scanner.get().equals("NOT"):
-                        scanner.match_words(["NOT", "NULL"])
+                        scanner.match_tokens(["NOT", "NULL"])
                         column.is_not_null = True
                     elif scanner.get().equals("NULL"):
-                        scanner.match_words(["NULL"])
+                        scanner.match_tokens(["NULL"])
                         column.set_is_allow_null(True)
                     elif scanner.get().equals("CHARACTER"):
-                        scanner.match_words(["CHARACTER", "SET"])
+                        scanner.match_tokens(["CHARACTER", "SET"])
                         column.set_character_set(scanner.pop_as_source())
                     elif scanner.get().equals("COLLATE"):
-                        scanner.match_words(["COLLATE"])
+                        scanner.match_tokens(["COLLATE"])
                         column.set_collate(scanner.pop_as_source())
                     elif scanner.get().equals("DEFAULT"):
-                        scanner.match_words(["DEFAULT"])
-                        column.default = parse_simple_expression_or_case_expression(scanner, DataSource.MYSQL)
+                        scanner.match_tokens(["DEFAULT"])
+                        column.default = parse_sentence(scanner, DataSource.MYSQL)
                     elif scanner.get().equals("COMMENT"):
-                        scanner.match_words(["COMMENT"])
+                        scanner.match_tokens(["COMMENT"])
                         column.set_comment(scanner.pop_as_source())
                     elif scanner.get().equals("ON"):  # ON UPDATE
-                        scanner.match_words(["ON", "UPDATE"])
-                        column.on_update = parse_simple_expression_or_case_expression(scanner, DataSource.MYSQL)
+                        scanner.match_tokens(["ON", "UPDATE"])
+                        column.on_update = parse_sentence(scanner, DataSource.MYSQL)
                     elif scanner.get().equals("AUTO_INCREMENT"):
-                        scanner.match_words(["AUTO_INCREMENT"])
+                        scanner.match_tokens(["AUTO_INCREMENT"])
                         column.is_auto_increment = True
                     elif scanner.get().equals("UNSIGNED"):
-                        scanner.match_words(["UNSIGNED"])
+                        scanner.match_tokens(["UNSIGNED"])
                         column.is_unsigned = True
                     elif scanner.get().equals("ZEROFILL"):
-                        scanner.match_words(["ZEROFILL"])
+                        scanner.match_tokens(["ZEROFILL"])
                         column.is_zerofill = True
                     else:
                         raise SqlParseError(f"Cannot parse ddl column: {column_group}")

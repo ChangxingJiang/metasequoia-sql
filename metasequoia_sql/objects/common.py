@@ -11,16 +11,19 @@ __all__ = [
     # ---------- 抽象基类 ----------
     "SQLBase",
 
+    # ---------- 元素层级 ----------
+    "SQLElement",
+
+    # 字面值：整型、浮点型、字符串、十六机制、布尔值、位值、空值
+    "SQLLiteralInteger", "SQLLiteralFloat", "SQLLiteralString", "SQLLiteralHex", "SQLLiteralBool", "SQLLiteralBit",
+    "SQLLiteralNull",
+
     # ---------- 单项式级别 ----------
     # 单项式抽象基类
     "SQLMonomial",
 
     # 函数调用（及其子类字段类型）；变量引用
     "SQLFunction", "SQLColumnType", "SQLVariable",
-
-    # 字面值：整型、浮点型、字符串、十六机制、布尔值、位值、空值
-    "SQLLiteralInteger", "SQLLiteralFloat", "SQLLiteralString", "SQLLiteralHex", "SQLLiteralBool", "SQLLiteralBit",
-    "SQLLiteralNull",
 
     # 计算运算符：加法、减法、乘法、除法
     "SQLPlus", "SQLSubtract", "SQLMultiple", "SQLDivide",
@@ -34,9 +37,11 @@ __all__ = [
 ]
 
 
+# TODO 新增通配符节点
+
+
 # ------------------------------ 抽象基类 ------------------------------
 
-# TODO 新增通配符节点
 
 class SQLBase(abc.ABC):
     @property
@@ -49,6 +54,87 @@ class SQLBase(abc.ABC):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} source={self.source}>"
+
+
+# ------------------------------ 元素层级 ------------------------------
+
+
+class SQLElement(SQLBase, abc.ABC):
+    """元素层级"""
+
+
+class SQLLiteralInteger(SQLElement):
+    """整数字面值"""
+
+    def __init__(self, value: int):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"{self._value}"
+
+
+class SQLLiteralFloat(SQLElement):
+    """浮点数字面值"""
+
+    def __init__(self, value: float):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"{self._value}"
+
+
+class SQLLiteralString(SQLElement):
+    """字符串字面值"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"'{self._value}'"
+
+
+class SQLLiteralHex(SQLElement):
+    """十六进制字面值"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"x'{self._value}'"
+
+
+class SQLLiteralBit(SQLElement):
+    """位值字面值"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return f"b'{self._value}'"
+
+
+class SQLLiteralBool(SQLElement):
+    """布尔值字面值"""
+
+    def __init__(self, value: bool):
+        self._value = value
+
+    @property
+    def source(self) -> str:
+        return "TRUE" if self._value is True else "FALSE"
+
+
+class SQLLiteralNull(SQLElement):
+    """空值字面值"""
+
+    @property
+    def source(self) -> str:
+        return "NULL"
 
 
 # ------------------------------ 单项式级别类 ------------------------------
@@ -106,80 +192,6 @@ class SQLVariable(SQLMonomial):
         return self.name
 
 
-class SQLLiteralInteger(SQLMonomial):
-    """整数字面值"""
-
-    def __init__(self, value: int):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"{self._value}"
-
-
-class SQLLiteralFloat(SQLMonomial):
-    """浮点数字面值"""
-
-    def __init__(self, value: float):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"{self._value}"
-
-
-class SQLLiteralString(SQLMonomial):
-    """字符串字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"'{self._value}'"
-
-
-class SQLLiteralHex(SQLMonomial):
-    """十六进制字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"x'{self._value}'"
-
-
-class SQLLiteralBit(SQLMonomial):
-    """位值字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return f"b'{self._value}'"
-
-
-class SQLLiteralBool(SQLMonomial):
-    """布尔值字面值"""
-
-    def __init__(self, value: bool):
-        self._value = value
-
-    @property
-    def source(self) -> str:
-        return "TRUE" if self._value is True else "FALSE"
-
-
-class SQLLiteralNull(SQLMonomial):
-    """空值字面值"""
-
-    @property
-    def source(self) -> str:
-        return "NULL"
-
-
 class SQLColumnName(SQLMonomial):
     """字段名"""
 
@@ -224,16 +236,6 @@ class SQLDivide(SQLMonomial):
 
 
 # ------------------------------ DDL 相关通用类 ------------------------------
-
-
-class SqlExpression(SQLBase, abc.ABC):
-    def __init__(self, tokens: List[ast.AST]):
-        self._tokens = tokens
-
-    @property
-    def source(self) -> str:
-        return " ".join(token.source for token in self._tokens)
-
 
 class DDLColumn(SQLBase):
     """【DDL】建表语句中的字段信息"""
@@ -382,7 +384,7 @@ class DDLForeignKey(SQLBase):
 # ------------------------------ DSL 相关通用类 ------------------------------
 
 
-class SQLSimpleExpression(SqlExpression):
+class SQLSimpleExpression(SQLMonomial):
     """字段表达式"""
 
     def __init__(self, tokens: List[ast.AST], alias: Optional[str] = None):
@@ -427,3 +429,18 @@ class DDLCreateTableStatement(SQLBase, abc.ABC):
 
     def set_comment(self, comment: str):
         self._comment = comment
+
+
+# ------------------------------ SELECT 语句相关的节点 ------------------------------
+
+
+class SQLExpression(SQLBase, abc.ABC):
+    """表达式级抽象基类"""
+
+    def __init__(self, tokens: List[ast.AST]):
+        self._tokens = tokens
+
+    @property
+    def source(self) -> str:
+        return " ".join(token.source for token in self._tokens)
+

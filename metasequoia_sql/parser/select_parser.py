@@ -5,27 +5,30 @@
 import enum
 
 from metasequoia_sql import ast
+from metasequoia_sql.common.token_scanner import TokenScanner
 
 
 @enum.unique
-class SelectParseStage(enum.StrEnum):
+class ParseSelectStage(enum.StrEnum):
     """
     状态命名规则：{子句名}_{位置描述}
     """
 
     # TODO DISTINCT 关键字
 
-    # 状态：在 SELECT 关键字之前
-    # 目标匹配：SELECT 关键字
-    STATEMENT_BEFORE = "STATEMENT_BEFORE"
+    BEFORE_KEYWORD_SELECT = enum.auto()
+
+    # 状态：在 SELECT 关键字之后
+    # 目标匹配：DISTINCT；
+    AFTER_KEYWORD_SELECT = enum.auto()
 
     # 状态：在 SELECT 关键字之后，或字段表达式后的逗号之后
     # 目标匹配：字段表达式
-    SELECT_WAIT_COLUMN_EXPRESSION = "SELECT_WAIT_COLUMN_EXPRESSION"
+    SELECT_WAIT_COLUMN = "SELECT_WAIT_COLUMN_EXPRESSION"
 
     # 状态：在字段表达式之后，逗号之前
     # 目标匹配：下一个子句的关键字；下一个字段表达式；语句结束
-    SELECT_AFTER_COLUMN_EXPRESSION = "SELECT_AFTER_COLUMN_EXPRESSION"
+    SELECT_AFTER_COLUMN = "SELECT_AFTER_COLUMN_EXPRESSION"
 
     # 状态：在 FROM 关键字之后，或 FROM 子句表名表达式后的逗号之后
     # 目标匹配：表名表达式
@@ -93,16 +96,24 @@ class SelectParseStage(enum.StrEnum):
     # 目标匹配：语句结束
     LIMIT_AFTER_LIMIT_EXPRESSION = "LIMIT_AFTER_LIMIT_EXPRESSION"
 
+    STATEMENT_FINISH = enum.auto()
 
-class SelectParser:
-    """Hive 的 SELECT 语句解析器"""
 
-    def __init__(self, root: ast.AST):
-        pass
+def parse_select(scanner: TokenScanner):
+    """解析 SELECT 语句"""
+    status = ParseSelectStage.BEFORE_KEYWORD_SELECT
+    while status != ParseSelectStage.STATEMENT_FINISH:
+        if status == ParseSelectStage.BEFORE_KEYWORD_SELECT:  # 状态：在关键字 SELECT 之前
+            scanner.match_token("SELECT")  # 匹配：关键字 SELECT
+            status = ParseSelectStage.SELECT_AFTER_COLUMN
+        elif status == ParseSelectStage.SELECT_AFTER_COLUMN:  # 状态：在关键字 SELECT 之后
+            if scanner.now.equals("DISTINCT"):  # 匹配：关键字 DISTINCT
+                scanner.match_token("DISTINCT")
+                status = ParseSelectStage.SELECT_WAIT_COLUMN
+            else:
+                pass
+
 
 
 if __name__ == "__main__":
-    from demo_sql import *
-
-    result: ast.AST = ast.parse_as_statements(DEMO_MYSQL_MCC_15_2_3_1)
-    print(result.__repr__())
+    print(parse_select(TokenScanner(ast.parse_as_tokens("trim(column1)"), ignore_space=True)))

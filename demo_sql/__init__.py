@@ -1,1 +1,1 @@
-from demo_sql.mysql_crash_course import *
+from demo_sql.sql_basic_tutorial_demo import *

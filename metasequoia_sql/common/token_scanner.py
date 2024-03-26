@@ -112,7 +112,12 @@ class TokenScanner:
             result.append(TokenScanner(tokens, ignore_space=ignore_space))
         return result
 
-    def match_words(self, words: List[str]) -> None:
+    def match_token(self, word: str) -> None:
+        """尝试从当前指针位置开始匹配 word，如果匹配失败则抛出异常"""
+        if not self.pop().equals(word):
+            raise SqlParseError(f"tokens={self._elements}, words={word}")
+
+    def match_tokens(self, words: List[str]) -> None:
         """尝试从当前指针位置开始匹配 words，如果匹配失败则抛出异常"""
         for word in words:
             if not self.pop().equals(word):
