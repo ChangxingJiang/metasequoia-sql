@@ -2,8 +2,6 @@
 字段表达式解析器
 """
 
-import enum
-
 from metasequoia_sql import ast
 from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
