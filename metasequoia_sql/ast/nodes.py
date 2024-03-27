@@ -16,11 +16,9 @@ from metasequoia_sql.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_S
 __all__ = [
     "AST",
     # 固定值节点类
-    "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon", "ASTEqual",
+    "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon",
 
-    # 运算符节点类
-    "ASTComputeOperator",  # 计算运算符
-    "ASTCompareOperator",  # 比较运算符
+    "ASTCommon",
 
     # 字面值节点类
     "ASTLiteralInteger",
@@ -125,6 +123,16 @@ class AST(abc.ABC):
         return False
 
     @property
+    def is_compare_operator(self) -> bool:
+        """当前节点是否为比较运算符"""
+        return False
+
+    @property
+    def is_logical_operator(self) -> bool:
+        """当前节点是否为逻辑运算符"""
+        return False
+
+    @property
     def is_literal(self) -> bool:
         """当前节点是否为字面值"""
         return False
@@ -200,49 +208,53 @@ class ASTSemicolon(AST):
         return "<ASTSemicolon>"
 
 
-class ASTEqual(AST):
-    """等号"""
-
-    @property
-    def source(self) -> str:
-        return "="
-
-    def __repr__(self) -> str:
-        return "<ASTEqual>"
-
-
 # ------------------------------ 非定值叶节点 ------------------------------
 
 
-class ASTComputeOperator(AST):
-    """算术操作符"""
+class ASTCommon(AST):
+    """通用节点"""
 
-    def __init__(self, origin: str):
-        if origin not in {"+", "-", "*", "/"}:
-            raise AstParseError(f"初始化 ASTComputeOperator 节点失败: origin={origin}")
-        self._origin = origin
+    def __init__(self, source: str,
+                 is_compute_operator: bool = False,
+                 is_compare_operator: bool = False,
+                 is_logical_operator: bool = False):
+        """通用节点构造器
+
+        Parameters
+        ----------
+        source : str
+            当前节点的源代码（格式化后的）
+        is_compute_operator : bool, default = False
+            当前节点是否为计算运算符
+        is_compare_operator : bool, default = False
+            当前节点是否为比较运算符
+        is_logical_operator : bool, default = False
+            当前节点是否为比较运算符
+        """
+        self._source = source
+        self._is_compute_operator = is_compute_operator
+        self._is_compare_operator = is_compare_operator
+        self._is_logical_operator = is_logical_operator
 
     @property
     def is_compute_operator(self) -> bool:
         """当前节点是否为计算运算符"""
-        return True
+        return self._is_compute_operator
+
+    @property
+    def is_compare_operator(self) -> bool:
+        """当前节点是否为比较运算符"""
+        return self._is_compare_operator
+
+    @property
+    def is_logical_operator(self) -> bool:
+        """当前节点是否为逻辑运算符"""
+        return self._is_logical_operator
 
     @property
     def source(self) -> str:
-        return self._origin
-
-
-class ASTCompareOperator(AST):
-    """比较运算符（不含等号）"""
-
-    def __init__(self, origin: str):
-        if origin not in {"<>", "!=", "<", "<=", ">", ">="}:
-            raise AstParseError(f"初始化 ASTCompareOperator 节点失败: origin={origin}")
-        self._origin = origin
-
-    @property
-    def source(self) -> str:
-        return self._origin
+        """当前节点的源代码（格式化后的）"""
+        return self._source
 
 
 class ASTLiteralInteger(AST):

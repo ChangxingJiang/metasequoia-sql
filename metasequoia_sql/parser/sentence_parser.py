@@ -8,6 +8,7 @@ from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.objects.new_select import *
+from metasequoia_sql.parser.basic_element import check_literal
 
 __all__ = [
     # 识别和解析函数调用节点（SQLFunction）
@@ -18,35 +19,7 @@ __all__ = [
 
     # 识别和解析变量引用节点（SQLVariable）
     "check_sql_variable", "parse_sql_variable",
-
-    # 识别和解析字面值节点
-    "check_sql_literal", "parse_sql_literal",
 ]
-
-
-def check_sql_literal(scanner: TokenScanner) -> bool:
-    """判断 scanner 当前指针位置是否为字面值"""
-    return scanner.now.is_literal
-
-
-def parse_sql_literal(scanner: TokenScanner) -> SQLLiteral:
-    """解析字面值"""
-    ast_node = scanner.pop()
-    if isinstance(ast_node, ast.ASTLiteralInteger):
-        return SQLLiteralInteger(ast_node.literal_value)
-    if isinstance(ast_node, ast.ASTLiteralFloat):
-        return SQLLiteralFloat(ast_node.literal_value)
-    if isinstance(ast_node, ast.ASTLiteralString):
-        return SQLLiteralString(ast_node.literal_value)
-    if isinstance(ast_node, ast.ASTLiteralHex):
-        return SQLLiteralHex(ast_node.literal_value)
-    if isinstance(ast_node, ast.ASTLiteralBool):
-        return SQLLiteralBool(ast_node.literal_value)
-    if isinstance(ast_node, ast.ASTLiteralBit):
-        return SQLLiteralBit(ast_node.literal_value)
-    if isinstance(ast_node, ast.ASTLiteralNull):
-        return SQLLiteralNull()
-    raise SqlParseError(f"未知的字面值类型: type(ast_node)={type(ast_node)}")
 
 
 def check_sql_function(scanner: TokenScanner) -> bool:
@@ -131,8 +104,8 @@ def parse_sentence(scanner: TokenScanner, data_source: DataSource):
             elif check_sql_variable(scanner, data_source):
                 tokens.append(parse_sql_variable(scanner))
             # 当前指针位置是字面值
-            elif check_sql_literal(scanner):
-                tokens.append(parse_sql_literal(scanner))
+            elif check_literal(scanner):
+                tokens.append(parse_literal(scanner))
             # 当前指针位置是其他元素
             else:
                 tokens.append(scanner.pop())

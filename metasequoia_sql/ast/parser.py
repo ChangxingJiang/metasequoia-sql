@@ -143,13 +143,16 @@ class AstParseContext:
             self.stack[-1].append(ASTSemicolon())
         # 等号
         elif origin == "=":
-            self.stack[-1].append(ASTEqual())
+            self.stack[-1].append(ASTCommon(origin, is_compare_operator=True))
         # 算术运算符
         elif origin in {"+", "-", "*", "/"}:
-            self.stack[-1].append(ASTComputeOperator(origin))
+            self.stack[-1].append(ASTCommon(origin, is_compute_operator=True))
         # 比较运算符
         elif origin in {"<>", "!=", "<", "<=", ">", ">="}:
-            self.stack[-1].append(ASTCompareOperator(origin))
+            self.stack[-1].append(ASTCommon(origin, is_compare_operator=True))
+        # 逻辑运算符
+        elif origin.upper() in {"AND", "NOT", "OR"}:
+            self.stack[-1].append(ASTCommon(origin.upper(), is_logical_operator=True))
         # 字面值整数
         elif re.match(r"^[+-]?\d+$", origin):
             self.stack[-1].append(ASTLiteralInteger(origin))

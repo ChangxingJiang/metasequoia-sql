@@ -43,7 +43,7 @@ class SQLBase(abc.ABC):
         """返回 SQL 源码"""
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__} source={self.source}>"
+        return self.__repr__()
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} source={self.source}>"

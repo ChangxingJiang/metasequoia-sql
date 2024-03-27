@@ -70,7 +70,13 @@ def parse_as_tokens(text: str) -> List[AST]:
             context.cache_add_and_handle_end_word()
             context.set_status(AstParseStatus.WAIT_TOKEN)
         elif context.status == AstParseStatus.IN_WORD:
-            if context.now_ch in {" ", "\n", ",", ";", "+", "-", "*", "/", "=", "`"}:
+            if context.now_ch in {" ", "\n", ",", ";", "+", "-", "*", "/", "`", "<", "!"}:
+                context.handle_end_word()
+                context.set_status(AstParseStatus.WAIT_TOKEN)
+            elif context.now_ch == "=" and context.last_ch not in {"!", "<", ">"}:
+                context.handle_end_word()
+                context.set_status(AstParseStatus.WAIT_TOKEN)
+            elif context.now_ch == ">" and context.last_ch != "<":
                 context.handle_end_word()
                 context.set_status(AstParseStatus.WAIT_TOKEN)
             elif context.now_ch == "\"":

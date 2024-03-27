@@ -32,6 +32,9 @@ class SQLPlus(SQLComputeOperator):
     def source(self) -> str:
         return "+"
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class SQLSubtract(SQLComputeOperator):
     """减法运算符"""
@@ -39,6 +42,9 @@ class SQLSubtract(SQLComputeOperator):
     @property
     def source(self) -> str:
         return "-"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
 
 class SQLMultiple(SQLComputeOperator):
@@ -48,6 +54,9 @@ class SQLMultiple(SQLComputeOperator):
     def source(self) -> str:
         return "*"
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class SQLDivide(SQLComputeOperator):
     """除法运算符"""
@@ -56,9 +65,23 @@ class SQLDivide(SQLComputeOperator):
     def source(self) -> str:
         return "/"
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class SQLCompareOperator(SQLBase, abc.ABC):
     """比较运算符"""
+
+
+class SQLEqualTo(SQLCompareOperator):
+    """等于运算符"""
+
+    @property
+    def source(self) -> str:
+        return "="
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
 
 class SQLNotEqualTo(SQLCompareOperator):
@@ -68,6 +91,9 @@ class SQLNotEqualTo(SQLCompareOperator):
     def source(self) -> str:
         return "!="
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class SQLLessThan(SQLCompareOperator):
     """小于运算符"""
@@ -75,6 +101,9 @@ class SQLLessThan(SQLCompareOperator):
     @property
     def source(self) -> str:
         return "<"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
 
 class SQLLessThanOrEqual(SQLCompareOperator):
@@ -84,6 +113,9 @@ class SQLLessThanOrEqual(SQLCompareOperator):
     def source(self) -> str:
         return "<="
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class SQLGreaterThan(SQLCompareOperator):
     """大于运算符"""
@@ -92,6 +124,9 @@ class SQLGreaterThan(SQLCompareOperator):
     def source(self) -> str:
         return ">"
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
 
 class SQLGreaterThanOrEqual(SQLCompareOperator):
     """大于等于运算符"""
@@ -99,6 +134,9 @@ class SQLGreaterThanOrEqual(SQLCompareOperator):
     @property
     def source(self) -> str:
         return ">="
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
 
 class SQLLiteral(SQLBase, abc.ABC):
@@ -212,20 +250,41 @@ class SQLLiteralNull(SQLLiteral):
         return "NULL"
 
 
-class SQLLogicalAnd(SQLBase):
+class SQLLogicalOperator(SQLBase, abc.ABC):
+    """逻辑运算符"""
+
+
+class SQLAndOperator(SQLLogicalOperator):
     """逻辑 AND 运算符"""
 
     @property
     def source(self) -> str:
         return "AND"
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
-class SQLLogicalOr(SQLBase):
+
+class SQLOrOperator(SQLLogicalOperator):
     """逻辑 OR 运算符"""
 
     @property
     def source(self) -> str:
         return "OR"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
+
+
+class SQLNotOperator(SQLLogicalOperator):
+    """逻辑 NOT 运算符"""
+
+    @property
+    def source(self) -> str:
+        return "OR"
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}>"
 
 
 # ------------------------------ 表达式层级（一般表达式） ------------------------------
@@ -473,11 +532,11 @@ class SQLConditionExpression(SQLBase):
     """条件表达式"""
 
     def __init__(self,
-                 elements: List[Union["SQLConditionExpression", SQLBoolExpression, SQLLogicalAnd, SQLLogicalOr]]):
+                 elements: List[Union["SQLConditionExpression", SQLBoolExpression, SQLLogicalOperator]]):
         self._elements = elements
 
     @property
-    def elements(self) -> List[Union["SQLConditionExpression", SQLBoolExpression, SQLLogicalAnd, SQLLogicalOr]]:
+    def elements(self) -> List[Union["SQLConditionExpression", SQLBoolExpression, SQLLogicalOperator]]:
         return self._elements
 
     @property
