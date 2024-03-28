@@ -141,6 +141,9 @@ class AstParseContext:
         # 分号
         elif origin == ";":
             self.stack[-1].append(ASTSemicolon())
+        # 点号
+        elif origin == ".":
+            self.stack[-1].append(ASTCommon(origin, is_dot=True))
         # 等号
         elif origin == "=":
             self.stack[-1].append(ASTCommon(origin, is_compare_operator=True))

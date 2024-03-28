@@ -51,9 +51,24 @@ class TokenScanner:
         return self.get()
 
     @property
-    def next(self) -> Optional[ast.AST]:
+    def next1(self) -> Optional[ast.AST]:
         """当前指针位置的下一个字符"""
         return self.get_next()
+
+    @property
+    def next2(self) -> Optional[ast.AST]:
+        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
+        return self.get_next(2)
+
+    @property
+    def next3(self) -> Optional[ast.AST]:
+        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
+        return self.get_next(3)
+
+    @property
+    def next4(self) -> Optional[ast.AST]:
+        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
+        return self.get_next(4)
 
     def get(self) -> Optional[ast.AST]:
         """获取当前指针位置元素，但不移动指针
@@ -67,14 +82,12 @@ class TokenScanner:
             return None
         return self._elements[self._pos]
 
-    def get_next(self) -> Optional[ast.AST]:
+    def get_next(self, idx: int = 1) -> Optional[ast.AST]:
         """获取当前指针下一个位置的元素，但不一定指针
         """
-        if self._pos + 1 > self._len:
-            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos + 1}")
-        if self._pos + 1 == self._len:
+        if self._pos + idx >= self._len:
             return None
-        return self._elements[self._pos + 1]
+        return self._elements[self._pos + idx]
 
     def pop(self) -> ast.AST:
         """获取当前指针位置元素，并移动指针

@@ -4,6 +4,7 @@
 
 from metasequoia_sql import ast
 from metasequoia_sql.common.token_scanner import TokenScanner
+from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.new_select import *
 from metasequoia_sql.parser import basic_element
 
@@ -76,3 +77,75 @@ def parse_literal_expression(scanner: TokenScanner) -> SQLLiteralExpression:
     metasequoia_sql.errors.SqlParseError: 未知的字面值: <ASTOther source=table_name.column_name>
     """
     return SQLLiteralExpression(literal=basic_element.parse_literal(scanner))
+
+
+def maybe_function_expression(scanner: TokenScanner) -> bool:
+    """是否可能为函数表达式
+
+    Examples
+    --------
+    >>> maybe_function_expression(TokenScanner(ast.parse_as_tokens("schema.function(param) AND"), ignore_space=True))
+    True
+    >>> maybe_function_expression(TokenScanner(ast.parse_as_tokens("`schema`.`function`(param) AND"), ignore_space=True))
+    True
+    >>> maybe_function_expression(TokenScanner(ast.parse_as_tokens("trim(column_name) AND"), ignore_space=True))
+    True
+    >>> maybe_function_expression(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
+    False
+    >>> maybe_function_expression(TokenScanner(ast.parse_as_tokens("coumn_name WHERE"), ignore_space=True))
+    False
+    """
+    return ((scanner.now.is_maybe_function_name and
+             scanner.next1 is not None and scanner.next1.is_parenthesis) or
+            (scanner.now.is_maybe_function_name and
+             scanner.next1 is not None and scanner.next1.is_dot and
+             scanner.next2 is not None and scanner.next2.is_maybe_function_name and
+             scanner.next3 is not None and scanner.next3.is_parenthesis
+             ))
+
+
+def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
+    """解析函数表达式
+
+    Examples
+    --------
+    >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("schema.function(param) AND"), ignore_space=True))
+    <SQLFunctionExpression source=schema.function(param)>
+    >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("`schema`.`function`(param) AND"), ignore_space=True))
+    <SQLFunctionExpression source=`schema`.`function`(param)>
+    >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("trim(column_name) AND"), ignore_space=True))
+    <SQLFunctionExpression source=trim(None)>
+    >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
+    Traceback (most recent call last):
+    ...
+    metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式格式: <TokenScanner tokens=[<ASTLiteralFloat source=2.5>, <ASTOther source=WHERE>], pos=0>
+    >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("coumn_name WHERE"), ignore_space=True))
+    Traceback (most recent call last):
+    ...
+    metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式格式: <TokenScanner tokens=[<ASTOther source=coumn_name>, <ASTOther source=WHERE>], pos=0>
+    """
+    if (scanner.now.is_maybe_function_name and
+            scanner.next1 is not None and scanner.next1.is_parenthesis):
+        schema_name = None
+        function_name = scanner.pop().source
+    elif (scanner.now.is_maybe_function_name and
+          scanner.next1 is not None and scanner.next1.is_dot and
+          scanner.next2 is not None and scanner.next2.is_maybe_function_name and
+          scanner.next3 is not None and scanner.next3.is_parenthesis):
+        schema_name = scanner.pop().source
+        scanner.pop()
+        function_name = scanner.pop().source
+    else:
+        raise SqlParseError(f"无法解析为函数表达式格式: {scanner}")
+
+    function_params: List[SQLGeneralExpression] = []
+    for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma(ignore_space=True):
+        function_params.append(parse_general_expression(param_scanner))
+
+    return SQLFunctionExpression(schema_name=schema_name,
+                                 function_name=function_name,
+                                 function_params=function_params)
+
+
+def parse_general_expression(scanner: TokenScanner) -> SQLGeneralExpression:
+    """解析一般表达式"""

@@ -20,7 +20,7 @@ def parse_as_tokens(text: str) -> List[AST]:
                 context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 context.cache_add()
                 context.set_status(AstParseStatus.IN_EXPLAIN_2)
-            elif context.now_ch in {" ", "\n", ",", ";", "=", "+", "-", "*", "/"}:
+            elif context.now_ch in {" ", "\n", ",", ";", "=", "+", "-", "*", "/", "."}:
                 context.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 context.handle_end_word()
             elif context.now_ch == "\"":
@@ -77,6 +77,10 @@ def parse_as_tokens(text: str) -> List[AST]:
                 context.handle_end_word()
                 context.set_status(AstParseStatus.WAIT_TOKEN)
             elif context.now_ch == ">" and context.last_ch != "<":
+                context.handle_end_word()
+                context.set_status(AstParseStatus.WAIT_TOKEN)
+            # 前面不完全为数字时，出现点号
+            elif context.now_ch == "." and not context.cache_get().isnumeric():
                 context.handle_end_word()
                 context.set_status(AstParseStatus.WAIT_TOKEN)
             elif context.now_ch == "\"":

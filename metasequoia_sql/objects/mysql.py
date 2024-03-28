@@ -221,7 +221,7 @@ class DDLCreateTableStatementMySQL(DDLCreateTableStatement):
             new_column_type = hashmap[old_column_type.upper()]
             column.column_type._name = new_column_type
             if remove_param is True:
-                column.column_type._params = []
+                column.column_type._function_params = []
 
     def append_column(self, column: DDLColumnMySQL):
         """添加字段"""

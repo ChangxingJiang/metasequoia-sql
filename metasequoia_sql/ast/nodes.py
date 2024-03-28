@@ -138,6 +138,11 @@ class AST(abc.ABC):
         return False
 
     @property
+    def is_dot(self) -> bool:
+        """是否为点符号"""
+        return False
+
+    @property
     def literal_value(self) -> Any:
         """字面值的值"""
         return None
@@ -217,7 +222,8 @@ class ASTCommon(AST):
     def __init__(self, source: str,
                  is_compute_operator: bool = False,
                  is_compare_operator: bool = False,
-                 is_logical_operator: bool = False):
+                 is_logical_operator: bool = False,
+                 is_dot: bool = False):
         """通用节点构造器
 
         Parameters
@@ -230,11 +236,14 @@ class ASTCommon(AST):
             当前节点是否为比较运算符
         is_logical_operator : bool, default = False
             当前节点是否为比较运算符
+        is_dot : bool, default = False
+            当前节点是否为点号
         """
         self._source = source
         self._is_compute_operator = is_compute_operator
         self._is_compare_operator = is_compare_operator
         self._is_logical_operator = is_logical_operator
+        self._is_dot = is_dot
 
     @property
     def is_compute_operator(self) -> bool:
@@ -250,6 +259,11 @@ class ASTCommon(AST):
     def is_logical_operator(self) -> bool:
         """当前节点是否为逻辑运算符"""
         return self._is_logical_operator
+
+    @property
+    def is_dot(self) -> bool:
+        """当前节点是否为点号"""
+        return self._is_dot
 
     @property
     def source(self) -> str:

@@ -323,23 +323,32 @@ class SQLFunctionExpression(SQLGeneralExpression):
     """函数表达式"""
 
     def __init__(self,
+                 schema_name: Optional[str],
                  function_name: str,
-                 params: List[SQLGeneralExpression]):
+                 function_params: List[SQLGeneralExpression]):
+        self._schema_name = schema_name
         self._function_name = function_name
-        self._params = params
+        self._function_params = function_params
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
 
     @property
     def function_name(self) -> str:
         return self._function_name
 
     @property
-    def params(self) -> List[SQLGeneralExpression]:
-        return self._params
+    def function_params(self) -> List[SQLGeneralExpression]:
+        return self._function_params
 
     @property
     def source(self) -> str:
-        params_str = ", ".join(str(param) for param in self._params)
-        return f"{self._function_name}({params_str})"
+        params_str = ", ".join(str(param) for param in self.function_params)
+        if self.schema_name is not None:
+            return f"{self.schema_name}.{self.function_name}({params_str})"
+        else:
+            return f"{self.function_name}({params_str})"
 
 
 class SQLCaseExpression(SQLGeneralExpression):

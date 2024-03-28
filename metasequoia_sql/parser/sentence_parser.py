@@ -23,7 +23,7 @@ __all__ = [
 
 def check_sql_function(scanner: TokenScanner) -> bool:
     """判断 scanner 当前指针位置是否为函数调用"""
-    return scanner.now.is_maybe_function_name and scanner.next is not None and scanner.next.is_parenthesis
+    return scanner.now.is_maybe_function_name and scanner.next1 is not None and scanner.next1.is_parenthesis
 
 
 def parse_sql_function(scanner: TokenScanner, data_source: DataSource) -> SQLFunction:
