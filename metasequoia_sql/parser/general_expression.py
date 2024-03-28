@@ -118,11 +118,11 @@ def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
     >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
     Traceback (most recent call last):
     ...
-    metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式格式: <TokenScanner tokens=[<ASTLiteralFloat source=2.5>, <ASTOther source=WHERE>], pos=0>
+    metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式: <TokenScanner tokens=[<ASTLiteralFloat source=2.5>, <ASTOther source=WHERE>], pos=0>
     >>> parse_function_expression(TokenScanner(ast.parse_as_tokens("coumn_name WHERE"), ignore_space=True))
     Traceback (most recent call last):
     ...
-    metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式格式: <TokenScanner tokens=[<ASTOther source=coumn_name>, <ASTOther source=WHERE>], pos=0>
+    metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式: <TokenScanner tokens=[<ASTOther source=coumn_name>, <ASTOther source=WHERE>], pos=0>
     """
     if (scanner.now.is_maybe_function_name and
             scanner.next1 is not None and scanner.next1.is_parenthesis):
@@ -136,7 +136,7 @@ def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
         scanner.pop()
         function_name = scanner.pop().source
     else:
-        raise SqlParseError(f"无法解析为函数表达式格式: {scanner}")
+        raise SqlParseError(f"无法解析为函数表达式: {scanner}")
 
     function_params: List[SQLGeneralExpression] = []
     for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma(ignore_space=True):
@@ -145,6 +145,82 @@ def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
     return SQLFunctionExpression(schema_name=schema_name,
                                  function_name=function_name,
                                  function_params=function_params)
+
+
+def maybe_column_name_expression(scanner: TokenScanner) -> bool:
+    """是否可能为列名表达式
+
+    Examples
+    --------
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("schema.function(param) AND"), ignore_space=True))
+    False
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("`schema`.`function`(param) AND"), ignore_space=True))
+    False
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("schema.column AND"), ignore_space=True))
+    True
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("`schema`.`column` AND"), ignore_space=True))
+    True
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("trim(column_name) AND"), ignore_space=True))
+    False
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
+    False
+    >>> maybe_column_name_expression(TokenScanner(ast.parse_as_tokens("coumn_name WHERE"), ignore_space=True))
+    True
+    """
+    return ((scanner.now.is_maybe_function_name and
+             (scanner.next1 is None or (not scanner.next1.is_dot and
+                                        not scanner.next1.is_parenthesis and
+                                        not scanner.next1.is_compute_operator))) or
+            (scanner.now.is_maybe_function_name and
+             scanner.next1 is not None and scanner.next1.is_dot and
+             scanner.next2 is not None and scanner.next2.is_maybe_function_name and
+             (scanner.next3 is None or (not scanner.next3.is_dot and
+                                        not scanner.next3.is_parenthesis and
+                                        not scanner.next3.is_compute_operator)))
+            )
+
+
+def parse_column_name_expression(scanner: TokenScanner) -> SQLColumnNameExpression:
+    """解析列名表达式
+
+    Examples
+    --------
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("schema.function(param) AND"), ignore_space=True))
+    Traceback (most recent call last):
+    ...
+    metasequoia_sql.errors.SqlParseError: 无法解析为表名表达式: <TokenScanner tokens=[<ASTOther source=schema>, <ASTCommon source=.>, <ASTOther source=function>, <ASTParenthesis children=[<ASTOther source=param>]>, <ASTCommon source=AND>], pos=0>
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("`schema`.`function`(param) AND"), ignore_space=True))
+    Traceback (most recent call last):
+    ...
+    metasequoia_sql.errors.SqlParseError: 无法解析为表名表达式: <TokenScanner tokens=[<ASTIdentifier source=`schema`>, <ASTCommon source=.>, <ASTIdentifier source=`function`>, <ASTParenthesis children=[<ASTOther source=param>]>, <ASTCommon source=AND>], pos=0>
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("schema.column AND"), ignore_space=True))
+    <SQLColumnNameExpression source=schema.column>
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("`schema`.`column` AND"), ignore_space=True))
+    <SQLColumnNameExpression source=`schema`.`column`>
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("trim(column_name) AND"), ignore_space=True))
+    Traceback (most recent call last):
+    ...
+    metasequoia_sql.errors.SqlParseError: 无法解析为表名表达式: <TokenScanner tokens=[<ASTOther source=trim>, <ASTParenthesis children=[<ASTOther source=column_name>]>, <ASTCommon source=AND>], pos=0>
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
+    Traceback (most recent call last):
+    ...
+    metasequoia_sql.errors.SqlParseError: 无法解析为表名表达式: <TokenScanner tokens=[<ASTLiteralFloat source=2.5>, <ASTOther source=WHERE>], pos=0>
+    >>> parse_column_name_expression(TokenScanner(ast.parse_as_tokens("coumn_name WHERE"), ignore_space=True))
+    <SQLColumnNameExpression source=coumn_name>
+    """
+    if (scanner.now.is_maybe_function_name and
+            (scanner.next1 is None or (not scanner.next1.is_dot and
+                                       not scanner.next1.is_parenthesis and
+                                       not scanner.next1.is_compute_operator))):
+        return SQLColumnNameExpression(None, scanner.now.source)
+    if (scanner.now.is_maybe_function_name and
+            scanner.next1 is not None and scanner.next1.is_dot and
+            scanner.next2 is not None and scanner.next2.is_maybe_function_name and
+            (scanner.next3 is None or (not scanner.next3.is_dot and
+                                       not scanner.next3.is_parenthesis and
+                                       not scanner.next3.is_compute_operator))):
+        return SQLColumnNameExpression(scanner.now.source, scanner.next2.source)
+    raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
 
 def parse_general_expression(scanner: TokenScanner) -> SQLGeneralExpression:
