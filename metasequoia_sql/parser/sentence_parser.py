@@ -4,11 +4,10 @@
 
 from metasequoia_sql import ast
 from metasequoia_sql.common.token_scanner import TokenScanner
-from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.objects.new_select import *
-from metasequoia_sql.parser.basic_element import check_literal
+from metasequoia_sql.parser.basic_element import maybe_literal, parse_literal
 
 __all__ = [
     # 识别和解析函数调用节点（SQLFunction）
@@ -104,7 +103,7 @@ def parse_sentence(scanner: TokenScanner, data_source: DataSource):
             elif check_sql_variable(scanner, data_source):
                 tokens.append(parse_sql_variable(scanner))
             # 当前指针位置是字面值
-            elif check_literal(scanner):
+            elif maybe_literal(scanner):
                 tokens.append(parse_literal(scanner))
             # 当前指针位置是其他元素
             else:

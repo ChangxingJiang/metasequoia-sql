@@ -1,3 +1,7 @@
+"""
+基础元素的解析逻辑
+"""
+
 from metasequoia_sql import ast
 from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
@@ -118,18 +122,18 @@ def parse_compare_operator(scanner: TokenScanner) -> SQLCompareOperator:
     raise SqlParseError(f"未知的比较运算符: {token}")
 
 
-def check_logical_operator(scanner: TokenScanner) -> bool:
+def maybe_logical_operator(scanner: TokenScanner) -> bool:
     """判断逻辑运算符：包含 AND、OR、NOT
 
     Examples
     --------
-    >>> check_logical_operator(TokenScanner(ast.parse_as_tokens("AND a > 1"), ignore_space=True))
+    >>> maybe_logical_operator(TokenScanner(ast.parse_as_tokens("AND a > 1"), ignore_space=True))
     True
-    >>> check_logical_operator(TokenScanner(ast.parse_as_tokens("NOT a > 1"), ignore_space=True))
+    >>> maybe_logical_operator(TokenScanner(ast.parse_as_tokens("NOT a > 1"), ignore_space=True))
     True
-    >>> check_logical_operator(TokenScanner(ast.parse_as_tokens("OR a > 1"), ignore_space=True))
+    >>> maybe_logical_operator(TokenScanner(ast.parse_as_tokens("OR a > 1"), ignore_space=True))
     True
-    >>> check_logical_operator(TokenScanner(ast.parse_as_tokens("a > 1"), ignore_space=True))
+    >>> maybe_logical_operator(TokenScanner(ast.parse_as_tokens("a > 1"), ignore_space=True))
     False
     """
     return scanner.now.is_logical_operator
@@ -161,34 +165,34 @@ def parse_logical_operator(scanner: TokenScanner) -> SQLLogicalOperator:
     raise SqlParseError(f"未知的逻辑运算符: {token}")
 
 
-def check_literal(scanner: TokenScanner) -> bool:
+def maybe_literal(scanner: TokenScanner) -> bool:
     """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值
 
     Examples
     --------
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("1 WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("1 WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("2.5 WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("'a' WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("'a' WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("x'3f' WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("x'3f' WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("TRUE WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("TRUE WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("true WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("true WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("False WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("False WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("b'1' WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("b'1' WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("null WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("null WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("NULL WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("NULL WHERE"), ignore_space=True))
     True
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("cnt WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("cnt WHERE"), ignore_space=True))
     False
-    >>> check_literal(TokenScanner(ast.parse_as_tokens("table_name.column_name WHERE"), ignore_space=True))
+    >>> maybe_literal(TokenScanner(ast.parse_as_tokens("table_name.column_name WHERE"), ignore_space=True))
     False
     """
     return scanner.now.is_literal

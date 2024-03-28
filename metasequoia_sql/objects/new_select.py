@@ -422,8 +422,7 @@ class SQLComputeSentence(SQLGeneralExpression):
 class SQLLiteralExpression(SQLGeneralExpression):
     """字面值表达式"""
 
-    def __init__(self,
-                 literal: SQLLiteral):
+    def __init__(self, literal: SQLLiteral):
         self._literal = literal
 
     @property
