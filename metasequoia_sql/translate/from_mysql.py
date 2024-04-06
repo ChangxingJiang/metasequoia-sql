@@ -2,7 +2,7 @@
 类型转换：将 MySQL 特性的 SQL 语句转化为全特性 SQL 语句
 """
 
-from metasequoia_sql.statements.mysql import *
+from metasequoia_sql.objects.mysql import *
 from metasequoia_sql.translate.full_statement import *
 
 

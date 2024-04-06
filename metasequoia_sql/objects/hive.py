@@ -4,10 +4,10 @@ Hive 语句相关元素对象
 
 from typing import Dict, List, Optional
 
-from metasequoia_sql.statements.common import *
+from metasequoia_sql.objects.common import *
 
 
-class DDLColumnTypeHive(DDLColumnType):
+class DDLColumnTypeHive(SQLColumnType):
     """【DDL】Hive 的字段类型对象"""
 
 
@@ -45,7 +45,7 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
             new_column_type = hashmap[old_column_type.upper()]
             column.column_type._name = new_column_type
             if remove_param is True:
-                column.column_type._params = []
+                column.column_type._function_params = []
 
     def append_partition_by_column(self, column: DDLColumnHive):
         """添加分区字段"""
@@ -62,7 +62,7 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
         result += f"`{self._table_name}`(\n"
         columns_and_keys = []
         for column in self.columns:
-            columns_and_keys.append(f"{indentation}{column.source()}")
+            columns_and_keys.append(f"{indentation}{column.source}")
         result += ",\n".join(columns_and_keys)
         result += "\n)"
         if self._comment is not None:
@@ -70,8 +70,7 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
         if len(self.partition_by) > 0:
             partition_columns = []
             for column in self.partition_by:
-                partition_columns.append(column.source())
+                partition_columns.append(column.source)
             partition_str = ", ".join(partition_columns)
             result += f" PARTITIONED BY ({partition_str})"
-        result += ";"
         return result
