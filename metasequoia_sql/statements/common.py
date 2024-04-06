@@ -84,7 +84,13 @@ class DDLColumn(SqlBase):
         else:
             return self._column_name
 
-    def set_comment(self, comment: Optional[str]):
+    def set_column_name(self, column_name: str) -> None:
+        self._column_name = column_name
+
+    def set_column_type(self, column_type: "DDLColumnType") -> None:
+        self._column_type = column_type
+
+    def set_comment(self, comment: Optional[str]) -> None:
         self._comment = comment
 
     def source(self) -> str:
@@ -96,16 +102,28 @@ class DDLColumn(SqlBase):
 
 class DDLPrimaryKey(SqlBase):
     def __init__(self, column: str):
-        self.column: str = column
+        self._column: str = column
+
+    @property
+    def column(self) -> str:
+        return self._column
 
     def source(self) -> str:
-        return f"PRIMARY KEY ({self.column})" if self.column is not None else ""
+        return f"PRIMARY KEY ({self._column})" if self._column is not None else ""
 
 
 class DDLUniqueKey(SqlBase):
     def __init__(self, name: str, columns: List[str]):
-        self.name: str = name
-        self.columns: List[str] = columns
+        self._name = name
+        self._columns = columns
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def columns(self) -> List[str]:
+        return self._columns
 
     def source(self) -> str:
         if len(self.columns) > 0:
@@ -115,8 +133,16 @@ class DDLUniqueKey(SqlBase):
 
 class DDLKey(SqlBase):
     def __init__(self, name: str, columns: List[str]):
-        self.name: str = name
-        self.columns: List[str] = columns
+        self._name: str = name
+        self._columns: List[str] = columns
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def columns(self) -> List[str]:
+        return self._columns
 
     def source(self) -> str:
         if len(self.columns) > 0:
@@ -126,8 +152,16 @@ class DDLKey(SqlBase):
 
 class DDLFulltextKey(SqlBase):
     def __init__(self, name: str, columns: List[str]):
-        self.name: str = name
-        self.columns: List[str] = columns
+        self._name: str = name
+        self._columns: List[str] = columns
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def columns(self) -> List[str]:
+        return self._columns
 
     def source(self) -> str:
         if len(self.columns) > 0:
