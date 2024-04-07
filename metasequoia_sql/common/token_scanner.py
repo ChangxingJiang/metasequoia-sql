@@ -5,15 +5,15 @@ TODO 多语句解析支持
 from typing import List, Optional
 
 from metasequoia_sql import ast
+from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 from metasequoia_sql.errors import SqlParseError
 
 
-class TokenScanner:
+class TokenScanner(BaseScanner):
     """Token 扫描器"""
 
-    def __init__(self,
-                 elements: List[ast.AST],
+    def __init__(self, elements: List[ast.AST],
                  pos: int = 0,
                  ignore_space: bool = False,
                  ignore_comment: bool = False):
@@ -26,11 +26,7 @@ class TokenScanner:
         pos : int, default = 0
             当前正在处理的抽象语法树节点下标
         """
-        if pos < 0:
-            raise ScannerError(f"初始化的指针小于 0: pos={pos}")
-        if pos > len(elements):
-            raise ScannerError(f"初始化指针大于字符串长度: len(text)={len(elements)}, pos={pos}")
-
+        # 根据要求筛选输入元素
         filtered_elements = []
         for element in elements:
             if element.is_space:
@@ -42,74 +38,7 @@ class TokenScanner:
             else:
                 filtered_elements.append(element)
 
-        self._elements = filtered_elements
-        self._pos = pos
-        self._len = len(self._elements)
-
-        self._last = elements[pos - 1] if pos > 0 else None  # 上一个元素
-
-    @property
-    def elements(self) -> List[ast.AST]:
-        return self._elements
-
-    @property
-    def pos(self) -> int:
-        return self._pos
-
-    @property
-    def last(self) -> Optional[ast.AST]:
-        """当前指针位置的上一个字符"""
-        return self._last
-
-    @property
-    def now(self) -> Optional[ast.AST]:
-        """当前指针位置的字符"""
-        return self.get()
-
-    @property
-    def next1(self) -> Optional[ast.AST]:
-        """当前指针位置的下一个字符"""
-        return self._get_by_offset(1)
-
-    @property
-    def next2(self) -> Optional[ast.AST]:
-        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
-        return self._get_by_offset(2)
-
-    @property
-    def next3(self) -> Optional[ast.AST]:
-        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
-        return self._get_by_offset(3)
-
-    @property
-    def next4(self) -> Optional[ast.AST]:
-        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
-        return self._get_by_offset(4)
-
-    def get(self) -> Optional[ast.AST]:
-        """获取当前指针位置元素，但不移动指针
-
-        - 如果指针已到达字符串末尾，则返回 None
-        - 如果指针超出字符串长度，则抛出异常
-        """
-        if self._pos > self._len:
-            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos}")
-        if self._pos == self._len:
-            return None
-        return self._elements[self._pos]
-
-    def pop(self) -> ast.AST:
-        """获取当前指针位置元素，并移动指针
-
-        - 如果要移动到的指针位置超出字符串长度，则抛出异常
-        """
-        if self._pos >= self._len:
-            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1} {self}")
-
-        self._last = self.get()  # 更新上一个元素
-        result = self._elements[self._pos]
-        self._pos += 1  # 移动指针
-        return result
+        super().__init__(filtered_elements, pos)
 
     def search(self, *tokens: str) -> bool:
         """从当前配置开始匹配 tokens
@@ -198,17 +127,7 @@ class TokenScanner:
         """返回是否已匹配结束"""
         return not self._pos < self._len or self.now.is_semicolon
 
-    def _get_by_offset(self, idx: int) -> Optional[ast.AST]:
-        """获取当前指针位置 + idx 位置的元素，但不一定指针
-        """
-        if self._pos + idx >= self._len:
-            return None
-        return self._elements[self._pos + idx]
 
-    def __repr__(self):
-        return f"<TokenScanner tokens={self.elements[self.pos:]}, pos={self.pos}>"
-
-
-def build_scanner(sql: str, ignore_space=True, ignore_comment=True):
+def build_token_scanner(sql: str, ignore_space=True, ignore_comment=True):
     """根据 sql 语句构造扫描器"""
     return TokenScanner(ast.parse_as_tokens(sql), ignore_space=ignore_space, ignore_comment=ignore_comment)

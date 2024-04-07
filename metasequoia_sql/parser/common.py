@@ -6,7 +6,7 @@ TODO 整理各种函数的共同规律
 """
 
 from metasequoia_sql import ast
-from metasequoia_sql.common.token_scanner import TokenScanner, build_scanner
+from metasequoia_sql.common.token_scanner import TokenScanner, build_token_scanner
 from metasequoia_sql.objects.core import *
 
 
@@ -574,12 +574,12 @@ def parse_case_expression(scanner: TokenScanner) -> Union[SQLCaseExpression, SQL
 
     Examples
     --------
-    >>> parse_case_expression(build_scanner("CASE WHEN 2 THEN 3 ELSE 4 END"))
+    >>> parse_case_expression(build_token_scanner("CASE WHEN 2 THEN 3 ELSE 4 END"))
     <SQLCaseExpression source=CASE
         WHEN <SQLLiteralExpression source=2> THEN <SQLLiteralExpression source=3>
         ELSE <SQLLiteralExpression source=4>
     END>
-    >>> parse_case_expression(build_scanner("3 + 5"))
+    >>> parse_case_expression(build_token_scanner("3 + 5"))
     Traceback (most recent call last):
     ...
     metasequoia_sql.errors.SqlParseError: 无法解析为CASE表达式: <TokenScanner tokens=[<ASTLiteralInteger source=3>, <ASTCommon source=+>, <ASTLiteralInteger source=5>], pos=1>
@@ -624,9 +624,9 @@ def maybe_window_expression(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_window_expression(build_scanner("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
+    >>> maybe_window_expression(build_token_scanner("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
     True
-    >>> maybe_window_expression(build_scanner("3 + 5"))
+    >>> maybe_window_expression(build_token_scanner("3 + 5"))
     False
     """
     return not scanner.is_finish and (
@@ -643,9 +643,9 @@ def parse_window_expression(scanner: TokenScanner) -> SQLWindowExpression:
 
     Examples
     --------
-    >>> parse_window_expression(build_scanner("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
+    >>> parse_window_expression(build_token_scanner("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
     <SQLWindowExpression source=<SQLFunctionExpression source=ROW_NUMBER()> OVER (PARTITION BY <SQLColumnNameExpression source=column1>ORDER BY <SQLColumnNameExpression source=column2>)>
-    >>> parse_window_expression(build_scanner("3 + 5"))
+    >>> parse_window_expression(build_token_scanner("3 + 5"))
     Traceback (most recent call last):
     ...
     metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式: <TokenScanner tokens=[<ASTLiteralInteger source=3>, <ASTCommon source=+>, <ASTLiteralInteger source=5>], pos=0>
@@ -699,7 +699,7 @@ def parse_table_name_expression(scanner: TokenScanner) -> Union[SQLTableNameExpr
 
     Examples
     --------
-    >>> parse_table_name_expression(build_scanner("table1.column1 AS t1"))
+    >>> parse_table_name_expression(build_token_scanner("table1.column1 AS t1"))
     <SQLTableNameExpression source=table1.column1>
     """
     if (scanner.now.is_maybe_name and
@@ -723,15 +723,15 @@ def parse_bool_expression(scanner: TokenScanner) -> SQLBoolExpression:
 
     Examples
     --------
-    >>> parse_bool_expression(build_scanner("column1 > 3"))
+    >>> parse_bool_expression(build_token_scanner("column1 > 3"))
     <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>>
-    >>> parse_bool_expression(build_scanner("t2.column1 > 3"))
+    >>> parse_bool_expression(build_token_scanner("t2.column1 > 3"))
     <SQLBoolCompareExpression source=<SQLColumnNameExpression source=t2.column1> <SQLGreaterThan> <SQLLiteralExpression source=3>>
-    >>> parse_bool_expression(build_scanner("t2.column1 + 3 > 3"))
+    >>> parse_bool_expression(build_token_scanner("t2.column1 + 3 > 3"))
     <SQLBoolCompareExpression source=<SQLComputeExpression source=<SQLColumnNameExpression source=t2.column1> <SQLPlus> <SQLLiteralExpression source=3>> <SQLGreaterThan> <SQLLiteralExpression source=3>>
-    >>> parse_bool_expression(build_scanner("column1 BETWEEN 3 AND 4"))
+    >>> parse_bool_expression(build_token_scanner("column1 BETWEEN 3 AND 4"))
     <SQLBoolBetweenExpression source=<SQLColumnNameExpression source=column1> BETWEEN <SQLLiteralExpression source=3> TO <SQLLiteralExpression source=4>>
-    >>> parse_bool_expression(build_scanner("column1 + 3 BETWEEN 3 AND 4"))
+    >>> parse_bool_expression(build_token_scanner("column1 + 3 BETWEEN 3 AND 4"))
     <SQLBoolBetweenExpression source=<SQLComputeExpression source=<SQLColumnNameExpression source=column1> <SQLPlus> <SQLLiteralExpression source=3>> BETWEEN <SQLLiteralExpression source=3> TO <SQLLiteralExpression source=4>>
     """
     if scanner.search_and_move("EXISTS"):
@@ -782,11 +782,11 @@ def maybe_alias_expression(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_alias_expression(build_scanner("t1"))
+    >>> maybe_alias_expression(build_token_scanner("t1"))
     True
-    >>> maybe_alias_expression(build_scanner("AS t1"))
+    >>> maybe_alias_expression(build_token_scanner("AS t1"))
     True
-    >>> maybe_alias_expression(build_scanner("WHERE"))
+    >>> maybe_alias_expression(build_token_scanner("WHERE"))
     False
     """
     return not scanner.is_finish and (scanner.now.equals("AS") or scanner.now.is_maybe_name)
@@ -797,11 +797,11 @@ def parse_alias_expression(scanner: TokenScanner) -> SQLAlisaExpression:
 
     Examples
     --------
-    >>> parse_alias_expression(build_scanner("t1"))
+    >>> parse_alias_expression(build_token_scanner("t1"))
     <SQLAlisaExpression source=AS t1>
-    >>> parse_alias_expression(build_scanner("AS t1"))
+    >>> parse_alias_expression(build_token_scanner("AS t1"))
     <SQLAlisaExpression source=AS t1>
-    >>> parse_alias_expression(build_scanner("WHERE"))
+    >>> parse_alias_expression(build_token_scanner("WHERE"))
     Traceback (most recent call last):
     ...
     metasequoia_sql.errors.SqlParseError: 无法解析为别名表达式: <TokenScanner tokens=[<ASTCommon source=WHERE>], pos=0>
@@ -817,11 +817,11 @@ def parse_condition_expression(scanner: TokenScanner) -> SQLConditionExpression:
 
     Examples
     --------
-    >>> parse_condition_expression(build_scanner("column1 > 3 AND column2 > 2 WHERE"))
+    >>> parse_condition_expression(build_token_scanner("column1 > 3 AND column2 > 2 WHERE"))
     <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLAndOperator> <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column2> <SQLGreaterThan> <SQLLiteralExpression source=2>>>
-    >>> parse_condition_expression(build_scanner("column1 > 3 OR column2 > 2 WHERE"))
+    >>> parse_condition_expression(build_token_scanner("column1 > 3 OR column2 > 2 WHERE"))
     <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLOrOperator> <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column2> <SQLGreaterThan> <SQLLiteralExpression source=2>>>
-    >>> parse_condition_expression(build_scanner("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE"))
+    >>> parse_condition_expression(build_token_scanner("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE"))
     <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLOrOperator> <SQLBoolBetweenExpression source=<SQLColumnNameExpression source=column2> BETWEEN <SQLLiteralExpression source=2> TO <SQLLiteralExpression source=4>>>
     """
 
@@ -847,7 +847,7 @@ def parse_join_on_expression(scanner: TokenScanner) -> SQLJoinOnExpression:
 
     Examples
     --------
-    >>> parse_join_on_expression(build_scanner("ON t1.column1 = t2.column2"))
+    >>> parse_join_on_expression(build_token_scanner("ON t1.column1 = t2.column2"))
     <SQLJoinOnExpression source=ON <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=t1.column1> <SQLEqualTo> <SQLColumnNameExpression source=t2.column2>>>>
     """
     if not scanner.pop().equals("ON"):
@@ -860,9 +860,9 @@ def parse_join_using_expression(scanner: TokenScanner) -> SQLJoinUsingExpression
 
     Examples
     --------
-    >>> parse_join_using_expression(build_scanner("USING(column1, column2)"))
+    >>> parse_join_using_expression(build_token_scanner("USING(column1, column2)"))
     <SQLJoinUsingExpression source=<SQLFunctionExpression source=USING(<SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>)>>
-    >>> parse_join_using_expression(build_scanner("using(column1, column2)"))
+    >>> parse_join_using_expression(build_token_scanner("using(column1, column2)"))
     <SQLJoinUsingExpression source=<SQLFunctionExpression source=using(<SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>)>>
     """
     if not scanner.now.equals("USING"):
@@ -880,11 +880,11 @@ def parse_join_expression(scanner: TokenScanner) -> SQLJoinExpression:
 
     Examples
     --------
-    >>> parse_join_on_expression(build_scanner("ON t1.column1 = t2.column2"))
+    >>> parse_join_on_expression(build_token_scanner("ON t1.column1 = t2.column2"))
     <SQLJoinOnExpression source=ON <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=t1.column1> <SQLEqualTo> <SQLColumnNameExpression source=t2.column2>>>>
-    >>> parse_join_using_expression(build_scanner("USING(column1, column2)"))
+    >>> parse_join_using_expression(build_token_scanner("USING(column1, column2)"))
     <SQLJoinUsingExpression source=<SQLFunctionExpression source=USING(<SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>)>>
-    >>> parse_join_using_expression(build_scanner("using(column1, column2)"))
+    >>> parse_join_using_expression(build_token_scanner("using(column1, column2)"))
     <SQLJoinUsingExpression source=<SQLFunctionExpression source=using(<SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>)>>
     """
     if scanner.search("ON"):
@@ -899,9 +899,9 @@ def maybe_wildcard_expression(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_wildcard_expression(build_scanner("*"))
+    >>> maybe_wildcard_expression(build_token_scanner("*"))
     True
-    >>> maybe_wildcard_expression(build_scanner("t1.*"))
+    >>> maybe_wildcard_expression(build_token_scanner("t1.*"))
     True
     """
     return not scanner.is_finish and (scanner.now.is_maybe_wildcard or
@@ -915,9 +915,9 @@ def parse_wildcard_expression(scanner: TokenScanner) -> SQLWildcardExpression:
 
     Examples
     --------
-    >>> parse_wildcard_expression(build_scanner("*"))
+    >>> parse_wildcard_expression(build_token_scanner("*"))
     <SQLWildcardExpression source=*>
-    >>> parse_wildcard_expression(build_scanner("t1.*"))
+    >>> parse_wildcard_expression(build_token_scanner("t1.*"))
     <SQLWildcardExpression source=t1.*>
     """
     if scanner.now.is_maybe_wildcard:
@@ -938,7 +938,7 @@ def parse_table_expression(scanner: TokenScanner) -> SQLTableExpression:
 
     Examples
     --------
-    >>> parse_table_expression(build_scanner("schema1.table1 AS t1"))
+    >>> parse_table_expression(build_token_scanner("schema1.table1 AS t1"))
     <SQLTableExpression source=<SQLTableNameExpression source=schema1.table1> AS <SQLAlisaExpression source=AS t1>>
     """
     table_name_expression = parse_table_name_expression(scanner)
@@ -951,11 +951,11 @@ def parse_column_expression(scanner: TokenScanner) -> SQLColumnExpression:
 
     Examples
     --------
-    >>> parse_column_expression(build_scanner("table1.column1 AS t1"))
+    >>> parse_column_expression(build_token_scanner("table1.column1 AS t1"))
     <SQLColumnExpression source=<SQLFunctionExpression source=TRIM(<SQLColumnNameExpression source=column1>)> AS <SQLAlisaExpression source=AS t1>>
-    >>> parse_column_expression(build_scanner("3 + 5 AS t1"))
+    >>> parse_column_expression(build_token_scanner("3 + 5 AS t1"))
     <SQLColumnExpression source=<SQLComputeExpression source=<SQLLiteralExpression source=3> <SQLPlus> <SQLLiteralExpression source=5>> AS <SQLAlisaExpression source=AS t1>>
-    >>> parse_column_expression(build_scanner("TRIM(column1) AS t1"))
+    >>> parse_column_expression(build_token_scanner("TRIM(column1) AS t1"))
     <SQLColumnExpression source=<SQLFunctionExpression source=TRIM(<SQLColumnNameExpression source=column1>)> AS <SQLAlisaExpression source=AS t1>>
     """
     general_expression = parse_general_expression(scanner)
@@ -976,11 +976,11 @@ def maybe_limit_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_limit_clause(build_scanner("LIMIT 2, 5"))
+    >>> maybe_limit_clause(build_token_scanner("LIMIT 2, 5"))
     True
-    >>> maybe_limit_clause(build_scanner("LIMIT 5 OFFSET 2"))
+    >>> maybe_limit_clause(build_token_scanner("LIMIT 5 OFFSET 2"))
     True
-    >>> maybe_limit_clause(build_scanner("ORDER BY column1"))
+    >>> maybe_limit_clause(build_token_scanner("ORDER BY column1"))
     False
     """
     return scanner.search("LIMIT")
@@ -991,9 +991,9 @@ def parse_limit_clause(scanner: TokenScanner) -> SQLLimitClause:
 
     Examples
     --------
-    >>> parse_limit_clause(build_scanner("LIMIT 2, 5"))
+    >>> parse_limit_clause(build_token_scanner("LIMIT 2, 5"))
     <SQLLimitClause source=LIMIT 2, 5>
-    >>> parse_limit_clause(build_scanner("LIMIT 5 OFFSET 2"))
+    >>> parse_limit_clause(build_token_scanner("LIMIT 5 OFFSET 2"))
     <SQLLimitClause source=LIMIT 2, 5>
     """
     if not scanner.search_and_move("LIMIT"):
@@ -1017,13 +1017,13 @@ def maybe_order_by_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_order_by_clause(build_scanner("ORDER BY column1, column2"))
+    >>> maybe_order_by_clause(build_token_scanner("ORDER BY column1, column2"))
     True
-    >>> maybe_order_by_clause(build_scanner("ORDER BY column1, column2 DESC"))
+    >>> maybe_order_by_clause(build_token_scanner("ORDER BY column1, column2 DESC"))
     True
-    >>> maybe_order_by_clause(build_scanner("ORDER BY trim(column1) ASC, column2"))
+    >>> maybe_order_by_clause(build_token_scanner("ORDER BY trim(column1) ASC, column2"))
     True
-    >>> maybe_order_by_clause(build_scanner("WHERE trim(column1) IS NOT NULL"))
+    >>> maybe_order_by_clause(build_token_scanner("WHERE trim(column1) IS NOT NULL"))
     False
     """
     return scanner.search("ORDER", "BY")
@@ -1034,11 +1034,11 @@ def parse_order_by_clause(scanner: TokenScanner) -> SQLOrderByClause:
 
     Examples
     --------
-    >>> parse_order_by_clause(build_scanner("ORDER BY column1, column2"))
+    >>> parse_order_by_clause(build_token_scanner("ORDER BY column1, column2"))
     <SQLOrderByClause source=ORDER BY <SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>>
-    >>> parse_order_by_clause(build_scanner("ORDER BY column1, column2 DESC"))
+    >>> parse_order_by_clause(build_token_scanner("ORDER BY column1, column2 DESC"))
     <SQLOrderByClause source=ORDER BY <SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2> DESC>
-    >>> parse_order_by_clause(build_scanner("ORDER BY trim(column1) ASC, column2"))
+    >>> parse_order_by_clause(build_token_scanner("ORDER BY trim(column1) ASC, column2"))
     <SQLOrderByClause source=ORDER BY <SQLFunctionExpression source=trim(<SQLColumnNameExpression source=column1>)>>
     """
 
@@ -1065,13 +1065,13 @@ def maybe_having_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_having_clause(build_scanner("HAVING column1 > 3 AND column2 > 2"))
+    >>> maybe_having_clause(build_token_scanner("HAVING column1 > 3 AND column2 > 2"))
     True
-    >>> maybe_having_clause(build_scanner("HAVING column1 > 3 OR column2 > 2"))
+    >>> maybe_having_clause(build_token_scanner("HAVING column1 > 3 OR column2 > 2"))
     True
-    >>> maybe_having_clause(build_scanner("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> maybe_having_clause(build_token_scanner("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
     True
-    >>> maybe_having_clause(build_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> maybe_having_clause(build_token_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
     False
     """
     return scanner.search("HAVING")
@@ -1082,11 +1082,11 @@ def parse_having_clause(scanner: TokenScanner) -> SQLHavingClause:
 
     Examples
     --------
-    >>> parse_having_clause(build_scanner("HAVING column1 > 3 AND column2 > 2"))
+    >>> parse_having_clause(build_token_scanner("HAVING column1 > 3 AND column2 > 2"))
     <SQLHavingClause source=HAVING <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLAndOperator> <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column2> <SQLGreaterThan> <SQLLiteralExpression source=2>>>>
-    >>> parse_having_clause(build_scanner("HAVING column1 > 3 OR column2 > 2"))
+    >>> parse_having_clause(build_token_scanner("HAVING column1 > 3 OR column2 > 2"))
     <SQLHavingClause source=HAVING <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLOrOperator> <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column2> <SQLGreaterThan> <SQLLiteralExpression source=2>>>>
-    >>> parse_having_clause(build_scanner("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> parse_having_clause(build_token_scanner("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
     <SQLHavingClause source=HAVING <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLOrOperator> <SQLBoolBetweenExpression source=<SQLColumnNameExpression source=column2> BETWEEN <SQLLiteralExpression source=2> TO <SQLLiteralExpression source=4>>>>
     """
     scanner.match("HAVING")
@@ -1098,13 +1098,13 @@ def maybe_group_by_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_group_by_clause(build_scanner("GROUP BY column1, column2"))
+    >>> maybe_group_by_clause(build_token_scanner("GROUP BY column1, column2"))
     True
-    >>> maybe_group_by_clause(build_scanner("GROUP BY column1, column2 DESC"))
+    >>> maybe_group_by_clause(build_token_scanner("GROUP BY column1, column2 DESC"))
     True
-    >>> maybe_group_by_clause(build_scanner("GROUP BY trim(column1) ASC, column2"))
+    >>> maybe_group_by_clause(build_token_scanner("GROUP BY trim(column1) ASC, column2"))
     True
-    >>> maybe_group_by_clause(build_scanner("WHERE trim(column1) IS NOT NULL"))
+    >>> maybe_group_by_clause(build_token_scanner("WHERE trim(column1) IS NOT NULL"))
     False
     """
     return scanner.search("GROUP", "BY")
@@ -1115,11 +1115,11 @@ def parse_group_by_clause(scanner: TokenScanner) -> SQLGroupByClause:
 
     Examples
     --------
-    >>> parse_group_by_clause(build_scanner("GROUP BY column1, column2"))
+    >>> parse_group_by_clause(build_token_scanner("GROUP BY column1, column2"))
     <SQLGroupByClause source=GROUP BY <SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>>
-    >>> parse_group_by_clause(build_scanner("GROUP BY column1, column2 DESC"))
+    >>> parse_group_by_clause(build_token_scanner("GROUP BY column1, column2 DESC"))
     <SQLGroupByClause source=GROUP BY <SQLColumnNameExpression source=column1>, <SQLColumnNameExpression source=column2>>
-    >>> parse_group_by_clause(build_scanner("GROUP BY trim(column1) ASC, column2"))
+    >>> parse_group_by_clause(build_token_scanner("GROUP BY trim(column1) ASC, column2"))
     <SQLGroupByClause source=GROUP BY <SQLFunctionExpression source=trim(<SQLColumnNameExpression source=column1>)>>
     """
     scanner.match("GROUP", "BY")
@@ -1150,13 +1150,13 @@ def maybe_where_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_where_clause(build_scanner("WHERE column1 > 3 AND column2 > 2"))
+    >>> maybe_where_clause(build_token_scanner("WHERE column1 > 3 AND column2 > 2"))
     True
-    >>> maybe_where_clause(build_scanner("WHERE column1 > 3 OR column2 > 2"))
+    >>> maybe_where_clause(build_token_scanner("WHERE column1 > 3 OR column2 > 2"))
     True
-    >>> maybe_where_clause(build_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> maybe_where_clause(build_token_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
     True
-    >>> maybe_where_clause(build_scanner("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> maybe_where_clause(build_token_scanner("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
     False
     """
     return scanner.search("WHERE")
@@ -1167,11 +1167,11 @@ def parse_where_clause(scanner: TokenScanner) -> SQLWhereClause:
 
     Examples
     --------
-    >>> parse_where_clause(build_scanner("WHERE column1 > 3 AND column2 > 2"))
+    >>> parse_where_clause(build_token_scanner("WHERE column1 > 3 AND column2 > 2"))
     <SQLWhereClause source=WHERE <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLAndOperator> <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column2> <SQLGreaterThan> <SQLLiteralExpression source=2>>>>
-    >>> parse_where_clause(build_scanner("WHERE column1 > 3 OR column2 > 2"))
+    >>> parse_where_clause(build_token_scanner("WHERE column1 > 3 OR column2 > 2"))
     <SQLWhereClause source=WHERE <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLOrOperator> <SQLBoolCompareExpression source=<SQLColumnNameExpression source=column2> <SQLGreaterThan> <SQLLiteralExpression source=2>>>>
-    >>> parse_where_clause(build_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> parse_where_clause(build_token_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
     <SQLWhereClause source=WHERE <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=column1> <SQLGreaterThan> <SQLLiteralExpression source=3>> <SQLOrOperator> <SQLBoolBetweenExpression source=<SQLColumnNameExpression source=column2> BETWEEN <SQLLiteralExpression source=2> TO <SQLLiteralExpression source=4>>>>
     """
     scanner.match("WHERE")
@@ -1183,11 +1183,11 @@ def maybe_join_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_join_clause(build_scanner("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
+    >>> maybe_join_clause(build_token_scanner("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
     True
-    >>> maybe_join_clause(build_scanner("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1"))
+    >>> maybe_join_clause(build_token_scanner("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1"))
     True
-    >>> maybe_join_clause(build_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
+    >>> maybe_join_clause(build_token_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
     False
     """
     return (scanner.search("JOIN") or
@@ -1229,9 +1229,9 @@ def parse_join_clause(scanner: TokenScanner) -> SQLJoinClause:
 
     Examples
     --------
-    >>> parse_join_clause(build_scanner("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
+    >>> parse_join_clause(build_token_scanner("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
     <SQLJoinClause source=LEFT JOIN <SQLTableExpression source=<SQLTableNameExpression source=table2> AS <SQLAlisaExpression source=AS t2>> <SQLJoinOnExpression source=ON <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=t1.column1> <SQLEqualTo> <SQLColumnNameExpression source=t2.column1>>>>>
-    >>> parse_join_clause(build_scanner("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1"))
+    >>> parse_join_clause(build_token_scanner("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1"))
     <SQLJoinClause source=LEFT JOIN <SQLTableExpression source=<SQLTableNameExpression source=schema2.table2> AS <SQLAlisaExpression source=AS t2>> <SQLJoinOnExpression source=ON <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=t1.column1> <SQLEqualTo> <SQLColumnNameExpression source=t2.column1>>>>>
     """
     join_type = _parse_join_type(scanner)
@@ -1248,11 +1248,11 @@ def maybe_from_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_from_clause(build_scanner("FROM schema1.table1 AS t1"))
+    >>> maybe_from_clause(build_token_scanner("FROM schema1.table1 AS t1"))
     True
-    >>> maybe_from_clause(build_scanner("FROM schema1.table1 AS t1, schema2.table2 AS t2"))
+    >>> maybe_from_clause(build_token_scanner("FROM schema1.table1 AS t1, schema2.table2 AS t2"))
     True
-    >>> maybe_from_clause(build_scanner("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
+    >>> maybe_from_clause(build_token_scanner("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
     False
     """
     return scanner.search("FROM")
@@ -1263,9 +1263,9 @@ def parse_from_clause(scanner: TokenScanner) -> SQLFromClause:
 
     Examples
     --------
-    >>> parse_from_clause(build_scanner("FROM schema1.table1 AS t1"))
+    >>> parse_from_clause(build_token_scanner("FROM schema1.table1 AS t1"))
     <SQLFromClause source=FROM <SQLTableExpression source=<SQLTableNameExpression source=schema1.table1> AS <SQLAlisaExpression source=AS t1>>>
-    >>> parse_from_clause(build_scanner("FROM schema1.table1 AS t1, schema2.table2 AS t2"))
+    >>> parse_from_clause(build_token_scanner("FROM schema1.table1 AS t1, schema2.table2 AS t2"))
     <SQLFromClause source=FROM <SQLTableExpression source=<SQLTableNameExpression source=schema1.table1> AS <SQLAlisaExpression source=AS t1>>, <SQLTableExpression source=<SQLTableNameExpression source=schema2.table2> AS <SQLAlisaExpression source=AS t2>>>
     """
     scanner.match("FROM")
@@ -1281,11 +1281,11 @@ def maybe_select_clause(scanner: TokenScanner) -> bool:
 
     Examples
     --------
-    >>> maybe_from_clause(build_scanner("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1"))
+    >>> maybe_from_clause(build_token_scanner("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1"))
     True
-    >>> maybe_from_clause(build_scanner("SELECT column1 AS c1"))
+    >>> maybe_from_clause(build_token_scanner("SELECT column1 AS c1"))
     True
-    >>> maybe_from_clause(build_scanner("FROM table1"))
+    >>> maybe_from_clause(build_token_scanner("FROM table1"))
     False
     """
     return scanner.search("SELECT")
@@ -1296,10 +1296,10 @@ def parse_select_clause(scanner: TokenScanner) -> SQLSelectClause:
 
     Examples
     --------
-    >>> parse_select_clause(build_scanner("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1"))
+    >>> parse_select_clause(build_token_scanner("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1"))
     <SQLSelectClause source=SELECT <SQLColumnExpression source=<SQLColumnNameExpression source=column1> AS <SQLAlisaExpression source=AS c1>>,
     <SQLColumnExpression source=<SQLFunctionExpression source=TRIM(<SQLColumnNameExpression source=column2>)> AS <SQLAlisaExpression source=AS c2>>>
-    >>> parse_select_clause(build_scanner("SELECT DISTINCT column1 AS c1"))
+    >>> parse_select_clause(build_token_scanner("SELECT DISTINCT column1 AS c1"))
     <SQLSelectClause source=SELECT DISTINCT <SQLColumnExpression source=<SQLColumnNameExpression source=column1> AS <SQLAlisaExpression source=AS c1>>>
     """
 
@@ -1322,12 +1322,14 @@ def _parse_single_with_table(scanner: TokenScanner) -> Tuple[str, SQLSelectState
 
 def parse_with_clause(scanner: TokenScanner) -> Optional[SQLWithClause]:
     """解析 WITH 子句"""
-    scanner.match("WITH")
-    tables = [_parse_single_with_table(scanner)]
-    while scanner.search_and_move(","):
-        table_statement = _parse_single_with_table(scanner)
-        tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
-    return SQLWithClause(tables=tables)
+    if scanner.search_and_move("WITH"):
+        tables = [_parse_single_with_table(scanner)]
+        while scanner.search_and_move(","):
+            table_statement = _parse_single_with_table(scanner)
+            tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
+        return SQLWithClause(tables=tables)
+    else:
+        return None
 
 
 def maybe_select_statement(scanner: TokenScanner) -> bool:

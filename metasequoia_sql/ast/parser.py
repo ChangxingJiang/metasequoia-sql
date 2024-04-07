@@ -42,7 +42,7 @@ class AstParseContext:
 
     def __init__(self, text: str):
         self._stack: List[List[AST]] = [[]]
-        self._scanner: TextScanner = TextScanner(text.replace("\r\n", "\n"))
+        self._scanner: TextScanner = TextScanner(list(text.replace("\r\n", "\n")))
         self._status: AstParseStatus = AstParseStatus.WAIT_TOKEN
         self._cache: List[str] = []
 
@@ -73,7 +73,7 @@ class AstParseContext:
     @property
     def next_ch(self) -> str:
         """当前指针位置的下一个字符"""
-        return self._scanner.next
+        return self._scanner.next1
 
     @property
     def is_finish(self) -> bool:
@@ -109,7 +109,7 @@ class AstParseContext:
 
     def handle_left_parenthesis(self) -> None:
         """【移动指针】处理当前指针位置的左括号"""
-        self.scanner.move()
+        self.scanner.pop()
         self.stack.append([])
 
     def handle_right_parenthesis(self) -> None:
@@ -117,7 +117,7 @@ class AstParseContext:
         if len(self.stack) <= 1:
             raise AstParseError(f"当前 ')' 数量大于 '(': pos={self.scanner.pos}")
 
-        self.scanner.move()
+        self.scanner.pop()
         tokens = self.stack.pop()
         self.stack[-1].append(ASTParenthesis(tokens, "(", ")"))
 
