@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="UTF-8") as file:
 
 setup(
     name="metasequoia-sql",
-    version="0.0.1",
+    version="0.1.0",
     description="SQL解析器：提供词法解析、句法解析和不同SQL类型翻译的功能",
     long_description=long_description,
     long_description_content_type="text/markdown",
