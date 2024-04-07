@@ -744,7 +744,7 @@ def parse_bool_expression(scanner: TokenScanner) -> SQLBoolExpression:
     if scanner.search_and_move("BETWEEN"):
         # "... BETWEEN ... AND ..."
         from_value = parse_general_expression(scanner)
-        if not scanner.pop().equals("AND"):
+        if not scanner.search_and_move("AND"):
             raise SqlParseError(f"无法解析为 BETWEEN 布尔值表达式: {scanner}")
         to_value = parse_general_expression(scanner)
         return SQLBoolBetweenExpression(before_value=before_value, from_value=from_value, to_value=to_value)
@@ -809,7 +809,7 @@ def parse_alias_expression(scanner: TokenScanner) -> SQLAlisaExpression:
     scanner.search_and_move("AS")
     if not scanner.now.is_maybe_name:
         raise SqlParseError(f"无法解析为别名表达式: {scanner}")
-    return SQLAlisaExpression(alias_name=scanner.pop().source)
+    return SQLAlisaExpression(alias_name=scanner.pop_as_source())
 
 
 def parse_condition_expression(scanner: TokenScanner) -> SQLConditionExpression:
@@ -850,7 +850,7 @@ def parse_join_on_expression(scanner: TokenScanner) -> SQLJoinOnExpression:
     >>> parse_join_on_expression(build_token_scanner("ON t1.column1 = t2.column2"))
     <SQLJoinOnExpression source=ON <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=t1.column1> <SQLEqualTo> <SQLColumnNameExpression source=t2.column2>>>>
     """
-    if not scanner.pop().equals("ON"):
+    if not scanner.search_and_move("ON"):
         raise SqlParseError(f"无法解析为 ON 关联表达式: {scanner}")
     return SQLJoinOnExpression(condition=parse_condition_expression(scanner))
 
@@ -1429,7 +1429,7 @@ def parse_in_parenthesis(scanner: TokenScanner) -> SQLGeneralExpression:
 def parse_sql_column_type(scanner: TokenScanner) -> SQLColumnType:
     """解析字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
     # 解析字段类型名称
-    function_name: str = scanner.pop().source
+    function_name: str = scanner.pop_as_source()
 
     # 解析字段类型参数
     if not scanner.is_finish and scanner.now.is_parenthesis:

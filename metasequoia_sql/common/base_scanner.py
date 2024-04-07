@@ -77,9 +77,9 @@ class BaseScanner(Generic[T]):
         - 如果指针已到达字符串末尾，则返回 None
         - 如果指针超出字符串长度，则抛出异常
         """
-        if self._pos > self._len:
-            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos}")
-        if self._pos == self._len:
+        if self.pos > self._len:
+            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self.pos}")
+        if self.pos == self._len:
             return None
         return self._elements[self._pos]
 
@@ -88,25 +88,25 @@ class BaseScanner(Generic[T]):
 
         - 如果要移动到的指针位置超出字符串长度，则抛出异常
         """
-        if self._pos >= self._len:
-            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1} {self}")
+        if self.pos >= self._len:
+            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self.pos + 1} {self}")
 
         self._last = self.get()  # 更新上一个元素
-        result = self._elements[self._pos]
+        result = self._elements[self.pos]
         self._pos += 1  # 移动指针
         return result
 
     def _get_by_offset(self, idx: int) -> Optional[T]:
         """获取当前指针位置 + idx 位置的元素，但不一定指针
         """
-        if self._pos + idx >= self._len:
+        if self.pos + idx >= self._len:
             return None
-        return self._elements[self._pos + idx]
+        return self._elements[self.pos + idx]
 
     @property
     def is_finish(self) -> bool:
         """返回当前是否已匹配结束"""
-        return self._pos == self._len
+        return self.pos == self._len
 
     def __repr__(self):
         return f"<{self.__class__.__name__} tokens={self.elements[self.pos:]}, pos={self.pos}>"

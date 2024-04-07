@@ -2,12 +2,11 @@
 TODO 多语句解析支持
 """
 
-from typing import List, Optional
+from typing import List
 
 from metasequoia_sql import ast
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
-from metasequoia_sql.errors import SqlParseError
 
 
 class TokenScanner(BaseScanner):
@@ -75,7 +74,7 @@ class TokenScanner(BaseScanner):
         """
         for word in tokens:
             if not self.pop().equals(word):
-                raise SqlParseError(f"没有解析到目标词语:{self._elements}, 目标词={tokens}")
+                raise ScannerError(f"没有解析到目标词语:{self._elements}, 目标词={tokens}")
 
     def pop_as_source(self) -> str:
         """将指针向后移动 1 个元素并返回当前元素的 source"""
