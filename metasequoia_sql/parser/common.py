@@ -1422,3 +1422,18 @@ def parse_in_parenthesis(scanner: TokenScanner) -> SQLGeneralExpression:
     if is_sub_query_parenthesis(scanner):
         return parse_sub_query_parenthesis(scanner)
     return parse_value_expression(scanner)
+
+
+def parse_sql_column_type(scanner: TokenScanner) -> SQLColumnType:
+    """解析字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
+    # 解析字段类型名称
+    function_name: str = scanner.pop().source
+
+    # 解析字段类型参数
+    if not scanner.is_finish and scanner.now.is_parenthesis:
+        function_params: List[SQLGeneralExpression] = []
+        for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
+            function_params.append(parse_general_expression(param_scanner))
+        return SQLColumnType(function_name, function_params)
+    else:
+        return SQLColumnType(function_name, [])

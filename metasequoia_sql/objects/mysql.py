@@ -5,6 +5,7 @@ MySQL 专用的语法对象
 from typing import Optional, Dict, List
 
 from metasequoia_sql.objects.common import *
+from metasequoia_sql.objects.core import *
 
 __all__ = ["DDLColumnTypeMySQL", "DDLColumnMySQL", "DDLPrimaryKeyMySQL", "DDLUniqueKeyMySQL", "DDLKeyMySQL",
            "DDLForeignKeyMySQL", "DDLFulltextKeyMysql", "DDLCreateTableStatementMySQL"]
@@ -18,7 +19,7 @@ class DDLColumnMySQL(DDLColumn):
     """【DDL】建表语句或修改表结构语句中的字段信息"""
 
     def __init__(self, column_name: str,
-                 column_type: SQLFunction,
+                 column_type: SQLGeneralExpression,
                  is_unsigned: bool = False,
                  is_zerofill: bool = False,
                  character_set: Optional[str] = None,
@@ -26,8 +27,8 @@ class DDLColumnMySQL(DDLColumn):
                  is_allow_null: bool = False,
                  is_not_null: bool = False,
                  is_auto_increment: bool = False,
-                 default: Optional[SQLFunction] = None,
-                 on_update: Optional[SQLFunction] = None,
+                 default: Optional[SQLGeneralExpression] = None,
+                 on_update: Optional[SQLGeneralExpression] = None,
                  comment: Optional[str] = None
                  ):
         super().__init__(column_name, column_type, comment)
@@ -38,8 +39,8 @@ class DDLColumnMySQL(DDLColumn):
         self.is_allow_null: bool = is_allow_null  # 是否显式地允许 NULL 值
         self.is_not_null: bool = is_not_null
         self.is_auto_increment: bool = is_auto_increment
-        self.default: Optional[SQLFunction] = default
-        self.on_update: Optional[SQLFunction] = on_update
+        self.default: Optional[SQLGeneralExpression] = default
+        self.on_update: Optional[SQLGeneralExpression] = on_update
 
     def set_is_unsigned(self, is_unsigned: bool) -> None:
         self.is_unsigned = is_unsigned

@@ -11,9 +11,6 @@ __all__ = [
     # ---------- 抽象基类 ----------
     "SQLBase",
 
-    # ---------- 元素层级 ----------
-    "SQLElement",
-
     # ---------- 单项式级别 ----------
     # 单项式抽象基类
     "SQLMonomial",
@@ -30,9 +27,6 @@ __all__ = [
 ]
 
 
-# TODO 新增通配符节点
-
-
 # ------------------------------ 抽象基类 ------------------------------
 
 
@@ -47,13 +41,6 @@ class SQLBase(abc.ABC):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} source={self.source}>"
-
-
-# ------------------------------ 元素层级 ------------------------------
-
-
-class SQLElement(SQLBase, abc.ABC):
-    """元素层级"""
 
 
 # ------------------------------ 单项式级别类 ------------------------------
@@ -111,23 +98,12 @@ class SQLVariable(SQLMonomial):
         return self.name
 
 
-class SQLColumnName(SQLMonomial):
-    """字段名"""
-
-    def __init__(self, column_name: str):
-        self._column_name = column_name
-
-    @property
-    def source(self) -> str:
-        return f"'{self._column_name}'"
-
-
 # ------------------------------ DDL 相关通用类 ------------------------------
 
 class DDLColumn(SQLBase):
     """【DDL】建表语句中的字段信息"""
 
-    def __init__(self, column_name: str, column_type: "SQLFunction", comment: Optional[str] = None):
+    def __init__(self, column_name: str, column_type, comment: Optional[str] = None):
         self._column_name = column_name.strip("`")
         self._column_type = column_type
         self._comment = comment
@@ -316,18 +292,3 @@ class DDLCreateTableStatement(SQLBase, abc.ABC):
 
     def set_comment(self, comment: str):
         self._comment = comment
-
-
-# ------------------------------ SELECT 语句相关的节点 ------------------------------
-
-
-class SQLExpression(SQLBase, abc.ABC):
-    """表达式级抽象基类"""
-
-    def __init__(self, tokens: List[ast.AST]):
-        self._tokens = tokens
-
-    @property
-    def source(self) -> str:
-        return " ".join(token.source for token in self._tokens)
-

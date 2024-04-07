@@ -1763,3 +1763,29 @@ class SQLMod(SQLComputeOperator):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}>"
+
+
+# ---------- DDL 中使用的节点 ----------
+
+class SQLColumnType:
+    """字段类型"""
+
+    def __init__(self, name: str, params: List[SQLGeneralExpression]):
+        self._name = name  # 函数名称
+        self._params = params  # 函数参数
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def params(self) -> List[SQLGeneralExpression]:
+        return self._params
+
+    @property
+    def source(self) -> str:
+        if len(self.params) > 0:
+            type_params = "(" + ", ".join([param.source for param in self.params]) + ")"
+            return f"{self.name}{type_params}"
+        else:
+            return self.name

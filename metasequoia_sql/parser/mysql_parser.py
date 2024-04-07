@@ -10,9 +10,8 @@ from typing import List
 from metasequoia_sql import ast
 from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.objects.mysql import *
-from metasequoia_sql.parser.sentence_parser import parse_sentence, parse_sql_column_type
+from metasequoia_sql.parser.common import parse_general_expression, parse_sql_column_type
 
 
 class MySQLCreateTableParser:
@@ -146,7 +145,7 @@ class MySQLCreateTableParser:
             else:
                 scanner = TokenScanner(column_group)
                 column_name = scanner.pop_as_source()
-                column_type = parse_sql_column_type(scanner, DataSource.MYSQL)
+                column_type = parse_sql_column_type(scanner)
                 column = DDLColumnMySQL(column_name, column_type)
                 while not scanner.is_finish:
                     if scanner.get().equals("NOT"):
@@ -163,13 +162,13 @@ class MySQLCreateTableParser:
                         column.set_collate(scanner.pop_as_source())
                     elif scanner.get().equals("DEFAULT"):
                         scanner.match("DEFAULT")
-                        column.default = parse_sentence(scanner, DataSource.MYSQL)
+                        column.default = parse_general_expression(scanner)
                     elif scanner.get().equals("COMMENT"):
                         scanner.match("COMMENT")
                         column.set_comment(scanner.pop_as_source())
                     elif scanner.get().equals("ON"):  # ON UPDATE
                         scanner.match("ON", "UPDATE")
-                        column.on_update = parse_sentence(scanner, DataSource.MYSQL)
+                        column.on_update = parse_general_expression(scanner)
                     elif scanner.get().equals("AUTO_INCREMENT"):
                         scanner.match("AUTO_INCREMENT")
                         column.is_auto_increment = True
