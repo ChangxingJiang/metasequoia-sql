@@ -5,7 +5,8 @@
 from typing import Optional, List
 
 from metasequoia_sql.errors import FullStatementCalledSource
-from metasequoia_sql.statements.common import *
+from metasequoia_sql.objects.common import *
+from metasequoia_sql.objects.core import SQLGeneralExpression
 
 __all__ = ["DDLColumnTypeFull", "DDLColumnFull", "DDLPrimaryKeyFull", "DDLUniqueKeyFull", "DDLKeyFull",
            "DDLForeignKeyFull", "DDLFulltextKeyFull", "DDLCreateTableStatementFull"]
@@ -21,7 +22,7 @@ class FullBase:
 class DDLColumnTypeFull(FullBase):
     """【DDL】MySQL 的字段类型对象"""
 
-    def __init__(self, name: str, params: Optional[List[str]] = None):
+    def __init__(self, name: str, params: Optional[List[SQLGeneralExpression]] = None):
         self.name = name
         self.params = params
 
@@ -40,8 +41,8 @@ class DDLColumnFull(FullBase):
                  is_allow_null: bool = False,
                  is_not_null: bool = False,
                  is_auto_increment: bool = False,
-                 default: Optional[SqlFunction] = None,
-                 on_update: Optional[SqlFunction] = None
+                 default: Optional[SQLFunction] = None,
+                 on_update: Optional[SQLFunction] = None
                  ):
         self.column_name = column_name
         self.column_type = column_type

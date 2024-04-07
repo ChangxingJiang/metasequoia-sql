@@ -8,20 +8,20 @@ import enum
 from typing import List
 
 from metasequoia_sql import ast
+from metasequoia_sql.common.token_scanner import TokenScanner
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.parser.common_parser import SqlParser
-from metasequoia_sql.statements.common import SqlFunction
-from metasequoia_sql.statements.mysql import *
+from metasequoia_sql.objects.mysql import *
+from metasequoia_sql.parser.common import parse_general_expression, parse_sql_column_type
 
 
-class MySQLCreateTableParser(SqlParser):
+class MySQLCreateTableParser:
     """
     当前已知不支持的场景：虚拟列 GENERATED ALWAYS AS（RDS427.prism1.oned_topic_kafka）
     """
 
-    def __init__(self, root: ast.ASTInternal):
+    def __init__(self, root: ast.AST):
         # 过滤 statement 中的空白字符
-        self.tokens: List[ast.AST] = [token for token in root.children if token.is_whitespace is False]
+        self.tokens: List[ast.AST] = [token for token in root.children if token.is_space is False]
         self.n_token = len(self.tokens)
 
         # 初始化自动机状态类
@@ -90,12 +90,12 @@ class MySQLCreateTableParser(SqlParser):
 
         # 过滤插入语中的空白字符
         inner_tokens: List[ast.AST] = [token for token in outer_token.children if
-                                       token.is_whitespace is False and not isinstance(token, ast.ASTComment)]
+                                       token.is_space is False and token.is_multiline_comment is False]
 
         # 根据逗号拆分插入语中的内容
         column_group_tokens: List[List[ast.AST]] = [[]]
         for token in inner_tokens:
-            if isinstance(token, ast.ASTComma):
+            if token.is_comma:
                 column_group_tokens.append([])
             else:
                 column_group_tokens[-1].append(token)
@@ -114,14 +114,14 @@ class MySQLCreateTableParser(SqlParser):
                         and isinstance(column_group[3], ast.ASTParenthesis)):
                     self.builder.add_unique_key(DDLUniqueKeyMySQL(
                         column_group[2].source,
-                        [node.source for node in column_group[3].children if not isinstance(node, ast.ASTComma)]))
+                        [node.source for node in column_group[3].children if not node.is_comma]))
                 else:
                     raise SqlParseError("unknown uniquekey format")
             elif column_group[0].equals("KEY"):
                 if len(column_group) >= 2 and isinstance(column_group[2], ast.ASTParenthesis):
                     self.builder.add_key(DDLKeyMySQL(
                         column_group[1].source,
-                        [node.source for node in column_group[2].children if not isinstance(node, ast.ASTComma)]))
+                        [node.source for node in column_group[2].children if not node.is_comma]))
                 else:
                     raise SqlParseError("unknown key format")
             elif column_group[0].equals("FULLTEXT"):
@@ -129,7 +129,7 @@ class MySQLCreateTableParser(SqlParser):
                         and isinstance(column_group[3], ast.ASTParenthesis)):
                     self.builder.add_fulltext_key(DDLFulltextKeyMysql(
                         column_group[2].source,
-                        [node.source for node in column_group[3].children if not isinstance(node, ast.ASTComma)]))
+                        [node.source for node in column_group[3].children if not node.is_comma]))
                 else:
                     raise SqlParseError("unknown uniquekey format")
             elif column_group[0].equals("CONSTRAINT"):
@@ -138,45 +138,45 @@ class MySQLCreateTableParser(SqlParser):
                         isinstance(column_group[7], ast.ASTParenthesis)):
                     self.builder.add_foreign_key(DDLForeignKeyMySQL(
                         column_group[1].source,
-                        [node.source for node in column_group[4].children if not isinstance(node, ast.ASTComma)],
+                        [node.source for node in column_group[4].children if not node.is_comma],
                         column_group[6].source,
-                        [node.source for node in column_group[7].children if not isinstance(node, ast.ASTComma)]
+                        [node.source for node in column_group[7].children if not node.is_comma]
                     ))
             else:
-                position = self.create_token_scanner(column_group)
-                column_name = position.move_as_source()
-                column_type = position.match_function(DDLColumnTypeMySQL)
+                scanner = TokenScanner(column_group)
+                column_name = scanner.pop_as_source()
+                column_type = parse_sql_column_type(scanner)
                 column = DDLColumnMySQL(column_name, column_type)
-                while not position.is_finish():
-                    if position.get().equals("NOT"):
-                        position.match_words(["NOT", "NULL"])
+                while not scanner.is_finish:
+                    if scanner.get().equals("NOT"):
+                        scanner.match("NOT", "NULL")
                         column.is_not_null = True
-                    elif position.get().equals("NULL"):
-                        position.match_words(["NULL"])
+                    elif scanner.get().equals("NULL"):
+                        scanner.match("NULL")
                         column.set_is_allow_null(True)
-                    elif position.get().equals("CHARACTER"):
-                        position.match_words(["CHARACTER", "SET"])
-                        column.set_character_set(position.move_as_source())
-                    elif position.get().equals("COLLATE"):
-                        position.match_words(["COLLATE"])
-                        column.set_collate(position.move_as_source())
-                    elif position.get().equals("DEFAULT"):
-                        position.match_words(["DEFAULT"])
-                        column.default = position.match_function(SqlFunction)
-                    elif position.get().equals("COMMENT"):
-                        position.match_words(["COMMENT"])
-                        column.set_comment(position.move_as_source())
-                    elif position.get().equals("ON"):  # ON UPDATE
-                        position.match_words(["ON", "UPDATE"])
-                        column.on_update = position.match_function(SqlFunction)
-                    elif position.get().equals("AUTO_INCREMENT"):
-                        position.match_words(["AUTO_INCREMENT"])
+                    elif scanner.get().equals("CHARACTER"):
+                        scanner.match("CHARACTER", "SET")
+                        column.set_character_set(scanner.pop_as_source())
+                    elif scanner.get().equals("COLLATE"):
+                        scanner.match("COLLATE")
+                        column.set_collate(scanner.pop_as_source())
+                    elif scanner.get().equals("DEFAULT"):
+                        scanner.match("DEFAULT")
+                        column.default = parse_general_expression(scanner)
+                    elif scanner.get().equals("COMMENT"):
+                        scanner.match("COMMENT")
+                        column.set_comment(scanner.pop_as_source())
+                    elif scanner.get().equals("ON"):  # ON UPDATE
+                        scanner.match("ON", "UPDATE")
+                        column.on_update = parse_general_expression(scanner)
+                    elif scanner.get().equals("AUTO_INCREMENT"):
+                        scanner.match("AUTO_INCREMENT")
                         column.is_auto_increment = True
-                    elif position.get().equals("UNSIGNED"):
-                        position.match_words(["UNSIGNED"])
+                    elif scanner.get().equals("UNSIGNED"):
+                        scanner.match("UNSIGNED")
                         column.is_unsigned = True
-                    elif position.get().equals("ZEROFILL"):
-                        position.match_words(["ZEROFILL"])
+                    elif scanner.get().equals("ZEROFILL"):
+                        scanner.match("ZEROFILL")
                         column.is_zerofill = True
                     else:
                         raise SqlParseError(f"Cannot parse ddl column: {column_group}")
@@ -192,13 +192,13 @@ class MySQLCreateTableParser(SqlParser):
             tokens.pop()
         i = 0
         while i < len(tokens):
-            if isinstance(tokens[i], ast.ASTComment):
+            if tokens[i].is_multiline_comment:
                 i += 1
             elif tokens[i].equals("ENGINE"):
                 if i + 2 < len(tokens) and tokens[i + 1].equals("="):
                     self.builder.set_engine(tokens[i + 2].source)
                 else:
-                    raise SqlParseError("unknown engine")
+                    raise SqlParseError(f"unknown engine: {tokens}")
                 i += 3
             elif tokens[i].equals("AUTO_INCREMENT"):
                 if i + 2 < len(tokens) and tokens[i + 1].equals("="):
@@ -253,5 +253,5 @@ class MySQLCreateTableParser(SqlParser):
 
 def parse_mysql_create_table_statement(sql: str) -> DDLCreateTableStatementMySQL:
     # 将 sql 解析为多个表达式，并检查是否有且只有 1 个表达式
-    root: ast.ASTStatement = ast.ASTParser(sql).parse()
+    root: ast.AST = ast.parse_as_statements(sql)[0]
     return MySQLCreateTableParser(root).builder

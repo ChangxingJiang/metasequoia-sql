@@ -1,210 +1,610 @@
 """
-将 SQL 解析为 AST 抽象语法树的工具类
+抽象语法树（AST）的节点类
+
+所有抽象语法树的节点类均继承自抽象基类 AST 类，除 AST 类外，其他节点可以分为如下三种类型：
+- 定值叶节点：不包含子节点，且 source 返回定值的对象
+- 非定值叶节点：不包含子节点，但 source 返回值不固定的对象
+- 中间节点（插入语节点）：包含子节点的节点
 """
 
 import abc
-import enum
-from typing import Tuple, List, Optional, Union
+from typing import List, Optional, Any
 
 from metasequoia_sql.errors import AstParseError
+from metasequoia_sql.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
+
+__all__ = [
+    "AST",
+    # 固定值节点类
+    "ASTSpace", "ASTLineBreak", "ASTComma", "ASTSemicolon",
+
+    "ASTCommon",
+
+    # 字面值节点类
+    "ASTLiteralInteger",
+    "ASTLiteralFloat",
+    "ASTLiteralString",
+    "ASTLiteralHex",
+    "ASTLiteralBool",
+    "ASTLiteralBit",
+    "ASTLiteralNull",
+
+    # 其他节点类
+    "ASTIdentifier",
+    "ASTParenthesis",
+    "ASTStatement",
+    "ASTOther"
+]
 
 
-# ------------------------------ 抽象语法树节点对象 ------------------------------
+# ------------------------------ 抽象节点类 ------------------------------
 
 
 class AST(abc.ABC):
-    """所有 SQL 的 AST 节点类的抽象基类"""
+    """抽象语法树（AST）节点类的抽象基类"""
 
-    def __init__(self, origin: Optional[str],
-                 start_lineno: Optional[int],
-                 start_col_offset: Optional[int],
-                 end_lineno: Optional[int],
-                 end_col_offset: Optional[int]):
-        self._origin = origin  # 源码
-        self.start_lineno = start_lineno  # 代码开始的行数
-        self.start_col_offset = start_col_offset  # 代码开始的列数
-        self.end_lineno = end_lineno  # 代码结束的行数
-        self.end_col_offset = end_col_offset  # 代码结束的列数
-
-    # -------------------- 需要实现的方法 --------------------
+    @classmethod
+    def check(cls, origin: str) -> bool:
+        """返回是否满足当前节点的格式要求"""
+        # TODO 待改为抽象方法
+        return True
 
     @property
     @abc.abstractmethod
     def source(self) -> str:
         """返回当前节点的源代码
 
-        TODO 子节点应该根据自己解析的源代码生成源代码，而不是直接返回原始源代码
-
         Returns
         -------
         str
             当前 AST 节点的源代码
         """
-        return self._origin
 
     @property
-    @abc.abstractmethod
     def children(self) -> List["AST"]:
         """返回所有下游节点，若为叶子节点，则返回空列表"""
+        return []
 
-    @property
-    @abc.abstractmethod
-    def is_whitespace(self) -> bool:
-        """当前 AST 节点是否为空格（包括空格、换行符等）"""
-
-    @property
-    def origin(self):
-        """返回当前节点的原始语句代码"""
-        return self._origin
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def __repr__(self) -> str:
-        return self.source
+        """AST 节点的对象描述
+
+        描述信息样式如下（其中第 3 中情况需要在子类中重写此方法）：
+        1. 中间节点：<{节点类名} children={子节点的对象描述}>
+        2. 非定值叶节点：<{节点类名} source={节点源码}>
+        3. 定值叶节点：<{节点类型}>
+        """
+        if len(self.children) > 0:
+            return f"<{self.__class__.__name__} children={self.children}>"
+        else:
+            format_source = self.source.replace("\n", r"\n")
+            return f"<{self.__class__.__name__} source={format_source}>"
+
+    def __hash__(self):
+        return hash(self.source)
 
     def equals(self, other: str) -> bool:
         """判断当前 AST 节点是否与一段源代码相同"""
         return self.source.upper() == other.upper()
 
-
-class ASTLeaf(AST, abc.ABC):
-    """抽象语法树 AST 的叶子节点"""
-
-    def __init__(self, origin: str, start_lineno: int, start_col_offset: int, end_lineno: int, end_col_offset: int):
-        super().__init__(origin, start_lineno, start_col_offset, end_lineno, end_col_offset)
+    # ------------------------------ 获取查询是否属于某种类型节点的方法 ------------------------------
 
     @property
-    def children(self) -> List["AST"]:
-        return []
-
-    def __new__(cls, source: str, start_lineno: int, start_col_offset: int, end_lineno: int, end_col_offset: int):
-        if source == " ":
-            obj = object.__new__(ASTSpace)  # 空格节点
-        elif source == "\n":
-            obj = object.__new__(ASTLineBreak)  # 换行符节点
-        elif source == ",":
-            obj = object.__new__(ASTComma)  # 逗号
-        elif source == ";":
-            obj = object.__new__(ASTSemicolon)  # 分号
-        elif source.startswith("`") and source.endswith("`"):
-            obj = object.__new__(ASTIdentifier)  # 标识符
-        elif (source.startswith("\"") and source.endswith("\"")) or (source.startswith("'") and source.endswith("'")):
-            obj = object.__new__(ASTString)  # 字符串
-        elif source.isnumeric():
-            obj = object.__new__(ASTNumber)  # 数字节点
-        elif source.startswith("/*") and source.endswith("*/"):
-            obj = object.__new__(ASTComment)  # 注释节点
-        else:
-            obj = object.__new__(ASTOtherLeaf)  # 其他节点
-        obj.__init__(source, start_lineno, start_col_offset, end_lineno, end_col_offset)
-        return obj
-
-
-class ASTSpaceLeaf(ASTLeaf, abc.ABC):
-    """空白字符的叶子结点的抽象类"""
+    def is_space(self) -> bool:
+        """当前节点是否为空格（包括空格、换行符等）"""
+        return False
 
     @property
-    def is_whitespace(self) -> bool:
-        """当前 AST 节点是否为空格（包括空格、换行符等）"""
-        return True
-
-
-class ASTNonSpaceLeaf(ASTLeaf, abc.ABC):
-    """非空白字符的叶子结点的抽象类"""
+    def is_comma(self) -> bool:
+        """当前节点是否为逗号"""
+        return False
 
     @property
-    def is_whitespace(self) -> bool:
-        """当前 AST 节点是否为空格（包括空格、换行符等）"""
+    def is_semicolon(self) -> bool:
+        """当前节点是否为分号"""
+        return False
+
+    @property
+    def is_maybe_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return False
+
+    @property
+    def is_parenthesis(self) -> bool:
+        """当前节点是否为插入语"""
+        return False
+
+    @property
+    def is_compute_operator(self) -> bool:
+        """当前节点是否为计算运算符"""
+        return False
+
+    @property
+    def is_compare_operator(self) -> bool:
+        """当前节点是否为比较运算符"""
+        return False
+
+    @property
+    def is_logical_operator(self) -> bool:
+        """当前节点是否为逻辑运算符"""
+        return False
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return False
+
+    @property
+    def is_dot(self) -> bool:
+        """是否为点符号"""
+        return False
+
+    @property
+    def literal_value(self) -> Any:
+        """字面值的值"""
+        return None
+
+    @property
+    def is_maybe_wildcard(self) -> bool:
+        """当前节点是否可能为通配符"""
+        return False
+
+    @property
+    def is_comment(self) -> bool:
+        """当前节点是否为注释"""
+        return False
+
+    @property
+    def is_multiline_comment(self) -> bool:
+        """当前节点是否为多行注释"""
         return False
 
 
-class ASTSpace(ASTSpaceLeaf):
-    """空白字符"""
+# ------------------------------ 定值叶节点类 ------------------------------
+
+
+class ASTSpace(AST):
+    """空格符"""
+
+    @property
+    def is_space(self) -> bool:
+        return True
 
     @property
     def source(self) -> str:
         return " "
 
+    def __repr__(self) -> str:
+        return "<ASTSpace>"
 
-class ASTLineBreak(ASTSpaceLeaf):
+
+class ASTLineBreak(AST):
     """换行符"""
+
+    @property
+    def is_space(self) -> bool:
+        return True
 
     @property
     def source(self) -> str:
         return "\n"
 
+    def __repr__(self) -> str:
+        return "<ASTLineBreak>"
 
-class ASTComma(ASTNonSpaceLeaf):
+
+class ASTComma(AST):
     """逗号"""
+
+    @property
+    def is_comma(self) -> bool:
+        """当前节点是否为逗号"""
+        return True
 
     @property
     def source(self) -> str:
         return ","
 
+    def __repr__(self) -> str:
+        return "<ASTComma>"
 
-class ASTSemicolon(ASTNonSpaceLeaf):
+
+class ASTSemicolon(AST):
     """分号"""
+
+    @property
+    def is_semicolon(self) -> bool:
+        """当前节点是否为分号"""
+        return True
 
     @property
     def source(self) -> str:
         return ";"
 
+    def __repr__(self) -> str:
+        return "<ASTSemicolon>"
 
-class ASTNumber(ASTNonSpaceLeaf):
-    """数字"""
+
+# ------------------------------ 非定值叶节点 ------------------------------
+
+
+class ASTCommon(AST):
+    """通用节点"""
+
+    def __init__(self,
+                 source: str,
+                 is_keyword: bool = False,
+                 is_compute_operator: bool = False,
+                 is_compare_operator: bool = False,
+                 is_logical_operator: bool = False,
+                 is_dot: bool = False,
+                 is_maybe_name: bool = False,
+                 is_maybe_wildcard: bool = False,
+                 is_comma: bool = False,
+                 is_comment: bool = False,
+                 is_multiline_comment: bool = False):
+        """通用节点构造器
+
+        Parameters
+        ----------
+        source : str
+            当前节点的源代码（格式化后的）
+        is_keyword : bool, default = False
+            当前节点是否为关键词
+        is_compute_operator : bool, default = False
+            当前节点是否为计算运算符
+        is_compare_operator : bool, default = False
+            当前节点是否为比较运算符
+        is_logical_operator : bool, default = False
+            当前节点是否为比较运算符
+        is_dot : bool, default = False
+            当前节点是否为点号
+        is_maybe_name : bool, default = False
+            当前节点是否可能为名称（表名、函数名或列名）
+        is_maybe_wildcard : bool, default = False
+            当前节点是否可能为通配符
+        is_comma : bool, default = False
+            当前节点是否为逗号
+        is_comment : bool, default = False
+            当前节点是否为注释
+        is_multiline_comment : bool, default = False
+            当前节点是否为多行注释
+        """
+        self._source = source
+        self._is_keyword = is_keyword
+        self._is_compute_operator = is_compute_operator
+        self._is_compare_operator = is_compare_operator
+        self._is_logical_operator = is_logical_operator
+        self._is_dot = is_dot
+        self._is_maybe_name = is_maybe_name
+        self._is_maybe_wildcard = is_maybe_wildcard
+        self._is_comma = is_comma
+        self._is_comment = is_comment
+        self._is_multiline_comment = is_multiline_comment
+
+    @property
+    def is_keyword(self) -> bool:
+        """当前节点是否为关键词"""
+        return self._is_keyword
+
+    @property
+    def is_compute_operator(self) -> bool:
+        """当前节点是否为计算运算符"""
+        return self._is_compute_operator
+
+    @property
+    def is_compare_operator(self) -> bool:
+        """当前节点是否为比较运算符"""
+        return self._is_compare_operator
+
+    @property
+    def is_logical_operator(self) -> bool:
+        """当前节点是否为逻辑运算符"""
+        return self._is_logical_operator
+
+    @property
+    def is_dot(self) -> bool:
+        """当前节点是否为点号"""
+        return self._is_dot
+
+    @property
+    def is_maybe_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return self._is_maybe_name
+
+    @property
+    def is_maybe_wildcard(self) -> bool:
+        """当前节点是否可能为通配符"""
+        return self._is_maybe_wildcard
+
+    @property
+    def is_comma(self) -> bool:
+        """当前节点是否为逗号"""
+        return self._is_comma
+
+    @property
+    def is_comment(self) -> bool:
+        """当前节点是否为注释"""
+        return self._is_comment
+
+    @property
+    def is_multiline_comment(self) -> bool:
+        """当前节点是否为多行注释"""
+        return self._is_multiline_comment
 
     @property
     def source(self) -> str:
-        return self._origin
+        """当前节点的源代码（格式化后的）"""
+        return self._source
 
 
-class ASTString(ASTNonSpaceLeaf):
-    """字符串"""
+class ASTLiteralInteger(AST):
+    """字面值整数"""
+
+    def __init__(self, origin: str):
+        self._value = int(origin)
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> int:
+        return self._value
 
     @property
     def source(self) -> str:
-        return self._origin
+        return f"{self._value}"
 
 
-class ASTIdentifier(ASTNonSpaceLeaf):
-    """标识符"""
+class ASTLiteralFloat(AST):
+    """字面值浮点数"""
 
-    def __init__(self, origin: str, start_lineno: int, start_col_offset: int, end_lineno: int, end_col_offset: int):
-        super().__init__(origin, start_lineno, start_col_offset, end_lineno, end_col_offset)
-        self._value = self._origin.strip("`")
+    def __init__(self, origin: str):
+        self._value = float(origin)
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> float:
+        return self._value
+
+    @property
+    def source(self) -> str:
+        return f"{self._value}"
+
+
+class ASTLiteralString(AST):
+    """字面值字符串"""
+
+    def __init__(self, origin: str):
+        self._value = origin[1:-1]  # 不包含引号的部分
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> str:
+        return self._value
+
+    @property
+    def is_maybe_name(self) -> bool:
+        return True
+
+    @property
+    def source(self) -> str:
+        return f"'{self._value}'"
+
+
+class ASTLiteralHex(AST):
+    """十六进制字面值"""
+
+    def __init__(self, origin: str):
+        self._value = self._get_value(origin)  # 获取十六进制字面值中的十六进制数值，如果格式不满足则返回 None
+        if self._value is None:
+            raise AstParseError(f"不满足格式要求的十六进制字面值: origin={origin}")
+
+    @classmethod
+    def check(cls, origin: str):
+        return cls._get_value(origin) is not None
+
+    @staticmethod
+    def _get_value(origin: str) -> Optional[str]:
+        """获取十六进制字面值中的十六进制数值，如果格式不满足则返回 None"""
+        # 检查是否满足如下 3 种字面值格式：x'01BF'、X'01BF'、0x01BF
+        if (origin.startswith("x'") or origin.startswith("X'")) and origin.endswith("'"):
+            value = origin[2:-1].upper()
+        elif (origin.startswith("x\"") or origin.startswith("X\"")) and origin.endswith("\""):
+            value = origin[2:-1].upper()
+        elif origin.startswith("0x"):
+            value = origin[2:].upper()
+        else:
+            return None
+
+        # 检查十六进制中的数值是否满足字符集要求
+        for ch in value:
+            if ch not in HEXADECIMAL_CHARACTER_SET:
+                return None
+
+        return value
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> str:
+        return self._value
+
+    @property
+    def source(self) -> str:
+        return f"x'{self._value}'"
+
+
+class ASTLiteralBool(AST):
+    """布尔字面值"""
+
+    def __init__(self, origin: str):
+        self._value: bool = (origin.upper() == "TRUE")
+
+    @classmethod
+    def check(cls, origin: str) -> bool:
+        return origin.upper() in {"TRUE", "FALSE"}
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> bool:
+        return self._value
+
+    @property
+    def source(self) -> str:
+        return "TRUE" if self._value is True else "FALSE"
+
+
+class ASTLiteralBit(AST):
+    """位值字面值"""
+
+    def __init__(self, origin: str):
+        self._value = self._get_value(origin)  # 获取二进制字面值中的二进制数值，如果格式不满足则返回 None
+        if self._value is None:
+            raise AstParseError(f"不满足格式要求的二进制字面值: origin={origin}")
+
+    @classmethod
+    def check(cls, origin: str):
+        return cls._get_value(origin) is not None
+
+    @staticmethod
+    def _get_value(origin: str) -> Optional[str]:
+        """获取二进制字面值中的二进制数值，如果格式不满足则返回 None"""
+        # 检查是否满足如下 3 种字面值格式：b'01'、B'01'、0b01
+        if (origin.startswith("b'") or origin.startswith("B'")) and origin.endswith("'"):
+            value = origin[2:-1].upper()
+        elif (origin.startswith("b\"") or origin.startswith("B\"")) and origin.endswith("\""):
+            value = origin[2:-1].upper()
+        elif origin.startswith("0b"):
+            value = origin[2:].upper()
+        else:
+            return None
+
+        # 检查二进制中的数值是否满足字符集要求
+        for ch in value:
+            if ch not in BINARY_CHARACTER_SET:
+                return None
+
+        return value
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> str:
+        return self._value
+
+    @property
+    def source(self) -> str:
+        return f"b'{self._value}'"
+
+
+class ASTLiteralNull(AST):
+    """空值字面值"""
+
+    @classmethod
+    def check(cls, origin: str):
+        return origin.upper() == "NULL"
+
+    @property
+    def is_literal(self) -> bool:
+        """当前节点是否为字面值"""
+        return True
+
+    @property
+    def literal_value(self) -> None:
+        return None
+
+    @property
+    def source(self) -> str:
+        return f"NULL"
+
+
+class ASTIdentifier(AST):
+    """显式标识符"""
+
+    def __init__(self, origin: str):
+        self._value = origin[1:-1]
+
+    @property
+    def is_maybe_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return True
 
     @property
     def source(self) -> str:
         return f"`{self._value}`"
 
-    def equals(self, other: str) -> bool:
-        return self.source.upper() == other.upper() or self.source.upper() == other.upper()
 
+class ASTOther(AST):
+    """未知节点"""
 
-class ASTComment(ASTNonSpaceLeaf):
-    """注释"""
+    # TODO 子节点应该根据自己解析的源代码生成源代码，而不是直接返回原始源代码
+
+    def __init__(self, origin: Optional[str]):
+        self._origin = origin
+
+    @property
+    def is_maybe_name(self) -> bool:
+        """当前节点是否可能为函数名称"""
+        return True
 
     @property
     def source(self) -> str:
         return self._origin
 
 
-class ASTOtherLeaf(ASTNonSpaceLeaf):
+# ------------------------------ 中间节点 ------------------------------
+
+
+class ASTParenthesis(AST):
+    """插入语节点"""
+
+    def __init__(self, tokens: List[AST], start_mark: str, end_mark: str):
+        self._tokens: List[AST] = tokens
+        self.start_mark = start_mark
+        self.end_mark = end_mark
+
     @property
-    def source(self) -> str:
-        return self._origin
+    def is_parenthesis(self) -> bool:
+        """当前节点是否为插入语"""
+        return True
+
+    @property
+    def children(self) -> List["AST"]:
+        return self._tokens
+
+    @property
+    def source(self):
+        return self.start_mark + "".join(token.source for token in self._tokens) + self.end_mark
 
 
-class ASTInternal(AST):
-    """抽象语法树 AST 的中间节点"""
+class ASTStatement(AST):
+    """【包含子节点的 AST 节点】完整 SQL 表达式"""
 
-    def __init__(self, origin: str, start_lineno: int, start_col_offset: int, end_lineno: int, end_col_offset: int,
-                 tokens: List[AST]):
-        super().__init__(origin, start_lineno, start_col_offset, end_lineno, end_col_offset)
+    def __init__(self, tokens: List[AST]):
         self._tokens: List[AST] = tokens  # 下级节点列表
-
-    @property
-    def is_whitespace(self) -> bool:
-        """当前 AST 节点是否为空格（包括空格、换行符等）"""
-        return False
 
     @property
     def source(self):
@@ -213,260 +613,3 @@ class ASTInternal(AST):
     @property
     def children(self) -> List["AST"]:
         return self._tokens
-
-
-class ASTStatement(ASTInternal):
-    """【包含子节点的 AST 节点】完整 SQL 表达式"""
-
-
-class ASTParenthesis(ASTInternal):
-    """插入语节点"""
-
-    def __init__(self, origin: str, start_lineno: int, start_col_offset: int, end_lineno: int, end_col_offset: int,
-                 tokens: List[AST]):
-        super().__init__(origin, start_lineno, start_col_offset, end_lineno, end_col_offset, tokens)
-        self.start_mark = origin[0]
-        self.end_mark = origin[-1]
-
-    @property
-    def source(self):
-        return self.start_mark + super().source + self.end_mark
-
-
-# ------------------------------ 抽象语法树解析对象 ------------------------------
-
-
-class ParseStatus(enum.Enum):
-    """SQL 源码的解析状态"""
-    WAIT_FOR_NEW_TOKEN = enum.auto()  # 前一个字符是开头、空白字符或上一个 token 的结尾，正等待新的 token
-    IS_IN_NORMAL = enum.auto()  # 当前正在正常词语中
-    IS_IN_DOUBLE_QUOTE = enum.auto()  # 当前正在双引号 " 中
-    IS_IN_SINGLE_QUOTE = enum.auto()  # 当前正在单引号 ' 中
-    IS_IN_BACK_QUOTE = enum.auto()  # 当前正在反引号 ` 中
-    IS_IN_EXPLAIN_1 = enum.auto()  # 当前在 # 标记的注释中
-    IS_IN_EXPLAIN_2 = enum.auto()  # 当前在 /* 和 */ 标注的注释中
-    FAIL = enum.auto()  # 无法解析的 SQL 格式
-
-
-class ASTParser:
-    def __init__(self, source: str):
-        """
-
-        Parameters
-        ----------
-        source : str
-            SQL 源码
-        """
-        self.source: str = source.replace("\r\n", "\n")  # 将源码中的 \r\n 统一为 \n
-        self.array: List[Tuple[str, int, int, int]] = text_to_char_array(self.source)
-        self.status: ParseStatus = ParseStatus.WAIT_FOR_NEW_TOKEN
-        self.now_token_lineno: int = 1  # 当前段落词语开始位置的行数
-        self.now_token_offset: int = 0  # 当前段落词语开始位置的列号
-
-    def parse(self) -> ASTStatement:
-        """将 SQL 源码解析为 AST 节点
-
-        Returns
-        -------
-        ASTStatement
-            AST 根节点
-        """
-        last_ch = None  # 上一个字符
-        stack: List[List[Union[Tuple[int, int, int], AST]]] = [[]]
-        skip = False
-        for i, (ch, idx, lineno, col_offset) in enumerate(self.array):
-            if skip is True:
-                skip = False
-                continue
-
-            # 计算当前行的下一个字符
-            next_ch = self.array[i + 1][0] if i + 1 < len(self.array) and self.array[i + 1][2] == lineno else None
-
-            if self.status == ParseStatus.WAIT_FOR_NEW_TOKEN:  # 前一个字符是空白字符
-                if ch == " ":
-                    stack[-1].append(ASTSpace(self.source[idx:idx + 1], lineno, col_offset, lineno, col_offset + 1))
-                elif ch == "\n":
-                    stack[-1].append(
-                        ASTLineBreak(self.source[idx:idx + 1], lineno, col_offset, lineno, col_offset + 1))
-                elif ch == "\"":
-                    stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_DOUBLE_QUOTE
-                elif ch == "'":
-                    stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_SINGLE_QUOTE
-                elif ch == "`":
-                    stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_BACK_QUOTE
-                elif ch == "#":
-                    stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_EXPLAIN_1
-                elif ch == "/":
-                    if next_ch == "*":
-                        stack[-1].append((idx, lineno, col_offset))
-                        self.status = ParseStatus.IS_IN_EXPLAIN_2
-                    else:
-                        stack[-1].append((idx, lineno, col_offset))
-                        self.status = ParseStatus.IS_IN_NORMAL
-                elif ch == "(":
-                    stack[-1].append((idx, lineno, col_offset))  # 插入语的语法树
-                    stack.append([])
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                elif ch == ")":
-                    if len(stack) > 1:
-                        tokens = stack.pop()
-                        start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                        stack[-1].append(
-                            ASTParenthesis(self.source[start_idx: idx + 1], start_lineno, start_col_offset, lineno,
-                                           col_offset + 1, tokens))
-                        self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                    else:
-                        raise AstParseError("')' 数量大于 '('")
-                else:
-                    stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_NORMAL
-            elif self.status == ParseStatus.IS_IN_DOUBLE_QUOTE:
-                if ch == "\"" and last_ch != "\\" and next_ch == "\"":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1], start_lineno, start_col_offset,
-                                lineno, col_offset + 1))
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                elif ch == "\"" and last_ch != "\\":  # 满足 (last_ch == "\"" and stack[-1][-1][0] + 1 == idx and next_ch == "\"")
-                    skip = True
-            elif self.status == ParseStatus.IS_IN_SINGLE_QUOTE:
-                if ch == "'" and last_ch != "\\" and not next_ch == "'":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1], start_lineno, start_col_offset,
-                                lineno, col_offset + 1))
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                elif ch == "'" and last_ch != "\\":  # 满足 (last_ch == "'" and not stack[-1][-1][0] + 1 == idx and next_ch == "'")
-                    skip = True
-            elif self.status == ParseStatus.IS_IN_BACK_QUOTE:
-                if ch == "`":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1], start_lineno, start_col_offset, lineno,
-                                col_offset + 1))
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-            elif self.status == ParseStatus.IS_IN_EXPLAIN_1:
-                if ch == "\n":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1], start_lineno, start_col_offset, lineno,
-                                col_offset + 1))
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-            elif self.status == ParseStatus.IS_IN_EXPLAIN_2:
-                if ch == "/" and last_ch == "*":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(
-                        ASTLeaf(self.source[start_idx: idx + 1], start_lineno, start_col_offset, lineno,
-                                col_offset + 1))
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-            elif self.status == ParseStatus.IS_IN_NORMAL:
-                if ch in {" ", "\n", ",", ";", "+", "-", "*", "/", "="}:
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(ASTLeaf(self.source[start_idx: idx], start_lineno, start_col_offset, lineno,
-                                             col_offset))
-                    stack[-1].append(
-                        ASTLeaf(self.source[idx:idx + 1], lineno, col_offset, lineno, col_offset + 1))
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                elif ch == "\"":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    if start_idx + 1 == idx and self.source[start_idx: idx] == "b":  # 兼容类似字符串 b'0'
-                        stack[-1].append((start_idx, start_lineno, start_col_offset))  # 将 b 视作字符串的一部分
-                    else:
-                        stack[-1].append(ASTLeaf(self.source[start_idx: idx], start_lineno, start_col_offset, lineno,
-                                                 col_offset))
-                        stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_DOUBLE_QUOTE
-                elif ch == "'":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    if start_idx + 1 == idx and self.source[start_idx: idx] == "b":  # 兼容类似字符串 b'0'
-                        stack[-1].append((start_idx, start_lineno, start_col_offset))  # 将 b 视作字符串的一部分
-                    else:
-                        stack[-1].append(ASTLeaf(self.source[start_idx: idx], start_lineno, start_col_offset, lineno,
-                                                 col_offset))
-                        stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_SINGLE_QUOTE
-                elif ch == "`":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(ASTLeaf(self.source[start_idx: idx], start_lineno, start_col_offset, lineno,
-                                             col_offset))
-                    stack[-1].append((idx, lineno, col_offset))
-                    self.status = ParseStatus.IS_IN_BACK_QUOTE
-                elif ch == "(":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(ASTLeaf(self.source[start_idx: idx], start_lineno, start_col_offset, lineno,
-                                             col_offset))
-                    stack[-1].append((idx, lineno, col_offset))  # 插入语的语法树
-                    stack.append([])
-                    self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                elif ch == ")":
-                    start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                    stack[-1].append(ASTLeaf(self.source[start_idx: idx], start_lineno, start_col_offset, lineno,
-                                             col_offset))
-                    if len(stack) > 1:
-                        tokens = stack.pop()
-                        start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                        stack[-1].append(
-                            ASTParenthesis(self.source[start_idx: idx + 1], start_lineno, start_col_offset, lineno,
-                                           col_offset + 1, tokens))
-                        self.status = ParseStatus.WAIT_FOR_NEW_TOKEN
-                    else:
-                        raise AstParseError("')' 数量大于 '('")
-                else:
-                    self.status = ParseStatus.IS_IN_NORMAL
-
-            last_ch = ch
-
-        if len(stack) > 1:
-            raise AstParseError("'(' 数量大于 ')'")
-        else:
-            if self.status == ParseStatus.IS_IN_NORMAL:  # 末尾没有分号的情况
-                start_idx, start_lineno, start_col_offset = stack[-1].pop()
-                stack[-1].append(ASTLeaf(self.source[start_idx: self.array[-1][1] + 1],
-                                         start_lineno, start_col_offset, self.array[-1][2], self.array[-1][3] + 1))
-            return ASTStatement(self.source, self.array[0][2], self.array[0][3], self.array[-1][2],
-                                self.array[-1][3], stack[0])
-
-
-def dump(node: AST) -> str:
-    """将 AST 节点序列化为 SQL 源码
-
-    Parameters
-    ----------
-    node : AST
-        AST 节点
-
-    Returns
-    -------
-    str
-        SQL 源码
-    """
-    return node.source
-
-
-def text_to_char_array(text: str) -> List[Tuple[str, int, int, int]]:
-    """将字符串转化为每个字符信息的列表
-
-    Parameters
-    ----------
-    text : str
-        字符串
-
-    Returns
-    -------
-    列表中每个元素为一个字符；每个元素的元组中的第 0 个元素为字符，第 1 个字符为完整字符串中的下标，第 2 个字符为行号，第 3 个字符为列号
-    """
-    result: List[Tuple[str, int, int, int]] = []
-    lineno: int = 1
-    offset: int = 0
-    for i, ch in enumerate(text):
-        result.append((ch, i, lineno, offset))
-        if ch != "\n":
-            offset += 1
-        else:  # 换行符
-            lineno += 1
-            offset = 0
-    return result

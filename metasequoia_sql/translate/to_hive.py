@@ -2,7 +2,7 @@
 类型转换：将全属性 SQL 语句转化为 Hive 特性 SQL 语句
 """
 
-from metasequoia_sql.statements.hive import *
+from metasequoia_sql.objects.hive import *
 from metasequoia_sql.translate.full_statement import *
 
 

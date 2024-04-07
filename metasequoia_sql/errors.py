@@ -22,3 +22,7 @@ class UnSupportDataSourceError(Exception):
 
     def __init__(self, reason: str):
         self.reason = reason
+
+
+class ScannerError(Exception):
+    """文本扫描异常"""
