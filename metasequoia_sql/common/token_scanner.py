@@ -88,30 +88,34 @@ class TokenScanner(BaseScanner):
         """【移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
         return TokenScanner(self.pop().children, ignore_space=ignore_space, ignore_comment=ignore_comment)
 
-    def split_by_comma(self) -> List["TokenScanner"]:
-        """【移动指针（到末尾）】将后续元素拆分为使用逗号分隔的扫描器列表"""
+    def split_by(self,
+                 source: str,
+                 ignore_space: bool = True,
+                 ignore_comment: bool = True) -> List["TokenScanner"]:
+        """【移动指针（到末尾）】将后续元素拆分为使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
         while not self.is_finish:
-            token = self.pop()
-            if token.is_comma:
+            token: ast.AST = self.pop()
+            if token.equals(source):
                 if len(tokens) > 0:
-                    result.append(TokenScanner(tokens))
+                    result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
                     tokens = []
             else:
                 tokens.append(token)
         if len(tokens) > 0:
-            result.append(TokenScanner(tokens))
+            result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
         return result
 
-    def pop_as_children_scanner_list_split_by_comma(self,
-                                                    ignore_space: bool = True,
-                                                    ignore_comment: bool = True) -> List["TokenScanner"]:
-        """【移动指针】返回当前指针位置的插入语结点的子节点使用逗号分隔的扫描器列表"""
+    def pop_as_children_scanner_list_split_by(self,
+                                              source: str,
+                                              ignore_space: bool = True,
+                                              ignore_comment: bool = True) -> List["TokenScanner"]:
+        """【移动指针】返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
         for token in self.pop().children:
-            if token.is_comma:
+            if token.equals(source):
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
                     tokens = []
@@ -124,7 +128,7 @@ class TokenScanner(BaseScanner):
     @property
     def is_finish(self) -> bool:
         """返回是否已匹配结束"""
-        return not self._pos < self._len or self.now.is_semicolon
+        return not self._pos < self._len
 
 
 def build_token_scanner(sql: str, ignore_space=True, ignore_comment=True):

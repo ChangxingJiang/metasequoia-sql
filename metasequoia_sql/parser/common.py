@@ -375,7 +375,7 @@ def parse_cast_function_expression(scanner: TokenScanner) -> SQLCastFunctionExpr
     if not scanner.is_finish and scanner.now.is_parenthesis:
         parenthesis_scanner = scanner.pop_as_children_scanner()
         cast_params: Optional[List[SQLGeneralExpression]] = []
-        for param_scanner in parenthesis_scanner.split_by_comma():
+        for param_scanner in parenthesis_scanner.split_by(","):
             cast_params.append(parse_general_expression(param_scanner))
             if not param_scanner.is_finish:
                 raise SqlParseError(f"无法解析函数参数: {param_scanner}")
@@ -401,7 +401,7 @@ def parse_if_function_expression(parenthesis_scanner: TokenScanner) -> SQLFuncti
     """解析 IF 函数表达式"""
     function_params: List[SQLGeneralExpression] = []
     first_param = True
-    for param_scanner in parenthesis_scanner.split_by_comma():
+    for param_scanner in parenthesis_scanner.split_by(","):
         if first_param is True:
             function_params.append(parse_condition_expression(param_scanner))
             first_param = False
@@ -469,7 +469,7 @@ def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
         is_distinct = True
 
     function_params: List[SQLGeneralExpression] = []
-    for param_scanner in parenthesis_scanner.split_by_comma():
+    for param_scanner in parenthesis_scanner.split_by(","):
         function_params.append(parse_general_expression(param_scanner))
         if not param_scanner.is_finish:
             raise SqlParseError(f"无法解析函数参数: {param_scanner}")
@@ -966,7 +966,7 @@ def parse_column_expression(scanner: TokenScanner) -> SQLColumnExpression:
 def parse_value_expression(scanner: TokenScanner) -> SQLValueExpression:
     """解析值表达式"""
     values = []
-    for value_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
+    for value_scanner in scanner.pop_as_children_scanner_list_split_by(","):
         values.append(parse_general_expression(value_scanner))
     return SQLValueExpression(values=values)
 
@@ -1125,9 +1125,9 @@ def parse_group_by_clause(scanner: TokenScanner) -> SQLGroupByClause:
     scanner.match("GROUP", "BY")
     if scanner.search_and_move("GROUPING", "SETS"):
         grouping_list = []
-        for grouping_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
+        for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             if grouping_scanner.now.is_parenthesis:
-                parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by_comma()
+                parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
                 columns_list = [parse_general_expression(parenthesis_scanner)
                                 for parenthesis_scanner in parenthesis_scanner_list]
                 grouping_list.append(columns_list)
@@ -1329,7 +1329,7 @@ def parse_with_clause(scanner: TokenScanner) -> Optional[SQLWithClause]:
             tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
         return SQLWithClause(tables=tables)
     else:
-        return None
+        return SQLWithClause.empty()
 
 
 def maybe_select_statement(scanner: TokenScanner) -> bool:
@@ -1378,6 +1378,11 @@ def parse_single_select_statement(scanner: TokenScanner,
     )
 
 
+def is_select_statement(scanner: TokenScanner) -> bool:
+    """判断是否为 SELECT 语句（已匹配过 WITH 语句后才可以调用）"""
+    return scanner.search("SELECT")
+
+
 def parse_select_statement(scanner: TokenScanner,
                            with_clause: Optional[SQLWithClause] = None) -> SQLSelectStatement:
     """解析 SELECT 语句"""
@@ -1392,6 +1397,7 @@ def parse_select_statement(scanner: TokenScanner,
                 break
         else:
             break
+    scanner.search_and_move(";")
     if not scanner.is_finish:
         raise SqlParseError(f"没有解析完成: {scanner}")
 
@@ -1434,8 +1440,31 @@ def parse_sql_column_type(scanner: TokenScanner) -> SQLColumnType:
     # 解析字段类型参数
     if not scanner.is_finish and scanner.now.is_parenthesis:
         function_params: List[SQLGeneralExpression] = []
-        for param_scanner in scanner.pop_as_children_scanner_list_split_by_comma():
+        for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             function_params.append(parse_general_expression(param_scanner))
         return SQLColumnType(function_name, function_params)
     else:
         return SQLColumnType(function_name, [])
+
+
+def parse(scanner: TokenScanner) -> List[SQLStatement]:
+    """解析一段 SQL 语句，返回表达式的列表
+
+    Examples
+    --------
+    >>> parse(build_token_scanner("SELECT a FROM b; SELECT c FROM d"))
+    [<SQLSingleSelectStatement source=SELECT a
+    FROM b>, <SQLSingleSelectStatement source=SELECT c
+    FROM d>]
+    """
+    statement_list = []
+    for statement_scanner in scanner.split_by(";"):
+        # 先尝试解析 WITH 语句
+        with_clause = parse_with_clause(statement_scanner)
+
+        if is_select_statement(statement_scanner):
+            statement_list.append(parse_select_statement(statement_scanner, with_clause=with_clause))
+        else:
+            raise SqlParseError(f"未知语句类型: {statement_scanner}")
+
+    return statement_list

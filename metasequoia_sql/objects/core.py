@@ -1482,9 +1482,15 @@ class SQLWithClause(SQLBase):
 
     @property
     def source(self) -> str:
-        table_str = ", \n".join(f"{table_name}({table_statement.source})"
-                                for table_name, table_statement in self.tables)
-        return f"WITH {table_str}"
+        if len(self.tables) > 0:
+            table_str = ", \n".join(f"{table_name}({table_statement.source})"
+                                    for table_name, table_statement in self.tables)
+            return f"WITH {table_str}"
+        else:
+            return ""
+
+    def is_empty(self):
+        return len(self.tables) == 0
 
 
 # ------------------------------ 语句层级 ------------------------------
@@ -1600,7 +1606,7 @@ class SQLSingleSelectStatement(SQLSelectStatement):
 
     @property
     def source(self) -> str:
-        with_clause_str = self.with_clause.source + "\n" if self.with_clause is not None else ""
+        with_clause_str = self.with_clause.source + "\n" if not self.with_clause.is_empty() else ""
         result = [self.select_clause.source]
         for clause in [self.from_clause, *self.join_clauses, self.where_clause, self.group_by_clause,
                        self.having_clause,
@@ -1693,7 +1699,7 @@ class SQLUnionSelectStatement(SQLSelectStatement):
 
     @property
     def source(self) -> str:
-        with_clause_str = self.with_clause.source + "\n" if self.with_clause is not None else ""
+        with_clause_str = self.with_clause.source + "\n" if not self.with_clause.is_empty() else ""
         return with_clause_str + "\n".join(element.source for element in self.elements)
 
     def get_from_used_table_list(self) -> List[str]:
