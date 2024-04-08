@@ -2,9 +2,8 @@
 Hive 语句相关元素对象
 """
 
-from typing import Dict, List, Optional
-
 from metasequoia_sql.objects.common import *
+from metasequoia_sql.objects.core import *
 
 
 class DDLColumnTypeHive(SQLColumnType):

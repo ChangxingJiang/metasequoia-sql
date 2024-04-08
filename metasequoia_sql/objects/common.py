@@ -5,21 +5,11 @@
 import abc
 from typing import Optional, List
 
-from metasequoia_sql import ast
-
 __all__ = [
     # ---------- 抽象基类 ----------
     "SQLBase",
 
-    # ---------- 单项式级别 ----------
-    # 单项式抽象基类
-    "SQLMonomial",
-
-    # 函数调用（及其子类字段类型）；变量引用
-    "SQLFunction", "SQLColumnType", "SQLVariable",
-
     # ---------- 其他类型 ----------
-    "SQLSimpleExpression",
     "DDLColumn",
     "DDLPrimaryKey",
     "DDLUniqueKey",
@@ -41,61 +31,6 @@ class SQLBase(abc.ABC):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} source={self.source}>"
-
-
-# ------------------------------ 单项式级别类 ------------------------------
-
-class SQLMonomial(SQLBase, abc.ABC):
-    """单项式级别抽象类"""
-
-
-class SQLFunction(SQLMonomial):
-    """函数调用语句"""
-
-    def __init__(self, name: str, params: List["SQLSimpleExpression"]):
-        self._name = name  # 函数名称
-        self._params = params  # 函数参数
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def params(self) -> List["SQLSimpleExpression"]:
-        return self._params
-
-    @property
-    def source(self) -> str:
-        if len(self.params) > 0:
-            type_params = "(" + ", ".join([param.source for param in self.params]) + ")"
-            return f"{self.name}{type_params}"
-        else:
-            return self.name
-
-
-class SQLColumnType(SQLFunction):
-    """DDL 中的字段类型
-
-    以是类型名称或函数调用（类型的注释）。因为在其他场景下，类型名称均不允许单独使用，所以在这里额外处理。
-    """
-
-    def __init__(self, name: str, params: Optional[List["SQLSimpleExpression"]] = None):
-        super().__init__(name, params if params is not None else [])
-
-
-class SQLVariable(SQLMonomial):
-    """变量引用语句"""
-
-    def __init__(self, name: str):
-        self._name = name.upper()  # 变量名称
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def source(self) -> str:
-        return self.name
 
 
 # ------------------------------ DDL 相关通用类 ------------------------------
@@ -129,7 +64,7 @@ class DDLColumn(SQLBase):
     def set_column_name(self, column_name: str) -> None:
         self._column_name = column_name
 
-    def set_column_type(self, column_type: "SQLColumnType") -> None:
+    def set_column_type(self, column_type) -> None:
         self._column_type = column_type
 
     def set_comment(self, comment: Optional[str]) -> None:
@@ -242,20 +177,6 @@ class DDLForeignKey(SQLBase):
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
         return f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) REFERENCES {self.master_table_name}({master_columns_str})"
-
-
-# ------------------------------ DSL 相关通用类 ------------------------------
-
-
-class SQLSimpleExpression(SQLMonomial):
-    """字段表达式"""
-
-    def __init__(self, tokens: List[ast.AST], alias: Optional[str] = None):
-        super().__init__(tokens)
-        self._alias = alias
-
-    def alias(self) -> Optional[str]:
-        return self._alias
 
 
 # ------------------------------ 表达式层级 ------------------------------

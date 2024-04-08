@@ -2,8 +2,6 @@
 MySQL 专用的语法对象
 """
 
-from typing import Optional, Dict, List
-
 from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.core import *
 
