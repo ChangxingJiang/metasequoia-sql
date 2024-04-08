@@ -2,6 +2,8 @@
 TODO 统一 SQLBase 的抽象方法：增加 get_used_column_list 和 get_used_table_list
 TODO 不返回 CURRENT_DATE、CURRENT_TIME、CURRENT_TIMESTAMP 作为字段
 TODO 增加 scanner 未解析完成的发现机制
+
+参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
 """
 
 import abc
@@ -73,6 +75,12 @@ class SQLEnumUnionType(enum.Enum):
     EXCEPT = ["EXCEPT"]
     INTERSECT = ["INTERSECT"]
     MINUS = ["MINUS"]
+
+
+class SQLInsertType(enum.Enum):
+    """插入类型"""
+    INSERT_INTO = ["INSERT", "INTO"]
+    INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
 
 
 # ------------------------------ 元素层级 ------------------------------
@@ -1201,6 +1209,42 @@ class SQLColumnExpression(SQLBase):
         return self.column.get_used_column_list()
 
 
+class SQLEqualExpression(SQLBase):
+    """等式表达式"""
+
+    def __init__(self, before_value: SQLGeneralExpression, after_value: SQLGeneralExpression):
+        self._before_value = before_value
+        self._after_value = after_value
+
+    @property
+    def before_value(self) -> SQLGeneralExpression:
+        return self._before_value
+
+    @property
+    def after_value(self) -> SQLGeneralExpression:
+        return self._after_value
+
+    @property
+    def source(self) -> str:
+        return f"{self.before_value.source} = {self.after_value.source}"
+
+
+class SQLPartitionExpression(SQLBase):
+    """分区表达式：PARTITION (<partition_expression>)"""
+
+    def __init__(self, partition_list: List[SQLEqualExpression]):
+        self._partition_list = partition_list
+
+    @property
+    def partition_list(self) -> List[SQLEqualExpression]:
+        return self._partition_list
+
+    @property
+    def source(self) -> str:
+        partition_list_str = ", ".join(partition.source for partition in self.partition_list)
+        return f"PARTITION ({partition_list_str})"
+
+
 # ------------------------------ 子句层级 ------------------------------
 
 
@@ -1756,6 +1800,109 @@ class SQLUnionSelectStatement(SQLSelectStatement):
             if isinstance(element, SQLSingleSelectStatement):
                 result.extend(element.get_order_by_used_column_list())
         return ordered_distinct(result)
+
+
+class SQLInsertStatement(SQLStatement, abc.ABC):
+    """INSERT 表达式
+
+    两个子类包含 VALUES 和 SELECT 两种方式
+
+    INSERT {INTO|OVERWRITE} [TABLE] <table_name_expression> [PARTITION (<partition_expression>)]
+    [(<colum_name_expression [,<column_name_expression> ...]>)]
+    {VALUES <value_expression> [,<value_expression> ...] | <select_statement>}
+    """
+
+    def __init__(self,
+                 with_clause: Optional[SQLWithClause],
+                 insert_type: SQLInsertType,
+                 has_table_keyword: bool,
+                 table_name: SQLTableNameExpression,
+                 partition: Optional[SQLPartitionExpression],
+                 columns: Optional[List[SQLColumnNameExpression]]):
+        super().__init__(with_clause)
+        self._insert_type = insert_type
+        self._has_table_keyword = has_table_keyword
+        self._table_name = table_name
+        self._partition = partition
+        self._columns = columns
+
+    @property
+    def insert_type(self) -> SQLInsertType:
+        return self._insert_type
+
+    @property
+    def has_table_keyword(self) -> bool:
+        return self._has_table_keyword
+
+    @property
+    def table_name(self) -> SQLTableNameExpression:
+        return self._table_name
+
+    @property
+    def partition(self) -> SQLPartitionExpression:
+        return self._partition
+
+    @property
+    def columns(self) -> Optional[List[SQLColumnExpression]]:
+        return self._columns
+
+    def _insert_str(self) -> str:
+        """INSERT语句的前半部分"""
+        insert_type_str = " ".join(self.insert_type.value)
+        table_keyword_str = "TABLE " if self.has_table_keyword else ""
+        partition_str = self.partition.source + " " if self.partition is not None else ""
+        if self.columns is not None:
+            columns_str = "(" + ", ".join(column.source for column in self.columns) + ") "
+        else:
+            columns_str = ""
+        return f"{insert_type_str} {table_keyword_str}{self.table_name.source} {partition_str}{columns_str}"
+
+
+class SQLInsertValuesStatement(SQLInsertStatement):
+    """INSERT ... VALUES ... 语句"""
+
+    def __init__(self,
+                 with_clause: Optional[SQLWithClause],
+                 insert_type: SQLInsertType,
+                 has_table_keyword: bool,
+                 table_name: SQLTableNameExpression,
+                 partition: Optional[SQLPartitionExpression],
+                 columns: Optional[List[SQLColumnNameExpression]],
+                 values: List[SQLValueExpression]):
+        super().__init__(with_clause, insert_type, has_table_keyword, table_name, partition, columns)
+        self._values = values
+
+    @property
+    def values(self) -> List[SQLValueExpression]:
+        return self._values
+
+    @property
+    def source(self) -> str:
+        values_str = ", ".join(value.source for value in self.values)
+        return f"{self._insert_str()}VALUES {values_str}"
+
+
+class SQLInsertSelectStatement(SQLInsertStatement):
+    """INSERT ... SELECT ... 语句"""
+
+    def __init__(self,
+                 with_clause: Optional[SQLWithClause],
+                 insert_type: SQLInsertType,
+                 has_table_keyword: bool,
+                 table_name: SQLTableNameExpression,
+                 partition: Optional[SQLPartitionExpression],
+                 columns: Optional[List[SQLColumnNameExpression]],
+                 select_statement: SQLSelectStatement):
+        super().__init__(with_clause, insert_type, has_table_keyword, table_name, partition, columns)
+        self._select_statement = select_statement
+
+    @property
+    def select_statement(self) -> SQLSelectStatement:
+        return self._select_statement
+
+    @property
+    def source(self) -> str:
+        return f"{self._insert_str()} {self.select_statement.source}"
 
 
 # ---------- 仅在部分 SQL 语言中使用的节点 ----------

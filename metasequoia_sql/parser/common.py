@@ -971,6 +971,28 @@ def parse_value_expression(scanner: TokenScanner) -> SQLValueExpression:
     return SQLValueExpression(values=values)
 
 
+def parse_equal_expression(scanner: TokenScanner) -> SQLEqualExpression:
+    """解析等式表达式"""
+    before_value = parse_general_expression(scanner)
+    scanner.match("=")
+    after_value = parse_general_expression(scanner)
+    return SQLEqualExpression(before_value=before_value, after_value=after_value)
+
+
+def is_partition_expression(scanner: TokenScanner) -> bool:
+    """判断是否可能为分区表达式"""
+    return scanner.search("PARTITION")
+
+
+def parse_partition_expression(scanner: TokenScanner) -> SQLPartitionExpression:
+    """解析分区表达式"""
+    scanner.match("PARTITION")
+    partition_list = []
+    for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        partition_list.append(parse_equal_expression(partition_scanner))
+    return SQLPartitionExpression(partition_list=partition_list)
+
+
 def maybe_limit_clause(scanner: TokenScanner) -> bool:
     """是否可能为 LIMIT 子句
 
@@ -1407,6 +1429,75 @@ def parse_select_statement(scanner: TokenScanner,
         return result[0]
 
 
+def is_insert_statement(scanner: TokenScanner) -> bool:
+    """判断是否为 INSERT 语句（已匹配过 WITH 语句才可以调用）"""
+    return scanner.search("INSERT")
+
+
+def parse_insert_statement(scanner: TokenScanner, with_clause: SQLWithClause) -> SQLInsertStatement:
+    """解析 INSERT 表达式"""
+    scanner.match("INSERT")
+
+    # 解析 INSERT 类型
+    if scanner.search_and_move("INTO"):
+        insert_type = SQLInsertType.INSERT_INTO
+    elif scanner.search_and_move("OVERWRITE"):
+        insert_type = SQLInsertType.INSERT_OVERWRITE
+    else:
+        raise SqlParseError(f"未知的 INSERT 类型: {scanner}")
+
+    # 匹配可能包含的 TABLE 关键字
+    has_table_keyword = scanner.search_and_move("TABLE")
+
+    # 匹配表名
+    table_name = parse_table_name_expression(scanner)
+
+    # 匹配分区表达式
+    if is_partition_expression(scanner):
+        partition = parse_partition_expression(scanner)
+    else:
+        partition = None
+
+    # 匹配列名列表
+    if scanner.now.is_parenthesis:
+        columns = []
+        for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+            columns.append(parse_column_name_expression(column_scanner))
+            if not column_scanner.is_finish:
+                raise SqlParseError(f"未解析完成的列名: {column_scanner}")
+    else:
+        columns = None
+
+    # 匹配 VALUES 类型
+    if scanner.search_and_move("VALUES"):
+        values = []
+        while scanner.now.is_parenthesis:
+            values.append(parse_value_expression(scanner))
+            scanner.search_and_move(",")
+
+        return SQLInsertValuesStatement(
+            with_clause=with_clause,
+            insert_type=insert_type,
+            has_table_keyword=has_table_keyword,
+            table_name=table_name,
+            partition=partition,
+            columns=columns,
+            values=values
+        )
+
+    if scanner.search("SELECT"):
+        select_statement = parse_select_statement(scanner, with_clause=SQLWithClause.empty())
+        return SQLInsertSelectStatement(
+            with_clause=with_clause,
+            insert_type=insert_type,
+            has_table_keyword=has_table_keyword,
+            table_name=table_name,
+            partition=partition,
+            columns=columns,
+            select_statement=select_statement
+        )
+
+
 def is_sub_query_parenthesis(scanner: TokenScanner) -> bool:
     """判断是否为子查询的插入语"""
     parenthesis_scanner: TokenScanner = scanner.get_as_children_scanner()
@@ -1468,3 +1559,7 @@ def parse(scanner: TokenScanner) -> List[SQLStatement]:
             raise SqlParseError(f"未知语句类型: {statement_scanner}")
 
     return statement_list
+
+
+if __name__ == "__main__":
+    print(parse_insert_statement(build_token_scanner("INSERT INTO Shohin VALUES ('0001', 'T恤' ,'衣服', 1000, 500, '2009-09-20');"), with_clause=SQLWithClause.empty()))
