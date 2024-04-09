@@ -1,9 +1,10 @@
-from metasequoia_sql.parser.mysql_parser import parse_mysql_create_table_statement
+from metasequoia_sql.parser.common import parse_create_table_statement
 from metasequoia_sql.translate import *
+from metasequoia_sql.common.token_scanner import build_token_scanner
 
 if __name__ == "__main__":
     statement = ddl_create_table_statement_to_hive(
-        ddl_create_table_statement_from_mysql(parse_mysql_create_table_statement("""
+        parse_create_table_statement(build_token_scanner("""
 CREATE TABLE `manual_annotation` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `video_id` varchar(20) NOT NULL COMMENT '视频ID(B站ID)',

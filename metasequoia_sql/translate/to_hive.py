@@ -3,26 +3,18 @@
 """
 
 from metasequoia_sql.objects.hive import *
-from metasequoia_sql.translate.full_statement import *
 
 
-def ddl_column_type_to_hive(column_type: DDLColumnTypeFull) -> DDLColumnTypeExpressionHive:
-    return DDLColumnTypeExpressionHive(
-        name=column_type.name,
-        params=column_type.params
-    )
-
-
-def ddl_column_to_hive(column: DDLColumnFull) -> DDLColumnExpressionHive:
-    return DDLColumnExpressionHive(
+def ddl_column_to_hive(column: DDLColumnExpression) -> DDLColumnExpression:
+    return DDLColumnExpression(
         column_name=column.column_name,
-        column_type=ddl_column_type_to_hive(column.column_type),
+        column_type=column.column_type,
         comment=column.comment
     )
 
 
 def ddl_create_table_statement_to_hive(
-        create_table_statement: DDLCreateTableStatementFull
+        create_table_statement: DDLCreateTableStatement
 ) -> DDLCreateTableStatementHive:
     return DDLCreateTableStatementHive(
         schema_name=create_table_statement.schema_name,

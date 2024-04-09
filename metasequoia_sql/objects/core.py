@@ -2163,29 +2163,153 @@ class DDLCreateTableStatement(SQLBase):
                  default_charset: Optional[str] = None,
                  collate: Optional[str] = None,
                  row_format: Optional[str] = None,
-                 states_persistent: Optional[str] = None
+                 states_persistent: Optional[str] = None,
+                 partition_by: List[DDLColumnExpression] = None
                  ):
         self._schema_name = schema_name
         self._table_name = table_name
         self._comment = comment
+        self._if_not_exists = if_not_exists
+        self._columns = columns
+        self._primary_key = primary_key
+        self._unique_key = unique_key
+        self._key = key
+        self._fulltext_key = fulltext_key
+        self._foreign_key = foreign_key
+        self._engine = engine
+        self._auto_increment = auto_increment
+        self._default_charset = default_charset
+        self._collate = collate
+        self._row_format = row_format
+        self._states_persistent = states_persistent
+        self._partition_by = partition_by if partition_by is not None else []
 
     @property
     def schema_name(self):
         return self._schema_name
 
-    def set_schema_name(self, schema_name: str):
-        self._schema_name = schema_name
-
     @property
     def table_name(self):
         return self._table_name
-
-    def set_table_name(self, table_name: str):
-        self._table_name = table_name
 
     @property
     def comment(self):
         return self._comment
 
-    def set_comment(self, comment: str):
-        self._comment = comment
+    @property
+    def if_not_exists(self) -> bool:
+        return self._if_not_exists
+
+    @property
+    def columns(self) -> List[DDLColumnExpression]:
+        return self._columns
+
+    @property
+    def primary_key(self) -> DDLPrimaryIndexExpression:
+        return self._primary_key
+
+    @property
+    def unique_key(self) -> List[DDLUniqueIndexExpression]:
+        return self._unique_key
+
+    @property
+    def key(self) -> List[DDLNormalIndexExpression]:
+        return self._key
+
+    @property
+    def fulltext_key(self) -> List[DDLFulltextIndexExpression]:
+        return self._fulltext_key
+
+    @property
+    def foreign_key(self) -> List[DDLForeignKeyExpression]:
+        return self._foreign_key
+
+    @property
+    def engine(self) -> Optional[str]:
+        return self._engine
+
+    @property
+    def auto_increment(self) -> Optional[str]:
+        return self._auto_increment
+
+    @property
+    def default_charset(self) -> Optional[str]:
+        return self._default_charset
+
+    @property
+    def collate(self) -> Optional[str]:
+        return self._collate
+
+    @property
+    def row_format(self) -> Optional[str]:
+        return self._row_format
+
+    @property
+    def states_persistent(self) -> Optional[str]:
+        return self._states_persistent
+
+    @property
+    def partition_by(self) -> List[DDLColumnExpression]:
+        return self._partition_by
+
+    def set_schema_name(self, schema_name: str):
+        self._schema_name = schema_name
+
+    def set_table_name(self, table_name: str):
+        self._table_name = table_name
+
+    def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):
+        """更新每个字段的变量类型"""
+        for column in self.columns:
+            old_column_type = column.column_type.name
+            new_column_type = hashmap[old_column_type.upper()]
+            column.column_type._name = new_column_type
+            if remove_param is True:
+                column.column_type._function_params = []
+
+    def append_column(self, column: DDLColumnExpression):
+        """添加字段"""
+        self.columns.append(column)
+
+    def append_partition_by_column(self, column: DDLColumnExpression):
+        """添加分区字段"""
+
+    @property
+    def source(self, n_indent: int = 4) -> str:
+        indentation = " " * n_indent  # 缩进字符串
+        result = "CREATE TABLE"
+        if self.if_not_exists is True:
+            result += " IF NOT EXISTS"
+        result += " "
+        if self._schema_name is not None:
+            result += f"`{self._schema_name}`."
+        result += f"`{self._table_name}`(\n"
+        columns_and_keys = []
+        for column in self.columns:
+            columns_and_keys.append(f"{indentation}{column.source}")
+        if self.primary_key is not None:
+            columns_and_keys.append(f"{indentation}{self.primary_key.source}")
+        for unique_key in self.unique_key:
+            columns_and_keys.append(f"{indentation}{unique_key.source}")
+        for key in self.key:
+            columns_and_keys.append(f"{indentation}{key.source}")
+        for fulltext_key in self.fulltext_key:
+            columns_and_keys.append(f"{indentation}{fulltext_key.source}")
+        for foreign_key in self.foreign_key:
+            columns_and_keys.append(f"{indentation}{foreign_key.source}")
+        result += ",\n".join(columns_and_keys)
+        result += "\n)"
+        if self.engine is not None:
+            result += f" ENGINE = {self.engine}"
+        if self.auto_increment is not None:
+            result += f" AUTO_INCREMENT = {self.auto_increment}"
+        if self.default_charset is not None:
+            result += f" DEFAULT CHARSET = {self.default_charset}"
+        if self.collate is not None:
+            result += f" COLLATE = {self.collate}"
+        if self.states_persistent is not None:
+            result += f" STATS_PERSISTENT = {self.states_persistent}"
+        if self._comment is not None:
+            result += f" COMMENT = {self._comment}"
+        result += ";"
+        return result
