@@ -6,7 +6,7 @@ import json
 import os
 import subprocess
 
-from metasequoia_sql.common.token_scanner import build_scanner
+from metasequoia_sql.common.token_scanner import build_token_scanner
 from metasequoia_sql.parser.common import parse_select_statement, maybe_select_statement
 from metasequoia_sql.objects.core import SQLSingleSelectStatement
 from scripts.demo import sql_basic_tutorial
@@ -30,7 +30,7 @@ def make_sql_basic_tutorial(force: bool = False):
         # 生成引用信息
         file.write("import unittest\n")
         file.write("\n")
-        file.write("from metasequoia_sql.common.token_scanner import build_scanner\n")
+        file.write("from metasequoia_sql.common.token_scanner import build_token_scanner\n")
         file.write("from metasequoia_sql.parser.common import parse_select_statement\n")
         file.write("from scripts.demo.sql_basic_tutorial import *\n")
         file.write("\n")
@@ -46,7 +46,7 @@ def make_sql_basic_tutorial(force: bool = False):
 
             # 词法分析
             sql = getattr(sql_basic_tutorial, name)
-            scanner = build_scanner(sql)
+            scanner = build_token_scanner(sql)
 
             if not maybe_select_statement(scanner):
                 continue  # 当前只处理 SELECT 语句
@@ -70,7 +70,7 @@ def make_sql_basic_tutorial(force: bool = False):
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")
-            file.write(f"        statement = parse_select_statement(build_scanner({name}))\n")
+            file.write(f"        statement = parse_select_statement(build_token_scanner({name}))\n")
 
             if isinstance(statement, SQLSingleSelectStatement):
                 print(f"DISTINCT: {statement.select_clause.distinct}", )

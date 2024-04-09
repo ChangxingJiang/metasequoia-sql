@@ -1,9 +1,9 @@
-from metasequoia_sql.parser.mysql_parser import parse_mysql_create_table_statement
+from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql.parser.common import parse_create_table_statement
 from metasequoia_sql.translate import *
 
 if __name__ == "__main__":
-    statement = ddl_create_table_statement_to_hive(
-        ddl_create_table_statement_from_mysql(parse_mysql_create_table_statement("""
+    statement = parse_create_table_statement(build_token_scanner("""
 CREATE TABLE `manual_annotation` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `video_id` varchar(20) NOT NULL COMMENT '视频ID(B站ID)',
@@ -30,5 +30,5 @@ CREATE TABLE `manual_annotation` (
   KEY `index_start_date` (`start_date`),
   KEY `index_series_id` (`series_id`),
   FULLTEXT KEY `fulltext_video_name` (`video_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频'""")))
-    print(statement.source())
+) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频'"""))
+    print(statement.source(DataSource.HIVE))
