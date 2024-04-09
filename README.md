@@ -38,7 +38,7 @@ from metasequoia_sql.parser.common import parse_create_table_statement
 from metasequoia_sql.translate import *
 from metasequoia_sql.common.token_scanner import build_token_scanner
 
-statement = ddl_create_table_statement_to_hive(parse_create_table_statement(build_token_scanner("your sql")))
+statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
 
 ## 实现原理

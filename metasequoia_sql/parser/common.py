@@ -416,14 +416,14 @@ def _parse_function_name(scanner: TokenScanner) -> Tuple[Optional[str], str]:
     """解析函数表达式函数的 schema 名和 function 名"""
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_parenthesis):
-        return None, scanner.pop().source
+        return None, scanner.pop_as_source()
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_name and
             scanner.next3 is not None and scanner.next3.is_parenthesis):
-        schema_name = scanner.pop().source
+        schema_name = scanner.pop_as_source()
         scanner.pop()
-        return schema_name, scanner.pop().source
+        return schema_name, scanner.pop_as_source()
     raise SqlParseError(f"无法解析为函数表达式: {scanner}")
 
 
@@ -544,14 +544,14 @@ def parse_column_name_expression(scanner: TokenScanner) -> SQLColumnNameExpressi
     """
     if (scanner.now.is_maybe_name and
             (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))):
-        return SQLColumnNameExpression(None, scanner.pop().source)
+        return SQLColumnNameExpression(None, scanner.pop_as_source())
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_name and
             (scanner.next3 is None or not scanner.next3.is_parenthesis)):
-        table_name = scanner.pop().source
+        table_name = scanner.pop_as_source()
         scanner.pop()
-        column_name = scanner.pop().source
+        column_name = scanner.pop_as_source()
         return SQLColumnNameExpression(table_name, column_name)
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
@@ -704,14 +704,14 @@ def parse_table_name_expression(scanner: TokenScanner) -> Union[SQLTableNameExpr
     """
     if (scanner.now.is_maybe_name and
             (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))):
-        return SQLTableNameExpression(None, scanner.pop().source)
+        return SQLTableNameExpression(None, scanner.pop_as_source())
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_name and
             (scanner.next3 is None or not scanner.next3.is_parenthesis)):
-        schema_name = scanner.pop().source
+        schema_name = scanner.pop_as_source()
         scanner.pop()
-        table_name = scanner.pop().source
+        table_name = scanner.pop_as_source()
         return SQLTableNameExpression(schema_name, table_name)
     if is_sub_query_parenthesis(scanner):
         return parse_sub_query_parenthesis(scanner)
@@ -926,7 +926,7 @@ def parse_wildcard_expression(scanner: TokenScanner) -> SQLWildcardExpression:
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_wildcard):
-        schema_name = scanner.pop().source
+        schema_name = scanner.pop_as_source()
         scanner.pop()
         scanner.pop()
         return SQLWildcardExpression(schema=schema_name)
