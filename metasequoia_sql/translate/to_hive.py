@@ -6,15 +6,15 @@ from metasequoia_sql.objects.hive import *
 from metasequoia_sql.translate.full_statement import *
 
 
-def ddl_column_type_to_hive(column_type: DDLColumnTypeFull) -> DDLColumnTypeHive:
-    return DDLColumnTypeHive(
+def ddl_column_type_to_hive(column_type: DDLColumnTypeFull) -> DDLColumnTypeExpressionHive:
+    return DDLColumnTypeExpressionHive(
         name=column_type.name,
         params=column_type.params
     )
 
 
-def ddl_column_to_hive(column: DDLColumnFull) -> DDLColumnHive:
-    return DDLColumnHive(
+def ddl_column_to_hive(column: DDLColumnFull) -> DDLColumnExpressionHive:
+    return DDLColumnExpressionHive(
         column_name=column.column_name,
         column_type=ddl_column_type_to_hive(column.column_type),
         comment=column.comment

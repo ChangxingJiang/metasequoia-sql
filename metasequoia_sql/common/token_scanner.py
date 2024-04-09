@@ -39,6 +39,10 @@ class TokenScanner(BaseScanner):
 
         super().__init__(filtered_elements, pos)
 
+    @property
+    def now_is_parenthesis(self):
+        return self.now.is_parenthesis
+
     def search(self, *tokens: str) -> bool:
         """从当前配置开始匹配 tokens
 

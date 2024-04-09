@@ -12,7 +12,6 @@ from typing import Optional, List, Tuple, Union, Dict
 
 from metasequoia_sql.common.basic import ordered_distinct
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.objects.common import SQLBase
 
 
 class SQLEnumJoinType(enum.Enum):
@@ -81,6 +80,19 @@ class SQLInsertType(enum.Enum):
     """插入类型"""
     INSERT_INTO = ["INSERT", "INTO"]
     INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
+
+
+class SQLBase(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def source(self) -> str:
+        """返回 SQL 源码"""
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} source={self.source}>"
 
 
 # ------------------------------ 元素层级 ------------------------------
@@ -1920,8 +1932,8 @@ class SQLMod(SQLComputeOperator):
 
 # ---------- DDL 中使用的节点 ----------
 
-class SQLColumnType:
-    """字段类型"""
+class DDLColumnTypeExpression(SQLBase):
+    """字段类型表达式"""
 
     def __init__(self, name: str, params: List[SQLGeneralExpression]):
         self._name = name  # 函数名称
@@ -1942,3 +1954,238 @@ class SQLColumnType:
             return f"{self.name}{type_params}"
         else:
             return self.name
+
+
+class DDLForeignKeyExpression(SQLBase):
+    """外键表达式"""
+
+    def __init__(self, constraint_name: str, slave_columns: List[str], master_table_name: str,
+                 master_columns: List[str]):
+        """
+
+        Parameters
+        ----------
+        constraint_name : str
+            外键约束名称
+        slave_columns : List[str]
+            从表的字段
+        master_table_name : str
+            主表名称
+        master_columns : List[str]
+            主表的字段名
+        """
+        self.constraint_name = constraint_name
+        self.slave_columns = slave_columns
+        self.master_table_name = master_table_name
+        self.master_columns = master_columns
+
+    @property
+    def source(self) -> str:
+        slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
+        master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
+        return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) "
+                f"REFERENCES {self.master_table_name}({master_columns_str})")
+
+
+class DDLIndexExpression(SQLBase, abc.ABC):
+    """声明索引表达式"""
+
+    def __init__(self, name: Optional[str], columns: List[str]):
+        self._name = name
+        self._columns = columns
+
+    @property
+    def name(self) -> Optional[str]:
+        return self._name
+
+    @property
+    def columns(self) -> List[str]:
+        return self._columns
+
+
+class DDLPrimaryIndexExpression(DDLIndexExpression):
+    """主键索引声明表达式"""
+
+    def __init__(self, columns: List[str]):
+        super().__init__(None, columns)
+
+    @property
+    def source(self) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
+
+
+class DDLUniqueIndexExpression(DDLIndexExpression):
+    @property
+    def source(self) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"UNIQUE KEY {self.name} ({columns_str})"
+
+
+class DDLNormalIndexExpression(DDLIndexExpression):
+    @property
+    def source(self) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"KEY {self.name} ({columns_str})"
+
+
+class DDLFulltextIndexExpression(DDLIndexExpression):
+    @property
+    def source(self) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"FULLTEXT KEY {self.name} ({columns_str})"
+
+
+class DDLColumnExpression(SQLBase):
+    """【DDL】建表语句中的字段信息"""
+
+    def __init__(self,
+                 column_name: str,
+                 column_type: DDLColumnTypeExpression,
+                 comment: Optional[str] = None,
+                 is_unsigned: bool = False,
+                 is_zerofill: bool = False,
+                 character_set: Optional[str] = None,
+                 collate: Optional[str] = None,
+                 is_allow_null: bool = False,
+                 is_not_null: bool = False,
+                 is_auto_increment: bool = False,
+                 default: Optional[SQLGeneralExpression] = None,
+                 on_update: Optional[SQLGeneralExpression] = None
+                 ):
+        self._column_name = column_name.strip("`")
+        self._column_type = column_type
+        self._comment = comment
+        self._is_unsigned = is_unsigned
+        self._is_zerofill = is_zerofill
+        self._character_set = character_set
+        self._collate = collate
+        self._is_allow_null = is_allow_null  # 是否显式地允许 NULL 值
+        self._is_not_null = is_not_null
+        self._is_auto_increment = is_auto_increment
+        self._default = default
+        self._on_update = on_update
+
+    @property
+    def column_name(self) -> str:
+        return f"`{self._column_name}`"
+
+    @property
+    def column_name_without_quote(self) -> str:
+        return self._column_name
+
+    @property
+    def column_type(self) -> DDLColumnTypeExpression:
+        return self._column_type
+
+    @property
+    def comment(self) -> Optional[str]:
+        return self._comment
+
+    @property
+    def is_unsigned(self) -> bool:
+        return self._is_unsigned
+
+    @property
+    def is_zerofill(self) -> bool:
+        return self._is_zerofill
+
+    @property
+    def character_set(self) -> Optional[str]:
+        return self._character_set
+
+    @property
+    def collate(self) -> Optional[str]:
+        return self._collate
+
+    @property
+    def is_allow_null(self) -> bool:
+        return self._is_allow_null
+
+    @property
+    def is_not_null(self) -> bool:
+        return self._is_not_null
+
+    @property
+    def is_auto_increment(self) -> bool:
+        return self._is_auto_increment
+
+    @property
+    def default(self) -> Optional[SQLGeneralExpression]:
+        return self._default
+
+    @property
+    def on_update(self) -> Optional[SQLGeneralExpression]:
+        return self._on_update
+
+    @property
+    def source(self) -> str:
+        res = f"{self._column_name} {self.column_type.source}"
+        if self.is_unsigned is True:
+            res += " UNSIGNED"
+        if self.is_zerofill is True:
+            res += " ZEROFILL"
+        if self.character_set is not None:
+            res += f" CHARACTER SET {self.character_set}"
+        if self.collate is not None:
+            res += f" COLLATE {self.collate}"
+        if self.is_allow_null is True:
+            res += " NULL"
+        if self.is_not_null is True:
+            res += " NOT NULL"
+        if self.is_auto_increment is True:
+            res += " AUTO_INCREMENT"
+        if self.default is not None:
+            res += f" DEFAULT {self.default.source}"
+        if self.on_update is not None:
+            res += f" ON UPDATE {self.on_update.source}"
+        if self.comment is not None:
+            res += f" COMMENT {self.comment}"
+        return res
+
+
+class DDLCreateTableStatement(SQLBase):
+    """【DDL】CREATE TABLE 语句"""
+
+    def __init__(self,
+                 schema_name: Optional[str] = None,
+                 table_name: Optional[str] = None,
+                 comment: Optional[str] = None,
+                 if_not_exists: bool = False,
+                 columns: Optional[List[DDLColumnExpression]] = None,
+                 primary_key: Optional[DDLPrimaryIndexExpression] = None,
+                 unique_key: Optional[List[DDLUniqueIndexExpression]] = None,
+                 key: Optional[List[DDLNormalIndexExpression]] = None,
+                 fulltext_key: Optional[List[DDLFulltextIndexExpression]] = None,
+                 foreign_key: List[DDLForeignKeyExpression] = None,
+                 engine: Optional[str] = None,
+                 auto_increment: Optional[int] = None,
+                 default_charset: Optional[str] = None,
+                 collate: Optional[str] = None,
+                 row_format: Optional[str] = None,
+                 states_persistent: Optional[str] = None
+                 ):
+        self._schema_name = schema_name
+        self._table_name = table_name
+        self._comment = comment
+
+    @property
+    def schema_name(self):
+        return self._schema_name
+
+    def set_schema_name(self, schema_name: str):
+        self._schema_name = schema_name
+
+    @property
+    def table_name(self):
+        return self._table_name
+
+    def set_table_name(self, table_name: str):
+        self._table_name = table_name
+
+    @property
+    def comment(self):
+        return self._comment
+
+    def set_comment(self, comment: str):
+        self._comment = comment

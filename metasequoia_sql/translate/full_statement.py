@@ -5,7 +5,6 @@
 from typing import Optional, List
 
 from metasequoia_sql.errors import FullStatementCalledSource
-from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.core import SQLGeneralExpression
 
 __all__ = ["DDLColumnTypeFull", "DDLColumnFull", "DDLPrimaryKeyFull", "DDLUniqueKeyFull", "DDLKeyFull",

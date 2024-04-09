@@ -372,7 +372,7 @@ def parse_cast_function_expression(scanner: TokenScanner) -> SQLCastFunctionExpr
     scanner.match("AS")
     signed = scanner.search_and_move("SIGNED")
     cast_type = parse_cast_data_type(scanner)
-    if not scanner.is_finish and scanner.now.is_parenthesis:
+    if not scanner.is_finish and scanner.now_is_parenthesis:
         parenthesis_scanner = scanner.pop_as_children_scanner()
         cast_params: Optional[List[SQLGeneralExpression]] = []
         for param_scanner in parenthesis_scanner.split_by(","):
@@ -675,7 +675,7 @@ def _parse_general_expression_element(scanner: TokenScanner, maybe_window: bool)
         return parse_literal_expression(scanner)
     if maybe_column_name_expression(scanner):
         return parse_column_name_expression(scanner)
-    if scanner.now.is_parenthesis:
+    if scanner.now_is_parenthesis:
         return parse_general_parenthesis(scanner)
     if maybe_wildcard_expression(scanner):
         return parse_wildcard_expression(scanner)
@@ -828,7 +828,7 @@ def parse_condition_expression(scanner: TokenScanner) -> SQLConditionExpression:
     def parse_single():
         if scanner.search("NOT"):
             elements.append(parse_logical_operator(scanner))
-        if scanner.now.is_parenthesis:
+        if scanner.now_is_parenthesis:
             elements.append(parse_condition_expression(scanner.pop_as_children_scanner()))  # 插入语，子句也应该是一个条件表达式
         else:
             elements.append(parse_bool_expression(scanner))
@@ -1148,7 +1148,7 @@ def parse_group_by_clause(scanner: TokenScanner) -> SQLGroupByClause:
     if scanner.search_and_move("GROUPING", "SETS"):
         grouping_list = []
         for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            if grouping_scanner.now.is_parenthesis:
+            if grouping_scanner.now_is_parenthesis:
                 parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
                 columns_list = [parse_general_expression(parenthesis_scanner)
                                 for parenthesis_scanner in parenthesis_scanner_list]
@@ -1459,7 +1459,7 @@ def parse_insert_statement(scanner: TokenScanner, with_clause: SQLWithClause) ->
         partition = None
 
     # 匹配列名列表
-    if scanner.now.is_parenthesis:
+    if scanner.now_is_parenthesis:
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             columns.append(parse_column_name_expression(column_scanner))
@@ -1471,7 +1471,7 @@ def parse_insert_statement(scanner: TokenScanner, with_clause: SQLWithClause) ->
     # 匹配 VALUES 类型
     if scanner.search_and_move("VALUES"):
         values = []
-        while scanner.now.is_parenthesis:
+        while scanner.now_is_parenthesis:
             values.append(parse_value_expression(scanner))
             scanner.search_and_move(",")
 
@@ -1523,19 +1523,156 @@ def parse_in_parenthesis(scanner: TokenScanner) -> SQLGeneralExpression:
     return parse_value_expression(scanner)
 
 
-def parse_sql_column_type(scanner: TokenScanner) -> SQLColumnType:
-    """解析字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
+def parse_ddl_column_type_expression(scanner: TokenScanner) -> DDLColumnTypeExpression:
+    """解析 DDL 的字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
     # 解析字段类型名称
     function_name: str = scanner.pop_as_source()
 
     # 解析字段类型参数
-    if not scanner.is_finish and scanner.now.is_parenthesis:
+    if not scanner.is_finish and scanner.now_is_parenthesis:
         function_params: List[SQLGeneralExpression] = []
         for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             function_params.append(parse_general_expression(param_scanner))
-        return SQLColumnType(function_name, function_params)
+        return DDLColumnTypeExpression(function_name, function_params)
     else:
-        return SQLColumnType(function_name, [])
+        return DDLColumnTypeExpression(function_name, [])
+
+
+def parse_ddl_column_expression(scanner: TokenScanner) -> DDLColumnExpression:
+    """解析 DDL 的字段表达式"""
+    # 解析顺序固定的信息
+    column_name = scanner.pop_as_source()
+    column_type = parse_ddl_column_type_expression(scanner)
+
+    # 解析顺序可能不定的字段信息
+    comment: Optional[str] = None
+    is_unsigned: bool = False
+    is_zerofill: bool = False
+    character_set: Optional[str] = None
+    collate: Optional[str] = None
+    is_allow_null: bool = False
+    is_not_null: bool = False
+    is_auto_increment: bool = False
+    default: Optional[SQLGeneralExpression] = None
+    on_update: Optional[SQLGeneralExpression] = None
+    while not scanner.is_finish:
+        if scanner.search_and_move("NOT", "NULL"):
+            is_not_null = True
+        elif scanner.search_and_move("NULL"):
+            is_allow_null = True
+        elif scanner.search_and_move("CHARACTER", "SET"):
+            character_set = scanner.pop_as_source()
+        elif scanner.search_and_move("COLLATE"):
+            collate = scanner.pop_as_source()
+        elif scanner.search_and_move("DEFAULT"):
+            default = parse_general_expression(scanner)
+        elif scanner.search_and_move("COMMENT"):
+            comment = scanner.pop_as_source()
+        elif scanner.search_and_move("ON", "UPDATE"):  # ON UPDATE
+            on_update = parse_general_expression(scanner)
+        elif scanner.search_and_move("AUTO_INCREMENT"):
+            is_auto_increment = True
+        elif scanner.search_and_move("UNSIGNED"):
+            is_unsigned = True
+        elif scanner.search_and_move("ZEROFILL"):
+            is_zerofill = True
+        else:
+            raise SqlParseError(f"无法解析的 DDL 字段表达式的字段属性: {scanner}")
+
+    # 构造 DDL 字段表达式对象
+    return DDLColumnExpression(
+        column_name=column_name,
+        column_type=column_type,
+        comment=comment,
+        is_unsigned=is_unsigned,
+        is_zerofill=is_zerofill,
+        character_set=character_set,
+        collate=collate,
+        is_allow_null=is_allow_null,
+        is_not_null=is_not_null,
+        is_auto_increment=is_auto_increment,
+        default=default,
+        on_update=on_update
+    )
+
+
+def is_ddl_primary_index_expression(scanner: TokenScanner) -> bool:
+    """判断是否为主键表达式"""
+    return scanner.search("PRIMARY", "KEY")
+
+
+def parse_ddl_primary_index_expression(scanner: TokenScanner) -> DDLPrimaryIndexExpression:
+    """解析主键表达式"""
+    scanner.match("PRIMARY", "KEY")
+    columns = [column_scanner.pop_as_source()
+               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    return DDLPrimaryIndexExpression(columns=columns)
+
+
+def is_ddl_unique_index_expression(scanner: TokenScanner) -> bool:
+    """判断是否为唯一键表达式"""
+    return scanner.search("UNIQUE", "KEY")
+
+
+def parse_ddl_unique_index_expression(scanner: TokenScanner) -> DDLUniqueIndexExpression:
+    """解析唯一键表达式"""
+    scanner.match("UNIQUE", "KEY")
+    name = scanner.pop_as_source()
+    columns = [column_scanner.pop_as_source()
+               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    return DDLUniqueIndexExpression(name=name, columns=columns)
+
+
+def is_ddl_normal_index_expression(scanner: TokenScanner) -> bool:
+    """判断是否为一般索引表达式"""
+    return scanner.search("KEY")
+
+
+def parse_ddl_normal_index_expression(scanner: TokenScanner) -> DDLNormalIndexExpression:
+    """解析一般索引表达式"""
+    scanner.match("KEY")
+    name = scanner.pop_as_source()
+    columns = [column_scanner.pop_as_source()
+               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    return DDLNormalIndexExpression(name=name, columns=columns)
+
+
+def is_ddl_fulltext_expression(scanner: TokenScanner) -> bool:
+    """判断是否为全文索引表达式"""
+    return scanner.search("FULLTEXT", "KEY")
+
+
+def parse_ddl_fulltext_expression(scanner: TokenScanner) -> DDLFulltextIndexExpression:
+    """解析全文索引表达式"""
+    scanner.match("FULLTEXT", "KEY")
+    name = scanner.pop_as_source()
+    columns = [column_scanner.pop_as_source()
+               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    return DDLFulltextIndexExpression(name=name, columns=columns)
+
+
+def is_ddl_foreign_key_expression(scanner: TokenScanner) -> bool:
+    """判断是否为外键表达式"""
+    return scanner.search("CONSTRAINT")
+
+
+def parse_dll_foreign_key_expression(scanner: TokenScanner) -> DDLForeignKeyExpression:
+    """解析外键表达式"""
+    scanner.match("CONSTRAINT")
+    constraint_name = scanner.pop_as_source()
+    scanner.match("FOREIGN", "KEY")
+    slave_columns = [column_scanner.pop_as_source()
+                     for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    scanner.match("REFERENCES")
+    master_table_name = scanner.pop_as_source()
+    master_columns = [column_scanner.pop_as_source()
+                      for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    return DDLForeignKeyExpression(
+        constraint_name=constraint_name,
+        slave_columns=slave_columns,
+        master_table_name=master_table_name,
+        master_columns=master_columns
+    )
 
 
 def parse(scanner: TokenScanner) -> List[SQLStatement]:
@@ -1562,4 +1699,6 @@ def parse(scanner: TokenScanner) -> List[SQLStatement]:
 
 
 if __name__ == "__main__":
-    print(parse_insert_statement(build_token_scanner("INSERT INTO Shohin VALUES ('0001', 'T恤' ,'衣服', 1000, 500, '2009-09-20');"), with_clause=SQLWithClause.empty()))
+    print(parse_insert_statement(
+        build_token_scanner("INSERT INTO Shohin VALUES ('0001', 'T恤' ,'衣服', 1000, 500, '2009-09-20');"),
+        with_clause=SQLWithClause.empty()))

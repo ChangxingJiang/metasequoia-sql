@@ -2,15 +2,14 @@
 Hive 语句相关元素对象
 """
 
-from metasequoia_sql.objects.common import *
 from metasequoia_sql.objects.core import *
 
 
-class DDLColumnTypeHive(SQLColumnType):
+class DDLColumnTypeExpressionHive(DDLColumnTypeExpression):
     """【DDL】Hive 的字段类型对象"""
 
 
-class DDLColumnHive(DDLColumn):
+class DDLColumnExpressionHive(DDLColumnExpression):
     """【DDL】Hive 建表语句或修改表结构语句中的字段信息"""
 
 
@@ -22,18 +21,18 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
                  table_name: Optional[str] = None,
                  comment: Optional[str] = None,
                  if_not_exists: bool = False,
-                 columns: List[DDLColumnHive] = None,
-                 partition_by: List[DDLColumnHive] = None
+                 columns: List[DDLColumnExpressionHive] = None,
+                 partition_by: List[DDLColumnExpressionHive] = None
                  ):
         super().__init__(schema_name=schema_name, table_name=table_name, comment=comment)
         self.if_not_exists = if_not_exists
-        self.columns: List[DDLColumnHive] = columns if columns is not None else []
-        self.partition_by: List[DDLColumnHive] = partition_by if partition_by is not None else []
+        self.columns: List[DDLColumnExpressionHive] = columns if columns is not None else []
+        self.partition_by: List[DDLColumnExpressionHive] = partition_by if partition_by is not None else []
 
     def set_if_not_exists(self, if_not_exists: bool):
         self.if_not_exists = if_not_exists
 
-    def append_column(self, column: DDLColumnHive):
+    def append_column(self, column: DDLColumnExpressionHive):
         """添加字段"""
         self.columns.append(column)
 
@@ -46,7 +45,7 @@ class DDLCreateTableStatementHive(DDLCreateTableStatement):
             if remove_param is True:
                 column.column_type._function_params = []
 
-    def append_partition_by_column(self, column: DDLColumnHive):
+    def append_partition_by_column(self, column: DDLColumnExpressionHive):
         """添加分区字段"""
         self.partition_by.append(column)
 
