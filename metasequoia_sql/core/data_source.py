@@ -9,5 +9,9 @@ __all__ = ["DataSource"]
 
 class DataSource(enum.Enum):
     """数据源类型（即 SQL 语句类型）"""
-    MYSQL = "MYSQL"
-    HIVE = "HIVE"
+    MYSQL = "MySQL"
+    HIVE = "Hive"
+    ORACLE = "Oracle"
+    DB2 = "DB2"
+    POSTGRE_SQL = "PostgreSQL"
+    SQL_SERVER = "SQL Server"

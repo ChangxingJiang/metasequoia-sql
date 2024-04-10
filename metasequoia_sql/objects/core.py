@@ -17,6 +17,7 @@ from metasequoia_sql.core.keyword.insert_type import SQLInsertType
 from metasequoia_sql.core.keyword.join_type import SQLJoinType
 from metasequoia_sql.core.keyword.order_type import SQLOrderType
 from metasequoia_sql.core.keyword.union_type import SQLUnionType
+from metasequoia_sql.core.operator.compute_operator import SQLComputeOperator
 from metasequoia_sql.errors import SqlParseError
 
 
@@ -55,65 +56,6 @@ class SQLEnumCastDataType(enum.Enum):
 
 
 # ------------------------------ 元素层级 ------------------------------
-
-
-class SQLComputeOperator(SQLBase, abc.ABC):
-    """计算运算符"""
-
-    @staticmethod
-    def get_used_column_list() -> List[str]:
-        """获取使用的字段列表"""
-        return []
-
-
-class SQLPlus(SQLComputeOperator):
-    """加法运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "+"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLSubtract(SQLComputeOperator):
-    """减法运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "-"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLMultiple(SQLComputeOperator):
-    """乘法运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "*"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLDivide(SQLComputeOperator):
-    """除法运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "/"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLConcat(SQLComputeOperator):
-    """字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "||"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
 
 
 class SQLCompareOperator(SQLBase, abc.ABC):
@@ -649,7 +591,7 @@ class SQLComputeExpression(SQLGeneralExpression):
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return " ".join(element.source() for element in self.elements)
+        return " ".join(element.source(data_source) for element in self.elements)
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
@@ -1816,18 +1758,6 @@ class SQLInsertSelectStatement(SQLInsertStatement):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         return f"{self._insert_str(data_source)} {self.select_statement.source()}"
-
-
-# ---------- 仅在部分 SQL 语言中使用的节点 ----------
-
-class SQLMod(SQLComputeOperator):
-    """取模运算符（仅 SQL Server 中适用）"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "%"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
 
 
 # ---------- DDL 中使用的节点 ----------

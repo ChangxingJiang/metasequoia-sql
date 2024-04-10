@@ -10,59 +10,6 @@ from metasequoia_sql.common import TokenScanner, build_token_scanner
 from metasequoia_sql.objects.core import *
 
 
-def maybe_compute_operator(scanner: TokenScanner) -> bool:
-    """检查是否可能为计算运算符
-
-    Examples
-    --------
-    >>> maybe_compute_operator(TokenScanner(ast.parse_as_tokens("+ 3"), ignore_space=True))
-    True
-    >>> maybe_compute_operator(TokenScanner(ast.parse_as_tokens("- 3"), ignore_space=True))
-    True
-    >>> maybe_compute_operator(TokenScanner(ast.parse_as_tokens("* 3"), ignore_space=True))
-    True
-    >>> maybe_compute_operator(TokenScanner(ast.parse_as_tokens("/ 3"), ignore_space=True))
-    True
-    >>> maybe_compute_operator(TokenScanner(ast.parse_as_tokens("3 + 3"), ignore_space=True))
-    False
-    """
-    return not scanner.is_finish and scanner.now.is_compute_operator
-
-
-def parse_compute_operator(scanner: TokenScanner) -> SQLComputeOperator:
-    """解析计算运算符
-
-    Examples
-    --------
-    >>> parse_compute_operator(TokenScanner(ast.parse_as_tokens("+ 3"), ignore_space=True))
-    <SQLPlus>
-    >>> parse_compute_operator(TokenScanner(ast.parse_as_tokens("- 3"), ignore_space=True))
-    <SQLSubtract>
-    >>> parse_compute_operator(TokenScanner(ast.parse_as_tokens("* 3"), ignore_space=True))
-    <SQLMultiple>
-    >>> parse_compute_operator(TokenScanner(ast.parse_as_tokens("/ 3"), ignore_space=True))
-    <SQLDivide>
-    >>> parse_compute_operator(TokenScanner(ast.parse_as_tokens("3 + 3"), ignore_space=True))
-    Traceback (most recent call last):
-    ...
-    metasequoia_sql.errors.SqlParseError: 未知的计算运算符: <ASTLiteralInteger source=3>
-    """
-    token: ast.AST = scanner.pop()
-    if token.source == "+":
-        return SQLPlus()
-    if token.source == "-":
-        return SQLSubtract()
-    if token.source == "*":
-        return SQLMultiple()
-    if token.source == "/":
-        return SQLDivide()
-    if token.source == "%":
-        return SQLMod()
-    if token.source == "||":
-        return SQLConcat()
-    raise SqlParseError(f"未知的计算运算符: {token}")
-
-
 def maybe_compare_operator(scanner: TokenScanner) -> bool:
     """检查是否可能为比较运算符
 
@@ -685,8 +632,8 @@ def _parse_general_expression_element(scanner: TokenScanner, maybe_window: bool)
 def parse_general_expression(scanner: TokenScanner, maybe_window: bool = True) -> SQLGeneralExpression:
     """解析一般表达式"""
     elements = [_parse_general_expression_element(scanner, maybe_window)]
-    while not scanner.is_finish and maybe_compute_operator(scanner):
-        elements.append(parse_compute_operator(scanner))
+    while SQLComputeOperator.check(scanner):
+        elements.append(SQLComputeOperator.parse(scanner))
         elements.append(_parse_general_expression_element(scanner, maybe_window))
     if len(elements) > 1:
         return SQLComputeExpression(elements=elements)  # 如果超过 1 个元素，则返回计算表达式（多项式）
