@@ -9,6 +9,7 @@ import subprocess
 from metasequoia_sql.common import build_token_scanner
 from metasequoia_sql.parser.common import parse_select_statement, maybe_select_statement
 from metasequoia_sql.objects.core import SQLSingleSelectStatement
+from metasequoia_sql.core import DataSource
 from scripts.demo import sql_basic_tutorial
 
 
@@ -57,8 +58,13 @@ def make_sql_basic_tutorial(force: bool = False):
             print(sql.strip("\n"))
 
             statement = parse_select_statement(scanner)
+            data_source = DataSource.MYSQL
+            if name in {"SBT_CH06_03_SQLSERVER"}:
+                data_source = DataSource.SQL_SERVER
+            if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
+                data_source = DataSource.ORACLE
             print("【格式化代码】")
-            print(statement.source)
+            print(statement.source(data_source))
 
             print("【分析结果】")
             print(f"SELECT_USED_COLUMN: {json.dumps(statement.get_select_used_column_list(), ensure_ascii=False)}")

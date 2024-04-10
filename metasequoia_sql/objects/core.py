@@ -351,10 +351,10 @@ class SQLFunctionExpression(SQLGeneralExpression):
         return self._function_params
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self._get_function_str()}({self._get_param_str()})"
+        return f"{self._get_function_str()}({self._get_param_str(data_source)})"
 
-    def _get_param_str(self) -> str:
-        return ", ".join(param.source() for param in self.function_params)
+    def _get_param_str(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        return ", ".join(param.source(data_source) for param in self.function_params)
 
     def _get_function_str(self) -> str:
         if self.schema_name is not None:
@@ -477,9 +477,9 @@ class SQLCaseExpression(SQLGeneralExpression):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         result = ["CASE"]
         for when, then in self.cases:
-            result.append(f"    WHEN {when.source()} THEN {then.source()}")
+            result.append(f"    WHEN {when.source(data_source)} THEN {then.source(data_source)}")
         if self.else_value is not None:
-            result.append(f"    ELSE {self.else_value.source()}")
+            result.append(f"    ELSE {self.else_value.source(data_source)}")
         result.append("END")
         return "\n".join(result)
 
@@ -523,9 +523,9 @@ class SQLCaseValueExpression(SQLGeneralExpression):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         result = ["CASE", self.case_value.source()]
         for when, then in self.cases:
-            result.append(f"    WHEN {when.source()} THEN {then.source()}")
+            result.append(f"    WHEN {when.source(data_source)} THEN {then.source(data_source)}")
         if self.else_value is not None:
-            result.append(f"    ELSE {self.else_value.source()}")
+            result.append(f"    ELSE {self.else_value.source(data_source)}")
         result.append("END")
         return "\n".join(result)
 
@@ -1060,9 +1060,9 @@ class SQLColumnExpression(SQLBase):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         if self.alias is not None:
-            return f"{self.column.source()} {self.alias.source()}"
+            return f"{self.column.source(data_source)} {self.alias.source()}"
         else:
-            return f"{self.column.source()}"
+            return f"{self.column.source(data_source)}"
 
     def get_alias_name(self) -> Optional[str]:
         """获取别名名称"""
@@ -1131,7 +1131,7 @@ class SQLSelectClause(SQLBase):
         result = ["SELECT"]
         if self.distinct is True:
             result.append("DISTINCT")
-        result.append(",\n".join(column.source() for column in self.columns))
+        result.append(",\n".join(column.source(data_source) for column in self.columns))
         return " ".join(result)
 
     def get_used_column_list(self) -> List[str]:
@@ -1509,7 +1509,7 @@ class SQLSingleSelectStatement(SQLSelectStatement):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         with_clause_str = self.with_clause.source() + "\n" if not self.with_clause.is_empty() else ""
-        result = [self.select_clause.source()]
+        result = [self.select_clause.source(data_source)]
         for clause in [self.from_clause, *self.join_clauses, self.where_clause, self.group_by_clause,
                        self.having_clause,
                        self.order_by_clause, self.limit_clause]:
