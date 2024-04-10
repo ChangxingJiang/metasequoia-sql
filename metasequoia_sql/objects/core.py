@@ -1888,11 +1888,11 @@ class DDLColumnTypeExpression(SQLBase):
         return self._params
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        if len(self.params) > 0:
+        if len(self.params) == 0 or data_source == DataSource.HIVE:
+            return self.name
+        else:
             type_params = "(" + ", ".join([param.source() for param in self.params]) + ")"
             return f"{self.name}{type_params}"
-        else:
-            return self.name
 
 
 class DDLForeignKeyExpression(SQLBase):
@@ -2053,7 +2053,7 @@ class DDLColumnExpression(SQLBase):
         return self._on_update
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        res = f"{self._column_name} {self.column_type.source()}"
+        res = f"{self._column_name} {self.column_type.source(data_source)}"
         if self.is_unsigned is True and data_source == DataSource.MYSQL:
             res += " UNSIGNED"
         if self.is_zerofill is True and data_source == DataSource.MYSQL:
