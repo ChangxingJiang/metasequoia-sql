@@ -24,7 +24,7 @@ root = parse_as_statements("your sql")
 
 ```python
 from metasequoia_sql.parser.common import parse_create_table_statement
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql.common import build_token_scanner
 
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
@@ -35,8 +35,7 @@ statement = parse_create_table_statement(build_token_scanner("your sql"))
 
 ```python
 from metasequoia_sql.parser.common import parse_create_table_statement
-from metasequoia_sql.translate import *
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql.common import build_token_scanner
 
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
@@ -48,11 +47,11 @@ statement = parse_create_table_statement(build_token_scanner("your sql"))
 **不同 DataSource 的 SQL 语句转换方法**： 先从特定 DataSource 的 SQL 转化为包含所有数据库特性的 FullStatement，然后再从
 FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
 
+- `analyzer`：分析器
 - `ast`：词法分析（主要使用有限状态自动机实现）
 - `common`：遍历器工具
 - `objects`：SQL语句对象
 - `parser`：SQL语句解析器
-- `translate`：翻译器
 
 ### 词法分析
 

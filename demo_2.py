@@ -3,7 +3,7 @@
 """
 
 from metasequoia_sql.parser.common import parse_create_table_statement
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql.common import build_token_scanner
 
 if __name__ == "__main__":
     statement = parse_create_table_statement(build_token_scanner("""

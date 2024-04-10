@@ -6,7 +6,7 @@ TODO 整理各种函数的共同规律
 """
 
 from metasequoia_sql import ast
-from metasequoia_sql.common.token_scanner import TokenScanner, build_token_scanner
+from metasequoia_sql.common import TokenScanner, build_token_scanner
 from metasequoia_sql.objects.core import *
 
 
@@ -1066,10 +1066,7 @@ def parse_order_by_clause(scanner: TokenScanner) -> SQLOrderByClause:
 
     def parse_single():
         column = parse_general_expression(scanner)
-        if not scanner.is_finish and scanner.search_and_move("DESC"):
-            order = SQLEnumOrderType.DESC
-        else:
-            order = SQLEnumOrderType.ASC
+        order = SQLOrderType.parse(scanner)
         columns.append((column, order))
 
     scanner.match("ORDER", "BY")
@@ -1212,38 +1209,7 @@ def maybe_join_clause(scanner: TokenScanner) -> bool:
     >>> maybe_join_clause(build_token_scanner("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
     False
     """
-    return (scanner.search("JOIN") or
-            scanner.search("INNER", "JOIN") or
-            scanner.search("LEFT", "JOIN") or
-            scanner.search("LEFT", "OUTER", "JOIN") or
-            scanner.search("RIGHT", "JOIN") or
-            scanner.search("RIGHT", "OUTER", "JOIN") or
-            scanner.search("FULL", "JOIN") or
-            scanner.search("FULL", "OUTER", "JOIN") or
-            scanner.search("CROSS", "JOIN"))
-
-
-def _parse_join_type(scanner: TokenScanner) -> SQLEnumJoinType:
-    """解析关联类型"""
-    if scanner.search_and_move("JOIN"):
-        return SQLEnumJoinType.JOIN
-    if scanner.search_and_move("INNER", "JOIN"):
-        return SQLEnumJoinType.INNER_JOIN
-    if scanner.search_and_move("LEFT", "JOIN"):
-        return SQLEnumJoinType.LEFT_JOIN
-    if scanner.search_and_move("LEFT", "OUTER", "JOIN"):
-        return SQLEnumJoinType.LEFT_OUTER_JOIN
-    if scanner.search_and_move("RIGHT", "JOIN"):
-        return SQLEnumJoinType.RIGHT_JOIN
-    if scanner.search_and_move("RIGHT", "OUTER", "JOIN"):
-        return SQLEnumJoinType.RIGHT_OUTER_JOIN
-    if scanner.search_and_move("FULL", "JOIN"):
-        return SQLEnumJoinType.FULL_JOIN
-    if scanner.search_and_move("FULL", "OUTER", "JOIN"):
-        return SQLEnumJoinType.FULL_OUTER_JOIN
-    if scanner.search_and_move("CROSS", "JOIN"):
-        return SQLEnumJoinType.CROSS_JOIN
-    raise SqlParseError(f"无法解析的关联类型: {scanner}")
+    return SQLJoinType.check(scanner)
 
 
 def parse_join_clause(scanner: TokenScanner) -> SQLJoinClause:
@@ -1256,7 +1222,7 @@ def parse_join_clause(scanner: TokenScanner) -> SQLJoinClause:
     >>> parse_join_clause(build_token_scanner("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1"))
     <SQLJoinClause source=LEFT JOIN <SQLTableExpression source=<SQLTableNameExpression source=schema2.table2> AS <SQLAlisaExpression source=AS t2>> <SQLJoinOnExpression source=ON <SQLConditionExpression source=<SQLBoolCompareExpression source=<SQLColumnNameExpression source=t1.column1> <SQLEqualTo> <SQLColumnNameExpression source=t2.column1>>>>>
     """
-    join_type = _parse_join_type(scanner)
+    join_type = SQLJoinType.parse(scanner)
     table_expression = parse_table_expression(scanner)
     if is_join_expression(scanner):
         join_rule = parse_join_expression(scanner)
@@ -1411,14 +1377,9 @@ def parse_select_statement(scanner: TokenScanner,
     if with_clause is None:
         with_clause = parse_with_clause(scanner)
     result = [parse_single_select_statement(scanner, with_clause=with_clause)]
-    while not scanner.is_finish:
-        for union_type in SQLEnumUnionType:
-            if scanner.search_and_move(*union_type.value):
-                result.append(SQLUnionKeyword(union_type=union_type))
-                result.append(parse_single_select_statement(scanner, with_clause=with_clause))
-                break
-        else:
-            break
+    while not scanner.is_finish and SQLUnionType.check(scanner):
+        result.append(SQLUnionType.parse(scanner))
+        result.append(parse_single_select_statement(scanner, with_clause=with_clause))
     scanner.search_and_move(";")
     if not scanner.is_finish:
         raise SqlParseError(f"没有解析完成: {scanner}")
@@ -1436,15 +1397,7 @@ def is_insert_statement(scanner: TokenScanner) -> bool:
 
 def parse_insert_statement(scanner: TokenScanner, with_clause: SQLWithClause) -> SQLInsertStatement:
     """解析 INSERT 表达式"""
-    scanner.match("INSERT")
-
-    # 解析 INSERT 类型
-    if scanner.search_and_move("INTO"):
-        insert_type = SQLInsertType.INSERT_INTO
-    elif scanner.search_and_move("OVERWRITE"):
-        insert_type = SQLInsertType.INSERT_OVERWRITE
-    else:
-        raise SqlParseError(f"未知的 INSERT 类型: {scanner}")
+    insert_type = SQLInsertType.parse(scanner)
 
     # 匹配可能包含的 TABLE 关键字
     has_table_keyword = scanner.search_and_move("TABLE")

@@ -11,31 +11,13 @@ import enum
 from typing import Optional, List, Tuple, Union, Dict
 
 from metasequoia_sql.common.basic import ordered_distinct
+from metasequoia_sql.core.base import SQLBase
+from metasequoia_sql.core.data_source import DataSource
+from metasequoia_sql.core.keyword.insert_type import SQLInsertType
+from metasequoia_sql.core.keyword.join_type import SQLJoinType
+from metasequoia_sql.core.keyword.order_type import SQLOrderType
+from metasequoia_sql.core.keyword.union_type import SQLUnionType
 from metasequoia_sql.errors import SqlParseError
-
-
-class DataSource(enum.Enum):
-    MYSQL = "MYSQL"
-    HIVE = "HIVE"
-
-
-class SQLEnumJoinType(enum.Enum):
-    """关联类型"""
-    JOIN = "JOIN"  # 内连接
-    INNER_JOIN = "INNER JOIN"  # 内连接
-    LEFT_JOIN = "LEFT JOIN"  # 左外连接
-    LEFT_OUTER_JOIN = "LEFT OUTER JOIN"  # 左外连接
-    RIGHT_JOIN = "RIGHT JOIN"  # 右外连接
-    RIGHT_OUTER_JOIN = "RIGHT OUTER JOIN"  # 右外连接
-    FULL_JOIN = "FULL JOIN"  # 全外连接
-    FULL_OUTER_JOIN = "FULL OUTER JOIN"  # 全外连接
-    CROSS_JOIN = "CROSS JOIN"  # 交叉连接
-
-
-class SQLEnumOrderType(enum.Enum):
-    """排序类型"""
-    ASC = "ASC"  # 升序
-    DESC = "DESC"  # 降序
 
 
 class SQLEnumCastDataType(enum.Enum):
@@ -70,36 +52,6 @@ class SQLEnumCastDataType(enum.Enum):
     MEDIUMBLOB = "MEDIUMBLOB"
     LONGBLOB = "LONGBLOB"
     TINYBLOB = "TINYBLOB"
-
-
-class SQLEnumUnionType(enum.Enum):
-    """关联类型"""
-    UNION_ALL = ["UNION", "ALL"]
-    UNION = ["UNION"]
-    EXCEPT = ["EXCEPT"]
-    INTERSECT = ["INTERSECT"]
-    MINUS = ["MINUS"]
-
-
-class SQLInsertType(enum.Enum):
-    """插入类型"""
-    INSERT_INTO = ["INSERT", "INTO"]
-    INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
-
-
-class SQLBase(abc.ABC):
-    @abc.abstractmethod
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        """返回 SQL 源码
-
-        TODO 待将 MySQL 修改为自动指定
-        """
-
-    def __str__(self) -> str:
-        return self.__repr__()
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} source={self.source()}>"
 
 
 # ------------------------------ 元素层级 ------------------------------
@@ -166,6 +118,10 @@ class SQLConcat(SQLComputeOperator):
 
 class SQLCompareOperator(SQLBase, abc.ABC):
     """比较运算符"""
+
+    @abc.abstractmethod
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        pass  # TODO 待移除
 
 
 class SQLEqualTo(SQLCompareOperator):
@@ -245,6 +201,10 @@ class SQLLiteral(SQLBase, abc.ABC):
     @abc.abstractmethod
     def value(self):
         """获取字面值"""
+
+    @abc.abstractmethod
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        pass  # TODO 待移除
 
 
 class SQLLiteralInteger(SQLLiteral):
@@ -381,20 +341,6 @@ class SQLNotOperator(SQLLogicalOperator):
         return f"<{self.__class__.__name__}>"
 
 
-class SQLUnionKeyword(SQLBase):
-    """复合查询关键字"""
-
-    def __init__(self, union_type: SQLEnumUnionType):
-        self._union_type = union_type
-
-    @property
-    def union_type(self) -> SQLEnumUnionType:
-        return self._union_type
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return " ".join(self._union_type.value)
-
-
 # ------------------------------ 表达式层级（一般表达式） ------------------------------
 
 
@@ -404,6 +350,11 @@ class SQLGeneralExpression(SQLBase, abc.ABC):
     @abc.abstractmethod
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
+
+    @abc.abstractmethod
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """TODO 待移除"""
+        pass
 
 
 class SQLColumnNameExpression(SQLGeneralExpression):
@@ -1088,6 +1039,10 @@ class SQLConditionExpression(SQLGeneralExpression):
 class SQLJoinExpression(SQLBase, abc.ABC):
     """关联表达式"""
 
+    @abc.abstractmethod
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        pass  # TODO 待移除
+
 
 class SQLJoinOnExpression(SQLJoinExpression):
     """ON 关联表达式"""
@@ -1283,7 +1238,7 @@ class SQLJoinClause(SQLBase):
     """JOIN 子句"""
 
     def __init__(self,
-                 join_type: SQLEnumJoinType,
+                 join_type: SQLJoinType,
                  table: SQLTableExpression,
                  join_rule: Optional[SQLJoinExpression]):
         self._join_type = join_type
@@ -1291,7 +1246,7 @@ class SQLJoinClause(SQLBase):
         self._join_rule = join_rule
 
     @property
-    def join_type(self) -> SQLEnumJoinType:
+    def join_type(self) -> SQLJoinType:
         return self._join_type
 
     @property
@@ -1304,9 +1259,9 @@ class SQLJoinClause(SQLBase):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         if self.join_rule is not None:
-            return f"{self.join_type.value} {self.table.source()} {self.join_rule.source()}"
+            return f"{self.join_type.source(data_source)} {self.table.source()} {self.join_rule.source()}"
         else:
-            return f"{self.join_type.value} {self.table.source()}"
+            return f"{self.join_type.source(data_source)} {self.table.source()}"
 
     def get_used_table_list(self) -> List[str]:
         return self.table.get_used_table_list()
@@ -1421,17 +1376,17 @@ class SQLHavingClause(SQLBase):
 class SQLOrderByClause(SQLBase):
     """ORDER BY 子句"""
 
-    def __init__(self, columns: List[Tuple[SQLGeneralExpression, SQLEnumOrderType]]):
+    def __init__(self, columns: List[Tuple[SQLGeneralExpression, SQLOrderType]]):
         self._columns = columns
 
     @property
-    def columns(self) -> List[Tuple[SQLGeneralExpression, SQLEnumOrderType]]:
+    def columns(self) -> List[Tuple[SQLGeneralExpression, SQLOrderType]]:
         return self._columns
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         result = []
         for column, order_type in self.columns:
-            if order_type == SQLEnumOrderType.ASC:
+            if order_type.source == "ASC":
                 result.append(f"{column.source()}")
             else:
                 result.append(f"{column.source()} DESC")
@@ -1510,6 +1465,11 @@ class SQLStatement(SQLBase, abc.ABC):
 
 class SQLSelectStatement(SQLStatement, abc.ABC):
     """SELECT 表达式"""
+
+    @abc.abstractmethod
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """TODO 待移除"""
+        pass
 
     @abc.abstractmethod
     def get_from_used_table_list(self) -> List[str]:
@@ -1689,17 +1649,17 @@ class SQLUnionSelectStatement(SQLSelectStatement):
 
     def __init__(self,
                  with_clause: Optional[SQLWithClause],
-                 elements: List[Union[SQLUnionKeyword, SQLSingleSelectStatement]]):
+                 elements: List[Union[SQLUnionType, SQLSingleSelectStatement]]):
         super().__init__(with_clause)
         self._elements = elements
 
     @property
-    def elements(self) -> List[Union[SQLUnionKeyword, SQLSingleSelectStatement]]:
+    def elements(self) -> List[Union[SQLUnionType, SQLSingleSelectStatement]]:
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         with_clause_str = self.with_clause.source() + "\n" if not self.with_clause.is_empty() else ""
-        return with_clause_str + "\n".join(element.source() for element in self.elements)
+        return with_clause_str + "\n".join(element.source(data_source) for element in self.elements)
 
     def get_from_used_table_list(self) -> List[str]:
         """获取 FROM 语句中使用的表名的列表"""
@@ -1801,9 +1761,9 @@ class SQLInsertStatement(SQLStatement, abc.ABC):
     def columns(self) -> Optional[List[SQLColumnExpression]]:
         return self._columns
 
-    def _insert_str(self) -> str:
+    def _insert_str(self, data_source: DataSource) -> str:
         """INSERT语句的前半部分"""
-        insert_type_str = " ".join(self.insert_type.value)
+        insert_type_str = self.insert_type.source(data_source)
         table_keyword_str = "TABLE " if self.has_table_keyword else ""
         partition_str = self.partition.source() + " " if self.partition is not None else ""
         if self.columns is not None:
@@ -1833,7 +1793,7 @@ class SQLInsertValuesStatement(SQLInsertStatement):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         values_str = ", ".join(value.source() for value in self.values)
-        return f"{self._insert_str()}VALUES {values_str}"
+        return f"{self._insert_str(data_source)}VALUES {values_str}"
 
 
 class SQLInsertSelectStatement(SQLInsertStatement):
@@ -1855,7 +1815,7 @@ class SQLInsertSelectStatement(SQLInsertStatement):
         return self._select_statement
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self._insert_str()} {self.select_statement.source()}"
+        return f"{self._insert_str(data_source)} {self.select_statement.source()}"
 
 
 # ---------- 仅在部分 SQL 语言中使用的节点 ----------

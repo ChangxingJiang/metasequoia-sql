@@ -6,7 +6,7 @@ import json
 import os
 import subprocess
 
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql.common import build_token_scanner
 from metasequoia_sql.parser.common import parse_select_statement, maybe_select_statement
 from metasequoia_sql.objects.core import SQLSingleSelectStatement
 from scripts.demo import sql_basic_tutorial
@@ -30,7 +30,7 @@ def make_sql_basic_tutorial(force: bool = False):
         # 生成引用信息
         file.write("import unittest\n")
         file.write("\n")
-        file.write("from metasequoia_sql.common.token_scanner import build_token_scanner\n")
+        file.write("from metasequoia_sql.common import build_token_scanner\n")
         file.write("from metasequoia_sql.parser.common import parse_select_statement\n")
         file.write("from scripts.demo.sql_basic_tutorial import *\n")
         file.write("\n")

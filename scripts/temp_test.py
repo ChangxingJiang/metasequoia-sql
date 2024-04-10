@@ -1,4 +1,4 @@
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql.common import build_token_scanner
 from metasequoia_sql.parser.common import parse_select_statement
 from scripts.demo.sql_basic_tutorial import *
 
