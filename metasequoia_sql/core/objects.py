@@ -2303,7 +2303,7 @@ class SQLInsertSelectStatement(SQLInsertStatement):
         return self._select_statement
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self._insert_str(data_source)} {self.select_statement.source()}"
+        return f"{self._insert_str(data_source)} {self.select_statement.source(data_source)}"
 
 
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
