@@ -117,7 +117,7 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 ## 修改记录
 
-#### 0.1.0 > 0.1.1
+#### 0.1.0 > 0.2.0
 
 新增：
 - `INSERT` 语句解析逻辑
@@ -125,11 +125,12 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 优化：
 - 统一 `CREATE TABLE` 解析逻辑（使用 `TokenScanner`，改造节点对象，改造解析逻辑，改造 Hive 源码生成逻辑）
-- 清理多余对象
-- TokenScanner 使用方法
+- 整理 objects 的节点和 parse 中的方法，清理多余对象，优化引用路径
+- 统一 TokenScanner 使用方法
 
 修复：
 - `WITH` 语句解析报错的 Bug 修复
+- Hive 建表语句的类型包含参数的 Bug 修复
 
 ##### 0.1.0
 
