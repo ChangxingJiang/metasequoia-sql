@@ -11,7 +11,7 @@ import abc
 from typing import List, Optional, Any
 
 from metasequoia_sql.errors import AstParseError
-from metasequoia_sql.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
+from metasequoia_sql.ast.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
 
 __all__ = [
     "AST",

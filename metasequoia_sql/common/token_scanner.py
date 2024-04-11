@@ -1,5 +1,11 @@
 """
 TODO 多语句解析支持
+TODO 支持匹配各种特殊要求，例如：
+    return not scanner.is_finish and (
+            scanner.now.is_maybe_name and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
+            scanner.next1 is not None and scanner.next1.is_parenthesis and
+            scanner.next2 is not None and scanner.next2.equals("OVER") and
+            scanner.next3 is not None and scanner.next3.is_parenthesis)
 """
 
 from typing import List
@@ -79,6 +85,10 @@ class TokenScanner(BaseScanner):
         for word in tokens:
             if not self.pop().equals(word):
                 raise ScannerError(f"没有解析到目标词语:{self._elements}, 目标词={tokens}")
+
+    def get_as_source(self) -> str:
+        """将指针向后移动 1 个元素并返回当前元素的 source"""
+        return self.now.source
 
     def pop_as_source(self) -> str:
         """将指针向后移动 1 个元素并返回当前元素的 source"""

@@ -6,9 +6,7 @@ import json
 import os
 import subprocess
 
-from metasequoia_sql.common.token_scanner import build_token_scanner
-from metasequoia_sql.parser.common import parse_select_statement, maybe_select_statement
-from metasequoia_sql.objects.core import SQLSingleSelectStatement
+from metasequoia_sql import *
 from scripts.demo import sql_basic_tutorial
 
 
@@ -30,8 +28,7 @@ def make_sql_basic_tutorial(force: bool = False):
         # 生成引用信息
         file.write("import unittest\n")
         file.write("\n")
-        file.write("from metasequoia_sql.common.token_scanner import build_token_scanner\n")
-        file.write("from metasequoia_sql.parser.common import parse_select_statement\n")
+        file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo.sql_basic_tutorial import *\n")
         file.write("\n")
         file.write("\n")
@@ -48,7 +45,7 @@ def make_sql_basic_tutorial(force: bool = False):
             sql = getattr(sql_basic_tutorial, name)
             scanner = build_token_scanner(sql)
 
-            if not maybe_select_statement(scanner):
+            if not check_select_statement(scanner):
                 continue  # 当前只处理 SELECT 语句
 
             # 语法分析并打印结果
@@ -57,8 +54,13 @@ def make_sql_basic_tutorial(force: bool = False):
             print(sql.strip("\n"))
 
             statement = parse_select_statement(scanner)
+            data_source = DataSource.MYSQL
+            if name in {"SBT_CH06_03_SQLSERVER"}:
+                data_source = DataSource.SQL_SERVER
+            if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
+                data_source = DataSource.ORACLE
             print("【格式化代码】")
-            print(statement.source)
+            print(statement.source(data_source))
 
             print("【分析结果】")
             print(f"SELECT_USED_COLUMN: {json.dumps(statement.get_select_used_column_list(), ensure_ascii=False)}")

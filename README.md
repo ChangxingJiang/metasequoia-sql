@@ -23,8 +23,7 @@ root = parse_as_statements("your sql")
 对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
 
 ```python
-from metasequoia_sql.parser.common import parse_create_table_statement
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql import *
 
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
@@ -34,9 +33,7 @@ statement = parse_create_table_statement(build_token_scanner("your sql"))
 将 MySQL 的 CREATE TABLE 语句转换为 Hive 的 CREATE TABLE 语句：
 
 ```python
-from metasequoia_sql.parser.common import parse_create_table_statement
-from metasequoia_sql.translate import *
-from metasequoia_sql.common.token_scanner import build_token_scanner
+from metasequoia_sql import *
 
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
@@ -48,11 +45,17 @@ statement = parse_create_table_statement(build_token_scanner("your sql"))
 **不同 DataSource 的 SQL 语句转换方法**： 先从特定 DataSource 的 SQL 转化为包含所有数据库特性的 FullStatement，然后再从
 FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
 
+- `analyzer`：分析器
 - `ast`：词法分析（主要使用有限状态自动机实现）
 - `common`：遍历器工具
+- `core`：句法分析节点类
+  - `abc`：抽象类（节点中不包含解析方法）
+  - `element`：元素类节点（不会引用其他节点）
+  - `general_expression`：一般表达式节点（可能引用元素类节点和其他一般表达式节点）
 - `objects`：SQL语句对象
 - `parser`：SQL语句解析器
-- `translate`：翻译器
+
+（因为在 Python 中若标记类型时，不同文件之间不同循环引用，所以需要保证所有类的引用之间为严格的拓扑关系）
 
 ### 词法分析
 
