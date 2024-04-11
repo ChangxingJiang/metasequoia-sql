@@ -1,8 +1,6 @@
 import unittest
 
-from metasequoia_sql.common import build_token_scanner
-from metasequoia_sql.objects import DataSource
-from metasequoia_sql.parser.common import *
+from metasequoia_sql import *
 
 
 class TestBasicNode(unittest.TestCase):

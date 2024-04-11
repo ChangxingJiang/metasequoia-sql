@@ -1,6 +1,4 @@
-from metasequoia_sql.common import build_token_scanner
-from metasequoia_sql.objects import DataSource
-from metasequoia_sql.parser.expression import parse_create_table_statement
+from metasequoia_sql import *
 
 if __name__ == "__main__":
     statement = parse_create_table_statement(build_token_scanner("""

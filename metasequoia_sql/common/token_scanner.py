@@ -1,5 +1,11 @@
 """
 TODO 多语句解析支持
+TODO 支持匹配各种特殊要求，例如：
+    return not scanner.is_finish and (
+            scanner.now.is_maybe_name and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
+            scanner.next1 is not None and scanner.next1.is_parenthesis and
+            scanner.next2 is not None and scanner.next2.equals("OVER") and
+            scanner.next3 is not None and scanner.next3.is_parenthesis)
 """
 
 from typing import List

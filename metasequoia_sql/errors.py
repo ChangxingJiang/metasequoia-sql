@@ -1,3 +1,10 @@
+"""
+在 metasequoia_sql 中年可能抛出的异常
+"""
+
+__all__ = ["SqlParseError", "AstParseError", "UnSupportDataSourceError", "ScannerError"]
+
+
 class SqlParseError(Exception):
     """SQL解析失败的异常"""
 
@@ -7,14 +14,6 @@ class SqlParseError(Exception):
 
 class AstParseError(SqlParseError):
     """AST 解析失败"""
-
-
-class TokenIdxOutOfRangeError(SqlParseError):
-    """尝试获取超过 Tokens 长度的抽象语法树节点的异常"""
-
-
-class FullStatementCalledSource(Exception):
-    """调用了 FullStatement 的 source 方法"""
 
 
 class UnSupportDataSourceError(Exception):

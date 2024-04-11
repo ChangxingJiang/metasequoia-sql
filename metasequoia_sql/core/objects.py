@@ -15,9 +15,10 @@ from metasequoia_sql.core.data_source import DataSource
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
 
 __all__ = [
-    # 所有 SQL 语句对象节点的抽象基类
+    # ------------------------------ 所有 SQL 语句对象节点的抽象基类 ------------------------------
     "SQLBase",
 
+    # ------------------------------ 基础元素（其中不引用其他元素） ------------------------------
     # 插入类型
     "EnumInsertType", "SQLInsertType",
 
@@ -39,6 +40,7 @@ __all__ = [
     # 逻辑运算符
     "EnumLogicalOperator", "SQLLogicalOperator",
 
+    # ------------------------------ 一般表达式 ------------------------------
     # 一般表达式的抽象基类
     "SQLGeneralExpression",
 
@@ -76,7 +78,83 @@ __all__ = [
     "SQLValueExpression",
 
     # 一般表达式：子查询表达式
-    "SQLSubQueryExpression"
+    "SQLSubQueryExpression",
+
+    # ------------------------------ 专有表达式 ------------------------------
+    # 专有表达式：表名表达式
+    "SQLTableNameExpression",
+
+    # 专有表达式：别名表达式
+    "SQLAlisaExpression",
+
+    # 专有表达式：关联表达式
+    "SQLJoinExpression", "SQLJoinOnExpression", "SQLJoinUsingExpression",
+
+    # 专有表达式：字段类型表达式
+    "SQLColumnTypeExpression",
+
+    # 专有表达式：表表达式
+    "SQLTableExpression",
+
+    # 专有表达式：列表达式
+    "SQLColumnExpression",
+
+    # 专有表达式：等式表达式
+    "SQLEqualExpression",
+
+    # 专有表达式：分区表达式
+    "SQLPartitionExpression",
+
+    # 专有表达式：声明外键表达式
+    "SQLForeignKeyExpression",
+
+    # 专有表达式：声明索引表达式
+    "SQLIndexExpression", "SQLPrimaryIndexExpression", "SQLUniqueIndexExpression", "SQLNormalIndexExpression",
+    "SQLFulltextIndexExpression",
+
+    # 专有表达式：声明字段表达式
+    "SQLDefineColumnExpression",
+
+    # ------------------------------ 子句节点 ------------------------------
+    # 子句节点：SELECT 子句
+    "SQLSelectClause",
+
+    # 子句节点：FROM 子句
+    "SQLFromClause",
+
+    # 子句节点；JOIN 子句
+    "SQLJoinClause",
+
+    # 子句节点：WHERE 子句
+    "SQLWhereClause",
+
+    # 子句节点：GROUP BY 子句
+    "SQLGroupByClause", "SQLNormalGroupByClause", "SQLGroupingSetsGroupByClause",
+
+    # 子句节点：HAVING 子句
+    "SQLHavingClause",
+
+    # 子句节点：ORDER BY 子句
+    "SQLOrderByClause",
+
+    # 子句节点：LIMIT 子句
+    "SQLLimitClause",
+
+    # 子句节点：WITH 子句
+    "SQLWithClause",
+
+    # ------------------------------ 语句节点 ------------------------------
+    # 语句的抽象基类
+    "SQLStatement",
+
+    # SELECT 语句
+    "SQLSelectStatement", "SQLSingleSelectStatement", "SQLUnionSelectStatement",
+
+    # INSERT 语句
+    "SQLInsertStatement", "SQLInsertSelectStatement", "SQLInsertValuesStatement",
+
+    # CREATE TABLE 语句
+    "SQLCreateTableStatement",
 ]
 
 
@@ -1098,6 +1176,7 @@ class SQLComputeExpression(SQLGeneralExpression):
             result.extend(element.get_used_column_list())
         return result
 
+
 # ---------------------------------------- 值表达式 ----------------------------------------
 
 
@@ -1117,6 +1196,7 @@ class SQLValueExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         return []
+
 
 # ---------------------------------------- 子查询表达式 ----------------------------------------
 
@@ -1141,7 +1221,7 @@ class SQLSubQueryExpression(SQLGeneralExpression):
         return self.select_statement.get_used_table_list()
 
 
-# ------------------------------ 表达式层级（专有表达式） ------------------------------
+# ---------------------------------------- 表名表达式 ----------------------------------------
 
 
 class SQLTableNameExpression(SQLBase):
@@ -1169,6 +1249,9 @@ class SQLTableNameExpression(SQLBase):
         return [self.source()]
 
 
+# ---------------------------------------- 别名表达式 ----------------------------------------
+
+
 class SQLAlisaExpression(SQLBase):
     """别名表达式"""
 
@@ -1181,6 +1264,9 @@ class SQLAlisaExpression(SQLBase):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         return f"AS {self.alias_name}"
+
+
+# ---------------------------------------- 关联表达式 ----------------------------------------
 
 
 class SQLJoinExpression(SQLBase, abc.ABC):
@@ -1219,6 +1305,34 @@ class SQLJoinUsingExpression(SQLJoinExpression):
         return f"{self.using_function.source()}"
 
 
+# ---------------------------------------- 字段类型表达式 ----------------------------------------
+
+class SQLColumnTypeExpression(SQLBase):
+    """字段类型表达式"""
+
+    def __init__(self, name: str, params: List[SQLGeneralExpression]):
+        self._name = name  # 函数名称
+        self._params = params  # 函数参数
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def params(self) -> List[SQLGeneralExpression]:
+        return self._params
+
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        if len(self.params) == 0 or data_source == DataSource.HIVE:
+            return self.name
+        else:
+            type_params = "(" + ", ".join([param.source() for param in self.params]) + ")"
+            return f"{self.name}{type_params}"
+
+
+# ---------------------------------------- 表表达式 ----------------------------------------
+
+
 class SQLTableExpression(SQLBase):
     """表表达式"""
 
@@ -1244,6 +1358,9 @@ class SQLTableExpression(SQLBase):
 
     def get_used_table_list(self) -> List[str]:
         return self.table.get_used_table_list()
+
+
+# ---------------------------------------- 列表达式 ----------------------------------------
 
 
 class SQLColumnExpression(SQLBase):
@@ -1280,6 +1397,9 @@ class SQLColumnExpression(SQLBase):
         return self.column.get_used_column_list()
 
 
+# ---------------------------------------- 等式表达式 ----------------------------------------
+
+
 class SQLEqualExpression(SQLBase):
     """等式表达式"""
 
@@ -1299,6 +1419,9 @@ class SQLEqualExpression(SQLBase):
         return f"{self.before_value.source()} = {self.after_value.source()}"
 
 
+# ---------------------------------------- 分区表达式 ----------------------------------------
+
+
 class SQLPartitionExpression(SQLBase):
     """分区表达式：PARTITION (<partition_expression>)"""
 
@@ -1314,7 +1437,198 @@ class SQLPartitionExpression(SQLBase):
         return f"PARTITION ({partition_list_str})"
 
 
-# ------------------------------ 子句层级 ------------------------------
+# ---------------------------------------- 声明外键表达式 ----------------------------------------
+
+
+class SQLForeignKeyExpression(SQLBase):
+    """声明外键表达式"""
+
+    def __init__(self, constraint_name: str, slave_columns: List[str], master_table_name: str,
+                 master_columns: List[str]):
+        """
+
+        Parameters
+        ----------
+        constraint_name : str
+            外键约束名称
+        slave_columns : List[str]
+            从表的字段
+        master_table_name : str
+            主表名称
+        master_columns : List[str]
+            主表的字段名
+        """
+        self.constraint_name = constraint_name
+        self.slave_columns = slave_columns
+        self.master_table_name = master_table_name
+        self.master_columns = master_columns
+
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
+        master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
+        return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) "
+                f"REFERENCES {self.master_table_name}({master_columns_str})")
+
+
+# ---------------------------------------- 声明索引表达式 ----------------------------------------
+
+
+class SQLIndexExpression(SQLBase, abc.ABC):
+    """声明索引表达式"""
+
+    def __init__(self, name: Optional[str], columns: List[str]):
+        self._name = name
+        self._columns = columns
+
+    @property
+    def name(self) -> Optional[str]:
+        return self._name
+
+    @property
+    def columns(self) -> List[str]:
+        return self._columns
+
+
+class SQLPrimaryIndexExpression(SQLIndexExpression):
+    """主键索引声明表达式"""
+
+    def __init__(self, columns: List[str]):
+        super().__init__(None, columns)
+
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
+
+
+class SQLUniqueIndexExpression(SQLIndexExpression):
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"UNIQUE KEY {self.name} ({columns_str})"
+
+
+class SQLNormalIndexExpression(SQLIndexExpression):
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"KEY {self.name} ({columns_str})"
+
+
+class SQLFulltextIndexExpression(SQLIndexExpression):
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        columns_str = ", ".join([f"{column}" for column in self.columns])
+        return f"FULLTEXT KEY {self.name} ({columns_str})"
+
+
+# ---------------------------------------- 声明字段表达式 ----------------------------------------
+
+
+class SQLDefineColumnExpression(SQLBase):
+    """声明字段表达式"""
+
+    def __init__(self,
+                 column_name: str,
+                 column_type: SQLColumnTypeExpression,
+                 comment: Optional[str] = None,
+                 is_unsigned: bool = False,
+                 is_zerofill: bool = False,
+                 character_set: Optional[str] = None,
+                 collate: Optional[str] = None,
+                 is_allow_null: bool = False,
+                 is_not_null: bool = False,
+                 is_auto_increment: bool = False,
+                 default: Optional[SQLGeneralExpression] = None,
+                 on_update: Optional[SQLGeneralExpression] = None
+                 ):
+        self._column_name = column_name.strip("`")
+        self._column_type = column_type
+        self._comment = comment
+        self._is_unsigned = is_unsigned
+        self._is_zerofill = is_zerofill
+        self._character_set = character_set
+        self._collate = collate
+        self._is_allow_null = is_allow_null  # 是否显式地允许 NULL 值
+        self._is_not_null = is_not_null
+        self._is_auto_increment = is_auto_increment
+        self._default = default
+        self._on_update = on_update
+
+    @property
+    def column_name(self) -> str:
+        return f"`{self._column_name}`"
+
+    @property
+    def column_name_without_quote(self) -> str:
+        return self._column_name
+
+    @property
+    def column_type(self) -> SQLColumnTypeExpression:
+        return self._column_type
+
+    @property
+    def comment(self) -> Optional[str]:
+        return self._comment
+
+    @property
+    def is_unsigned(self) -> bool:
+        return self._is_unsigned
+
+    @property
+    def is_zerofill(self) -> bool:
+        return self._is_zerofill
+
+    @property
+    def character_set(self) -> Optional[str]:
+        return self._character_set
+
+    @property
+    def collate(self) -> Optional[str]:
+        return self._collate
+
+    @property
+    def is_allow_null(self) -> bool:
+        return self._is_allow_null
+
+    @property
+    def is_not_null(self) -> bool:
+        return self._is_not_null
+
+    @property
+    def is_auto_increment(self) -> bool:
+        return self._is_auto_increment
+
+    @property
+    def default(self) -> Optional[SQLGeneralExpression]:
+        return self._default
+
+    @property
+    def on_update(self) -> Optional[SQLGeneralExpression]:
+        return self._on_update
+
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        res = f"{self._column_name} {self.column_type.source(data_source)}"
+        if self.is_unsigned is True and data_source == DataSource.MYSQL:
+            res += " UNSIGNED"
+        if self.is_zerofill is True and data_source == DataSource.MYSQL:
+            res += " ZEROFILL"
+        if self.character_set is not None and data_source == DataSource.MYSQL:
+            res += f" CHARACTER SET {self.character_set}"
+        if self.collate is not None and data_source == DataSource.MYSQL:
+            res += f" COLLATE {self.collate}"
+        if self.is_allow_null is True and data_source == DataSource.MYSQL:
+            res += " NULL"
+        if self.is_not_null is True and data_source == DataSource.MYSQL:
+            res += " NOT NULL"
+        if self.is_auto_increment is True and data_source == DataSource.MYSQL:
+            res += " AUTO_INCREMENT"
+        if self.default is not None and data_source == DataSource.MYSQL:
+            res += f" DEFAULT {self.default.source()}"
+        if self.on_update is not None and data_source == DataSource.MYSQL:
+            res += f" ON UPDATE {self.on_update.source()}"
+        if self.comment is not None:
+            res += f" COMMENT {self.comment}"
+        return res
+
+
+# ---------------------------------------- SELECT 子句 ----------------------------------------
 
 
 class SQLSelectClause(SQLBase):
@@ -1360,6 +1674,8 @@ class SQLSelectClause(SQLBase):
         return result
 
 
+# ---------------------------------------- FROM 子句 ----------------------------------------
+
 class SQLFromClause(SQLBase):
     """FROM 子句"""
 
@@ -1380,6 +1696,8 @@ class SQLFromClause(SQLBase):
             result.extend(table.get_used_table_list())
         return result
 
+
+# ---------------------------------------- JOIN 子句 ----------------------------------------
 
 class SQLJoinClause(SQLBase):
     """JOIN 子句"""
@@ -1414,6 +1732,9 @@ class SQLJoinClause(SQLBase):
         return self.table.get_used_table_list()
 
 
+# ---------------------------------------- WHERE 子句 ----------------------------------------
+
+
 class SQLWhereClause(SQLBase):
     """WHERE 子句"""
 
@@ -1431,6 +1752,8 @@ class SQLWhereClause(SQLBase):
         """获取使用的字段名列表"""
         return self.condition.get_used_column_list()
 
+
+# ---------------------------------------- GROUP BY 子句 ----------------------------------------
 
 class SQLGroupByClause(SQLBase, abc.ABC):
     """GROUP BY 子句"""
@@ -1503,6 +1826,9 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
         return result
 
 
+# ---------------------------------------- HAVING 子句 ----------------------------------------
+
+
 class SQLHavingClause(SQLBase):
     """HAVING 子句"""
 
@@ -1518,6 +1844,9 @@ class SQLHavingClause(SQLBase):
 
     def get_used_column_list(self) -> List[str]:
         return self.condition.get_used_column_list()
+
+
+# ---------------------------------------- ORDER BY 子句 ----------------------------------------
 
 
 class SQLOrderByClause(SQLBase):
@@ -1550,6 +1879,9 @@ class SQLOrderByClause(SQLBase):
         return result
 
 
+# ---------------------------------------- LIMIT 子句 ----------------------------------------
+
+
 class SQLLimitClause(SQLBase):
     """LIMIT 子句"""
 
@@ -1567,6 +1899,9 @@ class SQLLimitClause(SQLBase):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         return f"LIMIT {self.offset}, {self.limit}"
+
+
+# ---------------------------------------- WITH 子句 ----------------------------------------
 
 
 class SQLWithClause(SQLBase):
@@ -1596,11 +1931,11 @@ class SQLWithClause(SQLBase):
         return len(self.tables) == 0
 
 
-# ------------------------------ 语句层级 ------------------------------
+# ---------------------------------------- 语句的抽象基类 ----------------------------------------
 
 
 class SQLStatement(SQLBase, abc.ABC):
-    """表达式的抽象基类"""
+    """语句的抽象基类"""
 
     def __init__(self, with_clause: Optional[SQLWithClause]):
         self._with_clause = with_clause
@@ -1610,8 +1945,11 @@ class SQLStatement(SQLBase, abc.ABC):
         return self._with_clause
 
 
+# ---------------------------------------- SELECT 语句 ----------------------------------------
+
+
 class SQLSelectStatement(SQLStatement, abc.ABC):
-    """SELECT 表达式"""
+    """SELECT 语句"""
 
     @abc.abstractmethod
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -1864,6 +2202,9 @@ class SQLUnionSelectStatement(SQLSelectStatement):
         return ordered_distinct(result)
 
 
+# ---------------------------------------- INSERT 语句 ----------------------------------------
+
+
 class SQLInsertStatement(SQLStatement, abc.ABC):
     """INSERT 表达式
 
@@ -1965,214 +2306,10 @@ class SQLInsertSelectStatement(SQLInsertStatement):
         return f"{self._insert_str(data_source)} {self.select_statement.source()}"
 
 
-# ---------- DDL 中使用的节点 ----------
-
-class DDLColumnTypeExpression(SQLBase):
-    """字段类型表达式"""
-
-    def __init__(self, name: str, params: List[SQLGeneralExpression]):
-        self._name = name  # 函数名称
-        self._params = params  # 函数参数
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def params(self) -> List[SQLGeneralExpression]:
-        return self._params
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        if len(self.params) == 0 or data_source == DataSource.HIVE:
-            return self.name
-        else:
-            type_params = "(" + ", ".join([param.source() for param in self.params]) + ")"
-            return f"{self.name}{type_params}"
+# ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
 
-class DDLForeignKeyExpression(SQLBase):
-    """外键表达式"""
-
-    def __init__(self, constraint_name: str, slave_columns: List[str], master_table_name: str,
-                 master_columns: List[str]):
-        """
-
-        Parameters
-        ----------
-        constraint_name : str
-            外键约束名称
-        slave_columns : List[str]
-            从表的字段
-        master_table_name : str
-            主表名称
-        master_columns : List[str]
-            主表的字段名
-        """
-        self.constraint_name = constraint_name
-        self.slave_columns = slave_columns
-        self.master_table_name = master_table_name
-        self.master_columns = master_columns
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
-        master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
-        return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) "
-                f"REFERENCES {self.master_table_name}({master_columns_str})")
-
-
-class DDLIndexExpression(SQLBase, abc.ABC):
-    """声明索引表达式"""
-
-    def __init__(self, name: Optional[str], columns: List[str]):
-        self._name = name
-        self._columns = columns
-
-    @property
-    def name(self) -> Optional[str]:
-        return self._name
-
-    @property
-    def columns(self) -> List[str]:
-        return self._columns
-
-
-class DDLPrimaryIndexExpression(DDLIndexExpression):
-    """主键索引声明表达式"""
-
-    def __init__(self, columns: List[str]):
-        super().__init__(None, columns)
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        columns_str = ", ".join([f"{column}" for column in self.columns])
-        return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
-
-
-class DDLUniqueIndexExpression(DDLIndexExpression):
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        columns_str = ", ".join([f"{column}" for column in self.columns])
-        return f"UNIQUE KEY {self.name} ({columns_str})"
-
-
-class DDLNormalIndexExpression(DDLIndexExpression):
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        columns_str = ", ".join([f"{column}" for column in self.columns])
-        return f"KEY {self.name} ({columns_str})"
-
-
-class DDLFulltextIndexExpression(DDLIndexExpression):
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        columns_str = ", ".join([f"{column}" for column in self.columns])
-        return f"FULLTEXT KEY {self.name} ({columns_str})"
-
-
-class DDLColumnExpression(SQLBase):
-    """【DDL】建表语句中的字段信息"""
-
-    def __init__(self,
-                 column_name: str,
-                 column_type: DDLColumnTypeExpression,
-                 comment: Optional[str] = None,
-                 is_unsigned: bool = False,
-                 is_zerofill: bool = False,
-                 character_set: Optional[str] = None,
-                 collate: Optional[str] = None,
-                 is_allow_null: bool = False,
-                 is_not_null: bool = False,
-                 is_auto_increment: bool = False,
-                 default: Optional[SQLGeneralExpression] = None,
-                 on_update: Optional[SQLGeneralExpression] = None
-                 ):
-        self._column_name = column_name.strip("`")
-        self._column_type = column_type
-        self._comment = comment
-        self._is_unsigned = is_unsigned
-        self._is_zerofill = is_zerofill
-        self._character_set = character_set
-        self._collate = collate
-        self._is_allow_null = is_allow_null  # 是否显式地允许 NULL 值
-        self._is_not_null = is_not_null
-        self._is_auto_increment = is_auto_increment
-        self._default = default
-        self._on_update = on_update
-
-    @property
-    def column_name(self) -> str:
-        return f"`{self._column_name}`"
-
-    @property
-    def column_name_without_quote(self) -> str:
-        return self._column_name
-
-    @property
-    def column_type(self) -> DDLColumnTypeExpression:
-        return self._column_type
-
-    @property
-    def comment(self) -> Optional[str]:
-        return self._comment
-
-    @property
-    def is_unsigned(self) -> bool:
-        return self._is_unsigned
-
-    @property
-    def is_zerofill(self) -> bool:
-        return self._is_zerofill
-
-    @property
-    def character_set(self) -> Optional[str]:
-        return self._character_set
-
-    @property
-    def collate(self) -> Optional[str]:
-        return self._collate
-
-    @property
-    def is_allow_null(self) -> bool:
-        return self._is_allow_null
-
-    @property
-    def is_not_null(self) -> bool:
-        return self._is_not_null
-
-    @property
-    def is_auto_increment(self) -> bool:
-        return self._is_auto_increment
-
-    @property
-    def default(self) -> Optional[SQLGeneralExpression]:
-        return self._default
-
-    @property
-    def on_update(self) -> Optional[SQLGeneralExpression]:
-        return self._on_update
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        res = f"{self._column_name} {self.column_type.source(data_source)}"
-        if self.is_unsigned is True and data_source == DataSource.MYSQL:
-            res += " UNSIGNED"
-        if self.is_zerofill is True and data_source == DataSource.MYSQL:
-            res += " ZEROFILL"
-        if self.character_set is not None and data_source == DataSource.MYSQL:
-            res += f" CHARACTER SET {self.character_set}"
-        if self.collate is not None and data_source == DataSource.MYSQL:
-            res += f" COLLATE {self.collate}"
-        if self.is_allow_null is True and data_source == DataSource.MYSQL:
-            res += " NULL"
-        if self.is_not_null is True and data_source == DataSource.MYSQL:
-            res += " NOT NULL"
-        if self.is_auto_increment is True and data_source == DataSource.MYSQL:
-            res += " AUTO_INCREMENT"
-        if self.default is not None and data_source == DataSource.MYSQL:
-            res += f" DEFAULT {self.default.source()}"
-        if self.on_update is not None and data_source == DataSource.MYSQL:
-            res += f" ON UPDATE {self.on_update.source()}"
-        if self.comment is not None:
-            res += f" COMMENT {self.comment}"
-        return res
-
-
-class DDLCreateTableStatement(SQLBase):
+class SQLCreateTableStatement(SQLBase):
     """【DDL】CREATE TABLE 语句"""
 
     def __init__(self,
@@ -2180,19 +2317,19 @@ class DDLCreateTableStatement(SQLBase):
                  table_name: Optional[str] = None,
                  comment: Optional[str] = None,
                  if_not_exists: bool = False,
-                 columns: Optional[List[DDLColumnExpression]] = None,
-                 primary_key: Optional[DDLPrimaryIndexExpression] = None,
-                 unique_key: Optional[List[DDLUniqueIndexExpression]] = None,
-                 key: Optional[List[DDLNormalIndexExpression]] = None,
-                 fulltext_key: Optional[List[DDLFulltextIndexExpression]] = None,
-                 foreign_key: List[DDLForeignKeyExpression] = None,
+                 columns: Optional[List[SQLDefineColumnExpression]] = None,
+                 primary_key: Optional[SQLPrimaryIndexExpression] = None,
+                 unique_key: Optional[List[SQLUniqueIndexExpression]] = None,
+                 key: Optional[List[SQLNormalIndexExpression]] = None,
+                 fulltext_key: Optional[List[SQLFulltextIndexExpression]] = None,
+                 foreign_key: List[SQLForeignKeyExpression] = None,
                  engine: Optional[str] = None,
                  auto_increment: Optional[int] = None,
                  default_charset: Optional[str] = None,
                  collate: Optional[str] = None,
                  row_format: Optional[str] = None,
                  states_persistent: Optional[str] = None,
-                 partition_by: List[DDLColumnExpression] = None
+                 partition_by: List[SQLDefineColumnExpression] = None
                  ):
         self._schema_name = schema_name
         self._table_name = table_name
@@ -2229,27 +2366,27 @@ class DDLCreateTableStatement(SQLBase):
         return self._if_not_exists
 
     @property
-    def columns(self) -> List[DDLColumnExpression]:
+    def columns(self) -> List[SQLDefineColumnExpression]:
         return self._columns
 
     @property
-    def primary_key(self) -> DDLPrimaryIndexExpression:
+    def primary_key(self) -> SQLPrimaryIndexExpression:
         return self._primary_key
 
     @property
-    def unique_key(self) -> List[DDLUniqueIndexExpression]:
+    def unique_key(self) -> List[SQLUniqueIndexExpression]:
         return self._unique_key
 
     @property
-    def key(self) -> List[DDLNormalIndexExpression]:
+    def key(self) -> List[SQLNormalIndexExpression]:
         return self._key
 
     @property
-    def fulltext_key(self) -> List[DDLFulltextIndexExpression]:
+    def fulltext_key(self) -> List[SQLFulltextIndexExpression]:
         return self._fulltext_key
 
     @property
-    def foreign_key(self) -> List[DDLForeignKeyExpression]:
+    def foreign_key(self) -> List[SQLForeignKeyExpression]:
         return self._foreign_key
 
     @property
@@ -2277,7 +2414,7 @@ class DDLCreateTableStatement(SQLBase):
         return self._states_persistent
 
     @property
-    def partition_by(self) -> List[DDLColumnExpression]:
+    def partition_by(self) -> List[SQLDefineColumnExpression]:
         return self._partition_by
 
     def set_schema_name(self, schema_name: str):
@@ -2295,11 +2432,11 @@ class DDLCreateTableStatement(SQLBase):
             if remove_param is True:
                 column.column_type._function_params = []
 
-    def append_column(self, column: DDLColumnExpression):
+    def append_column(self, column: SQLDefineColumnExpression):
         """添加字段"""
         self.columns.append(column)
 
-    def append_partition_by_column(self, column: DDLColumnExpression):
+    def append_partition_by_column(self, column: SQLDefineColumnExpression):
         """添加分区字段"""
 
     def source(self, data_source: DataSource = DataSource.MYSQL, n_indent: int = 4) -> str:

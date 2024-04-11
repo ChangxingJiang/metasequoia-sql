@@ -23,8 +23,7 @@ root = parse_as_statements("your sql")
 对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
 
 ```python
-from metasequoia_sql.parser.expression import parse_create_table_statement
-from metasequoia_sql.common import build_token_scanner
+from metasequoia_sql import *
 
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
@@ -34,8 +33,7 @@ statement = parse_create_table_statement(build_token_scanner("your sql"))
 将 MySQL 的 CREATE TABLE 语句转换为 Hive 的 CREATE TABLE 语句：
 
 ```python
-from metasequoia_sql.parser.expression import parse_create_table_statement
-from metasequoia_sql.common import build_token_scanner
+from metasequoia_sql import *
 
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
