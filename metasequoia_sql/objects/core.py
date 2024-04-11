@@ -11,14 +11,18 @@ import enum
 from typing import Optional, List, Tuple, Union, Dict
 
 from metasequoia_sql.common.basic import ordered_distinct
-from metasequoia_sql.core.base import SQLBase
-from metasequoia_sql.core.data_source import DataSource
-from metasequoia_sql.core.element.insert_type import SQLInsertType
-from metasequoia_sql.core.element.join_type import SQLJoinType
-from metasequoia_sql.core.element.order_type import SQLOrderType
-from metasequoia_sql.core.element.union_type import SQLUnionType
-from metasequoia_sql.core.element.compute_operator import SQLComputeOperator
 from metasequoia_sql.errors import SqlParseError
+from metasequoia_sql.objects.data_source import DataSource
+from metasequoia_sql.objects.sql_base import SQLBase
+from metasequoia_sql.objects.sql_compare_operator import SQLCompareOperator
+from metasequoia_sql.objects.sql_compute_operator import SQLComputeOperator
+from metasequoia_sql.objects.sql_general_expression import SQLGeneralExpression
+from metasequoia_sql.objects.sql_insert_type import SQLInsertType
+from metasequoia_sql.objects.sql_join_type import SQLJoinType
+from metasequoia_sql.objects.sql_literal_expression import SQLLiteralExpression
+from metasequoia_sql.objects.sql_logical_operator import SQLLogicalOperator
+from metasequoia_sql.objects.sql_order_type import SQLOrderType
+from metasequoia_sql.objects.sql_union_type import SQLUnionType
 
 
 class SQLEnumCastDataType(enum.Enum):
@@ -55,256 +59,12 @@ class SQLEnumCastDataType(enum.Enum):
     TINYBLOB = "TINYBLOB"
 
 
-# ------------------------------ 元素层级 ------------------------------
-
-
-class SQLCompareOperator(SQLBase, abc.ABC):
-    """比较运算符"""
-
-    @abc.abstractmethod
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        pass  # TODO 待移除
-
-
-class SQLEqualTo(SQLCompareOperator):
-    """等于运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "="
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLNotEqualTo(SQLCompareOperator):
-    """不等于运算符：包含 != 和 <> 两种类型"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "!="
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLIs(SQLCompareOperator):
-    """不等于运算符：包含 != 和 <> 两种类型"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "IS"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLLessThan(SQLCompareOperator):
-    """小于运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "<"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLLessThanOrEqual(SQLCompareOperator):
-    """小于等于运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "<="
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLGreaterThan(SQLCompareOperator):
-    """大于运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return ">"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLGreaterThanOrEqual(SQLCompareOperator):
-    """大于等于运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return ">="
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLLiteral(SQLBase, abc.ABC):
-    """字面值"""
-
-    @property
-    @abc.abstractmethod
-    def value(self):
-        """获取字面值"""
-
-    @abc.abstractmethod
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        pass  # TODO 待移除
-
-
-class SQLLiteralInteger(SQLLiteral):
-    """整数字面值"""
-
-    def __init__(self, value: int):
-        self._value = value
-
-    @property
-    def value(self) -> int:
-        return self._value
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self._value}"
-
-
-class SQLLiteralFloat(SQLLiteral):
-    """浮点数字面值"""
-
-    def __init__(self, value: float):
-        self._value = value
-
-    @property
-    def value(self) -> float:
-        return self._value
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self._value}"
-
-
-class SQLLiteralString(SQLLiteral):
-    """字符串字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def value(self) -> str:
-        return self._value
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"'{self._value}'"
-
-
-class SQLLiteralHex(SQLLiteral):
-    """十六进制字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def value(self) -> str:
-        return self._value
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"x'{self._value}'"
-
-
-class SQLLiteralBit(SQLLiteral):
-    """位值字面值"""
-
-    def __init__(self, value: str):
-        self._value = value
-
-    @property
-    def value(self) -> str:
-        return self._value
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"b'{self._value}'"
-
-
-class SQLLiteralBool(SQLLiteral):
-    """布尔值字面值"""
-
-    def __init__(self, value: bool):
-        self._value = value
-
-    @property
-    def value(self) -> bool:
-        return self._value
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "TRUE" if self._value is True else "FALSE"
-
-
-class SQLLiteralNull(SQLLiteral):
-    """空值字面值"""
-
-    @property
-    def value(self) -> None:
-        return None
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "NULL"
-
-
-class SQLLogicalOperator(SQLBase, abc.ABC):
-    """逻辑运算符"""
-
-    @staticmethod
-    def get_used_column_list() -> List[str]:
-        """获取使用的字段列表"""
-        return []
-
-
-class SQLAndOperator(SQLLogicalOperator):
-    """逻辑 AND 运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "AND"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLOrOperator(SQLLogicalOperator):
-    """逻辑 OR 运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "OR"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
-class SQLNotOperator(SQLLogicalOperator):
-    """逻辑 NOT 运算符"""
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return "OR"
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}>"
-
-
 # ------------------------------ 表达式层级（一般表达式） ------------------------------
-
-
-class SQLGeneralExpression(SQLBase, abc.ABC):
-    """一般表达式"""
-
-    @abc.abstractmethod
-    def get_used_column_list(self) -> List[str]:
-        """获取使用的字段列表"""
-
-    @abc.abstractmethod
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        """TODO 待移除"""
-        pass
-
 
 class SQLColumnNameExpression(SQLGeneralExpression):
     """列名表达式"""
 
-    def __init__(self,
-                 table: Optional[str],
-                 column: str):
+    def __init__(self, table: Optional[str], column: str):
         self._table = table
         self._column = column
 
@@ -386,7 +146,7 @@ class SQLAggregationFunctionExpression(SQLFunctionExpression):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         is_distinct = "DISTINCT " if self.is_distinct is True else ""
-        return f"{self._get_function_str()}({is_distinct}{self._get_param_str()})"
+        return f"{self._get_function_str()}({is_distinct}{self._get_param_str(data_source)})"
 
 
 class SQLCastFunctionExpression(SQLFunctionExpression):
@@ -601,27 +361,6 @@ class SQLComputeExpression(SQLGeneralExpression):
         return result
 
 
-class SQLLiteralExpression(SQLGeneralExpression):
-    """字面值表达式"""
-
-    def __init__(self, literal: SQLLiteral):
-        self._literal = literal
-
-    def as_int(self) -> int:
-        return int(self.literal.value)
-
-    @property
-    def literal(self) -> SQLLiteral:
-        return self._literal
-
-    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return self.literal.source()
-
-    def get_used_column_list(self) -> List[str]:
-        """获取使用的字段列表"""
-        return []
-
-
 class SQLSubQueryExpression(SQLGeneralExpression):
     """子查询表达式"""
 
@@ -773,7 +512,9 @@ class SQLBoolCompareExpression(SQLBoolExpression):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self.before_value.source()} {self.operator.source()} {self.after_value.source()}"
+        return (f"{self.before_value.source(data_source)}"
+                f" {self.operator.source(data_source)} "
+                f"{self.after_value.source(data_source)}")
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
@@ -967,7 +708,8 @@ class SQLConditionExpression(SQLGeneralExpression):
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return " ".join(f"({element.source()})" if isinstance(element, SQLConditionExpression) else element.source()
+        return " ".join(f"({element.source(data_source)})"
+                        if isinstance(element, SQLConditionExpression) else element.source(data_source)
                         for element in self._elements)
 
     def get_used_column_list(self) -> List[str]:
@@ -1261,7 +1003,7 @@ class SQLNormalGroupByClause(SQLGroupByClause):
         result = []
         for column in self.columns:
             if isinstance(column, SQLLiteralExpression):
-                result.append(column.literal.value)  # 列编号
+                result.append(column.as_int())  # 列编号
             else:
                 result.extend(column.get_used_column_list())
         return result
@@ -1292,7 +1034,7 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
         for grouping in self.grouping_list:
             for column in grouping:
                 if isinstance(column, SQLLiteralExpression):
-                    result.append(column.literal.value)  # 列编号
+                    result.append(column.as_int())  # 列编号
                 else:
                     result.extend(column.get_used_column_list())
         return result
@@ -1339,7 +1081,7 @@ class SQLOrderByClause(SQLBase):
         result = []
         for column, order_type in self.columns:
             if isinstance(column, SQLLiteralExpression):
-                result.append(column.literal.value)  # 列编号
+                result.append(column.as_int())  # 列编号
             else:
                 result.extend(column.get_used_column_list())
         return result
@@ -1778,11 +1520,11 @@ class DDLColumnTypeExpression(SQLBase):
         return self._params
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        if len(self.params) > 0:
+        if len(self.params) == 0 or data_source == DataSource.HIVE:
+            return self.name
+        else:
             type_params = "(" + ", ".join([param.source() for param in self.params]) + ")"
             return f"{self.name}{type_params}"
-        else:
-            return self.name
 
 
 class DDLForeignKeyExpression(SQLBase):
@@ -1943,7 +1685,7 @@ class DDLColumnExpression(SQLBase):
         return self._on_update
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        res = f"{self._column_name} {self.column_type.source()}"
+        res = f"{self._column_name} {self.column_type.source(data_source)}"
         if self.is_unsigned is True and data_source == DataSource.MYSQL:
             res += " UNSIGNED"
         if self.is_zerofill is True and data_source == DataSource.MYSQL:

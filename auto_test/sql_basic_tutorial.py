@@ -1,7 +1,7 @@
 import unittest
 
 from metasequoia_sql.common import build_token_scanner
-from metasequoia_sql.parser.common import parse_select_statement
+from metasequoia_sql.parser.expression import parse_select_statement
 from scripts.demo.sql_basic_tutorial import *
 
 

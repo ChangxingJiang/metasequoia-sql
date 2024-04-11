@@ -5,11 +5,11 @@
 import enum
 
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.core import DataSource
-from metasequoia_sql.core.base import SQLBase
+from metasequoia_sql.objects.sql_base import SQLBase
+from metasequoia_sql.objects.data_source import DataSource
 from metasequoia_sql.errors import SqlParseError
 
-__all__ = ["SQLJoinType"]
+__all__ = ["SQLJoinType", "EnumJoinType"]
 
 
 class EnumJoinType(enum.Enum):

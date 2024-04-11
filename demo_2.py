@@ -2,7 +2,7 @@
 解析 MySQL 建表语句
 """
 
-from metasequoia_sql.parser.common import parse_create_table_statement
+from metasequoia_sql.parser.expression import parse_create_table_statement
 from metasequoia_sql.common import build_token_scanner
 
 if __name__ == "__main__":
