@@ -7,7 +7,7 @@ TODO 整理各种函数的共同规律
 
 from metasequoia_sql import ast
 from metasequoia_sql.common import TokenScanner, build_token_scanner
-from metasequoia_sql.objects.core import *
+from metasequoia_sql.core.objects import *
 from metasequoia_sql.parser.common import *
 
 

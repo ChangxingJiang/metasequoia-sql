@@ -8,7 +8,7 @@ import subprocess
 
 from metasequoia_sql.common import build_token_scanner
 from metasequoia_sql.parser.expression import parse_select_statement, maybe_select_statement
-from metasequoia_sql.objects.core import SQLSingleSelectStatement
+from metasequoia_sql.core.objects import SQLSingleSelectStatement
 from metasequoia_sql.objects import DataSource
 from scripts.demo import sql_basic_tutorial
 

@@ -3,14 +3,7 @@
 """
 
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.objects.sql_compare_operator import SQLCompareOperator, EnumCompareOperator
-from metasequoia_sql.objects.sql_compute_operator import SQLComputeOperator, EnumComputeOperator
-from metasequoia_sql.objects.sql_insert_type import SQLInsertType, EnumInsertType
-from metasequoia_sql.objects.sql_join_type import SQLJoinType, EnumJoinType
-from metasequoia_sql.objects.sql_logical_operator import SQLLogicalOperator, EnumLogicalOperator
-from metasequoia_sql.objects.sql_order_type import SQLOrderType, EnumOrderType
-from metasequoia_sql.objects.sql_union_type import SQLUnionType, EnumUnionType
+from metasequoia_sql.core.objects import *
 
 __all__ = ["check_insert_type", "parse_insert_type",
            "check_join_type", "parse_join_type",
