@@ -125,6 +125,9 @@ __all__ = [
     # 子句节点：FROM 子句
     "SQLFromClause",
 
+    # 子句节点：LATERAL VIEW 子句
+    "SQLLateralViewClause",
+
     # 子句节点；JOIN 子句
     "SQLJoinClause",
 
@@ -1734,6 +1737,34 @@ class SQLFromClause(SQLBase):
         return result
 
 
+# ---------------------------------------- LATERAL VIEW 子句 ----------------------------------------
+
+
+class SQLLateralViewClause(SQLBase):
+    def __init__(self, function: SQLFunctionExpression, view_name: str, alias: SQLAlisaExpression):
+        self._function = function
+        self._view_name = view_name
+        self._alias = alias
+
+    @property
+    def function(self) -> SQLFunctionExpression:
+        return self._function
+
+    @property
+    def view_name(self) -> str:
+        return self._view_name
+
+    @property
+    def alias(self) -> SQLAlisaExpression:
+        return self._alias
+
+    def source(self, data_source: DataSource) -> str:
+        return f"LATERAL VIEW {self.function.source(data_source)} {self.view_name} {self.alias.source(data_source)}"
+
+    def get_used_column_name(self) -> List[str]:
+        return self.function.get_used_column_list()
+
+
 # ---------------------------------------- JOIN 子句 ----------------------------------------
 
 class SQLJoinClause(SQLBase):
@@ -2039,15 +2070,21 @@ class SQLSingleSelectStatement(SQLSelectStatement):
                  with_clause: Optional[SQLWithClause],
                  select_clause: SQLSelectClause,
                  from_clause: Optional[SQLFromClause] = None,
-                 join_clauses: List[SQLJoinClause] = None,
+                 lateral_view_clauses: Optional[List[SQLLateralViewClause]] = None,
+                 join_clauses: Optional[List[SQLJoinClause]] = None,
                  where_clause: Optional[SQLWhereClause] = None,
                  group_by_clause: Optional[SQLGroupByClause] = None,
                  having_clause: Optional[SQLHavingClause] = None,
                  order_by_clause: Optional[SQLOrderByClause] = None,
                  limit_clause: Optional[SQLLimitClause] = None):
         super().__init__(with_clause)
+        if lateral_view_clauses is None:
+            lateral_view_clauses = []
+        if join_clauses is None:
+            join_clauses = []
         self._select_clause = select_clause
         self._from_clause = from_clause
+        self._lateral_view_clauses = lateral_view_clauses
         self._join_clauses = join_clauses
         self._where_clause = where_clause
         self._group_by_clause = group_by_clause
@@ -2062,6 +2099,10 @@ class SQLSingleSelectStatement(SQLSelectStatement):
     @property
     def from_clause(self) -> Optional[SQLFromClause]:
         return self._from_clause
+
+    @property
+    def lateral_view_clauses(self) -> List[SQLLateralViewClause]:
+        return self._lateral_view_clauses
 
     @property
     def join_clauses(self) -> List[SQLJoinClause]:
@@ -2090,9 +2131,8 @@ class SQLSingleSelectStatement(SQLSelectStatement):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         with_clause_str = self.with_clause.source() + "\n" if not self.with_clause.is_empty() else ""
         result = [self.select_clause.source(data_source)]
-        for clause in [self.from_clause, *self.join_clauses, self.where_clause, self.group_by_clause,
-                       self.having_clause,
-                       self.order_by_clause, self.limit_clause]:
+        for clause in [self.from_clause, *self.lateral_view_clauses, *self.join_clauses, self.where_clause,
+                       self.group_by_clause, self.having_clause, self.order_by_clause, self.limit_clause]:
             if clause is not None:
                 result.append(clause.source())
         return with_clause_str + "\n".join(result)

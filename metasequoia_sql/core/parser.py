@@ -121,6 +121,9 @@ __all__ = [
     # 判断、解析 FROM 子句
     "check_from_clause", "parse_from_clause",
 
+    # 判断、解析 LATERAL VIEW 子句
+    "check_lateral_view_clause", "parse_lateral_view_clause",
+
     # 判断、解析 JOIN 子句
     "check_join_clause", "parse_join_clause",
 
@@ -1262,6 +1265,20 @@ def parse_from_clause(scanner: TokenScanner) -> SQLFromClause:
     return SQLFromClause(tables=tables)
 
 
+def check_lateral_view_clause(scanner: TokenScanner) -> bool:
+    """判断是否为 LATERAL VIEW 子句"""
+    return scanner.search("LATERAL", "VIEW")
+
+
+def parse_lateral_view_clause(scanner: TokenScanner) -> SQLLateralViewClause:
+    """解析 LATERAL VIEW 子句"""
+    scanner.match("LATERAL", "VIEW")
+    function = parse_function_expression(scanner)
+    view_name = scanner.pop_as_source()
+    alias = parse_alias_expression(scanner)  # TODO 增加要求必须包含 AS
+    return SQLLateralViewClause(function=function, view_name=view_name, alias=alias)
+
+
 def check_join_clause(scanner: TokenScanner) -> bool:
     """判断是否为 JOIN 子句
 
@@ -1545,6 +1562,9 @@ def parse_single_select_statement(scanner: TokenScanner,
         with_clause = parse_with_clause(scanner)
     select_clause = parse_select_clause(scanner)
     from_clause = parse_from_clause(scanner) if check_from_clause(scanner) else None
+    lateral_view_clauses = []
+    while check_lateral_view_clause(scanner):
+        lateral_view_clauses.append(parse_lateral_view_clause(scanner))
     join_clause = []
     while check_join_clause(scanner):
         join_clause.append(parse_join_clause(scanner))
@@ -1557,6 +1577,7 @@ def parse_single_select_statement(scanner: TokenScanner,
         with_clause=with_clause,
         select_clause=select_clause,
         from_clause=from_clause,
+        lateral_view_clauses=lateral_view_clauses,
         join_clauses=join_clause,
         where_clause=where_clause,
         group_by_clause=group_by_clause,
