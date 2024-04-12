@@ -111,6 +111,9 @@ __all__ = [
     # 解析声明字段表达式
     "parse_define_column_expression",
 
+    # 解析配置名称表达式和配置值表达式
+    "parse_config_name_expression", "parse_config_value_expression",
+
     # ------------------------------ 子句解析 ------------------------------
     # 判断、解析 SELECT 子句
     "check_select_clause", "parse_select_clause",
@@ -146,11 +149,14 @@ __all__ = [
     # 判断、解析 INSERT 语句
     "check_insert_statement", "parse_insert_statement",
 
+    # 判断、解析 SET 语句
+    "check_set_statement", "parse_set_statement",
+
     # 解析 CREATE TABLE 语句
     "parse_create_table_statement",
 
     # 通用表达式解析
-    "parse_statement"
+    "parse_statements"
 ]
 
 
@@ -856,6 +862,20 @@ def parse_general_expression(scanner: TokenScanner, maybe_window: bool = True) -
         return SQLComputeExpression(elements=elements)  # 如果超过 1 个元素，则返回计算表达式（多项式）
     else:
         return elements[0]  # 如果只有 1 个元素，则返回该元素的表达式
+
+
+def parse_config_name_expression(scanner: TokenScanner) -> SQLConfigNameExpression:
+    """解析配置名称表达式"""
+    config_name_list = [scanner.pop_as_source()]
+    while not scanner.is_finish and scanner.now.is_dot:
+        scanner.pop()
+        config_name_list.append(scanner.pop_as_source())
+    return SQLConfigNameExpression(config_name=".".join(config_name_list))
+
+
+def parse_config_value_expression(scanner: TokenScanner) -> SQLConfigValueExpression:
+    """解析配置值表达式"""
+    return SQLConfigValueExpression(config_value=scanner.pop_as_source())
 
 
 def parse_table_name_expression(scanner: TokenScanner) -> Union[SQLTableNameExpression, SQLSubQueryExpression]:
@@ -1626,6 +1646,20 @@ def parse_insert_statement(scanner: TokenScanner, with_clause: SQLWithClause) ->
         )
 
 
+def check_set_statement(scanner: TokenScanner) -> bool:
+    """判断是否为 SET 语句"""
+    return scanner.search("SET")
+
+
+def parse_set_statement(scanner: TokenScanner) -> SQLSetStatement:
+    """解析 SET 语句"""
+    scanner.match("SET")
+    config_name = parse_config_name_expression(scanner)
+    scanner.match("=")
+    config_value = parse_config_value_expression(scanner)
+    return SQLSetStatement(config_name=config_name, config_value=config_value)
+
+
 def parse_create_table_statement(scanner: TokenScanner) -> SQLCreateTableStatement:
     # 解析字段、索引括号前的部分
     scanner.match("CREATE", "TABLE")
@@ -1706,18 +1740,23 @@ def parse_create_table_statement(scanner: TokenScanner) -> SQLCreateTableStateme
     )
 
 
-def parse_statement(scanner: TokenScanner) -> List[SQLStatement]:
+def parse_statements(scanner: TokenScanner) -> List[SQLStatement]:
     """解析一段 SQL 语句，返回表达式的列表
 
     Examples
     --------
-    >>> parse_statement(build_token_scanner("SELECT a FROM b; SELECT c FROM d"))
+    >>> parse_statements(build_token_scanner("SELECT a FROM b; SELECT c FROM d"))
     [<SQLSingleSelectStatement source=SELECT a
     FROM b>, <SQLSingleSelectStatement source=SELECT c
     FROM d>]
     """
     statement_list = []
     for statement_scanner in scanner.split_by(";"):
+        # 解析 SET 语句
+        if check_set_statement(statement_scanner):
+            statement_list.append(parse_set_statement(statement_scanner))
+            continue
+
         # 先尝试解析 WITH 语句
         with_clause = parse_with_clause(statement_scanner)
 

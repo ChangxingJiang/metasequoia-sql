@@ -115,6 +115,9 @@ __all__ = [
     # 专有表达式：声明字段表达式
     "SQLDefineColumnExpression",
 
+    # 专有表达式：配置名称表达式和配置值表达式
+    "SQLConfigNameExpression", "SQLConfigValueExpression",
+
     # ------------------------------ 子句节点 ------------------------------
     # 子句节点：SELECT 子句
     "SQLSelectClause",
@@ -152,6 +155,9 @@ __all__ = [
 
     # INSERT 语句
     "SQLInsertStatement", "SQLInsertSelectStatement", "SQLInsertValuesStatement",
+
+    # SET 语句
+    "SQLSetStatement",
 
     # CREATE TABLE 语句
     "SQLCreateTableStatement",
@@ -1628,6 +1634,37 @@ class SQLDefineColumnExpression(SQLBase):
         return res
 
 
+# ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
+
+
+class SQLConfigNameExpression(SQLBase):
+    """配置名称表达式"""
+
+    def __init__(self, config_name: str):
+        self._config_name = config_name
+
+    @property
+    def config_name(self) -> str:
+        return self._config_name
+
+    def source(self, data_source: DataSource) -> str:
+        return self._config_name
+
+
+class SQLConfigValueExpression(SQLBase):
+    """配置值表达式"""
+
+    def __init__(self, config_value: str):
+        self._config_value = config_value
+
+    @property
+    def config_value(self) -> str:
+        return self._config_value
+
+    def source(self, data_source: DataSource) -> str:
+        return self._config_value
+
+
 # ---------------------------------------- SELECT 子句 ----------------------------------------
 
 
@@ -2304,6 +2341,28 @@ class SQLInsertSelectStatement(SQLInsertStatement):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         return f"{self._insert_str(data_source)} {self.select_statement.source(data_source)}"
+
+
+# ---------------------------------------- SET 语句 ----------------------------------------
+
+
+class SQLSetStatement(SQLBase):
+    """SQL 语句"""
+
+    def __init__(self, config_name: SQLConfigNameExpression, config_value: SQLConfigValueExpression):
+        self._config_name = config_name
+        self._config_value = config_value
+
+    @property
+    def config_name(self) -> SQLConfigNameExpression:
+        return self._config_name
+
+    @property
+    def config_value(self) -> SQLConfigValueExpression:
+        return self._config_value
+
+    def source(self, data_source: DataSource) -> str:
+        return f"SET {self.config_name.source(data_source)} = {self.config_value.source(data_source)}"
 
 
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
