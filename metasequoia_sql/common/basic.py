@@ -1,5 +1,7 @@
 from typing import List, Any
 
+__all__ = ["ordered_distinct"]
+
 
 def ordered_distinct(elements: List[Any]):
     """保证顺序不变的情况下实现去重"""

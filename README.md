@@ -38,6 +38,12 @@ from metasequoia_sql import *
 statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```
 
+### pylint 自检
+
+```bash
+pylint --max-line-length=120 metasequoia_sql
+```
+
 ## 实现原理
 
 **SQL 解析原理**：将词法分析与句法分析分离，对所有 SQL 语句进行词法分析，然后对不同的 SQL 语句类型使用不同的句法分析方法。

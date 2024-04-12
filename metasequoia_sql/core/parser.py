@@ -4,6 +4,7 @@
 TODO 使用 search 替代直接使用 now 判断
 TODO 整理各种函数的共同规律
 TODO 将 doctest 转化为单元测试
+TODO 增加自动解析字符串的装饰器
 """
 
 from typing import Optional, Tuple, List, Union
@@ -291,7 +292,7 @@ def check_literal_expression(scanner: TokenScanner) -> bool:
     >>> check_literal_expression(TokenScanner(ast.parse_as_tokens("table_name.column_name WHERE"), ignore_space=True))
     False
     """
-    return not scanner.is_finish and scanner.now.is_literal
+    return not scanner.is_finish and (scanner.now.is_literal or scanner.now.equals("-"))
 
 
 def parse_literal_expression(scanner: TokenScanner) -> SQLLiteralExpression:
@@ -343,6 +344,12 @@ def parse_literal_expression(scanner: TokenScanner) -> SQLLiteralExpression:
         return SQLLiteralBitExpression(token.literal_value)
     if isinstance(token, ast.ASTLiteralNull):
         return SQLLiteralNullExpression()
+    if token.equals("-") and isinstance(scanner.now, ast.ASTLiteralInteger):
+        next_token = scanner.pop()
+        return SQLLiteralIntegerExpression(-next_token.literal_value)
+    if token.equals("-") and isinstance(scanner.now, ast.ASTLiteralFloat):
+        next_token = scanner.pop()
+        return SQLLiteralFloatExpression(-next_token.literal_value)
     raise SqlParseError(f"未知的字面值: {token}")
 
 
@@ -513,7 +520,7 @@ def parse_function_name(scanner: TokenScanner) -> Tuple[Optional[str], str]:
     raise SqlParseError(f"无法解析为函数表达式: {scanner}")
 
 
-def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
+def parse_function_expression(scanner: TokenScanner) -> Union[SQLFunctionExpression]:
     """解析函数表达式
 
     Examples
@@ -568,6 +575,16 @@ def parse_function_expression(scanner: TokenScanner) -> SQLFunctionExpression:
         return SQLFunctionExpression(schema_name=schema_name,
                                      function_name=function_name,
                                      function_params=function_params)
+
+
+def parse_function_expression_maybe_with_array_index(scanner: TokenScanner
+                                                     ) -> Union[SQLFunctionExpression, SQLArrayIndexExpression]:
+    """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
+    array_expression = parse_function_expression(scanner)
+    if scanner.is_finish or not scanner.now.is_array_index:
+        return array_expression
+    idx = int(scanner.pop_as_source().lstrip("[").rstrip("]"))
+    return SQLArrayIndexExpression(array_expression=array_expression, idx=idx)
 
 
 def parse_bool_expression(scanner: TokenScanner) -> SQLBoolExpression:
@@ -660,7 +677,7 @@ def parse_window_expression(scanner: TokenScanner) -> SQLWindowExpression:
     ...
     metasequoia_sql.errors.SqlParseError: 无法解析为函数表达式: <TokenScanner tokens=[<ASTLiteralInteger source=3>, <ASTCommon source=+>, <ASTLiteralInteger source=5>], pos=0>
     """
-    window_function = parse_function_expression(scanner)
+    window_function = parse_function_expression_maybe_with_array_index(scanner)
     partition_by = None
     order_by = None
     if not scanner.pop().equals("OVER"):
@@ -843,7 +860,7 @@ def _parse_general_expression_element(scanner: TokenScanner, maybe_window: bool)
     if maybe_window is True and check_window_expression(scanner):
         return parse_window_expression(scanner)
     if check_function_expression(scanner):
-        return parse_function_expression(scanner)
+        return parse_function_expression_maybe_with_array_index(scanner)
     if check_literal_expression(scanner):
         return parse_literal_expression(scanner)
     if check_column_name_expression(scanner):
@@ -1685,7 +1702,7 @@ def parse_create_table_statement(scanner: TokenScanner) -> SQLCreateTableStateme
     # 解析字段、索引括号前的部分
     scanner.match("CREATE", "TABLE")
     if_not_exists = scanner.search_and_move("IF", "NOT", "EXISTS")
-    table_name = scanner.pop_as_source().strip("`")  # TODO 待改为 TableNameExpression，并支持 schema_name
+    table_name_expression = parse_table_name_expression(scanner)
 
     # 解析字段和索引
     columns: List[SQLDefineColumnExpression] = []
@@ -1743,7 +1760,7 @@ def parse_create_table_statement(scanner: TokenScanner) -> SQLCreateTableStateme
     scanner.search_and_move(";")
 
     return SQLCreateTableStatement(
-        table_name=table_name,
+        table_name_expression=table_name_expression,
         comment=comment,
         if_not_exists=if_not_exists,
         columns=columns,
@@ -1783,6 +1800,8 @@ def parse_statements(scanner: TokenScanner) -> List[SQLStatement]:
 
         if check_select_statement(statement_scanner):
             statement_list.append(parse_select_statement(statement_scanner, with_clause=with_clause))
+        elif check_insert_statement(statement_scanner):
+            statement_list.append(parse_insert_statement(statement_scanner, with_clause=with_clause))
         else:
             raise SqlParseError(f"未知语句类型: {statement_scanner}")
 

@@ -148,9 +148,12 @@ class AstParseContext:
         elif origin == "=":
             self.stack[-1].append(ASTCommon(origin, is_compare_operator=True))
         # 子句核心关键词
-        elif origin.upper() in {"SELECT", "FROM", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING", "ORDER", "LIMIT",
-                                "UNION", "EXCEPT", "MINUS", "INTERSECT"}:
+        elif origin.upper() in {"SELECT", "FROM", "LATERAL", "VIEW", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING",
+                                "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT"}:
             self.stack[-1].append(ASTCommon(origin, is_maybe_name=False))
+        # 下标
+        elif origin.startswith("[") and origin.endswith("]"):
+            self.stack[-1].append(ASTCommon(origin, is_array_index=True))
         # 算术运算符
         elif origin in {"+", "-", "/", "%", "||"}:
             self.stack[-1].append(ASTCommon(origin, is_compute_operator=True))

@@ -5,13 +5,15 @@
 - 定值叶节点：不包含子节点，且 source 返回定值的对象
 - 非定值叶节点：不包含子节点，但 source 返回值不固定的对象
 - 中间节点（插入语节点）：包含子节点的节点
+
+TODO 让 Scanner 中支持用标记来完成 search
 """
 
 import abc
 from typing import List, Optional, Any
 
-from metasequoia_sql.errors import AstParseError
 from metasequoia_sql.ast.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
+from metasequoia_sql.errors import AstParseError
 
 __all__ = [
     "AST",
@@ -161,6 +163,11 @@ class AST(abc.ABC):
         """当前节点是否为多行注释"""
         return False
 
+    @property
+    def is_array_index(self) -> bool:
+        """是否为索引下标"""
+        return False
+
 
 # ------------------------------ 定值叶节点类 ------------------------------
 
@@ -244,7 +251,8 @@ class ASTCommon(AST):
                  is_maybe_wildcard: bool = False,
                  is_comma: bool = False,
                  is_comment: bool = False,
-                 is_multiline_comment: bool = False):
+                 is_multiline_comment: bool = False,
+                 is_array_index: bool = False):
         """通用节点构造器
 
         Parameters
@@ -271,6 +279,8 @@ class ASTCommon(AST):
             当前节点是否为注释
         is_multiline_comment : bool, default = False
             当前节点是否为多行注释
+        is_array_index : bool, default = False
+            当前节点是否为数组下标
         """
         self._source = source
         self._is_keyword = is_keyword
@@ -283,6 +293,7 @@ class ASTCommon(AST):
         self._is_comma = is_comma
         self._is_comment = is_comment
         self._is_multiline_comment = is_multiline_comment
+        self._is_array_index = is_array_index
 
     @property
     def is_keyword(self) -> bool:
@@ -333,6 +344,11 @@ class ASTCommon(AST):
     def is_multiline_comment(self) -> bool:
         """当前节点是否为多行注释"""
         return self._is_multiline_comment
+
+    @property
+    def is_array_index(self) -> bool:
+        """是否为数组下标"""
+        return self._is_array_index
 
     @property
     def source(self) -> str:

@@ -2,19 +2,24 @@
 TODO 统一 SQLBase 的抽象方法：增加 get_used_column_list 和 get_used_table_list
 TODO 不返回 CURRENT_DATE、CURRENT_TIME、CURRENT_TIMESTAMP 作为字段
 TODO 增加 scanner 未解析完成的发现机制
+TODO 存在重复代码的类优化
+TODO 移除 data_source 的默认值
+TODO 将 DataSource 重命名为 SQLSource
+TODO 考虑是否需要将 SQL 前缀改为 AST 前缀
 
 参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
 """
 
 import abc
 import enum
-from typing import Optional, List, Tuple, Union, Dict
+from typing import Optional, List, Tuple, Union, Dict, Set
 
 from metasequoia_sql.common.basic import ordered_distinct
-from metasequoia_sql.core.data_source import DataSource
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
 
 __all__ = [
+    "DataSource",
+
     # ------------------------------ 所有 SQL 语句对象节点的抽象基类 ------------------------------
     "SQLBase",
 
@@ -79,6 +84,9 @@ __all__ = [
 
     # 一般表达式：子查询表达式
     "SQLSubQueryExpression",
+
+    # 一般表达式：数组下标表达式
+    "SQLArrayIndexExpression",
 
     # ------------------------------ 专有表达式 ------------------------------
     # 专有表达式：表名表达式
@@ -168,6 +176,16 @@ __all__ = [
 
 
 # ---------------------------------------- 所有 SQL 语句对象节点的抽象基类 ----------------------------------------
+
+
+class DataSource(enum.Enum):
+    """数据源类型（即 SQL 语句类型）"""
+    MYSQL = "MySQL"
+    HIVE = "Hive"
+    ORACLE = "Oracle"
+    DB2 = "DB2"
+    POSTGRE_SQL = "PostgreSQL"
+    SQL_SERVER = "SQL Server"
 
 
 class SQLBase(abc.ABC):
@@ -985,7 +1003,7 @@ class SQLWindowExpression(SQLGeneralExpression):
     """窗口表达式"""
 
     def __init__(self,
-                 window_function: SQLFunctionExpression,
+                 window_function: Union[SQLFunctionExpression, "SQLArrayIndexExpression"],
                  partition_by: Optional[SQLGeneralExpression],
                  order_by: Optional[SQLGeneralExpression]):
         self._window_function = window_function
@@ -993,7 +1011,7 @@ class SQLWindowExpression(SQLGeneralExpression):
         self._order_by = order_by
 
     @property
-    def window_function(self) -> SQLFunctionExpression:
+    def window_function(self) -> Union[SQLFunctionExpression, "SQLArrayIndexExpression"]:
         return self._window_function
 
     @property
@@ -1228,6 +1246,33 @@ class SQLSubQueryExpression(SQLGeneralExpression):
 
     def get_used_table_list(self) -> List[str]:
         return self.select_statement.get_used_table_list()
+
+
+class SQLArrayIndexExpression(SQLGeneralExpression):
+    """数组下标表达式"""
+
+    def __init__(self, array_expression: SQLGeneralExpression, idx: int):
+        self._array_expression = array_expression
+        self._idx = idx
+
+    @property
+    def array_expression(self) -> SQLGeneralExpression:
+        return self._array_expression
+
+    @property
+    def idx(self) -> int:
+        return self._idx
+
+    def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        if data_source != DataSource.HIVE:
+            raise UnSupportDataSourceError(f"数组下标不支持SQL类型:{data_source}")
+        return f"{self.array_expression.source(data_source)}"
+
+    def get_used_column_list(self) -> List[str]:
+        return self.array_expression.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        return self.array_expression.get_used_column_list()
 
 
 # ---------------------------------------- 表名表达式 ----------------------------------------
@@ -1995,6 +2040,18 @@ class SQLWithClause(SQLBase):
         else:
             return ""
 
+    def get_with_table_name_set(self) -> Set[str]:
+        """获取 WITH 中临时表的名称"""
+        return set(table[0] for table in self.tables)
+
+    def get_used_table_list(self) -> List[str]:
+        with_table_name_set = self.get_with_table_name_set()
+        result = []
+        for _, select_statement in self.tables:
+            result.extend([table_name for table_name in select_statement.get_used_table_list()
+                           if table_name not in with_table_name_set])
+        return ordered_distinct(result)
+
     def is_empty(self):
         return len(self.tables) == 0
 
@@ -2150,8 +2207,6 @@ class SQLSingleSelectStatement(SQLSelectStatement):
         if self.from_clause is None:
             return []
         result = self.from_clause.get_used_table_list()
-        for join_clause in self.join_clauses:
-            result.extend(join_clause.get_used_table_list())
         return ordered_distinct(result)
 
     def get_join_used_table_list(self) -> List[str]:
@@ -2337,6 +2392,14 @@ class SQLInsertStatement(SQLStatement, abc.ABC):
             columns_str = ""
         return f"{insert_type_str} {table_keyword_str}{self.table_name.source()} {partition_str}{columns_str}"
 
+    @abc.abstractmethod
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表的列表"""
+
+    @abc.abstractmethod
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+
 
 class SQLInsertValuesStatement(SQLInsertStatement):
     """INSERT ... VALUES ... 语句"""
@@ -2360,6 +2423,14 @@ class SQLInsertValuesStatement(SQLInsertStatement):
         values_str = ", ".join(value.source() for value in self.values)
         return f"{self._insert_str(data_source)}VALUES {values_str}"
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表的列表"""
+        return []
+
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return []
+
 
 class SQLInsertSelectStatement(SQLInsertStatement):
     """INSERT ... SELECT ... 语句"""
@@ -2381,6 +2452,19 @@ class SQLInsertSelectStatement(SQLInsertStatement):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         return f"{self._insert_str(data_source)} {self.select_statement.source(data_source)}"
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表的列表"""
+        with_table_name_set = self.with_clause.get_with_table_name_set()
+        result = self.with_clause.get_used_table_list()
+        for table_name in self.select_statement.get_used_table_list():
+            if table_name not in with_table_name_set:
+                result.append(table_name)
+        return ordered_distinct(result)
+
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return self.select_statement.get_used_column_list()
 
 
 # ---------------------------------------- SET 语句 ----------------------------------------
@@ -2408,12 +2492,16 @@ class SQLSetStatement(SQLBase):
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
 
+class SQLTableConfigExpression(SQLBase):
+    """建表语句配置信息表达式"""
+
+
+
 class SQLCreateTableStatement(SQLBase):
     """【DDL】CREATE TABLE 语句"""
 
     def __init__(self,
-                 schema_name: Optional[str] = None,
-                 table_name: Optional[str] = None,
+                 table_name_expression: SQLTableNameExpression,
                  comment: Optional[str] = None,
                  if_not_exists: bool = False,
                  columns: Optional[List[SQLDefineColumnExpression]] = None,
@@ -2430,8 +2518,7 @@ class SQLCreateTableStatement(SQLBase):
                  states_persistent: Optional[str] = None,
                  partition_by: List[SQLDefineColumnExpression] = None
                  ):
-        self._schema_name = schema_name
-        self._table_name = table_name
+        self._table_name_expression = table_name_expression
         self._comment = comment
         self._if_not_exists = if_not_exists
         self._columns = columns
@@ -2449,12 +2536,8 @@ class SQLCreateTableStatement(SQLBase):
         self._partition_by = partition_by if partition_by is not None else []
 
     @property
-    def schema_name(self):
-        return self._schema_name
-
-    @property
-    def table_name(self):
-        return self._table_name
+    def table_name_expression(self):
+        return self._table_name_expression
 
     @property
     def comment(self):
@@ -2516,11 +2599,8 @@ class SQLCreateTableStatement(SQLBase):
     def partition_by(self) -> List[SQLDefineColumnExpression]:
         return self._partition_by
 
-    def set_schema_name(self, schema_name: str):
-        self._schema_name = schema_name
-
-    def set_table_name(self, table_name: str):
-        self._table_name = table_name
+    def set_table_name(self, table_name_expression: SQLTableNameExpression):
+        self._table_name_expression = table_name_expression
 
     def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):
         """更新每个字段的变量类型"""
@@ -2544,10 +2624,7 @@ class SQLCreateTableStatement(SQLBase):
             result = "CREATE TABLE"
             if self.if_not_exists is True:
                 result += " IF NOT EXISTS"
-            result += " "
-            if self._schema_name is not None:
-                result += f"`{self._schema_name}`."
-            result += f"`{self._table_name}`(\n"
+            result += f" {self.table_name_expression.source(data_source)}(\n"
             columns_and_keys = []
             for column in self.columns:
                 columns_and_keys.append(f"{indentation}{column.source()}")
@@ -2581,10 +2658,7 @@ class SQLCreateTableStatement(SQLBase):
             result = "CREATE TABLE"
             if self.if_not_exists is True:
                 result += " IF NOT EXISTS"
-            result += " "
-            if self._schema_name is not None:
-                result += f"`{self._schema_name}`."
-            result += f"`{self._table_name}`(\n"
+            result += f" {self.table_name_expression.source(data_source)}(\n"
             columns_and_keys = []
             for column in self.columns:
                 columns_and_keys.append(f"{indentation}{column.source(DataSource.HIVE)}")
