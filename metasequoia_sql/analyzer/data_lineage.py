@@ -12,7 +12,7 @@ class DataLineageAnalyzer:
     def __init__(self, sql: str, data_source: DataSource):
         # 过滤所有的 INSERT 语句
         self.statements: List[SQLInsertStatement] = [
-            statement for statement in parse_statements(build_token_scanner(sql))
+            statement for statement in parse_statements(sql)
             if isinstance(statement, SQLInsertStatement)]
 
         # 统计所有 INSERT 语句中涉及的表名

@@ -72,7 +72,7 @@ def make_sql_basic_tutorial(force: bool = False):
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")
-            file.write(f"        statement = parse_select_statement(build_token_scanner({name}))\n")
+            file.write(f"        statement = parse_select_statement({name})\n")
 
             if isinstance(statement, SQLSingleSelectStatement):
                 print(f"DISTINCT: {statement.select_clause.distinct}", )

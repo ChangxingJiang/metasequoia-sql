@@ -5,7 +5,6 @@ TODO 增加 scanner 未解析完成的发现机制
 TODO 存在重复代码的类优化
 TODO 移除 data_source 的默认值
 TODO 将 DataSource 重命名为 SQLSource
-TODO 考虑是否需要将 SQL 前缀改为 AST 前缀
 
 参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
 """
