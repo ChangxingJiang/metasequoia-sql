@@ -6,7 +6,9 @@ import enum
 import re
 from typing import List
 
-from metasequoia_sql.ast.nodes import *
+from metasequoia_sql.ast.nodes import (
+    AST, ASTSpace, ASTLineBreak, ASTSemicolon, ASTCommon, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
+    ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull, ASTIdentifier, ASTParenthesis, ASTOther)
 from metasequoia_sql.common.text_scanner import TextScanner
 from metasequoia_sql.errors import AstParseError
 
@@ -50,14 +52,17 @@ class AstParseContext:
 
     @property
     def stack(self) -> List[List[AST]]:
+        """获取当前自动机词语栈"""
         return self._stack
 
     @property
     def scanner(self) -> TextScanner:
+        """获取当前的文本扫描器"""
         return self._scanner
 
     @property
     def status(self) -> AstParseStatus:
+        """获取当前自动机状态"""
         return self._status
 
     @property

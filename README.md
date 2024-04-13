@@ -121,6 +121,8 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 - DB2 的 `CURRENT DATE` 的语法
 
+参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
+
 ## 修改记录
 
 #### 0.1.0 > 0.2.0

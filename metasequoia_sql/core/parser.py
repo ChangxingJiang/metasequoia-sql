@@ -1,5 +1,9 @@
+# pylint: disable=C0302
+
 """
 基础元素的解析逻辑
+
+因为不同解析函数之间需要相互调用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
 
 TODO 使用 search 替代直接使用 now 判断
 TODO 整理各种函数的共同规律
@@ -479,10 +483,9 @@ def parse_function_expression(scanner_or_string: Union[TokenScanner, str]) -> Un
         return SQLAggregationFunctionExpression(function_name=function_name,
                                                 function_params=function_params,
                                                 is_distinct=is_distinct)
-    else:
-        return SQLFunctionExpression(schema_name=schema_name,
-                                     function_name=function_name,
-                                     function_params=function_params)
+    return SQLFunctionExpression(schema_name=schema_name,
+                                 function_name=function_name,
+                                 function_params=function_params)
 
 
 def parse_function_expression_maybe_with_array_index(scanner_or_string: Union[TokenScanner, str]
@@ -515,10 +518,7 @@ def parse_bool_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLBoo
         return SQLBoolBetweenExpression(before_value=before_value, from_value=from_value, to_value=to_value)
     if scanner.search_and_move("IS"):
         # ".... IS ...." 或 "... IS NOT ..."
-        if scanner.search_and_move("NOT"):
-            is_not = True
-        else:
-            is_not = False
+        is_not = scanner.search_and_move("NOT")
         after_value = parse_general_expression(scanner)
         return SQLBoolIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
     if scanner.search_and_move("IN"):
@@ -642,20 +642,19 @@ def parse_case_expression(scanner_or_string: Union[TokenScanner, str]
             else_value = parse_general_expression(scanner)
         scanner.match("END")
         return SQLCaseExpression(cases=cases, else_value=else_value)
-    else:
-        # 第 2 种格式的 CASE 表达式
-        case_value = parse_general_expression(scanner)
-        cases = []
-        else_value = None
-        while scanner.search_and_move("WHEN"):
-            when_expression = parse_general_expression(scanner)
-            scanner.match("THEN")
-            case_expression = parse_general_expression(scanner)
-            cases.append((when_expression, case_expression))
-        if scanner.search_and_move("ELSE"):
-            else_value = parse_general_expression(scanner)
-        scanner.match("END")
-        return SQLCaseValueExpression(case_value=case_value, cases=cases, else_value=else_value)
+    # 第 2 种格式的 CASE 表达式
+    case_value = parse_general_expression(scanner)
+    cases = []
+    else_value = None
+    while scanner.search_and_move("WHEN"):
+        when_expression = parse_general_expression(scanner)
+        scanner.match("THEN")
+        case_expression = parse_general_expression(scanner)
+        cases.append((when_expression, case_expression))
+    if scanner.search_and_move("ELSE"):
+        else_value = parse_general_expression(scanner)
+    scanner.match("END")
+    return SQLCaseValueExpression(case_value=case_value, cases=cases, else_value=else_value)
 
 
 def parse_value_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLValueExpression:
@@ -727,10 +726,9 @@ def parse_general_expression(scanner_or_string: Union[TokenScanner, str],
     while check_compute_operator(scanner):
         elements.append(parse_compute_operator(scanner))
         elements.append(_parse_general_expression_element(scanner, maybe_window))
-    if len(elements) > 1:
-        return SQLComputeExpression(elements=elements)  # 如果超过 1 个元素，则返回计算表达式（多项式）
-    else:
+    if len(elements) == 1:
         return elements[0]  # 如果只有 1 个元素，则返回该元素的表达式
+    return SQLComputeExpression(elements=elements)  # 如果超过 1 个元素，则返回计算表达式（多项式）
 
 
 def parse_config_name_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLConfigNameExpression:
@@ -829,8 +827,7 @@ def parse_column_type_expression(scanner_or_string: Union[TokenScanner, str]) ->
         for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             function_params.append(parse_general_expression(param_scanner))
         return SQLColumnTypeExpression(function_name, function_params)
-    else:
-        return SQLColumnTypeExpression(function_name, [])
+    return SQLColumnTypeExpression(function_name, [])
 
 
 def parse_table_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLTableExpression:
@@ -1115,6 +1112,7 @@ def parse_group_by_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLGro
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("GROUP", "BY")
     if scanner.search_and_move("GROUPING", "SETS"):
+        # 处理 GROUPING SETS 的语法
         grouping_list = []
         for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             if grouping_scanner.now_is_parenthesis:
@@ -1125,15 +1123,16 @@ def parse_group_by_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLGro
             else:
                 grouping_list.append([parse_general_expression(grouping_scanner)])
         return SQLGroupingSetsGroupByClause(grouping_list=grouping_list)
-    else:
-        columns = [parse_general_expression(scanner)]
-        while not scanner.is_finish and scanner.now.is_comma:
-            scanner.pop()
-            columns.append(parse_general_expression(scanner))
-        with_rollup = False
-        if scanner.search_and_move("WITH", "ROLLUP"):
-            with_rollup = True
-        return SQLNormalGroupByClause(columns=columns, with_rollup=with_rollup)
+
+    # 处理一般的 GROUP BY 的语法
+    columns = [parse_general_expression(scanner)]
+    while not scanner.is_finish and scanner.now.is_comma:
+        scanner.pop()
+        columns.append(parse_general_expression(scanner))
+    with_rollup = False
+    if scanner.search_and_move("WITH", "ROLLUP"):
+        with_rollup = True
+    return SQLNormalGroupByClause(columns=columns, with_rollup=with_rollup)
 
 
 def check_having_clause(scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1217,8 +1216,7 @@ def parse_with_clause(scanner_or_string: Union[TokenScanner, str]) -> Optional[S
             table_statement = _parse_single_with_table(scanner)
             tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
         return SQLWithClause(tables=tables)
-    else:
-        return SQLWithClause.empty()
+    return SQLWithClause.empty()
 
 
 def check_select_statement(scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1287,10 +1285,9 @@ def parse_select_statement(scanner_or_string: Union[TokenScanner, str],
     if not scanner.is_finish:
         raise SqlParseError(f"没有解析完成: {scanner}")
 
-    if len(result) > 1:
-        return SQLUnionSelectStatement(with_clause=with_clause, elements=result)
-    else:
+    if len(result) == 1:
         return result[0]
+    return SQLUnionSelectStatement(with_clause=with_clause, elements=result)
 
 
 def check_insert_statement(scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1356,6 +1353,8 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
             select_statement=select_statement
         )
 
+    raise SqlParseError(f"未知的 INSERT 语句类型 {scanner}")
+
 
 def check_set_statement(scanner_or_string: Union[TokenScanner, str]) -> bool:
     """判断是否为 SET 语句"""
@@ -1374,6 +1373,7 @@ def parse_set_statement(scanner_or_string: Union[TokenScanner, str]) -> SQLSetSt
 
 
 def parse_create_table_statement(scanner_or_string: Union[TokenScanner, str]) -> SQLCreateTableStatement:
+    """解析 CREATE TABLE 语句"""
     # 解析字段、索引括号前的部分
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("CREATE", "TABLE")

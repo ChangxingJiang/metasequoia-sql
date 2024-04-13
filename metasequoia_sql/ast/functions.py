@@ -4,7 +4,7 @@ AST 对外暴露的辅助函数
 
 from typing import List
 
-from metasequoia_sql.ast.nodes import *
+from metasequoia_sql.ast.nodes import AST, ASTStatement
 from metasequoia_sql.ast.parser import AstParseContext, AstParseStatus
 from metasequoia_sql.errors import AstParseError
 
