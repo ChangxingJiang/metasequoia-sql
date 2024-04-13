@@ -1421,8 +1421,7 @@ class SQLJoinExpression(SQLBase, abc.ABC):
 
     @abc.abstractmethod
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        """返回语法节点的 SQL 源码"""
-        pass  # TODO 待移除
+        """返回语法节点的 SQL 源码  TODO 待移除"""
 
 
 class SQLJoinOnExpression(SQLJoinExpression):
@@ -1669,6 +1668,8 @@ class SQLPrimaryIndexExpression(SQLIndexExpression):
 
 
 class SQLUniqueIndexExpression(SQLIndexExpression):
+    """唯一键索引声明表达式"""
+
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
@@ -1676,6 +1677,8 @@ class SQLUniqueIndexExpression(SQLIndexExpression):
 
 
 class SQLNormalIndexExpression(SQLIndexExpression):
+    """普通索引声明表达式"""
+
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
@@ -1683,6 +1686,8 @@ class SQLNormalIndexExpression(SQLIndexExpression):
 
 
 class SQLFulltextIndexExpression(SQLIndexExpression):
+    """全文本索引声明表达式"""
+
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
@@ -1724,54 +1729,67 @@ class SQLDefineColumnExpression(SQLBase):
 
     @property
     def column_name(self) -> str:
+        """返回列名"""
         return f"`{self._column_name}`"
 
     @property
     def column_name_without_quote(self) -> str:
+        """返回没有被引号框柱的列名"""
         return self._column_name
 
     @property
     def column_type(self) -> SQLColumnTypeExpression:
+        """返回列的类型"""
         return self._column_type
 
     @property
     def comment(self) -> Optional[str]:
+        """返回列的注释"""
         return self._comment
 
     @property
     def is_unsigned(self) -> bool:
+        """返回是否包含 UNSIGHED 关键字"""
         return self._is_unsigned
 
     @property
     def is_zerofill(self) -> bool:
+        """返回是否包含 ZEROFILL 关键字"""
         return self._is_zerofill
 
     @property
     def character_set(self) -> Optional[str]:
+        """返回是否包含 CHARSET SET 关键字"""
         return self._character_set
 
     @property
     def collate(self) -> Optional[str]:
+        """返回是否包含 COLLATE 关键字"""
         return self._collate
 
     @property
     def is_allow_null(self) -> bool:
+        """返回是否包含 NULL 关键字"""
         return self._is_allow_null
 
     @property
     def is_not_null(self) -> bool:
+        """返回是否包含 NOT NULL 关键字"""
         return self._is_not_null
 
     @property
     def is_auto_increment(self) -> bool:
+        """返回是否包含 AUTO_INCREMENT 关键字"""
         return self._is_auto_increment
 
     @property
     def default(self) -> Optional[SQLGeneralExpression]:
+        """返回是否包含 DEFAULT 关键字"""
         return self._default
 
     @property
     def on_update(self) -> Optional[SQLGeneralExpression]:
+        """返回是否包含 ON UPDATE 关键字"""
         return self._on_update
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -1811,6 +1829,7 @@ class SQLConfigNameExpression(SQLBase):
 
     @property
     def config_name(self) -> str:
+        """返回配置名称"""
         return self._config_name
 
     def source(self, data_source: DataSource) -> str:
@@ -1826,6 +1845,7 @@ class SQLConfigValueExpression(SQLBase):
 
     @property
     def config_value(self) -> str:
+        """返回配置值"""
         return self._config_value
 
     def source(self, data_source: DataSource) -> str:
@@ -1845,10 +1865,12 @@ class SQLSelectClause(SQLBase):
 
     @property
     def distinct(self) -> bool:
+        """返回是否包含 DISTINCT 关键字"""
         return self._distinct
 
     @property
     def columns(self) -> List[SQLColumnExpression]:
+        """返回 SELECT 中获取的列表达式的列表"""
         return self._columns
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -1874,6 +1896,7 @@ class SQLSelectClause(SQLBase):
         return result
 
     def get_index_to_used_column_hash(self) -> Dict[int, List[str]]:
+        """获取字段序号对应的原始字段列表的映射表"""
         result = {}
         for idx, column in enumerate(self.columns):
             result[idx + 1] = column.get_used_column_list()  # 列编号从 1 开始
@@ -1890,6 +1913,7 @@ class SQLFromClause(SQLBase):
 
     @property
     def tables(self) -> List[SQLTableExpression]:
+        """返回 FROM 中获取的表表达式的列表"""
         return self._tables
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -1908,6 +1932,8 @@ class SQLFromClause(SQLBase):
 
 
 class SQLLateralViewClause(SQLBase):
+    """LATERAL VIEW 子句"""
+
     def __init__(self, function: SQLFunctionExpression, view_name: str, alias: SQLAlisaExpression):
         self._function = function
         self._view_name = view_name
@@ -1915,21 +1941,25 @@ class SQLLateralViewClause(SQLBase):
 
     @property
     def function(self) -> SQLFunctionExpression:
+        """返回行专列的函数表达式"""
         return self._function
 
     @property
     def view_name(self) -> str:
+        """返回视图的名称"""
         return self._view_name
 
     @property
     def alias(self) -> SQLAlisaExpression:
+        """返回新生成的列的别名"""
         return self._alias
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         return f"LATERAL VIEW {self.function.source(data_source)} {self.view_name} {self.alias.source(data_source)}"
 
-    def get_used_column_name(self) -> List[str]:
+    def get_used_column_list(self) -> List[str]:
+        """返回使用的字段列表"""
         return self.function.get_used_column_list()
 
 
@@ -1948,14 +1978,17 @@ class SQLJoinClause(SQLBase):
 
     @property
     def join_type(self) -> SQLJoinType:
+        """返回关联类型"""
         return self._join_type
 
     @property
     def table(self) -> SQLTableExpression:
+        """返回关联的表表达式"""
         return self._table
 
     @property
     def join_rule(self) -> Optional[SQLJoinExpression]:
+        """返回关联规则的关联表达式"""
         return self._join_rule
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -1980,6 +2013,7 @@ class SQLWhereClause(SQLBase):
 
     @property
     def condition(self) -> SQLConditionExpression:
+        """返回 WHERE 子句中的条件表达式"""
         return self._condition
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2010,10 +2044,12 @@ class SQLNormalGroupByClause(SQLGroupByClause):
 
     @property
     def columns(self) -> List[SQLGeneralExpression]:
+        """返回 GROUP BY 中的列的一般表达式的列表"""
         return self._columns
 
     @property
     def with_rollup(self) -> bool:
+        """返回是否包含 WITH ROLLUP 关键字"""
         return self._with_rollup
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2041,6 +2077,7 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
 
     @property
     def grouping_list(self) -> List[List[SQLGeneralExpression]]:
+        """返回 GROUPING SETS 中的各个组的列表"""
         return self._grouping_list
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2076,6 +2113,7 @@ class SQLHavingClause(SQLBase):
 
     @property
     def condition(self) -> SQLConditionExpression:
+        """返回 HAVING 中的条件表达式"""
         return self._condition
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2083,6 +2121,7 @@ class SQLHavingClause(SQLBase):
         return f"HAVING {self.condition.source()}"
 
     def get_used_column_list(self) -> List[str]:
+        """返回使用的字段列表"""
         return self.condition.get_used_column_list()
 
 
@@ -2097,6 +2136,7 @@ class SQLOrderByClause(SQLBase):
 
     @property
     def columns(self) -> List[Tuple[SQLGeneralExpression, SQLOrderType]]:
+        """返回 ORDER BY　子句中的列的一般表达式和排序类型的元组的列表"""
         return self._columns
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2132,10 +2172,12 @@ class SQLLimitClause(SQLBase):
 
     @property
     def limit(self) -> int:
+        """返回开始的位置"""
         return self._limit
 
     @property
     def offset(self) -> int:
+        """返回检索的行数"""
         return self._offset
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2159,6 +2201,7 @@ class SQLWithClause(SQLBase):
 
     @property
     def tables(self) -> List[Tuple[str, "SQLSelectStatement"]]:
+        """返回 WITH 中的表名与表的 SELECT 表达式的元组的列表"""
         return self._tables
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2183,6 +2226,7 @@ class SQLWithClause(SQLBase):
         return ordered_distinct(result)
 
     def is_empty(self):
+        """返回 WITH 语句是否为空"""
         return len(self.tables) == 0
 
 
@@ -2197,6 +2241,7 @@ class SQLStatement(SQLBase, abc.ABC):
 
     @property
     def with_clause(self) -> Optional[SQLWithClause]:
+        """返回语句的 WITH 子句"""
         return self._with_clause
 
 
@@ -2280,38 +2325,47 @@ class SQLSingleSelectStatement(SQLSelectStatement):
 
     @property
     def select_clause(self) -> SQLSelectClause:
+        """返回 SELECT 子句"""
         return self._select_clause
 
     @property
     def from_clause(self) -> Optional[SQLFromClause]:
+        """返回 FROM 子句"""
         return self._from_clause
 
     @property
     def lateral_view_clauses(self) -> List[SQLLateralViewClause]:
+        """返回 LATERAL VIEW 子句"""
         return self._lateral_view_clauses
 
     @property
     def join_clauses(self) -> List[SQLJoinClause]:
+        """返回 JOIN 子句"""
         return self._join_clauses
 
     @property
     def where_clause(self) -> Optional[SQLWhereClause]:
+        """返回 WHERE 子句"""
         return self._where_clause
 
     @property
     def group_by_clause(self) -> Optional[SQLGroupByClause]:
+        """返回 GROUP BY 子句"""
         return self._group_by_clause
 
     @property
     def having_clause(self) -> Optional[SQLHavingClause]:
+        """返回 HAVING 子句"""
         return self._having_clause
 
     @property
     def order_by_clause(self) -> Optional[SQLOrderByClause]:
+        """返回 ORDER BY 子句"""
         return self._order_by_clause
 
     @property
     def limit_clause(self) -> Optional[SQLLimitClause]:
+        """返回 LIMIT 子句"""
         return self._limit_clause
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2390,10 +2444,7 @@ class SQLSingleSelectStatement(SQLSelectStatement):
 
 
 class SQLUnionSelectStatement(SQLSelectStatement):
-    """复合查询语句，使用 UNION、EXCEPT、INTERSECT 进行组合
-
-    TODO 移除表达式中直接引用枚举类的行为，外面必须套一层表达式
-    """
+    """复合查询语句，使用 UNION、EXCEPT、INTERSECT 进行组合"""
 
     def __init__(self,
                  with_clause: Optional[SQLWithClause],
@@ -2403,6 +2454,7 @@ class SQLUnionSelectStatement(SQLSelectStatement):
 
     @property
     def elements(self) -> List[Union[SQLUnionType, SQLSingleSelectStatement]]:
+        """返回包含组合关键字的表达式的列表"""
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2459,6 +2511,7 @@ class SQLUnionSelectStatement(SQLSelectStatement):
         return ordered_distinct(result)
 
     def get_order_by_used_column_list(self) -> List[str]:
+        """返回在 ORDER BY 子句中使用的字段名的列表"""
         result = []
         for element in self.elements:
             if isinstance(element, SQLSingleSelectStatement):
@@ -2482,41 +2535,38 @@ class SQLInsertStatement(SQLStatement, abc.ABC):
     def __init__(self,
                  with_clause: Optional[SQLWithClause],
                  insert_type: SQLInsertType,
-                 has_table_keyword: bool,
                  table_name: SQLTableNameExpression,
                  partition: Optional[SQLPartitionExpression],
                  columns: Optional[List[SQLColumnNameExpression]]):
         super().__init__(with_clause)
         self._insert_type = insert_type
-        self._has_table_keyword = has_table_keyword
         self._table_name = table_name
         self._partition = partition
         self._columns = columns
 
     @property
     def insert_type(self) -> SQLInsertType:
+        """返回插入类型"""
         return self._insert_type
 
     @property
-    def has_table_keyword(self) -> bool:
-        return self._has_table_keyword
-
-    @property
     def table_name(self) -> SQLTableNameExpression:
+        """返回插入的表名"""
         return self._table_name
 
     @property
     def partition(self) -> SQLPartitionExpression:
+        """返回插入的分区"""
         return self._partition
 
     @property
     def columns(self) -> Optional[List[SQLColumnExpression]]:
+        """返回插入的列列表"""
         return self._columns
 
     def _insert_str(self, data_source: DataSource) -> str:
-        """INSERT语句的前半部分"""
         insert_type_str = self.insert_type.source(data_source)
-        table_keyword_str = "TABLE " if self.has_table_keyword else ""
+        table_keyword_str = "TABLE " if data_source == DataSource.HIVE else ""
         partition_str = self.partition.source() + " " if self.partition is not None else ""
         if self.columns is not None:
             columns_str = "(" + ", ".join(column.source() for column in self.columns) + ") "
@@ -2525,12 +2575,12 @@ class SQLInsertStatement(SQLStatement, abc.ABC):
         return f"{insert_type_str} {table_keyword_str}{self.table_name.source()} {partition_str}{columns_str}"
 
     @abc.abstractmethod
-    def get_used_table_list(self) -> List[str]:
-        """获取使用的表的列表"""
-
-    @abc.abstractmethod
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
+
+    @abc.abstractmethod
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表的列表"""
 
 
 class SQLInsertValuesStatement(SQLInsertStatement):
@@ -2539,16 +2589,16 @@ class SQLInsertValuesStatement(SQLInsertStatement):
     def __init__(self,
                  with_clause: Optional[SQLWithClause],
                  insert_type: SQLInsertType,
-                 has_table_keyword: bool,
                  table_name: SQLTableNameExpression,
                  partition: Optional[SQLPartitionExpression],
                  columns: Optional[List[SQLColumnNameExpression]],
                  values: List[SQLValueExpression]):
-        super().__init__(with_clause, insert_type, has_table_keyword, table_name, partition, columns)
+        super().__init__(with_clause, insert_type, table_name, partition, columns)
         self._values = values
 
     @property
     def values(self) -> List[SQLValueExpression]:
+        """返回插入的值表达式的列表"""
         return self._values
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2571,16 +2621,16 @@ class SQLInsertSelectStatement(SQLInsertStatement):
     def __init__(self,
                  with_clause: Optional[SQLWithClause],
                  insert_type: SQLInsertType,
-                 has_table_keyword: bool,
                  table_name: SQLTableNameExpression,
                  partition: Optional[SQLPartitionExpression],
                  columns: Optional[List[SQLColumnNameExpression]],
                  select_statement: SQLSelectStatement):
-        super().__init__(with_clause, insert_type, has_table_keyword, table_name, partition, columns)
+        super().__init__(with_clause, insert_type, table_name, partition, columns)
         self._select_statement = select_statement
 
     @property
     def select_statement(self) -> SQLSelectStatement:
+        """返回插入语句中使用的 SELECT 语句"""
         return self._select_statement
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -2613,10 +2663,12 @@ class SQLSetStatement(SQLBase):
 
     @property
     def config_name(self) -> SQLConfigNameExpression:
+        """返回配置名称表达式"""
         return self._config_name
 
     @property
     def config_value(self) -> SQLConfigValueExpression:
+        """返回配置值表达式"""
         return self._config_value
 
     def source(self, data_source: DataSource) -> str:
@@ -2671,69 +2723,86 @@ class SQLCreateTableStatement(SQLBase):
 
     @property
     def table_name_expression(self):
+        """返回表名表达式"""
         return self._table_name_expression
 
     @property
     def comment(self):
+        """返回表注释"""
         return self._comment
 
     @property
     def if_not_exists(self) -> bool:
+        """返回是否包含 IS NOT EXISTS 关键字"""
         return self._if_not_exists
 
     @property
     def columns(self) -> List[SQLDefineColumnExpression]:
+        """返回列声明表达式"""
         return self._columns
 
     @property
     def primary_key(self) -> SQLPrimaryIndexExpression:
+        """返回主键索引声明表达式"""
         return self._primary_key
 
     @property
     def unique_key(self) -> List[SQLUniqueIndexExpression]:
+        """返回唯一键索引声明表达式的列表"""
         return self._unique_key
 
     @property
     def key(self) -> List[SQLNormalIndexExpression]:
+        """返回普通索引声明表达式的列表"""
         return self._key
 
     @property
     def fulltext_key(self) -> List[SQLFulltextIndexExpression]:
+        """返回全文本索引声明表达式的列表"""
         return self._fulltext_key
 
     @property
     def foreign_key(self) -> List[SQLForeignKeyExpression]:
+        """返回外键"""
         return self._foreign_key
 
     @property
     def engine(self) -> Optional[str]:
+        """返回 ENGINE 的配置值"""
         return self._engine
 
     @property
     def auto_increment(self) -> Optional[str]:
+        """返回 AUTO INCREMENT 的配置值"""
         return self._auto_increment
 
     @property
     def default_charset(self) -> Optional[str]:
+        """返回 DEFAULT CHARSET 的配置值"""
         return self._default_charset
 
     @property
     def collate(self) -> Optional[str]:
+        """返回 COLLATE 的配置值"""
         return self._collate
 
     @property
     def row_format(self) -> Optional[str]:
+        """返回 ROW FORMAT 的配置值"""
         return self._row_format
 
     @property
     def states_persistent(self) -> Optional[str]:
+        """配置 STATES PERSISTENT 的配置值"""
         return self._states_persistent
 
     @property
     def partition_by(self) -> List[SQLDefineColumnExpression]:
+        """返回分组字段的字段声明表达式的列表"""
         return self._partition_by
 
     def set_table_name(self, table_name_expression: SQLTableNameExpression):
+        """设置表名"""
         self._table_name_expression = table_name_expression
 
     def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):

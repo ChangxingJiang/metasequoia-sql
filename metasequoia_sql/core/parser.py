@@ -1303,7 +1303,7 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
     insert_type = parse_insert_type(scanner)
 
     # 匹配可能包含的 TABLE 关键字
-    has_table_keyword = scanner.search_and_move("TABLE")
+    scanner.search_and_move("TABLE")
 
     # 匹配表名
     table_name = parse_table_name_expression(scanner)
@@ -1334,7 +1334,6 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
         return SQLInsertValuesStatement(
             with_clause=with_clause,
             insert_type=insert_type,
-            has_table_keyword=has_table_keyword,
             table_name=table_name,
             partition=partition,
             columns=columns,
@@ -1346,7 +1345,6 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
         return SQLInsertSelectStatement(
             with_clause=with_clause,
             insert_type=insert_type,
-            has_table_keyword=has_table_keyword,
             table_name=table_name,
             partition=partition,
             columns=columns,
