@@ -47,6 +47,7 @@ class TokenScanner(BaseScanner):
 
     @property
     def now_is_parenthesis(self):
+        """如果当前元素为插入语则返回 True"""
         return self.now.is_parenthesis
 
     def search(self, *tokens: str) -> bool:
@@ -71,10 +72,9 @@ class TokenScanner(BaseScanner):
             refer = self._get_by_offset(idx)
             if refer is None or not refer.equals(token):
                 return False
-        else:
-            for _ in range(len(tokens)):
-                self.pop()
-            return True
+        for _ in range(len(tokens)):
+            self.pop()
+        return True
 
     def match(self, *tokens: str) -> None:
         """从当前配置开始匹配 tokens

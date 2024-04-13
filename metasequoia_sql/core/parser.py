@@ -3,7 +3,6 @@
 
 TODO 使用 search 替代直接使用 now 判断
 TODO 整理各种函数的共同规律
-TODO 将 doctest 转化为单元测试
 """
 
 from typing import Optional, Tuple, List, Union
@@ -189,6 +188,7 @@ def parse_insert_type(scanner_or_string: Union[TokenScanner, str]) -> SQLInsertT
 
 
 def check_join_type(scanner_or_string: Union[TokenScanner, str]) -> bool:
+    """判断是否为关联类型"""
     scanner = _unify_input_scanner(scanner_or_string)
     for join_type in EnumJoinType:
         if scanner.search(*join_type.value):
@@ -197,6 +197,7 @@ def check_join_type(scanner_or_string: Union[TokenScanner, str]) -> bool:
 
 
 def parse_join_type(scanner_or_string: Union[TokenScanner, str]) -> SQLJoinType:
+    """解析关联类型"""
     scanner = _unify_input_scanner(scanner_or_string)
     for join_type in EnumJoinType:
         if scanner.search_and_move(*join_type.value):
@@ -205,11 +206,12 @@ def parse_join_type(scanner_or_string: Union[TokenScanner, str]) -> SQLJoinType:
 
 
 def check_order_type() -> bool:
-    """任何元素都可以是排序类型（省略升序），所以均返回 True"""
+    """判断是否为排序类型：任何元素都可以是排序类型（省略升序），所以均返回 True"""
     return True
 
 
 def parse_order_type(scanner_or_string: Union[TokenScanner, str]) -> SQLOrderType:
+    """解析排序类型"""
     scanner = _unify_input_scanner(scanner_or_string)
     if scanner.search_and_move("DESC"):
         return SQLOrderType(order_type=EnumOrderType.DESC)
@@ -219,6 +221,7 @@ def parse_order_type(scanner_or_string: Union[TokenScanner, str]) -> SQLOrderTyp
 
 
 def check_union_type(scanner_or_string: Union[TokenScanner, str]) -> bool:
+    """判断是否为组合类型"""
     scanner = _unify_input_scanner(scanner_or_string)
     for union_type in EnumUnionType:
         if scanner.search(*union_type.value):
@@ -227,6 +230,7 @@ def check_union_type(scanner_or_string: Union[TokenScanner, str]) -> bool:
 
 
 def parse_union_type(scanner_or_string: Union[TokenScanner, str]) -> SQLUnionType:
+    """解析组合类型"""
     scanner = _unify_input_scanner(scanner_or_string)
     for union_type in EnumUnionType:
         if scanner.search_and_move(*union_type.value):
@@ -235,11 +239,13 @@ def parse_union_type(scanner_or_string: Union[TokenScanner, str]) -> SQLUnionTyp
 
 
 def check_compare_operator(scanner_or_string: Union[TokenScanner, str]) -> bool:
+    """判断是否为比较运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
     return scanner.get_as_source() in {"=", "!=", "<>", "<", "<=", ">", ">="}
 
 
 def parse_compare_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLCompareOperator:
+    """解析比较运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
     compare_operator_hash = {
         "=": EnumCompareOperator.EQUAL_TO,
@@ -257,6 +263,7 @@ def parse_compare_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLCo
 
 
 def check_compute_operator(scanner_or_string: Union[TokenScanner, str]) -> bool:
+    """判断是否为计算运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
     for compute_operator in EnumComputeOperator:
         if scanner.search(compute_operator.value):
@@ -265,6 +272,7 @@ def check_compute_operator(scanner_or_string: Union[TokenScanner, str]) -> bool:
 
 
 def parse_compute_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLComputeOperator:
+    """解析计算运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
     for compute_operator in EnumComputeOperator:
         if scanner.search_and_move(compute_operator.value):
@@ -273,11 +281,13 @@ def parse_compute_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLCo
 
 
 def check_logical_operator(scanner_or_string: Union[TokenScanner, str]) -> bool:
+    """判断是否为逻辑运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
     return scanner.get_as_source() in {"AND", "OR", "NOT"}
 
 
 def parse_logical_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLLogicalOperator:
+    """解析逻辑运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
     for logical_operator in EnumLogicalOperator:
         if scanner.search_and_move(logical_operator.value):

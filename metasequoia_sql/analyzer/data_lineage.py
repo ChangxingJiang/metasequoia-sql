@@ -4,11 +4,14 @@
 
 from typing import List
 
-from metasequoia_sql.common import *
-from metasequoia_sql.core import *
+from metasequoia_sql.core import DataSource, parse_statements, SQLInsertStatement
 
 
 class DataLineageAnalyzer:
+    """
+    数据血缘分析器
+    """
+
     def __init__(self, sql: str, data_source: DataSource):
         # 过滤所有的 INSERT 语句
         self.statements: List[SQLInsertStatement] = [
@@ -25,4 +28,5 @@ class DataLineageAnalyzer:
         self.create_table_statements = {}
 
     def get_table_list(self) -> List[str]:
+        """获取上下游表的列表"""
         return list(self.used_table_set)

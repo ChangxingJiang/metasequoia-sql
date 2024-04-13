@@ -35,10 +35,12 @@ class BaseScanner(Generic[T]):
 
     @property
     def elements(self) -> List[T]:
+        """返回扫描器中的所有元素"""
         return self._elements
 
     @property
     def pos(self) -> int:
+        """返回当前扫描指针"""
         return self._pos
 
     @property

@@ -16,10 +16,8 @@ from metasequoia_sql.common.basic import ordered_distinct
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
 
 __all__ = [
+    # ------------------------------ SQL 数据源类型 ------------------------------
     "DataSource",
-
-    # ------------------------------ 所有 SQL 语句对象节点的抽象基类 ------------------------------
-    "SQLBase",
 
     # ------------------------------ 基础元素（其中不引用其他元素） ------------------------------
     # 插入类型
@@ -194,7 +192,7 @@ class SQLBase(abc.ABC):
 
     @abc.abstractmethod
     def source(self, data_source: DataSource) -> str:
-        """返回 SQL 源码
+        """返回语法节点的 SQL 源码
 
         TODO 待将 MySQL 修改为自动指定
         """
@@ -226,9 +224,11 @@ class SQLInsertType(SQLBase):
 
     @property
     def insert_type(self) -> EnumInsertType:
+        """返回插入类型的枚举类"""
         return self._insert_type
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return " ".join(self.insert_type.value)
 
 
@@ -256,9 +256,11 @@ class SQLJoinType(SQLBase):
 
     @property
     def join_type(self) -> EnumJoinType:
+        """返回关联类型的枚举类"""
         return self._join_type
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return " ".join(self.join_type.value)
 
 
@@ -272,14 +274,18 @@ class EnumOrderType(enum.Enum):
 
 
 class SQLOrderType(SQLBase):
+    """排序类型"""
+
     def __init__(self, order_type: EnumOrderType):
         self._order_type = order_type
 
     @property
     def order_type(self) -> EnumOrderType:
+        """返回排序类型的枚举类"""
         return self._order_type
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return self.order_type.value
 
 
@@ -303,9 +309,11 @@ class SQLUnionType(SQLBase):
 
     @property
     def union_type(self) -> EnumUnionType:
+        """返回组合类型的枚举类"""
         return self._union_type
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return " ".join(self.union_type.value)
 
 
@@ -335,9 +343,11 @@ class SQLCompareOperator(SQLBase):
 
     @property
     def compare_operator(self) -> EnumCompareOperator:
+        """返回比较运算符的枚举类"""
         return self._compare_operator
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return self.compare_operator.value
 
     @staticmethod
@@ -367,9 +377,11 @@ class SQLComputeOperator(SQLBase):
 
     @property
     def compute_operator(self) -> EnumComputeOperator:
+        """返回计算运算符的枚举类"""
         return self._compute_operator
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.compute_operator == EnumComputeOperator.MOD and data_source != DataSource.SQL_SERVER:
             raise UnSupportDataSourceError(f"{data_source} 不支持使用 % 运算符")
         if (self.compute_operator == EnumComputeOperator.CONCAT
@@ -401,9 +413,11 @@ class SQLLogicalOperator(SQLBase):
 
     @property
     def logical_operator(self) -> EnumLogicalOperator:
+        """返回逻辑运算符的枚举类"""
         return self._logical_operator
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return self.logical_operator.value
 
     @staticmethod
@@ -416,11 +430,14 @@ class SQLLogicalOperator(SQLBase):
 
 
 class SQLGeneralExpression(SQLBase, abc.ABC):
-    """一般表达式的抽象基类"""
+    """一般表达式的抽象基类
+
+    TODO 待移除所有方法
+    """
 
     @abc.abstractmethod
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        """TODO 待移除"""
+        """返回语法节点的 SQL 源码"""
 
     @abc.abstractmethod
     def get_used_column_list(self) -> List[str]:
@@ -454,9 +471,11 @@ class SQLLiteralIntegerExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> int:
+        """返回整型的字面值"""
         return self._value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self.value}"
 
     def as_int(self) -> int:
@@ -474,9 +493,11 @@ class SQLLiteralFloatExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> float:
+        """返回浮点型的字面值"""
         return self._value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self.value}"
 
     def as_string(self) -> str:
@@ -491,9 +512,11 @@ class SQLLiteralStringExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> str:
+        """返回字符串类型的字面值"""
         return self._value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"'{self.value}'"
 
     def as_int(self) -> Optional[int]:
@@ -513,9 +536,11 @@ class SQLLiteralHexExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> str:
+        """返回字符串类型的十六进制字面值"""
         return self._value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"x'{self._value}'"
 
     def as_string(self) -> str:
@@ -530,9 +555,11 @@ class SQLLiteralBitExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> str:
+        """返回字符串类型的位置字面值"""
         return self._value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"b'{self._value}'"
 
     def as_string(self) -> str:
@@ -547,12 +574,14 @@ class SQLLiteralBoolExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> bool:
+        """返回布尔值类型的字面值"""
         return self._value
 
     def as_int(self) -> int:
         return 1 if self.value is True else 0
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return "TRUE" if self._value is True else "FALSE"
 
 
@@ -561,9 +590,11 @@ class SQLLiteralNullExpression(SQLLiteralExpression):
 
     @property
     def value(self) -> None:
+        """返回空值字面值"""
         return None
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return "NULL"
 
 
@@ -586,6 +617,7 @@ class SQLColumnNameExpression(SQLGeneralExpression):
         return self._column
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.table is not None:
             return f"{self.table}.{self.column}"
         else:
@@ -657,6 +689,7 @@ class SQLFunctionExpression(SQLGeneralExpression):
         return self._function_params
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self._get_function_str()}({self._get_param_str(data_source)})"
 
     def _get_param_str(self, data_source: DataSource = DataSource.MYSQL) -> str:
@@ -691,6 +724,7 @@ class SQLAggregationFunctionExpression(SQLFunctionExpression):
         return self._is_distinct
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         is_distinct = "DISTINCT " if self.is_distinct is True else ""
         return f"{self._get_function_str()}({is_distinct}{self._get_param_str(data_source)})"
 
@@ -714,6 +748,7 @@ class SQLCastDataType(SQLBase):
         return self._params
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         result = []
         if self.signed is True:
             result.append("SIGNED")
@@ -748,6 +783,7 @@ class SQLCastFunctionExpression(SQLFunctionExpression):
         return self._cast_type
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self._get_function_str()}({self.column_expression.source()} AS {self.cast_type.source()})"
 
     def get_used_column_list(self) -> List[str]:
@@ -779,6 +815,7 @@ class SQLExtractFunctionExpression(SQLFunctionExpression):
         return self._column_expression
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self._get_function_str()}({self.extract_name.source()} FROM {self.column_expression.source()})"
 
     def get_used_column_list(self) -> List[str]:
@@ -824,6 +861,7 @@ class SQLBoolCompareExpression(SQLBoolExpression):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return (f"{self.before_value.source(data_source)}"
                 f" {self.operator.source(data_source)} "
                 f"{self.after_value.source(data_source)}")
@@ -857,6 +895,7 @@ class SQLBoolIsExpression(SQLBoolExpression):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.is_not:
             return f"{self.before_value.source()} IS NOT {self.after_value.source()}"
         else:
@@ -891,6 +930,7 @@ class SQLBoolInExpression(SQLBoolExpression):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.is_not:
             return f"{self.before_value.source()} NOT IN {self.after_value.source()}"
         else:
@@ -925,6 +965,7 @@ class SQLBoolLikeExpression(SQLBoolExpression):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.is_not:
             return f"{self.before_value.source()} NOT LIKE {self.after_value.source()}"
         else:
@@ -953,6 +994,7 @@ class SQLBoolExistsExpression(SQLBoolExpression):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.is_not:
             return f"NOT EXISTS {self.after_value.source()}"
         else:
@@ -987,6 +1029,7 @@ class SQLBoolBetweenExpression(SQLBoolExpression):
         return self._to_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self.before_value.source()} BETWEEN {self.from_value.source()} AND {self.to_value.source()}"
 
     def get_used_column_list(self) -> List[str]:
@@ -1021,6 +1064,7 @@ class SQLWindowExpression(SQLGeneralExpression):
         return self._order_by
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         result = f"{self.window_function.source()} OVER ("
         parenthesis = []
         if self.partition_by is not None:
@@ -1054,6 +1098,7 @@ class SQLWildcardExpression(SQLGeneralExpression):
         return self._schema
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.schema is not None:
             return f"{self.schema}.*"
         else:
@@ -1078,6 +1123,7 @@ class SQLConditionExpression(SQLGeneralExpression):
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return " ".join(f"({element.source(data_source)})"
                         if isinstance(element, SQLConditionExpression) else element.source(data_source)
                         for element in self._elements)
@@ -1117,6 +1163,7 @@ class SQLCaseExpression(SQLGeneralExpression):
         return self._else_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         result = ["CASE"]
         for when, then in self.cases:
             result.append(f"WHEN {when.source(data_source)} THEN {then.source(data_source)}")
@@ -1163,6 +1210,7 @@ class SQLCaseValueExpression(SQLGeneralExpression):
         return self._else_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         result = ["CASE", self.case_value.source()]
         for when, then in self.cases:
             result.append(f"    WHEN {when.source(data_source)} THEN {then.source(data_source)}")
@@ -1193,6 +1241,7 @@ class SQLComputeExpression(SQLGeneralExpression):
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return " ".join(element.source(data_source) for element in self.elements)
 
     def get_used_column_list(self) -> List[str]:
@@ -1217,6 +1266,7 @@ class SQLValueExpression(SQLGeneralExpression):
         return self._values
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         values_str = ", ".join(value.source() for value in self.values)
         return f"({values_str})"
 
@@ -1238,6 +1288,7 @@ class SQLSubQueryExpression(SQLGeneralExpression):
         return self._select_statement
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"({self.select_statement.source()})"
 
     def get_used_column_list(self) -> List[str]:
@@ -1263,6 +1314,7 @@ class SQLArrayIndexExpression(SQLGeneralExpression):
         return self._idx
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if data_source != DataSource.HIVE:
             raise UnSupportDataSourceError(f"数组下标不支持SQL类型:{data_source}")
         return f"{self.array_expression.source(data_source)}"
@@ -1293,6 +1345,7 @@ class SQLTableNameExpression(SQLBase):
         return self._table
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.schema is not None:
             return f"{self.schema}.{self.table}"
         else:
@@ -1316,6 +1369,7 @@ class SQLAlisaExpression(SQLBase):
         return self._alias_name
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"AS {self.alias_name}"
 
 
@@ -1327,6 +1381,7 @@ class SQLJoinExpression(SQLBase, abc.ABC):
 
     @abc.abstractmethod
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         pass  # TODO 待移除
 
 
@@ -1341,6 +1396,7 @@ class SQLJoinOnExpression(SQLJoinExpression):
         return self._condition
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"ON {self._condition.source()}"
 
 
@@ -1355,6 +1411,7 @@ class SQLJoinUsingExpression(SQLJoinExpression):
         return self._using_function
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self.using_function.source()}"
 
 
@@ -1376,6 +1433,7 @@ class SQLColumnTypeExpression(SQLBase):
         return self._params
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if len(self.params) == 0 or data_source == DataSource.HIVE:
             return self.name
         else:
@@ -1404,6 +1462,7 @@ class SQLTableExpression(SQLBase):
         return self._alias
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.alias is not None:
             return f"{self.table.source()} {self.alias.source()}"
         else:
@@ -1434,6 +1493,7 @@ class SQLColumnExpression(SQLBase):
         return self._alias
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.alias is not None:
             return f"{self.column.source(data_source)} {self.alias.source()}"
         else:
@@ -1469,6 +1529,7 @@ class SQLEqualExpression(SQLBase):
         return self._after_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self.before_value.source()} = {self.after_value.source()}"
 
 
@@ -1486,6 +1547,7 @@ class SQLPartitionExpression(SQLBase):
         return self._partition_list
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         partition_list_str = ", ".join(partition.source() for partition in self.partition_list)
         return f"PARTITION ({partition_list_str})"
 
@@ -1517,6 +1579,7 @@ class SQLForeignKeyExpression(SQLBase):
         self.master_columns = master_columns
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
         return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) "
@@ -1549,24 +1612,28 @@ class SQLPrimaryIndexExpression(SQLIndexExpression):
         super().__init__(None, columns)
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
         return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
 
 
 class SQLUniqueIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
         return f"UNIQUE KEY {self.name} ({columns_str})"
 
 
 class SQLNormalIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
         return f"KEY {self.name} ({columns_str})"
 
 
 class SQLFulltextIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column}" for column in self.columns])
         return f"FULLTEXT KEY {self.name} ({columns_str})"
 
@@ -1657,6 +1724,7 @@ class SQLDefineColumnExpression(SQLBase):
         return self._on_update
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         res = f"{self._column_name} {self.column_type.source(data_source)}"
         if self.is_unsigned is True and data_source == DataSource.MYSQL:
             res += " UNSIGNED"
@@ -1695,7 +1763,8 @@ class SQLConfigNameExpression(SQLBase):
         return self._config_name
 
     def source(self, data_source: DataSource) -> str:
-        return self._config_name
+        """返回语法节点的 SQL 源码"""
+        return self.config_name
 
 
 class SQLConfigValueExpression(SQLBase):
@@ -1709,7 +1778,8 @@ class SQLConfigValueExpression(SQLBase):
         return self._config_value
 
     def source(self, data_source: DataSource) -> str:
-        return self._config_value
+        """返回语法节点的 SQL 源码"""
+        return self.config_value
 
 
 # ---------------------------------------- SELECT 子句 ----------------------------------------
@@ -1731,6 +1801,7 @@ class SQLSelectClause(SQLBase):
         return self._columns
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         result = ["SELECT"]
         if self.distinct is True:
             result.append("DISTINCT")
@@ -1771,6 +1842,7 @@ class SQLFromClause(SQLBase):
         return self._tables
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return "FROM " + ", ".join(table.source() for table in self.tables)
 
     def get_used_table_list(self) -> List[str]:
@@ -1803,6 +1875,7 @@ class SQLLateralViewClause(SQLBase):
         return self._alias
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"LATERAL VIEW {self.function.source(data_source)} {self.view_name} {self.alias.source(data_source)}"
 
     def get_used_column_name(self) -> List[str]:
@@ -1835,6 +1908,7 @@ class SQLJoinClause(SQLBase):
         return self._join_rule
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.join_rule is not None:
             return f"{self.join_type.source(data_source)} {self.table.source()} {self.join_rule.source()}"
         else:
@@ -1858,6 +1932,7 @@ class SQLWhereClause(SQLBase):
         return self._condition
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"WHERE {self.condition.source()}"
 
     def get_used_column_list(self) -> List[str]:
@@ -1891,6 +1966,7 @@ class SQLNormalGroupByClause(SQLGroupByClause):
         return self._with_rollup
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         if self.with_rollup:
             return "GROUP BY " + ", ".join(column.source() for column in self.columns) + " WITH ROLLUP"
         else:
@@ -1918,6 +1994,7 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
         return self._grouping_list
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         grouping_str_list = []
         for grouping in self.grouping_list:
             if len(grouping) > 1:
@@ -1952,6 +2029,7 @@ class SQLHavingClause(SQLBase):
         return self._condition
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"HAVING {self.condition.source()}"
 
     def get_used_column_list(self) -> List[str]:
@@ -1972,6 +2050,7 @@ class SQLOrderByClause(SQLBase):
         return self._columns
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         result = []
         for column, order_type in self.columns:
             if order_type.source(data_source) == "ASC":
@@ -1983,7 +2062,7 @@ class SQLOrderByClause(SQLBase):
     def get_used_column_list(self) -> List[Union[str, int]]:
         """返回字段名和列编号"""
         result = []
-        for column, order_type in self.columns:
+        for column, _ in self.columns:
             if isinstance(column, SQLLiteralExpression):
                 result.append(column.as_int())  # 列编号
             else:
@@ -2010,6 +2089,7 @@ class SQLLimitClause(SQLBase):
         return self._offset
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"LIMIT {self.offset}, {self.limit}"
 
 
@@ -2032,12 +2112,12 @@ class SQLWithClause(SQLBase):
         return self._tables
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        if len(self.tables) > 0:
-            table_str = ", \n".join(f"{table_name}({table_statement.source()})"
-                                    for table_name, table_statement in self.tables)
-            return f"WITH {table_str}"
-        else:
+        """返回语法节点的 SQL 源码"""
+        if not self.tables:
             return ""
+        table_str = ", \n".join(f"{table_name}({table_statement.source()})"
+                                for table_name, table_statement in self.tables)
+        return f"WITH {table_str}"
 
     def get_with_table_name_set(self) -> Set[str]:
         """获取 WITH 中临时表的名称"""
@@ -2077,8 +2157,7 @@ class SQLSelectStatement(SQLStatement, abc.ABC):
 
     @abc.abstractmethod
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        """TODO 待移除"""
-        pass
+        """返回语法节点的 SQL 源码  TODO 待移除"""
 
     @abc.abstractmethod
     def get_from_used_table_list(self) -> List[str]:
@@ -2185,6 +2264,7 @@ class SQLSingleSelectStatement(SQLSelectStatement):
         return self._limit_clause
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         with_clause_str = self.with_clause.source() + "\n" if not self.with_clause.is_empty() else ""
         result = [self.select_clause.source(data_source)]
         for clause in [self.from_clause, *self.lateral_view_clauses, *self.join_clauses, self.where_clause,
@@ -2274,6 +2354,7 @@ class SQLUnionSelectStatement(SQLSelectStatement):
         return self._elements
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         with_clause_str = self.with_clause.source() + "\n" if not self.with_clause.is_empty() else ""
         return with_clause_str + "\n".join(element.source(data_source) for element in self.elements)
 
@@ -2419,6 +2500,7 @@ class SQLInsertValuesStatement(SQLInsertStatement):
         return self._values
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         values_str = ", ".join(value.source() for value in self.values)
         return f"{self._insert_str(data_source)}VALUES {values_str}"
 
@@ -2450,6 +2532,7 @@ class SQLInsertSelectStatement(SQLInsertStatement):
         return self._select_statement
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"{self._insert_str(data_source)} {self.select_statement.source(data_source)}"
 
     def get_used_table_list(self) -> List[str]:
@@ -2485,6 +2568,7 @@ class SQLSetStatement(SQLBase):
         return self._config_value
 
     def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
         return f"SET {self.config_name.source(data_source)} = {self.config_value.source(data_source)}"
 
 
@@ -2617,6 +2701,7 @@ class SQLCreateTableStatement(SQLBase):
         """添加分区字段"""
 
     def source(self, data_source: DataSource = DataSource.MYSQL, n_indent: int = 4) -> str:
+        """返回语法节点的 SQL 源码"""
         if data_source == DataSource.MYSQL:
             indentation = " " * n_indent  # 缩进字符串
             result = "CREATE TABLE"

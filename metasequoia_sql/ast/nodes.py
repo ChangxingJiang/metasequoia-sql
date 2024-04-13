@@ -80,9 +80,8 @@ class AST(abc.ABC):
         """
         if len(self.children) > 0:
             return f"<{self.__class__.__name__} children={self.children}>"
-        else:
-            format_source = self.source.replace("\n", r"\n")
-            return f"<{self.__class__.__name__} source={format_source}>"
+        format_source = self.source.replace("\n", r"\n")
+        return f"<{self.__class__.__name__} source={format_source}>"
 
     def __hash__(self):
         return hash(self.source)
@@ -470,7 +469,7 @@ class ASTLiteralBool(AST):
     """布尔字面值"""
 
     def __init__(self, origin: str):
-        self._value: bool = (origin.upper() == "TRUE")
+        self._value: bool = origin.upper() == "TRUE"
 
     @classmethod
     def check(cls, origin: str) -> bool:
@@ -554,7 +553,7 @@ class ASTLiteralNull(AST):
 
     @property
     def source(self) -> str:
-        return f"NULL"
+        return "NULL"
 
 
 class ASTIdentifier(AST):

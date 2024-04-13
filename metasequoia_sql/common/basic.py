@@ -1,3 +1,7 @@
+"""
+基础工具类
+"""
+
 from typing import List, Any
 
 __all__ = ["ordered_distinct"]
