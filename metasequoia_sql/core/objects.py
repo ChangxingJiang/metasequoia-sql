@@ -4,7 +4,6 @@ TODO 不返回 CURRENT_DATE、CURRENT_TIME、CURRENT_TIMESTAMP 作为字段
 TODO 增加 scanner 未解析完成的发现机制
 TODO 存在重复代码的类优化
 TODO 移除 data_source 的默认值
-TODO 将 DataSource 重命名为 SQLSource
 
 参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
 """
@@ -988,7 +987,7 @@ class SQLBoolBetweenExpression(SQLBoolExpression):
         return self._to_value
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
-        return f"{self.before_value.source()} BETWEEN {self.from_value.source()} TO {self.to_value.source()}"
+        return f"{self.before_value.source()} BETWEEN {self.from_value.source()} AND {self.to_value.source()}"
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
@@ -1023,11 +1022,12 @@ class SQLWindowExpression(SQLGeneralExpression):
 
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         result = f"{self.window_function.source()} OVER ("
+        parenthesis = []
         if self.partition_by is not None:
-            result += f"PARTITION BY {self.partition_by.source()}"
+            parenthesis.append(f"PARTITION BY {self.partition_by.source()}")
         if self.order_by is not None:
-            result += f"ORDER BY {self.order_by.source()}"
-        result += ")"
+            parenthesis.append(f"ORDER BY {self.order_by.source()}")
+        result += " ".join(parenthesis) + ")"
         return result
 
     def get_used_column_list(self) -> List[str]:
@@ -1119,11 +1119,11 @@ class SQLCaseExpression(SQLGeneralExpression):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         result = ["CASE"]
         for when, then in self.cases:
-            result.append(f"    WHEN {when.source(data_source)} THEN {then.source(data_source)}")
+            result.append(f"WHEN {when.source(data_source)} THEN {then.source(data_source)}")
         if self.else_value is not None:
-            result.append(f"    ELSE {self.else_value.source(data_source)}")
+            result.append(f"ELSE {self.else_value.source(data_source)}")
         result.append("END")
-        return "\n".join(result)
+        return " ".join(result)
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
@@ -1734,7 +1734,7 @@ class SQLSelectClause(SQLBase):
         result = ["SELECT"]
         if self.distinct is True:
             result.append("DISTINCT")
-        result.append(",\n".join(column.source(data_source) for column in self.columns))
+        result.append(", ".join(column.source(data_source) for column in self.columns))
         return " ".join(result)
 
     def get_used_column_list(self) -> List[str]:
@@ -1974,10 +1974,10 @@ class SQLOrderByClause(SQLBase):
     def source(self, data_source: DataSource = DataSource.MYSQL) -> str:
         result = []
         for column, order_type in self.columns:
-            if order_type.source == "ASC":
-                result.append(f"{column.source()}")
+            if order_type.source(data_source) == "ASC":
+                result.append(f"{column.source(data_source)}")
             else:
-                result.append(f"{column.source()} DESC")
+                result.append(f"{column.source(data_source)} DESC")
         return "ORDER BY " + ", ".join(result)
 
     def get_used_column_list(self) -> List[Union[str, int]]:
@@ -2493,7 +2493,6 @@ class SQLSetStatement(SQLBase):
 
 class SQLTableConfigExpression(SQLBase):
     """建表语句配置信息表达式"""
-
 
 
 class SQLCreateTableStatement(SQLBase):
