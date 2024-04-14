@@ -1,16 +1,10 @@
 """
 TODO 多语句解析支持
-TODO 支持匹配各种特殊要求，例如：
-    return not scanner.is_finish and (
-            scanner.now.is_maybe_name and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
-            scanner.next1 is not None and scanner.next1.is_parenthesis and
-            scanner.next2 is not None and scanner.next2.equals("OVER") and
-            scanner.next3 is not None and scanner.next3.is_parenthesis)
 """
 
 from typing import List, Union
 
-from metasequoia_sql.ast import AST, parse_as_tokens, ASTMark
+from metasequoia_sql.ast import AST, ContextAutomaton, ASTMark
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 
@@ -91,11 +85,11 @@ class TokenScanner(BaseScanner):
 
     def get_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
         """【不移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.now.children, ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.now.children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def pop_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
         """【移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.pop().children, ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.pop().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def split_by(self,
                  source: str,
@@ -123,7 +117,7 @@ class TokenScanner(BaseScanner):
         """【移动指针】返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
-        for token in self.pop().children:
+        for token in self.pop().children():
             if token.equals(source):
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
@@ -142,4 +136,6 @@ class TokenScanner(BaseScanner):
 
 def build_token_scanner(sql: str, ignore_space=True, ignore_comment=True):
     """根据 sql 语句构造扫描器"""
-    return TokenScanner(parse_as_tokens(sql), ignore_space=ignore_space, ignore_comment=ignore_comment)
+    context_automaton = ContextAutomaton(sql)
+    context_automaton.parse()
+    return TokenScanner(context_automaton.result(), ignore_space=ignore_space, ignore_comment=ignore_comment)

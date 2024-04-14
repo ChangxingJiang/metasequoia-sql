@@ -15,23 +15,8 @@ from metasequoia_sql.ast.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACT
 from metasequoia_sql.errors import AstParseError
 
 __all__ = [
-    "AST",
-
-    "ASTMark",
-
-    "ASTSingle",
-
-    # 字面值节点类
-    "ASTLiteralInteger",
-    "ASTLiteralFloat",
-    "ASTLiteralString",
-    "ASTLiteralHex",
-    "ASTLiteralBool",
-    "ASTLiteralBit",
-    "ASTLiteralNull",
-
-    # 其他节点类
-    "ASTParenthesis",
+    "AST", "ASTMark", "ASTSingle", "ASTParenthesis", "ASTLiteralInteger", "ASTLiteralFloat", "ASTLiteralString",
+    "ASTLiteralHex", "ASTLiteralBool", "ASTLiteralBit", "ASTLiteralNull"
 ]
 
 
@@ -110,7 +95,6 @@ class ASTParenthesis(AST):
         super().__init__(marks)
         self._tokens: List[AST] = tokens
 
-    @property
     def children(self) -> List["AST"]:
         return self._tokens
 
@@ -166,10 +150,6 @@ class ASTLiteralString(ASTSingle):
         return self._value
 
     @property
-    def is_maybe_name(self) -> bool:
-        return True
-
-    @property
     def source(self) -> str:
         return f"'{self._value}'"
 
@@ -185,6 +165,7 @@ class ASTLiteralHex(ASTSingle):
 
     @classmethod
     def check(cls, origin: str):
+        """判断是否为当前节点"""
         return cls._get_value(origin) is not None
 
     @staticmethod
@@ -225,6 +206,7 @@ class ASTLiteralBool(ASTSingle):
 
     @classmethod
     def check(cls, origin: str) -> bool:
+        """判断是否为当前节点"""
         return origin.upper() in {"TRUE", "FALSE"}
 
     @property
@@ -247,6 +229,7 @@ class ASTLiteralBit(ASTSingle):
 
     @classmethod
     def check(cls, origin: str):
+        """判断是否为当前节点"""
         return cls._get_value(origin) is not None
 
     @staticmethod
@@ -283,6 +266,7 @@ class ASTLiteralNull(ASTSingle):
 
     @classmethod
     def check(cls, origin: str):
+        """判断是否为当前节点"""
         return origin.upper() == "NULL"
 
     @property

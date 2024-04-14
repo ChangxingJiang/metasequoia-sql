@@ -23,11 +23,8 @@ class AstParseStatus(enum.Enum):
     IN_EXPLAIN_2 = enum.auto()  # 当前在 /* 和 */ 标注的多行注释中
 
 
-class AstParseContext:
-    """词法解析状态机的上下文管理器
-
-    - 以 move_ 为前缀的方法，会移动指针位置
-    - 以 stand_ 为前缀的方法，不会移动指针位置
+class ContextAutomaton:
+    """文本解析自动机
 
     Attributes
     ----------
@@ -43,9 +40,13 @@ class AstParseContext:
 
     def __init__(self, text: str):
         self._stack: List[List[AST]] = [[]]
-        self._scanner: TextScanner = TextScanner(list(text.replace("\r\n", "\n")))
+        self._scanner: TextScanner = TextScanner(self._preproc_text(text))
         self._status: AstParseStatus = AstParseStatus.WAIT_TOKEN
         self._cache: List[str] = []
+
+    @staticmethod
+    def _preproc_text(text):
+        return text.replace("\r\n", "\n").replace("\t", " ").replace("　", " ")
 
     # ------------------------------ 上下文管理器属性 ------------------------------
 
@@ -63,26 +64,6 @@ class AstParseContext:
     def status(self) -> AstParseStatus:
         """获取当前自动机状态"""
         return self._status
-
-    @property
-    def last_ch(self) -> str:
-        """当前指针位置的上一个字符"""
-        return self._scanner.last
-
-    @property
-    def now_ch(self) -> str:
-        """当前指针位置的字符"""
-        return self._scanner.now
-
-    @property
-    def next_ch(self) -> str:
-        """当前指针位置的下一个字符"""
-        return self._scanner.next1
-
-    @property
-    def is_finish(self) -> bool:
-        """若当前上下文已匹配结束则返回 True，否则返回 False"""
-        return self._scanner.is_finish
 
     # ------------------------------ 当前缓存词语的相关方法 ------------------------------
 
@@ -111,12 +92,12 @@ class AstParseContext:
 
     # ------------------------------ 状态变化方法 ------------------------------
 
-    def handle_left_parenthesis(self) -> None:
+    def start_parenthesis(self) -> None:
         """【移动指针】处理当前指针位置的左括号"""
         self.scanner.pop()
         self.stack.append([])
 
-    def handle_right_parenthesis(self) -> None:
+    def end_parenthesis(self) -> None:
         """【移动指针】处理当前指针位置的右括号"""
         if len(self.stack) <= 1:
             raise AstParseError(f"当前 ')' 数量大于 '(': pos={self.scanner.pos}")
@@ -136,19 +117,15 @@ class AstParseContext:
         # 空格、换行符
         if origin in {" ", "\n"}:
             self.stack[-1].append(ASTSingle(origin, {ASTMark.SPACE}))
-        # 逗号、分号、点号、等号、计算运算符（含通配符）、比较运算符
-        elif origin in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">="}:
-            self.stack[-1].append(ASTSingle(origin))
-        # 子句核心关键词
-        elif origin.upper() in {"SELECT", "FROM", "LATERAL", "VIEW", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING",
-                                "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT"}:
+        # 逗号、分号、点号、等号、计算运算符（含通配符）、比较运算符、子句核心关键词、逻辑运算符
+        elif origin in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">=",
+                        "SELECT", "FROM", "LATERAL", "VIEW", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING",
+                        "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT",
+                        "AND", "NOT", "OR"}:
             self.stack[-1].append(ASTSingle(origin))
         # 下标
         elif origin.startswith("[") and origin.endswith("]"):
             self.stack[-1].append(ASTSingle(origin, {ASTMark.ARRAY_INDEX}))
-        # 逻辑运算符
-        elif origin.upper() in {"AND", "NOT", "OR"}:
-            self.stack[-1].append(ASTSingle(origin.upper()))
         # 字面值整数
         elif re.match(r"^[+-]?\d+$", origin):
             self.stack[-1].append(ASTLiteralInteger(origin, {ASTMark.LITERAL}))
@@ -192,3 +169,120 @@ class AstParseContext:
     def set_status(self, status: AstParseStatus) -> None:
         """设置状态"""
         self._status = status
+
+    # ------------------------------ 自动机执行方法 ------------------------------
+    def parse(self):
+        """执行文本解析自动机"""
+        while not self.scanner.is_finish:
+            if self.status == AstParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
+                if self.scanner.now == "/" and self.scanner.next1 == "*":
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.cache_add()
+                    self.set_status(AstParseStatus.IN_EXPLAIN_2)
+                elif self.scanner.now in {" ", "\n", ",", ";", "=", "+", "*", "/", ".", "%"}:
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.handle_end_word()
+                elif self.scanner.now == "-" and not (self.scanner.last == "-" or self.scanner.next1 == "-"):
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.handle_end_word()
+                elif self.scanner.now == "\"":
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+                elif self.scanner.now == "'":
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
+                elif self.scanner.now == "`":
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.set_status(AstParseStatus.IN_BACK_QUOTE)
+                elif self.scanner.now == "#" or (self.scanner.now == "-" and self.scanner.next1 == "-"):
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.set_status(AstParseStatus.IN_EXPLAIN_1)
+                elif self.scanner.now == "(":
+                    self.start_parenthesis()  # 【移动指针】处理当前指针位置的左括号
+                elif self.scanner.now == ")":
+                    self.end_parenthesis()  # 【移动指针】处理当前指针位置的右括号
+                else:
+                    self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                    self.set_status(AstParseStatus.IN_WORD)
+            elif (self.status == AstParseStatus.IN_DOUBLE_QUOTE and
+                  self.scanner.last != "\\" and self.scanner.now == "\"" and not self.scanner.next1 == "\""):
+                self.cache_add_and_handle_end_word()
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            # 当前指针位置字符为双引号字符串中的 "" 转义中的第 1 个字符
+            elif (self.status == AstParseStatus.IN_DOUBLE_QUOTE and
+                  self.scanner.last != "\\" and self.scanner.now == "\"" and self.scanner.next1 == "\""):
+                self.cache_add()
+                self.cache_add()
+            elif (self.status == AstParseStatus.IN_SINGLE_QUOTE and
+                  self.scanner.last != "\\" and self.scanner.now == "'" and not self.scanner.next1 == "'"):
+                self.cache_add_and_handle_end_word()
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            # 当前指针位置字符为单引号字符串中的 '' 转义中的第 1 个字符
+            elif (self.status == AstParseStatus.IN_SINGLE_QUOTE and
+                  self.scanner.last != "\\" and self.scanner.now == "'" and self.scanner.next1 == "'"):
+                self.cache_add()
+                self.cache_add()
+            elif self.status == AstParseStatus.IN_BACK_QUOTE and self.scanner.now == "`":
+                self.cache_add_and_handle_end_word()
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            elif self.status == AstParseStatus.IN_EXPLAIN_1 and self.scanner.now == "\n":
+                self.handle_end_word()
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            elif self.status == AstParseStatus.IN_EXPLAIN_2 and self.scanner.last == "*" and self.scanner.now == "/":
+                self.cache_add_and_handle_end_word()
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            elif self.status == AstParseStatus.IN_WORD:
+                if self.scanner.now in {" ", "\n", ",", ";", "+", "-", "*", "/", "`", "<", "!", "%", ""}:
+                    self.handle_end_word()
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == "|" and self.scanner.last != "|":
+                    self.handle_end_word()
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == "=" and self.scanner.last not in {"!", "<", ">"}:
+                    self.handle_end_word()
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == ">" and self.scanner.last != "<":
+                    self.handle_end_word()
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                # 前面不完全为数字时，出现点号
+                elif self.scanner.now == "." and not self.cache_get().isnumeric():
+                    self.handle_end_word()
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == "\"":
+                    if self.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
+                        self.cache_add()
+                        self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+                    else:
+                        self.handle_end_word()
+                        self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == "'":
+                    if self.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
+                        self.cache_add()
+                        self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
+                    else:
+                        self.handle_end_word()
+                        self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == "(":
+                    self.handle_end_word()
+                    self.start_parenthesis()  # 【移动指针】处理当前指针位置的左括号
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                elif self.scanner.now == ")":
+                    self.handle_end_word()
+                    self.end_parenthesis()  # 【移动指针】处理当前指针位置的右括号
+                    self.set_status(AstParseStatus.WAIT_TOKEN)
+                else:
+                    self.cache_add()
+            else:
+                self.cache_add()
+
+        # 处理最后一个词语
+        if self.status == AstParseStatus.IN_WORD:
+            self.handle_end_word()
+            self.set_status(AstParseStatus.WAIT_TOKEN)
+
+        if len(self.stack) > 1:
+            raise AstParseError("'(' 数量大于 ')'")
+
+    def result(self):
+        """获取自动机运行结果"""
+        return self.stack[0]
