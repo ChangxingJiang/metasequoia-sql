@@ -7,6 +7,7 @@
 
 TODO 使用 search 替代直接使用 now 判断
 TODO 整理各种函数的共同规律
+TODO 将 NOT 完全合入布尔值表达式中
 """
 
 from typing import Optional, Tuple, List, Union
@@ -310,25 +311,25 @@ def parse_literal_expression(scanner_or_string: Union[TokenScanner, str]) -> SQL
     scanner = _unify_input_scanner(scanner_or_string)
     token: ast.AST = scanner.pop()
     if isinstance(token, ast.ASTLiteralInteger):
-        return SQLLiteralIntegerExpression(token.literal_value)
+        return SQLLiteralIntegerExpression(value=token.literal_value)
     if isinstance(token, ast.ASTLiteralFloat):
-        return SQLLiteralFloatExpression(token.literal_value)
+        return SQLLiteralFloatExpression(value=token.literal_value)
     if isinstance(token, ast.ASTLiteralString):
-        return SQLLiteralStringExpression(token.literal_value)
+        return SQLLiteralStringExpression(value=token.literal_value)
     if isinstance(token, ast.ASTLiteralHex):
-        return SQLLiteralHexExpression(token.literal_value)
+        return SQLLiteralHexExpression(value=token.literal_value)
     if isinstance(token, ast.ASTLiteralBool):
-        return SQLLiteralBoolExpression(token.literal_value)
+        return SQLLiteralBoolExpression(value=token.literal_value)
     if isinstance(token, ast.ASTLiteralBit):
-        return SQLLiteralBitExpression(token.literal_value)
+        return SQLLiteralBitExpression(value=token.literal_value)
     if isinstance(token, ast.ASTLiteralNull):
         return SQLLiteralNullExpression()
     if token.equals("-") and isinstance(scanner.now, ast.ASTLiteralInteger):
         next_token = scanner.pop()
-        return SQLLiteralIntegerExpression(-next_token.literal_value)
+        return SQLLiteralIntegerExpression(value=-next_token.literal_value)
     if token.equals("-") and isinstance(scanner.now, ast.ASTLiteralFloat):
         next_token = scanner.pop()
-        return SQLLiteralFloatExpression(-next_token.literal_value)
+        return SQLLiteralFloatExpression(value=-next_token.literal_value)
     raise SqlParseError(f"未知的字面值: {token}")
 
 
@@ -350,7 +351,7 @@ def parse_column_name_expression(scanner_or_string: Union[TokenScanner, str]) ->
     scanner = _unify_input_scanner(scanner_or_string)
     if (scanner.now.is_maybe_name and
             (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))):
-        return SQLColumnNameExpression(None, scanner.pop_as_source())
+        return SQLColumnNameExpression(column=scanner.pop_as_source())
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_name and
@@ -358,7 +359,7 @@ def parse_column_name_expression(scanner_or_string: Union[TokenScanner, str]) ->
         table_name = scanner.pop_as_source()
         scanner.pop()
         column_name = scanner.pop_as_source()
-        return SQLColumnNameExpression(table_name, column_name)
+        return SQLColumnNameExpression(table=table_name, column=column_name)
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
 
@@ -417,7 +418,7 @@ def parse_extract_function_expression(scanner_or_string: Union[TokenScanner, str
     return SQLExtractFunctionExpression(extract_name=extract_name, column_expression=column_expression)
 
 
-def parse_if_function_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLFunctionExpression:
+def parse_if_function_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLNormalFunctionExpression:
     """解析 IF 函数表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
     function_params: List[SQLGeneralExpression] = []
@@ -430,7 +431,7 @@ def parse_if_function_expression(scanner_or_string: Union[TokenScanner, str]) ->
             function_params.append(parse_general_expression(param_scanner))
         if not param_scanner.is_finish:
             raise SqlParseError(f"无法解析函数参数: {param_scanner}")
-    return SQLFunctionExpression(schema_name=None, function_name="IF", function_params=function_params)
+    return SQLNormalFunctionExpression(function_name="IF", function_params=function_params)
 
 
 def parse_function_name(scanner_or_string: Union[TokenScanner, str]) -> Tuple[Optional[str], str]:
@@ -483,13 +484,13 @@ def parse_function_expression(scanner_or_string: Union[TokenScanner, str]) -> Un
         return SQLAggregationFunctionExpression(function_name=function_name,
                                                 function_params=function_params,
                                                 is_distinct=is_distinct)
-    return SQLFunctionExpression(schema_name=schema_name,
-                                 function_name=function_name,
-                                 function_params=function_params)
+    return SQLNormalFunctionExpression(schema_name=schema_name, function_name=function_name,
+                                       function_params=function_params)
 
 
-def parse_function_expression_maybe_with_array_index(scanner_or_string: Union[TokenScanner, str]
-                                                     ) -> Union[SQLFunctionExpression, SQLArrayIndexExpression]:
+def parse_function_expression_maybe_with_array_index(
+        scanner_or_string: Union[TokenScanner, str]
+) -> Union[SQLFunctionExpression, SQLArrayIndexExpression]:
     """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
     scanner = _unify_input_scanner(scanner_or_string)
     array_expression = parse_function_expression(scanner)
@@ -586,7 +587,7 @@ def parse_wildcard_expression(scanner_or_string: Union[TokenScanner, str]) -> SQ
     scanner = _unify_input_scanner(scanner_or_string)
     if scanner.now.is_maybe_wildcard:
         scanner.pop()
-        return SQLWildcardExpression(schema=None)
+        return SQLWildcardExpression()
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_wildcard):
@@ -753,7 +754,7 @@ def parse_table_name_expression(scanner_or_string: Union[TokenScanner, str]
     scanner = _unify_input_scanner(scanner_or_string)
     if (scanner.now.is_maybe_name and
             (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))):
-        return SQLTableNameExpression(None, scanner.pop_as_source())
+        return SQLTableNameExpression(table=scanner.pop_as_source())
     if (scanner.now.is_maybe_name and
             scanner.next1 is not None and scanner.next1.is_dot and
             scanner.next2 is not None and scanner.next2.is_maybe_name and
@@ -761,7 +762,7 @@ def parse_table_name_expression(scanner_or_string: Union[TokenScanner, str]
         schema_name = scanner.pop_as_source()
         scanner.pop()
         table_name = scanner.pop_as_source()
-        return SQLTableNameExpression(schema_name, table_name)
+        return SQLTableNameExpression(schema=schema_name, table=table_name)
     if check_sub_query_parenthesis(scanner):
         return parse_sub_query_expression(scanner)
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
@@ -779,7 +780,7 @@ def parse_alias_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLAl
     scanner.search_and_move("AS")
     if not scanner.now.is_maybe_name:
         raise SqlParseError(f"无法解析为别名表达式: {scanner}")
-    return SQLAlisaExpression(alias_name=scanner.pop_as_source())
+    return SQLAlisaExpression(name=scanner.pop_as_source())
 
 
 def check_join_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -826,8 +827,8 @@ def parse_column_type_expression(scanner_or_string: Union[TokenScanner, str]) ->
         function_params: List[SQLGeneralExpression] = []
         for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             function_params.append(parse_general_expression(param_scanner))
-        return SQLColumnTypeExpression(function_name, function_params)
-    return SQLColumnTypeExpression(function_name, [])
+        return SQLColumnTypeExpression(name=function_name, params=function_params)
+    return SQLColumnTypeExpression(name=function_name)
 
 
 def parse_table_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLTableExpression:
