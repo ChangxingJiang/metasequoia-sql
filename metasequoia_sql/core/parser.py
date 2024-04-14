@@ -170,6 +170,10 @@ def _unify_input_scanner(scanner_or_string: Union[TokenScanner, str]) -> TokenSc
     if isinstance(scanner_or_string, TokenScanner):
         return scanner_or_string
     if isinstance(scanner_or_string, str):
+        # 兼容 DB2 的 CURRENT DATE、CURRENT TIME、CURRENT TIMESTAMP 语法
+        scanner_or_string = scanner_or_string.replace("CURRENT DATE", "CURRENT_DATE")
+        scanner_or_string = scanner_or_string.replace("CURRENT TIME", "CURRENT_TIME")
+        scanner_or_string = scanner_or_string.replace("CURRENT TIMESTAMP", "CURRENT_TIMESTAMP")
         return build_token_scanner(scanner_or_string)
     raise SqlParseError(f"未知的参数类型: {scanner_or_string} (type={type(scanner_or_string)})")
 

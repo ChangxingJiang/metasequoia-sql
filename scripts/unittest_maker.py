@@ -43,9 +43,8 @@ def make_sql_basic_tutorial(force: bool = False):
 
             # 词法分析
             sql = getattr(sql_basic_tutorial, name)
-            scanner = build_token_scanner(sql)
 
-            if not check_select_statement(scanner):
+            if not check_select_statement(sql):
                 continue  # 当前只处理 SELECT 语句
 
             # 语法分析并打印结果
@@ -53,13 +52,16 @@ def make_sql_basic_tutorial(force: bool = False):
             print("【原始代码】")
             print(sql.strip("\n"))
 
-            statement = parse_select_statement(scanner)
+            statement = parse_select_statement(sql)
             data_source = DataSource.MYSQL
             if name in {"SBT_CH06_03_SQLSERVER"}:
                 data_source = DataSource.SQL_SERVER
             if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
                 data_source = DataSource.ORACLE
+            if name in {"SBT_CH06_13_DB2", "SBT_CH06_14_DB2", "SBT_CH06_15_DB2", "SBT_CH06_16_DB2"}:
+                data_source = DataSource.DB2
             print("【格式化代码】")
+            print(statement)
             print(statement.source(data_source))
 
             print("【分析结果】")

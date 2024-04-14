@@ -530,7 +530,13 @@ class SQLColumnNameExpression(SQLGeneralExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self.table}.{self.column}" if self.table is not None else f"{self.column}"
+        result = f"{self.table}.{self.column}" if self.table is not None else f"{self.column}"
+        if data_source == DataSource.DB2:
+            # 兼容 DB2 的 CURRENT DATE、CURRENT TIME、CURRENT TIMESTAMP 语法
+            result = result.replace("CURRENT_DATE", "CURRENT DATE")
+            result = result.replace("CURRENT_TIME", "CURRENT TIME")
+            result = result.replace("CURRENT_TIMESTAMP", "CURRENT TIMESTAMP")
+        return result
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""

@@ -1,5 +1,5 @@
 """
-TODO 多语句解析支持
+抽象语法树扫描器
 """
 
 from typing import List, Union
