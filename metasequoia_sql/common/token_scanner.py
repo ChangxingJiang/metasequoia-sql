@@ -8,9 +8,9 @@ TODO 支持匹配各种特殊要求，例如：
             scanner.next3 is not None and scanner.next3.is_parenthesis)
 """
 
-from typing import List
+from typing import List, Union
 
-from metasequoia_sql import ast
+from metasequoia_sql.ast import AST, parse_as_tokens, ASTMark
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 
@@ -18,7 +18,7 @@ from metasequoia_sql.errors import ScannerError
 class TokenScanner(BaseScanner):
     """Token 扫描器"""
 
-    def __init__(self, elements: List[ast.AST],
+    def __init__(self, elements: List[AST],
                  pos: int = 0,
                  ignore_space: bool = False,
                  ignore_comment: bool = False):
@@ -34,10 +34,10 @@ class TokenScanner(BaseScanner):
         # 根据要求筛选输入元素
         filtered_elements = []
         for element in elements:
-            if element.is_space:
+            if element.equals(ASTMark.SPACE):
                 if ignore_space is False:  # 关闭忽略空白字符的模式
                     filtered_elements.append(element)
-            elif element.is_comment:
+            elif element.equals(ASTMark.COMMENT):
                 if ignore_comment is False:  # 关闭忽略注释的模式
                     filtered_elements.append(element)
             else:
@@ -45,12 +45,7 @@ class TokenScanner(BaseScanner):
 
         super().__init__(filtered_elements, pos)
 
-    @property
-    def now_is_parenthesis(self):
-        """如果当前元素为插入语则返回 True"""
-        return self.now.is_parenthesis
-
-    def search(self, *tokens: str) -> bool:
+    def search(self, *tokens: Union[str, ASTMark]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则返回 True
@@ -62,7 +57,7 @@ class TokenScanner(BaseScanner):
                 return False
         return True
 
-    def search_and_move(self, *tokens: str) -> bool:
+    def search_and_move(self, *tokens: Union[str, ASTMark]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素并返回 True
@@ -76,7 +71,7 @@ class TokenScanner(BaseScanner):
             self.pop()
         return True
 
-    def match(self, *tokens: str) -> None:
+    def match(self, *tokens: Union[str, ASTMark]) -> None:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素
@@ -110,7 +105,7 @@ class TokenScanner(BaseScanner):
         result = []
         tokens = []
         while not self.is_finish:
-            token: ast.AST = self.pop()
+            token: AST = self.pop()
             if token.equals(source):
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
@@ -147,4 +142,4 @@ class TokenScanner(BaseScanner):
 
 def build_token_scanner(sql: str, ignore_space=True, ignore_comment=True):
     """根据 sql 语句构造扫描器"""
-    return TokenScanner(ast.parse_as_tokens(sql), ignore_space=ignore_space, ignore_comment=ignore_comment)
+    return TokenScanner(parse_as_tokens(sql), ignore_space=ignore_space, ignore_comment=ignore_comment)

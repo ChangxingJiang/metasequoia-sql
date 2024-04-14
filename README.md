@@ -10,13 +10,7 @@ pip install metasequoia-sql
 
 ### 词法分析
 
-对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象语法树节点（详见 demo_1）：
-
-```python
-from metasequoia_sql.ast.functions import parse_as_statements
-
-root = parse_as_statements("your sql")
-```
+对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象语法树节点：
 
 ### 句法分析
 

@@ -4,11 +4,11 @@ AST 对外暴露的辅助函数
 
 from typing import List
 
-from metasequoia_sql.ast.nodes import AST, ASTStatement
+from metasequoia_sql.ast.nodes import AST
 from metasequoia_sql.ast.parser import AstParseContext, AstParseStatus
 from metasequoia_sql.errors import AstParseError
 
-__all__ = ["parse_as_tokens", "parse_as_statements", "iter_child_nodes", "dump"]
+__all__ = ["parse_as_tokens"]
 
 
 def parse_as_tokens(text: str) -> List[AST]:
@@ -125,32 +125,6 @@ def parse_as_tokens(text: str) -> List[AST]:
         raise AstParseError("'(' 数量大于 ')'")
 
     return context.stack[0]
-
-
-def parse_as_statements(text: str) -> List[AST]:
-    """把源码解析为 AST 表达式节点列表"""
-    tokens = parse_as_tokens(format_sql_text(text))
-    statement_list = []
-    now_statement = []
-    for token in tokens:
-        if token.is_semicolon is True:
-            if len(now_statement) > 0:
-                statement_list.append(ASTStatement(now_statement))
-        else:
-            now_statement.append(token)
-    if len(now_statement) > 0:
-        statement_list.append(ASTStatement(now_statement))
-    return statement_list
-
-
-def iter_child_nodes(node: AST) -> List[AST]:
-    """有序地产生 node 所有的直接子节点的列表"""
-    return node.children
-
-
-def dump(node: AST) -> str:
-    """返回 node 中树结构的格式化转储。这主要适用于调试目的"""
-    return node.source
 
 
 def format_sql_text(text: str) -> str:

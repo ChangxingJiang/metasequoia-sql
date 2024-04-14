@@ -10,10 +10,10 @@ TODO 使用 search 替代直接使用 now 判断
 
 from typing import Optional, Tuple, List, Union
 
-from metasequoia_sql import ast
+from metasequoia_sql.ast import *
 from metasequoia_sql.common import TokenScanner, build_token_scanner
 from metasequoia_sql.core.objects import *
-from metasequoia_sql.core.static import *
+from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
 
 __all__ = [
@@ -286,7 +286,7 @@ def parse_compute_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLCo
 def check_logical_operator(scanner_or_string: Union[TokenScanner, str]) -> bool:
     """判断是否为逻辑运算符"""
     scanner = _unify_input_scanner(scanner_or_string)
-    return scanner.get_as_source() in {"AND", "OR", "NOT"}
+    return scanner.get_as_source() in {"AND", "OR"}
 
 
 def parse_logical_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLLogicalOperator:
@@ -301,31 +301,31 @@ def parse_logical_operator(scanner_or_string: Union[TokenScanner, str]) -> SQLLo
 def check_literal_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:
     """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
     scanner = _unify_input_scanner(scanner_or_string)
-    return not scanner.is_finish and (scanner.now.is_literal or scanner.now.equals("-"))
+    return scanner.search(ASTMark.LITERAL) or scanner.search("-")
 
 
 def parse_literal_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLLiteralExpression:
     """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
     scanner = _unify_input_scanner(scanner_or_string)
-    token: ast.AST = scanner.pop()
-    if isinstance(token, ast.ASTLiteralInteger):
+    token: AST = scanner.pop()
+    if isinstance(token, ASTLiteralInteger):
         return SQLLiteralIntegerExpression(value=token.literal_value)
-    if isinstance(token, ast.ASTLiteralFloat):
+    if isinstance(token, ASTLiteralFloat):
         return SQLLiteralFloatExpression(value=token.literal_value)
-    if isinstance(token, ast.ASTLiteralString):
+    if isinstance(token, ASTLiteralString):
         return SQLLiteralStringExpression(value=token.literal_value)
-    if isinstance(token, ast.ASTLiteralHex):
+    if isinstance(token, ASTLiteralHex):
         return SQLLiteralHexExpression(value=token.literal_value)
-    if isinstance(token, ast.ASTLiteralBool):
+    if isinstance(token, ASTLiteralBool):
         return SQLLiteralBoolExpression(value=token.literal_value)
-    if isinstance(token, ast.ASTLiteralBit):
+    if isinstance(token, ASTLiteralBit):
         return SQLLiteralBitExpression(value=token.literal_value)
-    if isinstance(token, ast.ASTLiteralNull):
+    if isinstance(token, ASTLiteralNull):
         return SQLLiteralNullExpression()
-    if token.equals("-") and isinstance(scanner.now, ast.ASTLiteralInteger):
+    if token.equals("-") and isinstance(scanner.now, ASTLiteralInteger):
         next_token = scanner.pop()
         return SQLLiteralIntegerExpression(value=-next_token.literal_value)
-    if token.equals("-") and isinstance(scanner.now, ast.ASTLiteralFloat):
+    if token.equals("-") and isinstance(scanner.now, ASTLiteralFloat):
         next_token = scanner.pop()
         return SQLLiteralFloatExpression(value=-next_token.literal_value)
     raise SqlParseError(f"未知的字面值: {token}")
@@ -335,25 +335,27 @@ def check_column_name_expression(scanner_or_string: Union[TokenScanner, str]) ->
     """是否可能为列名表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
     return not scanner.is_finish and (
-            (scanner.now.is_maybe_name and
-             (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))) or
-            (scanner.now.is_maybe_name and
-             scanner.next1 is not None and scanner.next1.is_dot and
-             scanner.next2 is not None and scanner.next2.is_maybe_name and
-             (scanner.next3 is None or not scanner.next3.is_parenthesis))
+            (scanner.now.equals(ASTMark.NAME) and
+             (scanner.next1 is None or (
+                     not scanner.next1.equals(".") and not scanner.next1.equals(ASTMark.PARENTHESIS)))) or
+            (scanner.now.equals(ASTMark.NAME) and
+             scanner.next1 is not None and scanner.next1.equals(".") and
+             scanner.next2 is not None and scanner.next2.equals(ASTMark.NAME) and
+             (scanner.next3 is None or not scanner.next3.equals(ASTMark.PARENTHESIS)))
     )
 
 
 def parse_column_name_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLColumnNameExpression:
     """解析列名表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    if (scanner.now.is_maybe_name and
-            (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))):
+    if (scanner.now.equals(ASTMark.NAME) and
+            (scanner.next1 is None or (
+                    not scanner.next1.equals(".") and not scanner.next1.equals(ASTMark.PARENTHESIS)))):
         return SQLColumnNameExpression(column=scanner.pop_as_source())
-    if (scanner.now.is_maybe_name and
-            scanner.next1 is not None and scanner.next1.is_dot and
-            scanner.next2 is not None and scanner.next2.is_maybe_name and
-            (scanner.next3 is None or not scanner.next3.is_parenthesis)):
+    if (scanner.now.equals(ASTMark.NAME) and
+            scanner.next1 is not None and scanner.next1.equals(".") and
+            scanner.next2 is not None and scanner.next2.equals(ASTMark.NAME) and
+            (scanner.next3 is None or not scanner.next3.equals(ASTMark.PARENTHESIS))):
         table_name = scanner.pop_as_source()
         scanner.pop()
         column_name = scanner.pop_as_source()
@@ -364,14 +366,8 @@ def parse_column_name_expression(scanner_or_string: Union[TokenScanner, str]) ->
 def check_function_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:
     """是否可能为函数表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    return not scanner.is_finish and (
-            (scanner.now.is_maybe_name and
-             scanner.next1 is not None and scanner.next1.is_parenthesis) or
-            (scanner.now.is_maybe_name and
-             scanner.next1 is not None and scanner.next1.is_dot and
-             scanner.next2 is not None and scanner.next2.is_maybe_name and
-             scanner.next3 is not None and scanner.next3.is_parenthesis
-             ))
+    return (scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS) or
+            scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS))
 
 
 def parse_cast_data_type(scanner_or_string: Union[TokenScanner, str]) -> EnumCastDataType:
@@ -390,7 +386,7 @@ def parse_cast_function_expression(scanner_or_string: Union[TokenScanner, str]) 
     scanner.match("AS")
     signed = scanner.search_and_move("SIGNED")
     cast_type = parse_cast_data_type(scanner)
-    if not scanner.is_finish and scanner.now_is_parenthesis:
+    if scanner.search(ASTMark.PARENTHESIS):
         parenthesis_scanner = scanner.pop_as_children_scanner()
         cast_params: Optional[List[SQLGeneralExpression]] = []
         for param_scanner in parenthesis_scanner.split_by(","):
@@ -435,13 +431,9 @@ def parse_if_function_expression(scanner_or_string: Union[TokenScanner, str]) ->
 def parse_function_name(scanner_or_string: Union[TokenScanner, str]) -> Tuple[Optional[str], str]:
     """解析函数表达式函数的 schema 名和 function 名"""
     scanner = _unify_input_scanner(scanner_or_string)
-    if (scanner.now.is_maybe_name and
-            scanner.next1 is not None and scanner.next1.is_parenthesis):
+    if scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
         return None, scanner.pop_as_source()
-    if (scanner.now.is_maybe_name and
-            scanner.next1 is not None and scanner.next1.is_dot and
-            scanner.next2 is not None and scanner.next2.is_maybe_name and
-            scanner.next3 is not None and scanner.next3.is_parenthesis):
+    if scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS):
         schema_name = scanner.pop_as_source()
         scanner.pop()
         return schema_name, scanner.pop_as_source()
@@ -464,12 +456,11 @@ def parse_function_expression(scanner_or_string: Union[TokenScanner, str]) -> Un
     if function_name.upper() == "SUBSTRING":
         # 将 MySQL 和 PostgreSQL 中的 "SUBSTRING(str1 FROM 3 FOR 2)" 格式化为 "SUBSTRING(str1, 3, 2)"
         parenthesis_scanner = TokenScanner([
-            element if not element.equals("FROM") and not element.equals("FOR") else ast.ASTComma()
+            element if not element.equals("FROM") and not element.equals("FOR") else ASTSingle(",")
             for element in parenthesis_scanner.elements])
 
     is_distinct = False
-    if function_name.upper() in {"COUNT", "SUM", "MIN", "MAX", "AVG"} and parenthesis_scanner.now.equals("DISTINCT"):
-        parenthesis_scanner.pop()
+    if function_name.upper() in AGGREGATION_FUNCTION_NAME_SET and parenthesis_scanner.search_and_move("DISTINCT"):
         is_distinct = True
 
     function_params: List[SQLGeneralExpression] = []
@@ -478,7 +469,7 @@ def parse_function_expression(scanner_or_string: Union[TokenScanner, str]) -> Un
         if not param_scanner.is_finish:
             raise SqlParseError(f"无法解析函数参数: {param_scanner}")
 
-    if schema_name is None and function_name.upper() in {"COUNT", "SUM", "MIN", "MAX", "AVG"}:
+    if schema_name is None and function_name.upper() in AGGREGATION_FUNCTION_NAME_SET:
         return SQLAggregationFunctionExpression(function_name=function_name,
                                                 function_params=function_params,
                                                 is_distinct=is_distinct)
@@ -492,7 +483,7 @@ def parse_function_expression_maybe_with_array_index(
     """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
     scanner = _unify_input_scanner(scanner_or_string)
     array_expression = parse_function_expression(scanner)
-    if scanner.is_finish or not scanner.now.is_array_index:
+    if scanner.is_finish or not scanner.search(ASTMark.ARRAY_INDEX):
         return array_expression
     idx = int(scanner.pop_as_source().lstrip("[").rstrip("]"))
     return SQLArrayIndexExpression(array_expression=array_expression, idx=idx)
@@ -535,10 +526,10 @@ def check_window_expression(scanner_or_string: Union[TokenScanner, str]) -> bool
     """判断是否可能为窗口函数"""
     scanner = _unify_input_scanner(scanner_or_string)
     return not scanner.is_finish and (
-            scanner.now.is_maybe_name and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
-            scanner.next1 is not None and scanner.next1.is_parenthesis and
+            scanner.now.equals(ASTMark.NAME) and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
+            scanner.next1 is not None and scanner.next1.equals(ASTMark.PARENTHESIS) and
             scanner.next2 is not None and scanner.next2.equals("OVER") and
-            scanner.next3 is not None and scanner.next3.is_parenthesis)
+            scanner.next3 is not None and scanner.next3.equals(ASTMark.PARENTHESIS))
 
 
 def parse_window_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLWindowExpression:
@@ -564,21 +555,15 @@ def parse_window_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLW
 def check_wildcard_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:
     """判断是否可能为通配符表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    return not scanner.is_finish and (scanner.now.is_maybe_wildcard or
-                                      (scanner.now.is_maybe_name and
-                                       scanner.next1 is not None and scanner.next1.is_dot and
-                                       scanner.next2 is not None and scanner.next2.is_maybe_wildcard))
+    return scanner.search("*") or scanner.search(ASTMark.NAME, ".", "*")
 
 
 def parse_wildcard_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLWildcardExpression:
     """解析通配符表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    if scanner.now.is_maybe_wildcard:
-        scanner.pop()
+    if scanner.search_and_move("*"):
         return SQLWildcardExpression()
-    if (scanner.now.is_maybe_name and
-            scanner.next1 is not None and scanner.next1.is_dot and
-            scanner.next2 is not None and scanner.next2.is_maybe_wildcard):
+    if scanner.search(ASTMark.NAME, ".", "*"):
         schema_name = scanner.pop_as_source()
         scanner.pop()
         scanner.pop()
@@ -591,7 +576,7 @@ def parse_condition_expression(scanner_or_string: Union[TokenScanner, str]) -> S
     scanner = _unify_input_scanner(scanner_or_string)
 
     def parse_single():
-        if scanner.now_is_parenthesis:
+        if scanner.search(ASTMark.PARENTHESIS):
             elements.append(parse_condition_expression(scanner.pop_as_children_scanner()))  # 插入语，子句也应该是一个条件表达式
         else:
             elements.append(parse_bool_expression(scanner))
@@ -695,7 +680,7 @@ def _parse_general_expression_element(scanner_or_string: Union[TokenScanner, str
         return parse_literal_expression(scanner)
     if check_column_name_expression(scanner):
         return parse_column_name_expression(scanner)
-    if scanner.now_is_parenthesis:
+    if scanner.search(ASTMark.PARENTHESIS):
         return _parse_general_parenthesis(scanner)
     if check_wildcard_expression(scanner):
         return parse_wildcard_expression(scanner)
@@ -719,8 +704,7 @@ def parse_config_name_expression(scanner_or_string: Union[TokenScanner, str]) ->
     """解析配置名称表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
     config_name_list = [scanner.pop_as_source()]
-    while not scanner.is_finish and scanner.now.is_dot:
-        scanner.pop()
+    while scanner.search_and_move("."):
         config_name_list.append(scanner.pop_as_source())
     return SQLConfigNameExpression(config_name=".".join(config_name_list))
 
@@ -735,13 +719,14 @@ def parse_table_name_expression(scanner_or_string: Union[TokenScanner, str]
                                 ) -> Union[SQLTableNameExpression, SQLSubQueryExpression]:
     """解析表名表达式或子查询表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    if (scanner.now.is_maybe_name and
-            (scanner.next1 is None or (not scanner.next1.is_dot and not scanner.next1.is_parenthesis))):
+    if (scanner.now.equals(ASTMark.NAME) and
+            (scanner.next1 is None or (
+                    not scanner.next1.equals(".") and not scanner.next1.equals(ASTMark.PARENTHESIS)))):
         return SQLTableNameExpression(table=scanner.pop_as_source())
-    if (scanner.now.is_maybe_name and
-            scanner.next1 is not None and scanner.next1.is_dot and
-            scanner.next2 is not None and scanner.next2.is_maybe_name and
-            (scanner.next3 is None or not scanner.next3.is_parenthesis)):
+    if (scanner.now.equals(ASTMark.NAME) and
+            scanner.next1 is not None and scanner.next1.equals(".") and
+            scanner.next2 is not None and scanner.next2.equals(ASTMark.NAME) and
+            (scanner.next3 is None or not scanner.next3.equals(ASTMark.PARENTHESIS))):
         schema_name = scanner.pop_as_source()
         scanner.pop()
         table_name = scanner.pop_as_source()
@@ -754,7 +739,7 @@ def parse_table_name_expression(scanner_or_string: Union[TokenScanner, str]
 def check_alias_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:
     """判断是否可能为别名表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    return not scanner.is_finish and (scanner.now.equals("AS") or scanner.now.is_maybe_name)
+    return not scanner.is_finish and (scanner.search("AS") or scanner.search(ASTMark.NAME))
 
 
 def parse_alias_expression(scanner_or_string: Union[TokenScanner, str],
@@ -773,7 +758,7 @@ def parse_alias_expression(scanner_or_string: Union[TokenScanner, str],
         scanner.match("AS")
     else:
         scanner.search_and_move("AS")
-    if not scanner.now.is_maybe_name:
+    if not scanner.search(ASTMark.NAME):
         raise SqlParseError(f"无法解析为别名表达式: {scanner}")
     return SQLAlisaExpression(name=scanner.pop_as_source())
 
@@ -818,7 +803,7 @@ def parse_column_type_expression(scanner_or_string: Union[TokenScanner, str]) ->
     function_name: str = scanner.pop_as_source()
 
     # 解析字段类型参数
-    if not scanner.is_finish and scanner.now_is_parenthesis:
+    if scanner.search(ASTMark.PARENTHESIS):
         function_params: List[SQLGeneralExpression] = []
         for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             function_params.append(parse_general_expression(param_scanner))
@@ -1027,8 +1012,7 @@ def parse_select_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLSelec
     scanner.match("SELECT")
     distinct = scanner.search_and_move("DISTINCT")
     columns = [parse_column_expression(scanner)]
-    while not scanner.is_finish and scanner.now.is_comma:
-        scanner.pop()
+    while scanner.search_and_move(","):
         columns.append(parse_column_expression(scanner))
     return SQLSelectClause(distinct=distinct, columns=columns)
 
@@ -1044,8 +1028,7 @@ def parse_from_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLFromCla
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("FROM")
     tables = [parse_table_expression(scanner)]
-    while not scanner.is_finish and scanner.now.is_comma:
-        scanner.pop()
+    while scanner.search_and_move(","):
         tables.append(parse_table_expression(scanner))
     return SQLFromClause(tables=tables)
 
@@ -1111,7 +1094,7 @@ def parse_group_by_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLGro
         # 处理 GROUPING SETS 的语法
         grouping_list = []
         for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            if grouping_scanner.now_is_parenthesis:
+            if grouping_scanner.search(ASTMark.PARENTHESIS):
                 parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
                 columns_list = [parse_general_expression(parenthesis_scanner)
                                 for parenthesis_scanner in parenthesis_scanner_list]
@@ -1122,8 +1105,7 @@ def parse_group_by_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLGro
 
     # 处理一般的 GROUP BY 的语法
     columns = [parse_general_expression(scanner)]
-    while not scanner.is_finish and scanner.now.is_comma:
-        scanner.pop()
+    while scanner.search_and_move(","):
         columns.append(parse_general_expression(scanner))
     with_rollup = False
     if scanner.search_and_move("WITH", "ROLLUP"):
@@ -1162,8 +1144,7 @@ def parse_order_by_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLOrd
     scanner.match("ORDER", "BY")
     columns = []
     parse_single()
-    while not scanner.is_finish and scanner.now.is_comma:
-        scanner.pop()
+    while scanner.search_and_move(","):
         parse_single()
 
     return SQLOrderByClause(columns=columns)
@@ -1181,16 +1162,14 @@ def parse_limit_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLLimitC
     if not scanner.search_and_move("LIMIT"):
         raise SqlParseError("无法解析为 LIMIT 子句")
     cnt_1 = parse_literal_expression(scanner).as_int()
-    mark = scanner.pop()
-    if mark.is_comma:
+    if scanner.search_and_move(","):
         offset_int = cnt_1
         limit_int = parse_literal_expression(scanner).as_int()
-    elif mark.equals("OFFSET"):
+    elif scanner.search_and_move("OFFSET"):
         offset_int = parse_literal_expression(scanner).as_int()
         limit_int = cnt_1
     else:
         raise SqlParseError("无法解析为 LIMIT 子句")
-
     return SQLLimitClause(limit=limit_int, offset=offset_int)
 
 
@@ -1311,7 +1290,7 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
         partition = None
 
     # 匹配列名列表
-    if scanner.now_is_parenthesis:
+    if scanner.search(ASTMark.PARENTHESIS):
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             columns.append(parse_column_name_expression(column_scanner))
@@ -1323,7 +1302,7 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
     # 匹配 VALUES 类型
     if scanner.search_and_move("VALUES"):
         values = []
-        while scanner.now_is_parenthesis:
+        while scanner.search(ASTMark.PARENTHESIS):
             values.append(parse_value_expression(scanner))
             scanner.search_and_move(",")
 

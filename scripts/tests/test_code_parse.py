@@ -47,11 +47,9 @@ class TestCoreParser(unittest.TestCase):
     def test_logical_operator(self):
         """测试判断、解析逻辑运算符"""
         self.assertTrue(check_logical_operator("AND a > 1"))
-        self.assertTrue(check_logical_operator("NOT a > 1"))
         self.assertTrue(check_logical_operator("OR a > 1"))
         self.assertFalse(check_logical_operator("a > 1"))
         self.assertEqual(parse_logical_operator("AND a > 1").source(DataSource.MYSQL), "AND")
-        self.assertEqual(parse_logical_operator("NOT a > 1").source(DataSource.MYSQL), "NOT")
         self.assertEqual(parse_logical_operator("OR a > 1").source(DataSource.MYSQL), "OR")
 
     def test_literal_expression(self):
