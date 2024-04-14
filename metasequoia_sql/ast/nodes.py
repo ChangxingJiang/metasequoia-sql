@@ -103,7 +103,7 @@ class ASTParenthesis(AST):
         return "(" + "".join(token.source for token in self._tokens) + ")"
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} children={self.children}>"
+        return f"<{self.__class__.__name__} children={self.children()}>"
 
 
 class ASTLiteralInteger(ASTSingle):

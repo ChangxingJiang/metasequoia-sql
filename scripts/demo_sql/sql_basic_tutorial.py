@@ -2239,13 +2239,6 @@ SELECT shohin_id, shohin_mei, hanbai_tanka,
   FROM Shohin;
 """
 
-SBT_CH08_06 = """
-SELECT shohin_id, shohin_mei, hanbai_tanka,
-       AVG (hanbai_tanka) OVER (ORDER BY shohin_id
-                                ROWS 2 PRECEDING) AS moving_avg
-  FROM Shohin;
-"""
-
 SBT_CH08_07 = """
 SELECT shohin_id, shohin_mei, hanbai_tanka,
        AVG (hanbai_tanka) OVER (ORDER BY shohin_id

@@ -13,26 +13,7 @@ from typing import Optional, Tuple, List, Union
 from metasequoia_sql.ast import (AST, ASTMark, ASTSingle, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
                                  ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull)
 from metasequoia_sql.common import TokenScanner, build_token_scanner
-from metasequoia_sql.core.objects import (
-    EnumInsertType, SQLInsertType, EnumJoinType, SQLJoinType, EnumOrderType, SQLOrderType, EnumUnionType, SQLUnionType,
-    EnumCompareOperator, SQLCompareOperator, EnumComputeOperator, SQLComputeOperator, EnumLogicalOperator,
-    SQLLogicalOperator, SQLGeneralExpression, SQLLiteralExpression, SQLLiteralIntegerExpression,
-    SQLLiteralFloatExpression, SQLLiteralStringExpression, SQLLiteralHexExpression, SQLLiteralBitExpression,
-    SQLLiteralBoolExpression, SQLLiteralNullExpression, SQLColumnNameExpression, SQLFunctionExpression,
-    EnumCastDataType, SQLNormalFunctionExpression, SQLAggregationFunctionExpression, SQLCastDataType,
-    SQLCastFunctionExpression, SQLExtractFunctionExpression, SQLBoolExpression, SQLBoolCompareExpression,
-    SQLBoolIsExpression, SQLBoolInExpression, SQLBoolLikeExpression, SQLBoolExistsExpression, SQLBoolBetweenExpression,
-    SQLArrayIndexExpression, SQLWindowExpression, SQLWildcardExpression, SQLConditionExpression, SQLCaseExpression,
-    SQLCaseValueExpression, SQLComputeExpression, SQLValueExpression, SQLSubQueryExpression, SQLTableNameExpression,
-    SQLAlisaExpression, SQLJoinExpression, SQLJoinOnExpression, SQLJoinUsingExpression, SQLColumnTypeExpression,
-    SQLTableExpression, SQLColumnExpression, SQLEqualExpression, SQLPartitionExpression, SQLForeignKeyExpression,
-    SQLPrimaryIndexExpression, SQLUniqueIndexExpression, SQLNormalIndexExpression, SQLFulltextIndexExpression,
-    SQLDefineColumnExpression, SQLConfigNameExpression, SQLConfigValueExpression, SQLSelectClause, SQLFromClause,
-    SQLLateralViewClause, SQLJoinClause, SQLWhereClause, SQLGroupByClause, SQLNormalGroupByClause,
-    SQLGroupingSetsGroupByClause, SQLHavingClause, SQLOrderByClause, SQLLimitClause, SQLWithClause, SQLStatement,
-    SQLSelectStatement, SQLSingleSelectStatement, SQLUnionSelectStatement, SQLInsertStatement, SQLInsertSelectStatement,
-    SQLInsertValuesStatement, SQLSetStatement, SQLCreateTableStatement
-)
+from metasequoia_sql.core.objects import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
 
@@ -550,6 +531,35 @@ def check_window_expression(scanner_or_string: Union[TokenScanner, str]) -> bool
             scanner.next3 is not None and scanner.next3.equals(ASTMark.PARENTHESIS))
 
 
+def parse_window_row(scanner_or_string: Union[TokenScanner, str]) -> SQLWindowRow:
+    """解析窗口函数行限制中的行"""
+    scanner = _unify_input_scanner(scanner_or_string)
+    if scanner.search_and_move("CURRENT", "ROW"):
+        return SQLWindowRow(row_type=EnumWindowRowType.CURRENT_ROW)
+    if scanner.search_and_move("UNBOUNDED"):
+        if scanner.search_and_move("PRECEDING"):
+            return SQLWindowRow(row_type=EnumWindowRowType.PRECEDING, is_unbounded=True)
+        if scanner.search_and_move("FOLLOWING"):
+            return SQLWindowRow(row_type=EnumWindowRowType.FOLLOWING, is_unbounded=True)
+        raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
+    row_num = int(scanner.pop_as_source())
+    if scanner.search_and_move("PRECEDING"):
+        return SQLWindowRow(row_type=EnumWindowRowType.PRECEDING, row_num=row_num)
+    if scanner.search_and_move("FOLLOWING"):
+        return SQLWindowRow(row_type=EnumWindowRowType.FOLLOWING, row_num=row_num)
+    raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
+
+
+def parse_window_row_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLWindowRowExpression:
+    """解析窗口语句限制行的表达式"""
+    scanner = _unify_input_scanner(scanner_or_string)
+    scanner.match("ROWS", "BETWEEN")
+    from_row = parse_window_row(scanner)
+    scanner.match("AND")
+    to_row = parse_window_row(scanner)
+    return SQLWindowRowExpression(from_row=from_row, to_row=to_row)
+
+
 def parse_window_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLWindowExpression:
     """解析窗口函数
 
@@ -560,15 +570,20 @@ def parse_window_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLW
     window_function = parse_function_expression_maybe_with_array_index(scanner)
     partition_by = None
     order_by = None
-    if not scanner.pop().equals("OVER"):
-        raise SqlParseError(f"无法解析为窗口表达式: {scanner}")
+    row_expression = None
+    scanner.match("OVER")
     parenthesis_scanner = scanner.pop_as_children_scanner()
     if parenthesis_scanner.search_and_move("PARTITION", "BY"):
         partition_by = parse_general_expression(parenthesis_scanner, maybe_window=False)
     if parenthesis_scanner.search_and_move("ORDER", "BY"):
         order_by = parse_general_expression(parenthesis_scanner, maybe_window=False)
+    if parenthesis_scanner.search("ROWS", "BETWEEN"):
+        row_expression = parse_window_row_expression(parenthesis_scanner)
     parenthesis_scanner.close()
-    return SQLWindowExpression(window_function=window_function, partition_by=partition_by, order_by=order_by)
+    return SQLWindowExpression(window_function=window_function,
+                               partition_by=partition_by,
+                               order_by=order_by,
+                               row_expression=row_expression)
 
 
 def check_wildcard_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:

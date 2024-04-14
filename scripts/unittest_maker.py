@@ -61,7 +61,6 @@ def make_sql_basic_tutorial(force: bool = False):
             if name in {"SBT_CH06_13_DB2", "SBT_CH06_14_DB2", "SBT_CH06_15_DB2", "SBT_CH06_16_DB2"}:
                 data_source = DataSource.DB2
             print("【格式化代码】")
-            print(statement)
             print(statement.source(data_source))
 
             print("【分析结果】")

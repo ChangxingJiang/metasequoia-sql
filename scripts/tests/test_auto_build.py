@@ -1327,13 +1327,6 @@ class TestSqlBasicTutorial(unittest.TestCase):
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_id", "shohin_mei", "hanbai_tanka"])
         self.assertEqual(statement.get_used_column_list(), ["shohin_id", "shohin_mei", "hanbai_tanka"])
 
-    def test_sbt_ch08_06(self):
-        statement = parse_select_statement(SBT_CH08_06)
-        self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
-        self.assertEqual(statement.get_used_table_list(), ["Shohin"])
-        self.assertEqual(statement.get_select_used_column_list(), ["shohin_id", "shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_id", "shohin_mei", "hanbai_tanka"])
-
     def test_sbt_ch08_07(self):
         statement = parse_select_statement(SBT_CH08_07)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])

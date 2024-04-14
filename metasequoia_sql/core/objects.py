@@ -63,7 +63,7 @@ __all__ = [
     "SQLArrayIndexExpression",
 
     # 一般表达式：窗口表达式
-    "SQLWindowExpression",
+    "EnumWindowRowType", "SQLWindowRow", "SQLWindowRowExpression", "SQLWindowExpression",
 
     # 一般表达式：通配符表达式
     "SQLWildcardExpression",
@@ -846,6 +846,53 @@ class SQLArrayIndexExpression(SQLGeneralExpression):
 # ---------------------------------------- 窗口表达式 ----------------------------------------
 
 
+class EnumWindowRowType(enum.Enum):
+    """窗口函数中的行限制的类型"""
+    PRECEDING = "PRECEDING"
+    CURRENT_ROW = "CURRENT ROW"
+    FOLLOWING = "FOLLOWING"
+
+
+@dataclasses.dataclass(slots=True, frozen=True)
+class SQLWindowRow(SQLBaseAlone):
+    """窗口函数中的行限制
+
+    unbounded preceding = 当前行的所有行
+    n preceding = 当前行之前的 n 行
+    current row = 当前行
+    n following = 当前行之后的 n行
+    unbounded following = 当前行之后的所有行
+    """
+
+    row_type: EnumWindowRowType = dataclasses.field(kw_only=True)
+    is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
+    row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
+
+    def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
+        if self.row_type == EnumWindowRowType.CURRENT_ROW:
+            return "CURRENT ROW"
+        row_type_str = self.row_type.value
+        if self.is_unbounded is True:
+            return f"UNBOUNDED {row_type_str}"
+        return f"{self.row_num} {row_type_str}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True)
+class SQLWindowRowExpression(SQLBaseAlone):
+    """窗口函数中的行限制表达式
+
+    ROWS BETWEEN {SQLWindowRow} AND {SQLWindowRow}
+    """
+
+    from_row: SQLWindowRow = dataclasses.field(kw_only=True)
+    to_row: SQLWindowRow = dataclasses.field(kw_only=True)
+
+    def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"ROWS BETWEEN {self.from_row.source(data_source)} AND {self.to_row.source(data_source)}"
+
+
 @dataclasses.dataclass(slots=True, frozen=True)
 class SQLWindowExpression(SQLGeneralExpression):
     """窗口表达式"""
@@ -853,6 +900,7 @@ class SQLWindowExpression(SQLGeneralExpression):
     window_function: Union[SQLNormalFunctionExpression, SQLArrayIndexExpression] = dataclasses.field(kw_only=True)
     partition_by: Optional[SQLGeneralExpression] = dataclasses.field(kw_only=True)
     order_by: Optional[SQLGeneralExpression] = dataclasses.field(kw_only=True)
+    row_expression: Optional[SQLWindowRowExpression] = dataclasses.field(kw_only=True)
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
@@ -862,6 +910,8 @@ class SQLWindowExpression(SQLGeneralExpression):
             parenthesis.append(f"PARTITION BY {self.partition_by.source(data_source)}")
         if self.order_by is not None:
             parenthesis.append(f"ORDER BY {self.order_by.source(data_source)}")
+        if self.row_expression is not None:
+            parenthesis.append(self.row_expression.source(data_source))
         result += " ".join(parenthesis) + ")"
         return result
 
