@@ -1,7 +1,7 @@
 import unittest
 
 from metasequoia_sql import *
-from scripts.demo.sql_basic_tutorial import *
+from scripts.demo_sql.sql_basic_tutorial import *
 
 
 class TestSqlBasicTutorial(unittest.TestCase):
