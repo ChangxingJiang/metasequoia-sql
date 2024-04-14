@@ -663,16 +663,16 @@ class TestSqlBasicTutorial(unittest.TestCase):
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_bunrui", "shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["hanbai_tanka"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_bunrui", "shohin_mei", "hanbai_tanka"])
+        self.assertEqual(statement.get_where_used_column_list(), ["hanbai_tanka", "S1.shohin_bunrui", "S2.shohin_bunrui", "shohin_bunrui"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_bunrui", "shohin_mei", "hanbai_tanka", "S1.shohin_bunrui", "S2.shohin_bunrui"])
 
     def test_sbt_ch05_16_sqlserver(self):
         statement = parse_select_statement(SBT_CH05_16_SQLSERVER)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_bunrui", "shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["hanbai_tanka"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_bunrui", "shohin_mei", "hanbai_tanka"])
+        self.assertEqual(statement.get_where_used_column_list(), ["hanbai_tanka", "S1.shohin_bunrui", "S2.shohin_bunrui", "shohin_bunrui"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_bunrui", "shohin_mei", "hanbai_tanka", "S1.shohin_bunrui", "S2.shohin_bunrui"])
 
     def test_sbt_ch06_02(self):
         statement = parse_select_statement(SBT_CH06_02)
@@ -1011,62 +1011,64 @@ class TestSqlBasicTutorial(unittest.TestCase):
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["shohin_id"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "shohin_id"])
+        self.assertEqual(statement.get_where_used_column_list(), ["shohin_id", "tenpo_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "shohin_id", "tenpo_id"])
 
     def test_sbt_ch06_37(self):
         statement = parse_select_statement(SBT_CH06_37)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["shohin_id"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "shohin_id"])
+        self.assertEqual(statement.get_where_used_column_list(), ["shohin_id", "tenpo_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "shohin_id", "tenpo_id"])
 
     def test_sbt_ch06_38_oracle(self):
         statement = parse_select_statement(SBT_CH06_38_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["*"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*"])
+        self.assertEqual(statement.get_where_used_column_list(), ["*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
 
     def test_sbt_ch06_38_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_38_SQLSERVER)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["*"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*"])
+        self.assertEqual(statement.get_where_used_column_list(), ["*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
 
     def test_sbt_ch06_39_oracle(self):
         statement = parse_select_statement(SBT_CH06_39_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka"])
+        self.assertEqual(statement.get_where_used_column_list(), ["TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
 
     def test_sbt_ch06_39_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_39_SQLSERVER)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka"])
+        self.assertEqual(statement.get_where_used_column_list(), ["TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
 
     def test_sbt_ch06_40_oracle(self):
         statement = parse_select_statement(SBT_CH06_40_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["*"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*"])
+        self.assertEqual(statement.get_where_used_column_list(), ["*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
 
     def test_sbt_ch06_40_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_40_SQLSERVER)
         self.assertEqual(statement.get_from_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_used_table_list(), ["Shohin"])
         self.assertEqual(statement.get_select_used_column_list(), ["shohin_mei", "hanbai_tanka"])
-        self.assertEqual(statement.get_where_used_column_list(), ["*"])
-        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*"])
+        self.assertEqual(statement.get_where_used_column_list(), ["*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
+        self.assertEqual(statement.get_used_column_list(), ["shohin_mei", "hanbai_tanka", "*", "TS.tenpo_id", "TS.shohin_id", "S.shohin_id"])
 
     def test_sbt_ch06_41(self):
         statement = parse_select_statement(SBT_CH06_41)
@@ -1287,8 +1289,8 @@ class TestSqlBasicTutorial(unittest.TestCase):
         self.assertEqual(statement.get_from_used_table_list(), ["EmpSkills"])
         self.assertEqual(statement.get_used_table_list(), ["EmpSkills"])
         self.assertEqual(statement.get_select_used_column_list(), ["emp"])
-        self.assertEqual(statement.get_where_used_column_list(), ["skill"])
-        self.assertEqual(statement.get_used_column_list(), ["emp", "skill"])
+        self.assertEqual(statement.get_where_used_column_list(), ["skill", "ES1.emp", "ES2.emp"])
+        self.assertEqual(statement.get_used_column_list(), ["emp", "skill", "ES1.emp", "ES2.emp"])
 
     def test_sbt_ch08_01(self):
         statement = parse_select_statement(SBT_CH08_01)

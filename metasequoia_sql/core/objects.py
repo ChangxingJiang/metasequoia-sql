@@ -5,17 +5,18 @@
 
 因为不同语法节点之间需要相互引用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
 
-TODO 统一 SQLBase 的抽象方法：增加 get_used_column_list 和 get_used_table_list
+TODO
 TODO 不返回 CURRENT_DATE、CURRENT_TIME、CURRENT_TIMESTAMP 作为字段
 TODO 增加 scanner 未解析完成的发现机制
 TODO 存在重复代码的类优化
+TODO 补充 SLOT
 """
 
 import abc
 import enum
 from typing import Optional, List, Tuple, Union, Dict, Set
 
-from metasequoia_sql.common.basic import ordered_distinct
+from metasequoia_sql.common.basic import ordered_distinct, chain_list
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
 
 __all__ = [
@@ -195,11 +196,31 @@ class SQLBase(abc.ABC):
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
 
+    @abc.abstractmethod
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+
+    @abc.abstractmethod
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表的列表"""
+
     def __str__(self) -> str:
         return self.__repr__()
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} source={self.source(DataSource.DEFAULT)}>"
+
+
+class SQLBaseAlone(SQLBase, abc.ABC):
+    """不使用字段、表的 SQL 固定值语法节点的抽象基类"""
+
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return []
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表的列表"""
+        return []
 
 
 # ---------------------------------------- 插入类型 ----------------------------------------
@@ -211,7 +232,7 @@ class EnumInsertType(enum.Enum):
     INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
 
 
-class SQLInsertType(SQLBase):
+class SQLInsertType(SQLBaseAlone):
     """插入类型"""
 
     def __init__(self, insert_type: EnumInsertType):
@@ -243,7 +264,7 @@ class EnumJoinType(enum.Enum):
     CROSS_JOIN = ["CROSS", "JOIN"]  # 交叉连接
 
 
-class SQLJoinType(SQLBase):
+class SQLJoinType(SQLBaseAlone):
     """关联类型"""
 
     def __init__(self, join_type: EnumJoinType):
@@ -268,7 +289,7 @@ class EnumOrderType(enum.Enum):
     DESC = "DESC"  # 降序
 
 
-class SQLOrderType(SQLBase):
+class SQLOrderType(SQLBaseAlone):
     """排序类型"""
 
     def __init__(self, order_type: EnumOrderType):
@@ -296,7 +317,7 @@ class EnumUnionType(enum.Enum):
     MINUS = ["MINUS"]
 
 
-class SQLUnionType(SQLBase):
+class SQLUnionType(SQLBaseAlone):
     """组合类型"""
 
     def __init__(self, union_type: EnumUnionType):
@@ -330,7 +351,7 @@ class EnumCompareOperator(enum.Enum):
     GREATER_THAN_OR_EQUAL = ">="
 
 
-class SQLCompareOperator(SQLBase):
+class SQLCompareOperator(SQLBaseAlone):
     """比较运算符"""
 
     def __init__(self, compare_operator: EnumCompareOperator):
@@ -344,11 +365,6 @@ class SQLCompareOperator(SQLBase):
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         return self.compare_operator.value
-
-    @staticmethod
-    def get_used_column_list() -> List[str]:
-        """获取使用的字段列表"""
-        return []
 
 
 # ---------------------------------------- 计算运算符 ----------------------------------------
@@ -364,7 +380,7 @@ class EnumComputeOperator(enum.Enum):
     CONCAT = "||"  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
 
 
-class SQLComputeOperator(SQLBase):
+class SQLComputeOperator(SQLBaseAlone):
     """计算运算符"""
 
     def __init__(self, compute_operator: EnumComputeOperator):
@@ -384,11 +400,6 @@ class SQLComputeOperator(SQLBase):
             raise UnSupportDataSourceError(f"{data_source} 不支持使用 || 运算符")
         return self.compute_operator.value
 
-    @staticmethod
-    def get_used_column_list() -> List[str]:
-        """获取使用的字段列表"""
-        return []
-
 
 # ---------------------------------------- 逻辑运算符 ----------------------------------------
 
@@ -400,7 +411,7 @@ class EnumLogicalOperator(enum.Enum):
     NOT = "NOT"
 
 
-class SQLLogicalOperator(SQLBase):
+class SQLLogicalOperator(SQLBaseAlone):
     """逻辑运算符"""
 
     def __init__(self, logical_operator: EnumLogicalOperator):
@@ -415,34 +426,18 @@ class SQLLogicalOperator(SQLBase):
         """返回语法节点的 SQL 源码"""
         return self.logical_operator.value
 
-    @staticmethod
-    def get_used_column_list() -> List[str]:
-        """获取使用的字段列表"""
-        return []
-
 
 # ---------------------------------------- 一般表达式的抽象基类 ----------------------------------------
 
 
 class SQLGeneralExpression(SQLBase, abc.ABC):
-    """一般表达式的抽象基类
-
-    TODO 待移除所有方法
-    """
-
-    @abc.abstractmethod
-    def source(self, data_source: DataSource) -> str:
-        """返回语法节点的 SQL 源码"""
-
-    @abc.abstractmethod
-    def get_used_column_list(self) -> List[str]:
-        """获取使用的字段列表"""
+    """一般表达式的抽象基类"""
 
 
 # ---------------------------------------- 字面值表达式 ----------------------------------------
 
 
-class SQLLiteralExpression(SQLGeneralExpression, abc.ABC):
+class SQLLiteralExpression(SQLBaseAlone, SQLGeneralExpression, abc.ABC):
     """字面值表达式"""
 
     def as_int(self) -> Optional[int]:
@@ -621,6 +616,10 @@ class SQLColumnNameExpression(SQLGeneralExpression):
         """获取使用的字段列表"""
         return [self.source(DataSource.DEFAULT)]
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表名列表"""
+        return []
+
 
 # ---------------------------------------- 函数表达式 ----------------------------------------
 
@@ -697,10 +696,11 @@ class SQLFunctionExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
-        result = []
-        for param in self.function_params:
-            result.extend(param.get_used_column_list())
-        return result
+        return chain_list(param.get_used_column_list() for param in self.function_params)
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表名列表"""
+        return chain_list(param.get_used_table_list() for param in self.function_params)
 
 
 class SQLAggregationFunctionExpression(SQLFunctionExpression):
@@ -724,7 +724,7 @@ class SQLAggregationFunctionExpression(SQLFunctionExpression):
         return f"{self._get_function_str()}({is_distinct}{self._get_param_str(data_source)})"
 
 
-class SQLCastDataType(SQLBase):
+class SQLCastDataType(SQLBaseAlone):
     """CAST 语句中的数据类型"""
 
     def __init__(self, signed: bool, data_type: EnumCastDataType, params: Optional[List[SQLGeneralExpression]]):
@@ -793,6 +793,10 @@ class SQLCastFunctionExpression(SQLFunctionExpression):
         """获取使用的字段列表"""
         return self.column_expression.get_used_column_list()
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.column_expression.get_used_table_list()
+
 
 class SQLExtractFunctionExpression(SQLFunctionExpression):
     """Extract 函数表达式"""
@@ -838,10 +842,6 @@ class SQLBoolExpression(SQLBase, abc.ABC):
     TODO 整理子类继承关系
     """
 
-    @abc.abstractmethod
-    def get_used_column_list(self) -> List[str]:
-        """获取使用的字段列表"""
-
 
 class SQLBoolCompareExpression(SQLBoolExpression):
     """比较运算符关联表达式"""
@@ -879,6 +879,10 @@ class SQLBoolCompareExpression(SQLBoolExpression):
         """获取使用的字段列表"""
         return self.before_value.get_used_column_list() + self.after_value.get_used_column_list()
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.before_value.get_used_table_list() + self.after_value.get_used_table_list()
+
 
 class SQLBoolIsExpression(SQLBoolExpression):
     """IS运算符布尔值表达式"""
@@ -914,6 +918,10 @@ class SQLBoolIsExpression(SQLBoolExpression):
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
         return self.before_value.get_used_column_list() + self.after_value.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.before_value.get_used_table_list() + self.after_value.get_used_table_list()
 
 
 class SQLBoolInExpression(SQLBoolExpression):
@@ -951,6 +959,10 @@ class SQLBoolInExpression(SQLBoolExpression):
         """获取使用的字段列表"""
         return self.before_value.get_used_column_list() + self.after_value.get_used_column_list()
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.before_value.get_used_table_list() + self.after_value.get_used_table_list()
+
 
 class SQLBoolLikeExpression(SQLBoolExpression):
     """LIKE 运算符关联表达式"""
@@ -987,6 +999,10 @@ class SQLBoolLikeExpression(SQLBoolExpression):
         """获取使用的字段列表"""
         return self.before_value.get_used_column_list() + self.after_value.get_used_column_list()
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.before_value.get_used_table_list() + self.after_value.get_used_table_list()
+
 
 class SQLBoolExistsExpression(SQLBoolExpression):
     """Exists 运算符关联表达式"""
@@ -1015,6 +1031,10 @@ class SQLBoolExistsExpression(SQLBoolExpression):
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
         return self.after_value.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.after_value.get_used_table_list()
 
 
 class SQLBoolBetweenExpression(SQLBoolExpression):
@@ -1050,7 +1070,13 @@ class SQLBoolBetweenExpression(SQLBoolExpression):
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
-        return self.before_value.get_used_column_list()
+        return (self.before_value.get_used_column_list() + self.from_value.get_used_column_list()
+                + self.to_value.get_used_column_list())
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return (self.before_value.get_used_table_list() + self.from_value.get_used_table_list()
+                + self.to_value.get_used_table_list())
 
 
 # ---------------------------------------- 窗口表达式 ----------------------------------------
@@ -1096,10 +1122,15 @@ class SQLWindowExpression(SQLGeneralExpression):
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
         result = []
-        if self.partition_by is not None:
-            result.extend(self.partition_by.get_used_column_list())
-        if self.order_by is not None:
-            result.extend(self.order_by.get_used_column_list())
+        result.extend(self.partition_by.get_used_column_list() if self.partition_by is not None else [])
+        result.extend(self.order_by.get_used_column_list() if self.order_by is not None else [])
+        return result
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        result = []
+        result.extend(self.partition_by.get_used_table_list() if self.partition_by is not None else [])
+        result.extend(self.order_by.get_used_table_list() if self.order_by is not None else [])
         return result
 
 
@@ -1125,6 +1156,10 @@ class SQLWildcardExpression(SQLGeneralExpression):
         """获取语句结果中使用的字段"""
         return [self.source(DataSource.DEFAULT)]
 
+    def get_used_table_list(self) -> List[str]:
+        """获取语句结果中使用的字段"""
+        return []
+
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
@@ -1148,10 +1183,11 @@ class SQLConditionExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
-        result = []
-        for element in self.elements:
-            result.extend(element.get_used_column_list())
-        return result
+        return chain_list(element.get_used_column_list() for element in self.elements)
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return chain_list(element.get_used_table_list() for element in self.elements)
 
 
 # ---------------------------------------- CASE 表达式 ----------------------------------------
@@ -1194,10 +1230,11 @@ class SQLCaseExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
-        result = []
-        for when, _ in self.cases:
-            result.extend(when.get_used_column_list())
-        return result
+        return chain_list(when.get_used_column_list() for when, _ in self.cases)
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return chain_list(when.get_used_table_list() for when, _ in self.cases)
 
 
 class SQLCaseValueExpression(SQLGeneralExpression):
@@ -1249,6 +1286,13 @@ class SQLCaseValueExpression(SQLGeneralExpression):
             result.extend(when.get_used_column_list())
         return result
 
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        result = self.case_value.get_used_table_list()
+        for when, _ in self.cases:
+            result.extend(when.get_used_table_list())
+        return result
+
 
 # ---------------------------------------- 计算表达式 ----------------------------------------
 
@@ -1270,16 +1314,17 @@ class SQLComputeExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
-        result = []
-        for element in self.elements:
-            result.extend(element.get_used_column_list())
-        return result
+        return chain_list(element.get_used_column_list() for element in self.elements)
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return chain_list(element.get_used_table_list() for element in self.elements)
 
 
 # ---------------------------------------- 值表达式 ----------------------------------------
 
 
-class SQLValueExpression(SQLGeneralExpression):
+class SQLValueExpression(SQLBaseAlone, SQLGeneralExpression):
     """INSERT INTO 表达式中，VALUES 里的表达式"""
 
     def __init__(self, values: List[SQLGeneralExpression]):
@@ -1320,7 +1365,7 @@ class SQLSubQueryExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         """返回使用的字段列表"""
-        return self.select_statement.get_select_used_column_list()
+        return self.select_statement.get_used_column_list()
 
     def get_used_table_list(self) -> List[str]:
         """返回使用的表列表"""
@@ -1383,6 +1428,10 @@ class SQLTableNameExpression(SQLBase):
         """返回语法节点的 SQL 源码"""
         return f"{self.schema}.{self.table}" if self.schema is not None else f"{self.table}"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return []
+
     def get_used_table_list(self) -> List[str]:
         """获取使用的表列表"""
         return [self.source(DataSource.DEFAULT)]
@@ -1391,7 +1440,7 @@ class SQLTableNameExpression(SQLBase):
 # ---------------------------------------- 别名表达式 ----------------------------------------
 
 
-class SQLAlisaExpression(SQLBase):
+class SQLAlisaExpression(SQLBaseAlone):
     """别名表达式"""
 
     def __init__(self, alias_name: str):
@@ -1429,6 +1478,14 @@ class SQLJoinOnExpression(SQLJoinExpression):
         """返回语法节点的 SQL 源码"""
         return f"ON {self._condition.source(data_source)}"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return self.condition.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.condition.get_used_table_list()
+
 
 class SQLJoinUsingExpression(SQLJoinExpression):
     """USING 关联表达式"""
@@ -1445,10 +1502,18 @@ class SQLJoinUsingExpression(SQLJoinExpression):
         """返回语法节点的 SQL 源码"""
         return f"{self.using_function.source(data_source)}"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return self.using_function.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.using_function.get_used_table_list()
+
 
 # ---------------------------------------- 字段类型表达式 ----------------------------------------
 
-class SQLColumnTypeExpression(SQLBase):
+class SQLColumnTypeExpression(SQLBaseAlone):
     """字段类型表达式"""
 
     def __init__(self, name: str, params: List[SQLGeneralExpression]):
@@ -1501,6 +1566,10 @@ class SQLTableExpression(SQLBase):
             return f"{self.table.source(data_source)} {self.alias.source(data_source)}"
         return f"{self.table.source(data_source)}"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return []
+
     def get_used_table_list(self) -> List[str]:
         """获取使用的表列表"""
         return self.table.get_used_table_list()
@@ -1541,8 +1610,12 @@ class SQLColumnExpression(SQLBase):
         return None
 
     def get_used_column_list(self) -> List[str]:
-        """获取语句结果中使用的字段"""
+        """获取使用的字段列表"""
         return self.column.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """返回使用的表列表"""
+        return []
 
 
 # ---------------------------------------- 等式表达式 ----------------------------------------
@@ -1569,6 +1642,14 @@ class SQLEqualExpression(SQLBase):
         """返回语法节点的 SQL 源码"""
         return f"{self.before_value.source(data_source)} = {self.after_value.source(data_source)}"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return self.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return self.get_used_table_list()
+
 
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
@@ -1589,11 +1670,19 @@ class SQLPartitionExpression(SQLBase):
         partition_list_str = ", ".join(partition.source(data_source) for partition in self.partition_list)
         return f"PARTITION ({partition_list_str})"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return chain_list(partition.get_used_column_list() for partition in self.partition_list)
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return chain_list(partition.get_used_table_list() for partition in self.partition_list)
+
 
 # ---------------------------------------- 声明外键表达式 ----------------------------------------
 
 
-class SQLForeignKeyExpression(SQLBase):
+class SQLForeignKeyExpression(SQLBaseAlone):
     """声明外键表达式"""
 
     def __init__(self, constraint_name: str, slave_columns: List[str], master_table_name: str,
@@ -1627,7 +1716,7 @@ class SQLForeignKeyExpression(SQLBase):
 # ---------------------------------------- 声明索引表达式 ----------------------------------------
 
 
-class SQLIndexExpression(SQLBase, abc.ABC):
+class SQLIndexExpression(SQLBaseAlone, abc.ABC):
     """声明索引表达式"""
 
     def __init__(self, name: Optional[str], columns: List[str]):
@@ -1687,7 +1776,7 @@ class SQLFulltextIndexExpression(SQLIndexExpression):
 # ---------------------------------------- 声明字段表达式 ----------------------------------------
 
 
-class SQLDefineColumnExpression(SQLBase):
+class SQLDefineColumnExpression(SQLBaseAlone):
     """声明字段表达式"""
 
     def __init__(self,
@@ -1811,7 +1900,7 @@ class SQLDefineColumnExpression(SQLBase):
 # ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
 
 
-class SQLConfigNameExpression(SQLBase):
+class SQLConfigNameExpression(SQLBaseAlone):
     """配置名称表达式"""
 
     def __init__(self, config_name: str):
@@ -1827,7 +1916,7 @@ class SQLConfigNameExpression(SQLBase):
         return self.config_name
 
 
-class SQLConfigValueExpression(SQLBase):
+class SQLConfigValueExpression(SQLBaseAlone):
     """配置值表达式"""
 
     def __init__(self, config_value: str):
@@ -1872,11 +1961,12 @@ class SQLSelectClause(SQLBase):
         return " ".join(result)
 
     def get_used_column_list(self) -> List[str]:
-        """获取语句结果中使用的字段的列表"""
-        result = []
-        for column in self.columns:
-            result.extend(column.get_used_column_list())
-        return result
+        """获取使用的字段列表"""
+        return chain_list(column.get_used_column_list() for column in self.columns)
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return []
 
     def get_alias_to_used_column_hash(self) -> Dict[str, List[str]]:
         """获取字段别名对应的原始字段的列表"""
@@ -1910,12 +2000,13 @@ class SQLFromClause(SQLBase):
         """返回语法节点的 SQL 源码"""
         return "FROM " + ", ".join(table.source(data_source) for table in self.tables)
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return []
+
     def get_used_table_list(self) -> List[str]:
-        """获取语句中查询的表名的列表"""
-        result = []
-        for table in self.tables:
-            result.extend(table.get_used_table_list())
-        return result
+        """获取使用的表列表"""
+        return chain_list(table.get_used_table_list() for table in self.tables)
 
 
 # ---------------------------------------- LATERAL VIEW 子句 ----------------------------------------
@@ -1951,6 +2042,10 @@ class SQLLateralViewClause(SQLBase):
     def get_used_column_list(self) -> List[str]:
         """返回使用的字段列表"""
         return self.function.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """返回使用的表列表"""
+        return []
 
 
 # ---------------------------------------- JOIN 子句 ----------------------------------------
@@ -1988,6 +2083,10 @@ class SQLJoinClause(SQLBase):
                     f"{self.join_rule.source(data_source)}")
         return f"{self.join_type.source(data_source)} {self.table.source(data_source)}"
 
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return self.join_rule.get_used_column_list()
+
     def get_used_table_list(self) -> List[str]:
         """获取使用的表列表"""
         return self.table.get_used_table_list()
@@ -2012,18 +2111,18 @@ class SQLWhereClause(SQLBase):
         return f"WHERE {self.condition.source(data_source)}"
 
     def get_used_column_list(self) -> List[str]:
-        """获取使用的字段名列表"""
+        """获取使用的字段列表"""
         return self.condition.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """获取使用的表列表"""
+        return []
 
 
 # ---------------------------------------- GROUP BY 子句 ----------------------------------------
 
 class SQLGroupByClause(SQLBase, abc.ABC):
     """GROUP BY 子句"""
-
-    @abc.abstractmethod
-    def get_used_column_list(self) -> List[Union[str, int]]:
-        """返回字段名和列编号"""
 
 
 class SQLNormalGroupByClause(SQLGroupByClause):
@@ -2050,7 +2149,7 @@ class SQLNormalGroupByClause(SQLGroupByClause):
         return "GROUP BY " + ", ".join(column.source(data_source) for column in self.columns)
 
     def get_used_column_list(self) -> List[Union[str, int]]:
-        """返回字段名和列编号"""
+        """返回使用的字段列表（和字段序号）"""
         result = []
         for column in self.columns:
             if isinstance(column, SQLLiteralExpression):
@@ -2058,6 +2157,10 @@ class SQLNormalGroupByClause(SQLGroupByClause):
             else:
                 result.extend(column.get_used_column_list())
         return result
+
+    def get_used_table_list(self) -> List[str]:
+        """返回使用的表列表"""
+        return []
 
 
 class SQLGroupingSetsGroupByClause(SQLGroupByClause):
@@ -2082,7 +2185,7 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
         return "GROUP BY GROUPING SETS (" + ", ".join(grouping_str_list) + ")"
 
     def get_used_column_list(self) -> List[Union[str, int]]:
-        """返回字段名和列编号"""
+        """返回使用的字段列表（和字段序号）"""
         result = []
         for grouping in self.grouping_list:
             for column in grouping:
@@ -2091,6 +2194,10 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
                 else:
                     result.extend(column.get_used_column_list())
         return result
+
+    def get_used_table_list(self) -> List[str]:
+        """返回使用的表列表"""
+        return []
 
 
 # ---------------------------------------- HAVING 子句 ----------------------------------------
@@ -2114,6 +2221,10 @@ class SQLHavingClause(SQLBase):
     def get_used_column_list(self) -> List[str]:
         """返回使用的字段列表"""
         return self.condition.get_used_column_list()
+
+    def get_used_table_list(self) -> List[str]:
+        """返回使用的表列表"""
+        return []
 
 
 # ---------------------------------------- ORDER BY 子句 ----------------------------------------
@@ -2141,7 +2252,7 @@ class SQLOrderByClause(SQLBase):
         return "ORDER BY " + ", ".join(result)
 
     def get_used_column_list(self) -> List[Union[str, int]]:
-        """返回字段名和列编号"""
+        """返回使用的字段列表（和字段序号）"""
         result = []
         for column, _ in self.columns:
             if isinstance(column, SQLLiteralExpression):
@@ -2150,11 +2261,15 @@ class SQLOrderByClause(SQLBase):
                 result.extend(column.get_used_column_list())
         return result
 
+    def get_used_table_list(self) -> List[str]:
+        """返回使用的表列表"""
+        return []
+
 
 # ---------------------------------------- LIMIT 子句 ----------------------------------------
 
 
-class SQLLimitClause(SQLBase):
+class SQLLimitClause(SQLBaseAlone):
     """LIMIT 子句"""
 
     def __init__(self, limit: int, offset: int):
@@ -2206,6 +2321,10 @@ class SQLWithClause(SQLBase):
     def get_with_table_name_set(self) -> Set[str]:
         """获取 WITH 中临时表的名称"""
         return set(table[0] for table in self.tables)
+
+    def get_used_column_list(self) -> List[str]:
+        """获取使用的字段列表"""
+        return chain_list(select_statement.get_used_column_list() for _, select_statement in self.tables)
 
     def get_used_table_list(self) -> List[str]:
         """获取使用的表列表"""
@@ -2642,7 +2761,7 @@ class SQLInsertSelectStatement(SQLInsertStatement):
 # ---------------------------------------- SET 语句 ----------------------------------------
 
 
-class SQLSetStatement(SQLBase):
+class SQLSetStatement(SQLBaseAlone):
     """SQL 语句"""
 
     def __init__(self, config_name: SQLConfigNameExpression, config_value: SQLConfigValueExpression):
@@ -2667,11 +2786,11 @@ class SQLSetStatement(SQLBase):
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
 
-class SQLTableConfigExpression(SQLBase):
+class SQLTableConfigExpression(SQLBaseAlone):
     """建表语句配置信息表达式"""
 
 
-class SQLCreateTableStatement(SQLBase):
+class SQLCreateTableStatement(SQLBaseAlone):
     """【DDL】CREATE TABLE 语句"""
 
     def __init__(self,
