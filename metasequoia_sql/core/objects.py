@@ -7,8 +7,6 @@
 
 TODO 不将 CURRENT_DATE、CURRENT_TIME、CURRENT_TIMESTAMP 作为字段返回
 TODO 增加 scanner 未解析完成的发现机制
-TODO 存在重复代码的类优化
-TODO 补充 SLOT
 """
 
 import abc
@@ -692,8 +690,11 @@ class SQLExtractFunctionExpression(SQLFunctionExpression):
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
 
 
+@dataclasses.dataclass(slots=True, frozen=True)
 class SQLBoolExpression(SQLBase, abc.ABC):
     """布尔值表达式"""
+
+    is_not: bool = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True)
@@ -720,16 +721,14 @@ class SQLBoolCompareExpression(SQLBoolOperatorExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(data_source)}"
-                f" {self.operator.source(data_source)} "
+        is_not_str = "NOT " if self.is_not else ""
+        return (f"{is_not_str}{self.before_value.source(data_source)} {self.operator.source(data_source)} "
                 f"{self.after_value.source(data_source)}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True)
 class SQLBoolIsExpression(SQLBoolOperatorExpression):
     """IS运算符布尔值表达式"""
-
-    is_not: bool = dataclasses.field(kw_only=True)
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
@@ -741,8 +740,6 @@ class SQLBoolIsExpression(SQLBoolOperatorExpression):
 class SQLBoolInExpression(SQLBoolOperatorExpression):
     """In 关键字的布尔值表达式"""
 
-    is_not: bool = dataclasses.field(kw_only=True)
-
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT IN " if self.is_not else "IN"
@@ -752,8 +749,6 @@ class SQLBoolInExpression(SQLBoolOperatorExpression):
 @dataclasses.dataclass(slots=True, frozen=True)
 class SQLBoolLikeExpression(SQLBoolOperatorExpression):
     """LIKE 运算符关联表达式"""
-
-    is_not: bool = dataclasses.field(kw_only=True)
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
@@ -765,7 +760,6 @@ class SQLBoolLikeExpression(SQLBoolOperatorExpression):
 class SQLBoolExistsExpression(SQLBoolExpression):
     """Exists 运算符关联表达式"""
 
-    is_not: bool = dataclasses.field(kw_only=True)
     after_value: SQLGeneralExpression = dataclasses.field(kw_only=True)
 
     def source(self, data_source: DataSource) -> str:
@@ -792,7 +786,8 @@ class SQLBoolBetweenExpression(SQLBoolExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(data_source)} "
+        if_not_str = "NOT " if self.is_not else ""
+        return (f"{self.before_value.source(data_source)} {if_not_str}"
                 f"BETWEEN {self.from_value.source(data_source)} AND {self.to_value.source(data_source)}")
 
     def get_used_column_list(self) -> List[str]:
@@ -1985,8 +1980,8 @@ class SQLSetStatement(SQLBaseAlone):
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
 
-class SQLTableConfigExpression(SQLBaseAlone):
-    """建表语句配置信息表达式"""
+# class SQLTableConfigExpression(SQLBaseAlone):
+#     """建表语句配置信息表达式"""
 
 
 @dataclasses.dataclass(slots=True)

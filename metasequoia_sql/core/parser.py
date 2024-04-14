@@ -6,8 +6,6 @@
 因为不同解析函数之间需要相互调用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
 
 TODO 使用 search 替代直接使用 now 判断
-TODO 整理各种函数的共同规律
-TODO 将 NOT 完全合入布尔值表达式中
 """
 
 from typing import Optional, Tuple, List, Union
@@ -503,43 +501,33 @@ def parse_function_expression_maybe_with_array_index(
 def parse_bool_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLBoolExpression:
     """解析布尔值表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
+    is_not = scanner.search_and_move("NOT")
     if scanner.search_and_move("EXISTS"):
         after_value = parse_sub_query_expression(scanner)
-        return SQLBoolExistsExpression(is_not=False, after_value=after_value)
-    if scanner.search_and_move("NOT", "EXISTS"):
-        after_value = parse_sub_query_expression(scanner)
-        return SQLBoolExistsExpression(is_not=True, after_value=after_value)
+        return SQLBoolExistsExpression(is_not=is_not, after_value=after_value)
     before_value = parse_general_expression(scanner)
-    if scanner.search_and_move("BETWEEN"):
-        # "... BETWEEN ... AND ..."
+    is_not = is_not or scanner.search_and_move("NOT")
+    if scanner.search_and_move("BETWEEN"):  # "... BETWEEN ... AND ..."
         from_value = parse_general_expression(scanner)
-        if not scanner.search_and_move("AND"):
-            raise SqlParseError(f"无法解析为 BETWEEN 布尔值表达式: {scanner}")
+        scanner.match("AND")
         to_value = parse_general_expression(scanner)
-        return SQLBoolBetweenExpression(before_value=before_value, from_value=from_value, to_value=to_value)
-    if scanner.search_and_move("IS"):
-        # ".... IS ...." 或 "... IS NOT ..."
-        is_not = scanner.search_and_move("NOT")
+        return SQLBoolBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
+                                        to_value=to_value)
+    if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
+        is_not = is_not or scanner.search_and_move("NOT")
         after_value = parse_general_expression(scanner)
         return SQLBoolIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-    if scanner.search_and_move("IN"):
-        # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
+    if scanner.search_and_move("IN"):  # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
         after_value = _parse_in_parenthesis(scanner)
-        return SQLBoolInExpression(is_not=False, before_value=before_value, after_value=after_value)
-    if scanner.search_and_move("NOT", "IN"):
-        after_value = _parse_in_parenthesis(scanner)
-        return SQLBoolInExpression(is_not=True, before_value=before_value, after_value=after_value)
+        return SQLBoolInExpression(is_not=is_not, before_value=before_value, after_value=after_value)
     if scanner.search_and_move("LIKE"):
         after_value = parse_general_expression(scanner)
-        return SQLBoolLikeExpression(is_not=False, before_value=before_value, after_value=after_value)
-    if scanner.search_and_move("NOT LIKE"):
-        after_value = parse_general_expression(scanner)
-        return SQLBoolLikeExpression(is_not=True, before_value=before_value, after_value=after_value)
-    if check_compare_operator(scanner):
-        # "... > ..."
+        return SQLBoolLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+    if check_compare_operator(scanner):  # "... > ..."
         compare_operator = parse_compare_operator(scanner)
         after_value = parse_general_expression(scanner)
-        return SQLBoolCompareExpression(operator=compare_operator, before_value=before_value, after_value=after_value)
+        return SQLBoolCompareExpression(is_not=is_not, operator=compare_operator, before_value=before_value,
+                                        after_value=after_value)
     raise SqlParseError(f"无法解析为布尔值表达式: {scanner}")
 
 
@@ -603,8 +591,6 @@ def parse_condition_expression(scanner_or_string: Union[TokenScanner, str]) -> S
     scanner = _unify_input_scanner(scanner_or_string)
 
     def parse_single():
-        if scanner.search("NOT"):
-            elements.append(parse_logical_operator(scanner))
         if scanner.now_is_parenthesis:
             elements.append(parse_condition_expression(scanner.pop_as_children_scanner()))  # 插入语，子句也应该是一个条件表达式
         else:
@@ -697,10 +683,7 @@ def _parse_general_parenthesis(scanner_or_string: Union[TokenScanner, str]) -> S
 
 def _parse_general_expression_element(scanner_or_string: Union[TokenScanner, str],
                                       maybe_window: bool) -> SQLGeneralExpression:
-    """解析一般表达式中的一个元素
-
-    # TODO 将非一般表达式的子类移出一般表达式
-    """
+    """解析一般表达式中的一个元素"""
     scanner = _unify_input_scanner(scanner_or_string)
     if check_case_expression(scanner):
         return parse_case_expression(scanner)
@@ -774,10 +757,22 @@ def check_alias_expression(scanner_or_string: Union[TokenScanner, str]) -> bool:
     return not scanner.is_finish and (scanner.now.equals("AS") or scanner.now.is_maybe_name)
 
 
-def parse_alias_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLAlisaExpression:
-    """解析别名表达式"""
+def parse_alias_expression(scanner_or_string: Union[TokenScanner, str],
+                           must_has_as_keyword: bool = False) -> SQLAlisaExpression:
+    """解析别名表达式
+
+    Parameters
+    ----------
+    scanner_or_string : str
+        词法扫描器或 SQL 字符串语句
+    must_has_as_keyword : bool, default = False
+        是否必须包含 AS 关键字
+    """
     scanner = _unify_input_scanner(scanner_or_string)
-    scanner.search_and_move("AS")
+    if must_has_as_keyword is True:
+        scanner.match("AS")
+    else:
+        scanner.search_and_move("AS")
     if not scanner.now.is_maybe_name:
         raise SqlParseError(f"无法解析为别名表达式: {scanner}")
     return SQLAlisaExpression(name=scanner.pop_as_source())
@@ -1067,7 +1062,7 @@ def parse_lateral_view_clause(scanner_or_string: Union[TokenScanner, str]) -> SQ
     scanner.match("LATERAL", "VIEW")
     function = parse_function_expression(scanner)
     view_name = scanner.pop_as_source()
-    alias = parse_alias_expression(scanner)  # TODO 增加要求必须包含 AS
+    alias = parse_alias_expression(scanner, must_has_as_keyword=True)
     return SQLLateralViewClause(function=function, view_name=view_name, alias=alias)
 
 
@@ -1449,7 +1444,8 @@ def parse_create_table_statement(scanner_or_string: Union[TokenScanner, str]) ->
         default_charset=default_charset,
         collate=collate,
         row_format=row_format,
-        states_persistent=states_persistent
+        states_persistent=states_persistent,
+        partition_by=[]  # TODO 待支持 Hive 建表语句解析
     )
 
 
