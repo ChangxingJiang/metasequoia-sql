@@ -800,92 +800,64 @@ class TestSqlBasicTutorial(unittest.TestCase):
         statement = parse_select_statement(SBT_CH06_13_DB2)
         self.assertEqual(statement.get_from_used_table_list(), ["SYSIBM.SYSDUMMY1"])
         self.assertEqual(statement.get_used_table_list(), ["SYSIBM.SYSDUMMY1"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_DATE"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_DATE"])
 
     def test_sbt_ch06_13_oracle(self):
         statement = parse_select_statement(SBT_CH06_13_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["DUAL"])
         self.assertEqual(statement.get_used_table_list(), ["DUAL"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_DATE"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_DATE"])
 
     def test_sbt_ch06_13_postgresql(self):
         statement = parse_select_statement(SBT_CH06_13_POSTGRESQL)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_DATE"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_DATE"])
 
     def test_sbt_ch06_13_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_13_SQLSERVER)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_14_db2(self):
         statement = parse_select_statement(SBT_CH06_14_DB2)
         self.assertEqual(statement.get_from_used_table_list(), ["SYSIBM.SYSDUMMY1"])
         self.assertEqual(statement.get_used_table_list(), ["SYSIBM.SYSDUMMY1"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_14_oracle(self):
         statement = parse_select_statement(SBT_CH06_14_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["DUAL"])
         self.assertEqual(statement.get_used_table_list(), ["DUAL"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_14_postgresql(self):
         statement = parse_select_statement(SBT_CH06_14_POSTGRESQL)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIME"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIME"])
 
     def test_sbt_ch06_14_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_14_SQLSERVER)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_15_db2(self):
         statement = parse_select_statement(SBT_CH06_15_DB2)
         self.assertEqual(statement.get_from_used_table_list(), ["SYSIBM.SYSDUMMY1"])
         self.assertEqual(statement.get_used_table_list(), ["SYSIBM.SYSDUMMY1"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_15_oracle(self):
         statement = parse_select_statement(SBT_CH06_15_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["DUAL"])
         self.assertEqual(statement.get_used_table_list(), ["DUAL"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_15_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_15_SQLSERVER)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_16_db2(self):
         statement = parse_select_statement(SBT_CH06_16_DB2)
         self.assertEqual(statement.get_from_used_table_list(), ["SYSIBM.SYSDUMMY1"])
         self.assertEqual(statement.get_used_table_list(), ["SYSIBM.SYSDUMMY1"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_16_oracle(self):
         statement = parse_select_statement(SBT_CH06_16_ORACLE)
         self.assertEqual(statement.get_from_used_table_list(), ["DUAL"])
         self.assertEqual(statement.get_used_table_list(), ["DUAL"])
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_16_postgresql(self):
         statement = parse_select_statement(SBT_CH06_16_POSTGRESQL)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP"])
 
     def test_sbt_ch06_16_sqlserver(self):
         statement = parse_select_statement(SBT_CH06_16_SQLSERVER)
-        self.assertEqual(statement.get_select_used_column_list(), ["CURRENT_TIMESTAMP", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND"])
-        self.assertEqual(statement.get_used_column_list(), ["CURRENT_TIMESTAMP", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND"])
+        self.assertEqual(statement.get_select_used_column_list(), ["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND"])
+        self.assertEqual(statement.get_used_column_list(), ["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND"])
 
     def test_sbt_ch06_17_db2(self):
         statement = parse_select_statement(SBT_CH06_17_DB2)

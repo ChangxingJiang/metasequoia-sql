@@ -4,9 +4,6 @@
 语法节点
 
 因为不同语法节点之间需要相互引用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
-
-TODO 不将 CURRENT_DATE、CURRENT_TIME、CURRENT_TIMESTAMP 作为字段返回
-TODO 增加 scanner 未解析完成的发现机制
 """
 
 import abc
@@ -540,7 +537,11 @@ class SQLColumnNameExpression(SQLGeneralExpression):
 
     def get_used_column_list(self) -> List[str]:
         """获取使用的字段列表"""
-        return [self.source(DataSource.DEFAULT)]
+        column_name = self.source(DataSource.DEFAULT)
+        if column_name in {"CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT DATE", "CURRENT TIME",
+                           "CURRENT TIMESTAMP"}:
+            return []
+        return [column_name]
 
     def get_used_table_list(self) -> List[str]:
         """获取使用的表名列表"""

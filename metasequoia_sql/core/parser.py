@@ -10,9 +10,29 @@ TODO 使用 search 替代直接使用 now 判断
 
 from typing import Optional, Tuple, List, Union
 
-from metasequoia_sql.ast import *
+from metasequoia_sql.ast import (AST, ASTMark, ASTSingle, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
+                                 ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull)
 from metasequoia_sql.common import TokenScanner, build_token_scanner
-from metasequoia_sql.core.objects import *
+from metasequoia_sql.core.objects import (
+    EnumInsertType, SQLInsertType, EnumJoinType, SQLJoinType, EnumOrderType, SQLOrderType, EnumUnionType, SQLUnionType,
+    EnumCompareOperator, SQLCompareOperator, EnumComputeOperator, SQLComputeOperator, EnumLogicalOperator,
+    SQLLogicalOperator, SQLGeneralExpression, SQLLiteralExpression, SQLLiteralIntegerExpression,
+    SQLLiteralFloatExpression, SQLLiteralStringExpression, SQLLiteralHexExpression, SQLLiteralBitExpression,
+    SQLLiteralBoolExpression, SQLLiteralNullExpression, SQLColumnNameExpression, SQLFunctionExpression,
+    EnumCastDataType, SQLNormalFunctionExpression, SQLAggregationFunctionExpression, SQLCastDataType,
+    SQLCastFunctionExpression, SQLExtractFunctionExpression, SQLBoolExpression, SQLBoolCompareExpression,
+    SQLBoolIsExpression, SQLBoolInExpression, SQLBoolLikeExpression, SQLBoolExistsExpression, SQLBoolBetweenExpression,
+    SQLArrayIndexExpression, SQLWindowExpression, SQLWildcardExpression, SQLConditionExpression, SQLCaseExpression,
+    SQLCaseValueExpression, SQLComputeExpression, SQLValueExpression, SQLSubQueryExpression, SQLTableNameExpression,
+    SQLAlisaExpression, SQLJoinExpression, SQLJoinOnExpression, SQLJoinUsingExpression, SQLColumnTypeExpression,
+    SQLTableExpression, SQLColumnExpression, SQLEqualExpression, SQLPartitionExpression, SQLForeignKeyExpression,
+    SQLPrimaryIndexExpression, SQLUniqueIndexExpression, SQLNormalIndexExpression, SQLFulltextIndexExpression,
+    SQLDefineColumnExpression, SQLConfigNameExpression, SQLConfigValueExpression, SQLSelectClause, SQLFromClause,
+    SQLLateralViewClause, SQLJoinClause, SQLWhereClause, SQLGroupByClause, SQLNormalGroupByClause,
+    SQLGroupingSetsGroupByClause, SQLHavingClause, SQLOrderByClause, SQLLimitClause, SQLWithClause, SQLStatement,
+    SQLSelectStatement, SQLSingleSelectStatement, SQLUnionSelectStatement, SQLInsertStatement, SQLInsertSelectStatement,
+    SQLInsertValuesStatement, SQLSetStatement, SQLCreateTableStatement
+)
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
 
@@ -352,18 +372,14 @@ def check_column_name_expression(scanner_or_string: Union[TokenScanner, str]) ->
 def parse_column_name_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLColumnNameExpression:
     """解析列名表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    if (scanner.now.equals(ASTMark.NAME) and
-            (scanner.next1 is None or (
-                    not scanner.next1.equals(".") and not scanner.next1.equals(ASTMark.PARENTHESIS)))):
-        return SQLColumnNameExpression(column=scanner.pop_as_source())
-    if (scanner.now.equals(ASTMark.NAME) and
-            scanner.next1 is not None and scanner.next1.equals(".") and
-            scanner.next2 is not None and scanner.next2.equals(ASTMark.NAME) and
-            (scanner.next3 is None or not scanner.next3.equals(ASTMark.PARENTHESIS))):
+    if (scanner.search(ASTMark.NAME, ".", ASTMark.NAME) and
+            not scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS)):
         table_name = scanner.pop_as_source()
         scanner.pop()
         column_name = scanner.pop_as_source()
         return SQLColumnNameExpression(table=table_name, column=column_name)
+    if scanner.search(ASTMark.NAME) and not scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
+        return SQLColumnNameExpression(column=scanner.pop_as_source())
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
 
@@ -395,12 +411,10 @@ def parse_cast_function_expression(scanner_or_string: Union[TokenScanner, str]) 
         cast_params: Optional[List[SQLGeneralExpression]] = []
         for param_scanner in parenthesis_scanner.split_by(","):
             cast_params.append(parse_general_expression(param_scanner))
-            if not param_scanner.is_finish:
-                raise SqlParseError(f"无法解析函数参数: {param_scanner}")
+            param_scanner.close()
     else:
         cast_params = None
-    if not scanner.is_finish:
-        raise SqlParseError(f"无法解析CAST函数参数: {scanner}")
+    scanner.close()
     cast_data_type = SQLCastDataType(signed=signed, data_type=cast_type, params=cast_params)
     return SQLCastFunctionExpression(column_expression=column_expression, cast_type=cast_data_type)
 
@@ -411,8 +425,7 @@ def parse_extract_function_expression(scanner_or_string: Union[TokenScanner, str
     extract_name = parse_general_expression(scanner)
     scanner.match("FROM")
     column_expression = parse_general_expression(scanner)
-    if not scanner.is_finish:
-        raise SqlParseError(f"无法解析EXTRACT函数参数: {scanner}")
+    scanner.close()
     return SQLExtractFunctionExpression(extract_name=extract_name, column_expression=column_expression)
 
 
@@ -427,8 +440,7 @@ def parse_if_function_expression(scanner_or_string: Union[TokenScanner, str]) ->
             first_param = False
         else:
             function_params.append(parse_general_expression(param_scanner))
-        if not param_scanner.is_finish:
-            raise SqlParseError(f"无法解析函数参数: {param_scanner}")
+        param_scanner.close()
     return SQLNormalFunctionExpression(function_name="IF", function_params=function_params)
 
 
@@ -472,6 +484,8 @@ def parse_function_expression(scanner_or_string: Union[TokenScanner, str]) -> Un
         function_params.append(parse_general_expression(param_scanner))
         if not param_scanner.is_finish:
             raise SqlParseError(f"无法解析函数参数: {param_scanner}")
+
+    parenthesis_scanner.close()
 
     if schema_name is None and function_name.upper() in AGGREGATION_FUNCTION_NAME_SET:
         return SQLAggregationFunctionExpression(function_name=function_name,
@@ -553,6 +567,7 @@ def parse_window_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLW
         partition_by = parse_general_expression(parenthesis_scanner, maybe_window=False)
     if parenthesis_scanner.search_and_move("ORDER", "BY"):
         order_by = parse_general_expression(parenthesis_scanner, maybe_window=False)
+    parenthesis_scanner.close()
     return SQLWindowExpression(window_function=window_function, partition_by=partition_by, order_by=order_by)
 
 
@@ -581,7 +596,9 @@ def parse_condition_expression(scanner_or_string: Union[TokenScanner, str]) -> S
 
     def parse_single():
         if scanner.search(ASTMark.PARENTHESIS):
-            elements.append(parse_condition_expression(scanner.pop_as_children_scanner()))  # 插入语，子句也应该是一个条件表达式
+            parenthesis_scanner = scanner.pop_as_children_scanner()
+            elements.append(parse_condition_expression(parenthesis_scanner))  # 插入语，子句也应该是一个条件表达式
+            parenthesis_scanner.close()
         else:
             elements.append(parse_bool_expression(scanner))
 
@@ -639,6 +656,7 @@ def parse_value_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLVa
     values = []
     for value_scanner in scanner.pop_as_children_scanner_list_split_by(","):
         values.append(parse_general_expression(value_scanner))
+        value_scanner.close()
     return SQLValueExpression(values=values)
 
 
@@ -651,7 +669,10 @@ def check_sub_query_parenthesis(scanner_or_string: Union[TokenScanner, str]) -> 
 def parse_sub_query_expression(scanner_or_string: Union[TokenScanner, str]) -> SQLSubQueryExpression:
     """解析子查询表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    return SQLSubQueryExpression(select_statement=parse_select_statement(scanner.pop_as_children_scanner()))
+    parenthesis_scanner = scanner.pop_as_children_scanner()
+    result = SQLSubQueryExpression(select_statement=parse_select_statement(parenthesis_scanner))
+    parenthesis_scanner.close()
+    return result
 
 
 def _parse_in_parenthesis(scanner_or_string: Union[TokenScanner, str]) -> SQLGeneralExpression:
@@ -667,7 +688,10 @@ def _parse_general_parenthesis(scanner_or_string: Union[TokenScanner, str]) -> S
     scanner = _unify_input_scanner(scanner_or_string)
     if check_sub_query_parenthesis(scanner):
         return parse_sub_query_expression(scanner)
-    return parse_general_expression(scanner.pop_as_children_scanner())
+    parenthesis_scanner = scanner.pop_as_children_scanner()
+    result = parse_general_expression(parenthesis_scanner)
+    parenthesis_scanner.close()
+    return result
 
 
 def _parse_general_expression_element(scanner_or_string: Union[TokenScanner, str],
@@ -723,18 +747,14 @@ def parse_table_name_expression(scanner_or_string: Union[TokenScanner, str]
                                 ) -> Union[SQLTableNameExpression, SQLSubQueryExpression]:
     """解析表名表达式或子查询表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
-    if (scanner.now.equals(ASTMark.NAME) and
-            (scanner.next1 is None or (
-                    not scanner.next1.equals(".") and not scanner.next1.equals(ASTMark.PARENTHESIS)))):
-        return SQLTableNameExpression(table=scanner.pop_as_source())
-    if (scanner.now.equals(ASTMark.NAME) and
-            scanner.next1 is not None and scanner.next1.equals(".") and
-            scanner.next2 is not None and scanner.next2.equals(ASTMark.NAME) and
-            (scanner.next3 is None or not scanner.next3.equals(ASTMark.PARENTHESIS))):
+    if (scanner.search(ASTMark.NAME, ".", ASTMark.NAME) and
+            not scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS)):
         schema_name = scanner.pop_as_source()
         scanner.pop()
         table_name = scanner.pop_as_source()
         return SQLTableNameExpression(schema=schema_name, table=table_name)
+    if scanner.search(ASTMark.NAME) and not scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
+        return SQLTableNameExpression(table=scanner.pop_as_source())
     if check_sub_query_parenthesis(scanner):
         return parse_sub_query_expression(scanner)
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
@@ -811,6 +831,7 @@ def parse_column_type_expression(scanner_or_string: Union[TokenScanner, str]) ->
         function_params: List[SQLGeneralExpression] = []
         for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             function_params.append(parse_general_expression(param_scanner))
+            param_scanner.close()
         return SQLColumnTypeExpression(name=function_name, params=function_params)
     return SQLColumnTypeExpression(name=function_name)
 
@@ -853,6 +874,7 @@ def parse_partition_expression(scanner_or_string: Union[TokenScanner, str]) -> S
     partition_list = []
     for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
         partition_list.append(parse_equal_expression(partition_scanner))
+        partition_scanner.close()
     return SQLPartitionExpression(partition_list=partition_list)
 
 
@@ -868,12 +890,16 @@ def parse_foreign_key_expression(scanner_or_string: Union[TokenScanner, str]) ->
     scanner.match("CONSTRAINT")
     constraint_name = scanner.pop_as_source()
     scanner.match("FOREIGN", "KEY")
-    slave_columns = [column_scanner.pop_as_source()
-                     for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    slave_columns = []
+    for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        column_scanner.pop_as_source()
+        column_scanner.close()
     scanner.match("REFERENCES")
     master_table_name = scanner.pop_as_source()
-    master_columns = [column_scanner.pop_as_source()
-                      for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    master_columns = []
+    for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        column_scanner.pop_as_source()
+        column_scanner.close()
     return SQLForeignKeyExpression(
         constraint_name=constraint_name,
         slave_columns=slave_columns,
@@ -892,8 +918,10 @@ def parse_primary_index_expression(scanner_or_string: Union[TokenScanner, str]) 
     """解析主键表达式"""
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("PRIMARY", "KEY")
-    columns = [column_scanner.pop_as_source()
-               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    columns = []
+    for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        column_scanner.pop_as_source()
+        column_scanner.close()
     return SQLPrimaryIndexExpression(columns=columns)
 
 
@@ -908,8 +936,10 @@ def parse_unique_index_expression(scanner_or_string: Union[TokenScanner, str]) -
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("UNIQUE", "KEY")
     name = scanner.pop_as_source()
-    columns = [column_scanner.pop_as_source()
-               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    columns = []
+    for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        column_scanner.pop_as_source()
+        column_scanner.close()
     return SQLUniqueIndexExpression(name=name, columns=columns)
 
 
@@ -924,8 +954,10 @@ def parse_normal_index_expression(scanner_or_string: Union[TokenScanner, str]) -
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("KEY")
     name = scanner.pop_as_source()
-    columns = [column_scanner.pop_as_source()
-               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    columns = []
+    for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        column_scanner.pop_as_source()
+        column_scanner.close()
     return SQLNormalIndexExpression(name=name, columns=columns)
 
 
@@ -940,8 +972,10 @@ def parse_fulltext_expression(scanner_or_string: Union[TokenScanner, str]) -> SQ
     scanner = _unify_input_scanner(scanner_or_string)
     scanner.match("FULLTEXT", "KEY")
     name = scanner.pop_as_source()
-    columns = [column_scanner.pop_as_source()
-               for column_scanner in scanner.pop_as_children_scanner_list_split_by(",")]
+    columns = []
+    for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+        column_scanner.pop_as_source()
+        column_scanner.close()
     return SQLFulltextIndexExpression(name=name, columns=columns)
 
 
@@ -1100,11 +1134,14 @@ def parse_group_by_clause(scanner_or_string: Union[TokenScanner, str]) -> SQLGro
         for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             if grouping_scanner.search(ASTMark.PARENTHESIS):
                 parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
-                columns_list = [parse_general_expression(parenthesis_scanner)
-                                for parenthesis_scanner in parenthesis_scanner_list]
+                columns_list = []
+                for parenthesis_scanner in parenthesis_scanner_list:
+                    parse_general_expression(parenthesis_scanner)
+                    parenthesis_scanner.close()
                 grouping_list.append(columns_list)
             else:
                 grouping_list.append([parse_general_expression(grouping_scanner)])
+            grouping_scanner.close()
         return SQLGroupingSetsGroupByClause(grouping_list=grouping_list)
 
     # 处理一般的 GROUP BY 的语法
@@ -1182,7 +1219,9 @@ def _parse_single_with_table(scanner_or_string: Union[TokenScanner, str]) -> Tup
     scanner = _unify_input_scanner(scanner_or_string)
     table_name = scanner.pop_as_source()
     scanner.match("AS")
-    table_statement = parse_select_statement(scanner.pop_as_children_scanner(), with_clause=SQLWithClause.empty())
+    parenthesis_scanner = scanner.pop_as_children_scanner()
+    table_statement = parse_select_statement(parenthesis_scanner, with_clause=SQLWithClause.empty())
+    parenthesis_scanner.close()
     return table_name, table_statement
 
 
@@ -1298,8 +1337,7 @@ def parse_insert_statement(scanner_or_string: Union[TokenScanner, str],
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             columns.append(parse_column_name_expression(column_scanner))
-            if not column_scanner.is_finish:
-                raise SqlParseError(f"未解析完成的列名: {column_scanner}")
+            column_scanner.close()
     else:
         columns = None
 
@@ -1377,6 +1415,7 @@ def parse_create_table_statement(scanner_or_string: Union[TokenScanner, str]) ->
             foreign_key.append(parse_foreign_key_expression(group_scanner))
         else:
             columns.append(parse_define_column_expression(group_scanner))
+        group_scanner.close()
 
     # 解析表属性
     comment: Optional[str] = None
@@ -1451,5 +1490,7 @@ def parse_statements(scanner_or_string: Union[TokenScanner, str]) -> List[SQLSta
             statement_list.append(parse_insert_statement(statement_scanner, with_clause=with_clause))
         else:
             raise SqlParseError(f"未知语句类型: {statement_scanner}")
+
+        statement_scanner.close()
 
     return statement_list
