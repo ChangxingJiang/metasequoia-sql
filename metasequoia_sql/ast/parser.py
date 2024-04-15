@@ -118,10 +118,10 @@ class ASTParser:
         if origin in {" ", "\n"}:
             self.stack[-1].append(ASTSingle(origin, {ASTMark.SPACE}))
         # 逗号、分号、点号、等号、计算运算符（含通配符）、比较运算符、子句核心关键词、逻辑运算符
-        elif origin in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">=",
-                        "SELECT", "FROM", "LATERAL", "VIEW", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING",
-                        "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT",
-                        "AND", "NOT", "OR"}:
+        elif origin.upper() in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">=",
+                                "SELECT", "FROM", "LATERAL", "VIEW", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING",
+                                "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT",
+                                "AND", "NOT", "OR"}:
             self.stack[-1].append(ASTSingle(origin))
         # 下标
         elif origin.startswith("[") and origin.endswith("]"):

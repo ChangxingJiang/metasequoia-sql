@@ -4,7 +4,7 @@
 
 from typing import List, Union
 
-from metasequoia_sql.ast import AST, ASTParser, ASTMark
+from metasequoia_sql.ast import AST, ASTMark
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 

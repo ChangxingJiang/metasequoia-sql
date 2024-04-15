@@ -4,6 +4,8 @@
 语法节点
 
 因为不同语法节点之间需要相互引用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
+
+TODO 统一处理 ` 符号
 """
 
 import abc
@@ -2040,17 +2042,11 @@ class SQLSetStatement(SQLBaseAlone):
 
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
-
-# class SQLTableConfigExpression(SQLBaseAlone):
-#     """建表语句配置信息表达式"""
-
-
 @dataclasses.dataclass(slots=True)
 class SQLCreateTableStatement(SQLBaseAlone):
     """【DDL】CREATE TABLE 语句"""
 
     table_name_expression: SQLTableNameExpression = dataclasses.field(kw_only=True)
-    comment: Optional[str] = dataclasses.field(kw_only=True)
     if_not_exists: bool = dataclasses.field(kw_only=True)
     columns: Optional[List[SQLDefineColumnExpression]] = dataclasses.field(kw_only=True)
     primary_key: Optional[SQLPrimaryIndexExpression] = dataclasses.field(kw_only=True)
@@ -2058,13 +2054,20 @@ class SQLCreateTableStatement(SQLBaseAlone):
     key: Optional[List[SQLNormalIndexExpression]] = dataclasses.field(kw_only=True)
     fulltext_key: Optional[List[SQLFulltextIndexExpression]] = dataclasses.field(kw_only=True)
     foreign_key: List[SQLForeignKeyExpression] = dataclasses.field(kw_only=True)
+    partitioned_by: List[SQLDefineColumnExpression] = dataclasses.field(kw_only=True)
+    comment: Optional[str] = dataclasses.field(kw_only=True)
     engine: Optional[str] = dataclasses.field(kw_only=True)
     auto_increment: Optional[int] = dataclasses.field(kw_only=True)
     default_charset: Optional[str] = dataclasses.field(kw_only=True)
     collate: Optional[str] = dataclasses.field(kw_only=True)
     row_format: Optional[str] = dataclasses.field(kw_only=True)
     states_persistent: Optional[str] = dataclasses.field(kw_only=True)
-    partition_by: List[SQLDefineColumnExpression] = dataclasses.field(kw_only=True)
+    row_format_serde: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
+    stored_as_inputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
+    outputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
+    location: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
+    tblproperties: Optional[List[Tuple[SQLConfigNameExpression, SQLConfigValueExpression]]] = dataclasses.field(
+        kw_only=True, default=None)  # Hive
 
     def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):
         """更新每个字段的变量类型"""
@@ -2079,7 +2082,7 @@ class SQLCreateTableStatement(SQLBaseAlone):
 
     def append_partition_by_column(self, column: SQLDefineColumnExpression):
         """添加分区字段"""
-        self.partition_by.append(column)
+        self.partitioned_by.append(column)
 
     def source(self, data_source: DataSource, n_indent: int = 4) -> str:
         """返回语法节点的 SQL 源码"""
@@ -2124,12 +2127,24 @@ class SQLCreateTableStatement(SQLBaseAlone):
             result += "\n)"
             if self.comment is not None:
                 result += f" COMMENT {self.comment}"
-            if len(self.partition_by) > 0:
+            if len(self.partitioned_by) > 0:
                 partition_columns = []
-                for column in self.partition_by:
+                for column in self.partitioned_by:
                     partition_columns.append(column.source(data_source))
                 partition_str = ", ".join(partition_columns)
                 result += f" PARTITIONED BY ({partition_str})"
+            if self.row_format_serde is not None:
+                result += f" ROW FORMAT SERDE {self.row_format_serde}"
+            if self.stored_as_inputformat is not None:
+                result += f" STORED AS INPUTFORMAT {self.stored_as_inputformat}"
+            if self.outputformat is not None:
+                result += f" OUTPUTFORMAT {self.outputformat}"
+            if self.location is not None:
+                result += f" LOCATION {self.location}"
+            if len(self.tblproperties) > 0:
+                tblproperties_str = ", ".join([f"{config_name.source(data_source)}={config_value.source(data_source)}"
+                                               for config_name, config_value in self.tblproperties])
+                result += f"TBLPROPERTIES ({tblproperties_str})"
             return result
         raise SqlParseError(f"暂不支持的数据类型: {data_source}")
 

@@ -631,14 +631,18 @@ class SQLParser:
                                     ) -> Union[SQLTableNameExpression, SQLSubQueryExpression]:
         """解析表名表达式或子查询表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if (scanner.search(ASTMark.NAME, ".", ASTMark.NAME) and
-                not scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS)):
+        if scanner.search(ASTMark.NAME, ".", ASTMark.NAME):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
             return SQLTableNameExpression(schema=schema_name, table=table_name)
-        if scanner.search(ASTMark.NAME) and not scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
-            return SQLTableNameExpression(table=scanner.pop_as_source())
+        if scanner.search(ASTMark.NAME):
+            name_source = scanner.pop_as_source()
+            if name_source.count(".") == 1:
+                schema_name, table_name = name_source.strip("`").split(".")
+            else:
+                schema_name, table_name = None, name_source
+            return SQLTableNameExpression(schema=schema_name, table=table_name)
         if cls.check_sub_query_parenthesis(scanner):
             return cls.parse_sub_query_expression(scanner)
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
@@ -1302,6 +1306,7 @@ class SQLParser:
             group_scanner.close()
 
         # 解析表属性
+        partitioned_by: List[SQLDefineColumnExpression] = []
         comment: Optional[str] = None
         engine: Optional[str] = None
         auto_increment: Optional[int] = None
@@ -1309,28 +1314,56 @@ class SQLParser:
         collate: Optional[str] = None
         row_format: Optional[str] = None
         states_persistent: Optional[str] = None
+        row_format_serde: Optional[str] = None
+        stored_as_inputformat: Optional[str] = None
+        outputformat: Optional[str] = None
+        location: Optional[str] = None
+        tblproperties: Optional[List[Tuple[SQLConfigNameExpression, SQLConfigValueExpression]]] = []
         while not scanner.is_finish:
             if scanner.search_and_move("ENGINE"):
                 scanner.search_and_move("=")
                 engine = scanner.pop_as_source()
             elif scanner.search_and_move("AUTO_INCREMENT"):
-                scanner.match("=")
+                scanner.search_and_move("=")
                 auto_increment = int(scanner.pop_as_source())
             elif scanner.search_and_move("DEFAULT", "CHARSET"):
-                scanner.match("=")
+                scanner.search_and_move("=")
                 default_charset = scanner.pop_as_source()
             elif scanner.search_and_move("ROW_FORMAT"):
-                scanner.match("=")
+                scanner.search_and_move("=")
                 row_format = scanner.pop_as_source()
             elif scanner.search_and_move("COLLATE"):
-                scanner.match("=")
+                scanner.search_and_move("=")
                 collate = scanner.pop_as_source()
             elif scanner.search_and_move("COMMENT"):
-                scanner.match("=")
+                scanner.search_and_move("=")
                 comment = scanner.pop_as_source()
             elif scanner.search_and_move("STATS_PERSISTENT"):
-                scanner.match("=")
+                scanner.search_and_move("=")
                 states_persistent = scanner.pop_as_source()
+            elif scanner.search_and_move("PARTITIONED", "BY"):
+                for group_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+                    partitioned_by.append(cls.parse_define_column_expression(group_scanner))
+                    group_scanner.close()
+            elif scanner.search_and_move("ROW", "FORMAT", "SERDE"):
+                scanner.search_and_move("=")
+                row_format_serde = scanner.pop_as_source()
+            elif scanner.search_and_move("STORED", "AS", "INPUTFORMAT"):
+                scanner.search_and_move("=")
+                stored_as_inputformat = scanner.pop_as_source()
+            elif scanner.search_and_move("OUTPUTFORMAT"):
+                scanner.search_and_move("=")
+                outputformat = scanner.pop_as_source()
+            elif scanner.search_and_move("LOCATION"):
+                scanner.search_and_move("=")
+                location = scanner.pop_as_source()
+            elif scanner.search_and_move("TBLPROPERTIES"):
+                for group_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+                    config_name = cls.parse_config_name_expression(group_scanner)
+                    group_scanner.match("=")
+                    config_value = cls.parse_config_value_expression(group_scanner)
+                    tblproperties.append((config_name, config_value))
+                    group_scanner.close()
             else:
                 raise SqlParseError(f"未知的 DDL 表属性: {scanner}")
         scanner.search_and_move(";")
@@ -1351,7 +1384,12 @@ class SQLParser:
             collate=collate,
             row_format=row_format,
             states_persistent=states_persistent,
-            partition_by=[]  # TODO 待支持 Hive 建表语句解析
+            partitioned_by=partitioned_by,
+            row_format_serde=row_format_serde,
+            stored_as_inputformat=stored_as_inputformat,
+            outputformat=outputformat,
+            location=location,
+            tblproperties=tblproperties
         )
 
     @classmethod
