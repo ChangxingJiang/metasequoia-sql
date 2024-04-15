@@ -28,6 +28,7 @@ class ASTMark(enum.Enum):
     LITERAL = "<literal>"
     COMMENT = "<comment>"
     ARRAY_INDEX = "<array_index>"
+    CUSTOM = "<custom>"  # 自定义标记（用于插件开发）
 
 
 # 抽象语法树节点标记映射
