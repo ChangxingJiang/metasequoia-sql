@@ -3,4 +3,4 @@
 """
 
 from metasequoia_sql.ast.nodes import *
-from metasequoia_sql.ast.parser import ContextAutomaton
+from metasequoia_sql.ast.parser import ASTParser, AstParseStatus

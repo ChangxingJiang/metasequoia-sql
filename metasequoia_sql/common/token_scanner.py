@@ -4,7 +4,7 @@
 
 from typing import List, Union
 
-from metasequoia_sql.ast import AST, ContextAutomaton, ASTMark
+from metasequoia_sql.ast import AST, ASTParser, ASTMark
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 
@@ -132,10 +132,3 @@ class TokenScanner(BaseScanner):
     def is_finish(self) -> bool:
         """返回是否已匹配结束"""
         return not self._pos < self._len
-
-
-def build_token_scanner(sql: str, ignore_space=True, ignore_comment=True):
-    """根据 sql 语句构造扫描器"""
-    context_automaton = ContextAutomaton(sql)
-    context_automaton.parse()
-    return TokenScanner(context_automaton.result(), ignore_space=ignore_space, ignore_comment=ignore_comment)

@@ -19,7 +19,7 @@ pip install metasequoia-sql
 ```python
 from metasequoia_sql import *
 
-statement = parse_create_table_statement("your sql")
+statement = SQLParser.parse_create_table_statement("your sql")
 ```
 
 ### 翻译工具
@@ -29,7 +29,7 @@ statement = parse_create_table_statement("your sql")
 ```python
 from metasequoia_sql import *
 
-statement = parse_create_table_statement("your sql")
+statement = SQLParser.parse_create_table_statement("your sql")
 ```
 
 ### pylint 自检

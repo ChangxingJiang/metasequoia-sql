@@ -44,7 +44,7 @@ def make_sql_basic_tutorial(force: bool = False):
             # 词法分析
             sql = getattr(sql_basic_tutorial, name)
 
-            if not check_select_statement(sql):
+            if not SQLParser.check_select_statement(sql):
                 continue  # 当前只处理 SELECT 语句
 
             # 语法分析并打印结果
@@ -52,7 +52,7 @@ def make_sql_basic_tutorial(force: bool = False):
             print("【原始代码】")
             print(sql.strip("\n"))
 
-            statement = parse_select_statement(sql)
+            statement = SQLParser.parse_select_statement(sql)
             data_source = DataSource.MYSQL
             if name in {"SBT_CH06_03_SQLSERVER"}:
                 data_source = DataSource.SQL_SERVER
@@ -73,7 +73,7 @@ def make_sql_basic_tutorial(force: bool = False):
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")
-            file.write(f"        statement = parse_select_statement({name})\n")
+            file.write(f"        statement = SQLParser.parse_select_statement({name})\n")
 
             if isinstance(statement, SQLSingleSelectStatement):
                 print(f"DISTINCT: {statement.select_clause.distinct}", )
