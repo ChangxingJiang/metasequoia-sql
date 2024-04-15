@@ -18,6 +18,9 @@ __all__ = [
     # ------------------------------ SQL 数据源类型 ------------------------------
     "DataSource",
 
+    # ------------------------------ 抽象基类 ------------------------------
+    "SQLBase", "SQLBaseAlone",
+
     # ------------------------------ 基础元素（其中不引用其他元素） ------------------------------
     # 插入类型
     "EnumInsertType", "SQLInsertType",
@@ -184,6 +187,7 @@ class DataSource(enum.Enum):
     DEFAULT = "DEFAULT"
 
 
+@dataclasses.dataclass(slots=True)
 class SQLBase(abc.ABC):
     """所有 SQL 语法节点的抽象基类"""
 
@@ -227,7 +231,7 @@ class EnumInsertType(enum.Enum):
     INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLInsertType(SQLBaseAlone):
     """插入类型"""
 
@@ -254,7 +258,7 @@ class EnumJoinType(enum.Enum):
     CROSS_JOIN = ["CROSS", "JOIN"]  # 交叉连接
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLJoinType(SQLBaseAlone):
     """关联类型"""
 
@@ -274,7 +278,7 @@ class EnumOrderType(enum.Enum):
     DESC = "DESC"  # 降序
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLOrderType(SQLBaseAlone):
     """排序类型"""
 
@@ -297,7 +301,7 @@ class EnumUnionType(enum.Enum):
     MINUS = ["MINUS"]
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLUnionType(SQLBaseAlone):
     """组合类型"""
 
@@ -326,7 +330,7 @@ class EnumCompareOperator(enum.Enum):
     GREATER_THAN_OR_EQUAL = ">="
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLCompareOperator(SQLBaseAlone):
     """比较运算符"""
 
@@ -349,7 +353,7 @@ class EnumComputeOperator(enum.Enum):
     CONCAT = "||"  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLComputeOperator(SQLBaseAlone):
     """计算运算符"""
 
@@ -375,7 +379,7 @@ class EnumLogicalOperator(enum.Enum):
     NOT = "NOT"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLogicalOperator(SQLBaseAlone):
     """逻辑运算符"""
 
@@ -412,7 +416,7 @@ class SQLLiteralExpression(SQLBaseAlone, SQLGeneralExpression, abc.ABC):
         return []
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralIntegerExpression(SQLLiteralExpression):
     """整数字面值"""
 
@@ -429,7 +433,7 @@ class SQLLiteralIntegerExpression(SQLLiteralExpression):
         return f"{self.value}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralFloatExpression(SQLLiteralExpression):
     """浮点数字面值"""
 
@@ -443,7 +447,7 @@ class SQLLiteralFloatExpression(SQLLiteralExpression):
         return f"{self.value}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralStringExpression(SQLLiteralExpression):
     """字符串字面值"""
 
@@ -462,7 +466,7 @@ class SQLLiteralStringExpression(SQLLiteralExpression):
         return self.value
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralHexExpression(SQLLiteralExpression):
     """十六进制字面值"""
 
@@ -476,7 +480,7 @@ class SQLLiteralHexExpression(SQLLiteralExpression):
         return f"{self.value}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralBitExpression(SQLLiteralExpression):
     """位值字面值"""
 
@@ -490,7 +494,7 @@ class SQLLiteralBitExpression(SQLLiteralExpression):
         return f"{self.value}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralBoolExpression(SQLLiteralExpression):
     """布尔值字面值"""
 
@@ -504,7 +508,7 @@ class SQLLiteralBoolExpression(SQLLiteralExpression):
         return "TRUE" if self.value is True else "FALSE"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLiteralNullExpression(SQLLiteralExpression):
     """空值字面值"""
 
@@ -518,7 +522,7 @@ class SQLLiteralNullExpression(SQLLiteralExpression):
 # ---------------------------------------- 列名表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLColumnNameExpression(SQLGeneralExpression):
     """列名表达式"""
 
@@ -585,7 +589,7 @@ class EnumCastDataType(enum.Enum):
     TINYBLOB = "TINYBLOB"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLFunctionExpression(SQLGeneralExpression, abc.ABC):
     """函数表达式的抽象基类"""
 
@@ -596,7 +600,7 @@ class SQLFunctionExpression(SQLGeneralExpression, abc.ABC):
         return f"{self.schema_name}.{self.function_name}" if self.schema_name is not None else f"{self.function_name}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLNormalFunctionExpression(SQLFunctionExpression):
     """包含一般参数的函数表达式"""
 
@@ -618,7 +622,7 @@ class SQLNormalFunctionExpression(SQLFunctionExpression):
         return chain_list(param.get_used_table_list() for param in self.function_params)
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLAggregationFunctionExpression(SQLNormalFunctionExpression):
     """聚合函数表达式"""
 
@@ -630,7 +634,7 @@ class SQLAggregationFunctionExpression(SQLNormalFunctionExpression):
         return f"{self._get_function_str()}({is_distinct}{self._get_param_str(data_source)})"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLCastDataType(SQLBaseAlone):
     """CAST 语句中的数据类型"""
 
@@ -650,7 +654,7 @@ class SQLCastDataType(SQLBaseAlone):
         return " ".join(result)
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLCastFunctionExpression(SQLFunctionExpression):
     """Cast 函数表达式"""
 
@@ -672,7 +676,7 @@ class SQLCastFunctionExpression(SQLFunctionExpression):
         return self.column_expression.get_used_table_list()
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLExtractFunctionExpression(SQLFunctionExpression):
     """Extract 函数表达式"""
 
@@ -697,14 +701,14 @@ class SQLExtractFunctionExpression(SQLFunctionExpression):
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolExpression(SQLBase, abc.ABC):
     """布尔值表达式"""
 
     is_not: bool = dataclasses.field(kw_only=True)
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolOperatorExpression(SQLBoolExpression, abc.ABC):
     """通过运算符或关键字比较运算符前后两个表达式的布尔值表达式"""
 
@@ -720,7 +724,7 @@ class SQLBoolOperatorExpression(SQLBoolExpression, abc.ABC):
         return self.before_value.get_used_table_list() + self.after_value.get_used_table_list()
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolCompareExpression(SQLBoolOperatorExpression):
     """比较运算符布尔值表达式"""
 
@@ -733,7 +737,7 @@ class SQLBoolCompareExpression(SQLBoolOperatorExpression):
                 f"{self.after_value.source(data_source)}")
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolIsExpression(SQLBoolOperatorExpression):
     """IS运算符布尔值表达式"""
 
@@ -743,7 +747,7 @@ class SQLBoolIsExpression(SQLBoolOperatorExpression):
         return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolInExpression(SQLBoolOperatorExpression):
     """In 关键字的布尔值表达式"""
 
@@ -753,7 +757,7 @@ class SQLBoolInExpression(SQLBoolOperatorExpression):
         return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolLikeExpression(SQLBoolOperatorExpression):
     """LIKE 运算符关联表达式"""
 
@@ -763,7 +767,7 @@ class SQLBoolLikeExpression(SQLBoolOperatorExpression):
         return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolExistsExpression(SQLBoolExpression):
     """Exists 运算符关联表达式"""
 
@@ -783,7 +787,7 @@ class SQLBoolExistsExpression(SQLBoolExpression):
         return self.after_value.get_used_table_list()
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLBoolBetweenExpression(SQLBoolExpression):
     """BETWEEN 关联表达式"""
 
@@ -853,7 +857,7 @@ class EnumWindowRowType(enum.Enum):
     FOLLOWING = "FOLLOWING"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLWindowRow(SQLBaseAlone):
     """窗口函数中的行限制
 
@@ -878,7 +882,7 @@ class SQLWindowRow(SQLBaseAlone):
         return f"{self.row_num} {row_type_str}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLWindowRowExpression(SQLBaseAlone):
     """窗口函数中的行限制表达式
 
@@ -893,7 +897,7 @@ class SQLWindowRowExpression(SQLBaseAlone):
         return f"ROWS BETWEEN {self.from_row.source(data_source)} AND {self.to_row.source(data_source)}"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLWindowExpression(SQLGeneralExpression):
     """窗口表达式"""
 
@@ -933,7 +937,7 @@ class SQLWindowExpression(SQLGeneralExpression):
 # ---------------------------------------- 通配符表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLWildcardExpression(SQLGeneralExpression):
     """通配符表达式"""
 
@@ -954,7 +958,7 @@ class SQLWildcardExpression(SQLGeneralExpression):
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLConditionExpression(SQLGeneralExpression):
     """条件表达式"""
 
@@ -979,7 +983,7 @@ class SQLConditionExpression(SQLGeneralExpression):
 # ---------------------------------------- CASE 表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLCaseExpression(SQLGeneralExpression):
     """第 1 种格式的 CASE 表达式
 
@@ -1011,7 +1015,7 @@ class SQLCaseExpression(SQLGeneralExpression):
         return chain_list(when.get_used_table_list() for when, _ in self.cases)
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLCaseValueExpression(SQLGeneralExpression):
     """第 2 种格式的 CASE 表达式
 
@@ -1048,7 +1052,7 @@ class SQLCaseValueExpression(SQLGeneralExpression):
 
 # ---------------------------------------- 计算表达式 ----------------------------------------
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLComputeExpression(SQLGeneralExpression):
     """计算表达式"""
 
@@ -1070,7 +1074,7 @@ class SQLComputeExpression(SQLGeneralExpression):
 # ---------------------------------------- 值表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLValueExpression(SQLBaseAlone, SQLGeneralExpression):
     """INSERT INTO 表达式中，VALUES 里的表达式"""
 
@@ -1085,7 +1089,7 @@ class SQLValueExpression(SQLBaseAlone, SQLGeneralExpression):
 # ---------------------------------------- 子查询表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLSubQueryExpression(SQLGeneralExpression):
     """子查询表达式"""
 
@@ -1107,7 +1111,7 @@ class SQLSubQueryExpression(SQLGeneralExpression):
 # ---------------------------------------- 表名表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLTableNameExpression(SQLBase):
     """表名表达式"""
 
@@ -1130,7 +1134,7 @@ class SQLTableNameExpression(SQLBase):
 # ---------------------------------------- 别名表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLAlisaExpression(SQLBaseAlone):
     """别名表达式"""
 
@@ -1148,7 +1152,7 @@ class SQLJoinExpression(SQLBase, abc.ABC):
     """关联表达式"""
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLJoinOnExpression(SQLJoinExpression):
     """ON 关联表达式"""
 
@@ -1167,7 +1171,7 @@ class SQLJoinOnExpression(SQLJoinExpression):
         return self.condition.get_used_table_list()
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLJoinUsingExpression(SQLJoinExpression):
     """USING 关联表达式"""
 
@@ -1188,7 +1192,7 @@ class SQLJoinUsingExpression(SQLJoinExpression):
 
 # ---------------------------------------- 字段类型表达式 ----------------------------------------
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLColumnTypeExpression(SQLBaseAlone):
     """字段类型表达式"""
 
@@ -1206,7 +1210,7 @@ class SQLColumnTypeExpression(SQLBaseAlone):
 # ---------------------------------------- 表表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLTableExpression(SQLBase):
     """表表达式"""
 
@@ -1231,7 +1235,7 @@ class SQLTableExpression(SQLBase):
 # ---------------------------------------- 列表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLColumnExpression(SQLBase):
     """列表达式"""
 
@@ -1256,7 +1260,7 @@ class SQLColumnExpression(SQLBase):
 # ---------------------------------------- 等式表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLEqualExpression(SQLBase):
     """等式表达式"""
 
@@ -1279,7 +1283,7 @@ class SQLEqualExpression(SQLBase):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLPartitionExpression(SQLBase):
     """分区表达式：PARTITION (<partition_expression>)"""
 
@@ -1302,7 +1306,7 @@ class SQLPartitionExpression(SQLBase):
 # ---------------------------------------- 声明外键表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLForeignKeyExpression(SQLBaseAlone):
     """声明外键表达式"""
 
@@ -1322,7 +1326,7 @@ class SQLForeignKeyExpression(SQLBaseAlone):
 # ---------------------------------------- 声明索引表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLIndexExpression(SQLBaseAlone, abc.ABC):
     """声明索引表达式"""
 
@@ -1330,7 +1334,7 @@ class SQLIndexExpression(SQLBaseAlone, abc.ABC):
     columns: List[str] = dataclasses.field(kw_only=True)
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLPrimaryIndexExpression(SQLIndexExpression):
     """主键索引声明表达式"""
 
@@ -1340,7 +1344,7 @@ class SQLPrimaryIndexExpression(SQLIndexExpression):
         return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLUniqueIndexExpression(SQLIndexExpression):
     """唯一键索引声明表达式"""
 
@@ -1350,7 +1354,7 @@ class SQLUniqueIndexExpression(SQLIndexExpression):
         return f"UNIQUE KEY {self.name} ({columns_str})"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLNormalIndexExpression(SQLIndexExpression):
     """普通索引声明表达式"""
 
@@ -1360,7 +1364,7 @@ class SQLNormalIndexExpression(SQLIndexExpression):
         return f"KEY {self.name} ({columns_str})"
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLFulltextIndexExpression(SQLIndexExpression):
     """全文本索引声明表达式"""
 
@@ -1424,7 +1428,7 @@ class SQLDefineColumnExpression(SQLBaseAlone):
 # ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLConfigNameExpression(SQLBaseAlone):
     """配置名称表达式"""
 
@@ -1435,7 +1439,7 @@ class SQLConfigNameExpression(SQLBaseAlone):
         return self.config_name
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLConfigValueExpression(SQLBaseAlone):
     """配置值表达式"""
 
@@ -1449,7 +1453,7 @@ class SQLConfigValueExpression(SQLBaseAlone):
 # ---------------------------------------- SELECT 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLSelectClause(SQLBase):
     """SELECT 子句"""
 
@@ -1484,7 +1488,7 @@ class SQLSelectClause(SQLBase):
 
 # ---------------------------------------- FROM 子句 ----------------------------------------
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLFromClause(SQLBase):
     """FROM 子句"""
 
@@ -1506,7 +1510,7 @@ class SQLFromClause(SQLBase):
 # ---------------------------------------- LATERAL VIEW 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLateralViewClause(SQLBase):
     """LATERAL VIEW 子句"""
 
@@ -1529,7 +1533,7 @@ class SQLLateralViewClause(SQLBase):
 
 # ---------------------------------------- JOIN 子句 ----------------------------------------
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLJoinClause(SQLBase):
     """JOIN 子句"""
 
@@ -1556,7 +1560,7 @@ class SQLJoinClause(SQLBase):
 # ---------------------------------------- WHERE 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLWhereClause(SQLBase):
     """WHERE 子句"""
 
@@ -1581,7 +1585,7 @@ class SQLGroupByClause(SQLBase, abc.ABC):
     """GROUP BY 子句"""
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLNormalGroupByClause(SQLGroupByClause):
     """普通 GROUP BY 子句"""
 
@@ -1609,7 +1613,7 @@ class SQLNormalGroupByClause(SQLGroupByClause):
         return []
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLGroupingSetsGroupByClause(SQLGroupByClause):
     """使用 GROUPING SETS 语法的 GROUP BY 子句"""
 
@@ -1644,7 +1648,7 @@ class SQLGroupingSetsGroupByClause(SQLGroupByClause):
 # ---------------------------------------- HAVING 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLHavingClause(SQLBase):
     """HAVING 子句"""
 
@@ -1666,7 +1670,7 @@ class SQLHavingClause(SQLBase):
 # ---------------------------------------- ORDER BY 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLOrderByClause(SQLBase):
     """ORDER BY 子句"""
 
@@ -1700,7 +1704,7 @@ class SQLOrderByClause(SQLBase):
 # ---------------------------------------- LIMIT 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLLimitClause(SQLBaseAlone):
     """LIMIT 子句"""
 
@@ -1715,7 +1719,7 @@ class SQLLimitClause(SQLBaseAlone):
 # ---------------------------------------- WITH 子句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLWithClause(SQLBase):
     """WITH 子句"""
 
@@ -1759,7 +1763,7 @@ class SQLWithClause(SQLBase):
 # ---------------------------------------- 语句的抽象基类 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLStatement(SQLBase, abc.ABC):
     """语句的抽象基类"""
 
@@ -1811,7 +1815,7 @@ class SQLSelectStatement(SQLStatement, abc.ABC):
                                 self.get_order_by_used_column_list())
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLSingleSelectStatement(SQLSelectStatement):
     """单个 SELECT 表达式"""
 
@@ -1890,7 +1894,7 @@ class SQLSingleSelectStatement(SQLSelectStatement):
         return ordered_distinct(result)
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLUnionSelectStatement(SQLSelectStatement):
     """复合查询语句，使用 UNION、EXCEPT、INTERSECT 进行组合"""
 
@@ -1947,7 +1951,7 @@ class SQLUnionSelectStatement(SQLSelectStatement):
 # ---------------------------------------- INSERT 语句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLInsertStatement(SQLStatement, abc.ABC):
     """INSERT 表达式
 
@@ -1975,7 +1979,7 @@ class SQLInsertStatement(SQLStatement, abc.ABC):
                 f"{partition_str}{columns_str}")
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLInsertValuesStatement(SQLInsertStatement):
     """INSERT ... VALUES ... 语句"""
 
@@ -1995,7 +1999,7 @@ class SQLInsertValuesStatement(SQLInsertStatement):
         return []
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLInsertSelectStatement(SQLInsertStatement):
     """INSERT ... SELECT ... 语句"""
 
@@ -2022,7 +2026,7 @@ class SQLInsertSelectStatement(SQLInsertStatement):
 # ---------------------------------------- SET 语句 ----------------------------------------
 
 
-@dataclasses.dataclass(slots=True, frozen=True)
+@dataclasses.dataclass(slots=True)
 class SQLSetStatement(SQLBaseAlone):
     """SQL 语句"""
 
