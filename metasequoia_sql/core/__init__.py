@@ -1,3 +1,6 @@
-from metasequoia_sql.core.data_source import DataSource
+"""
+语法分析器
+"""
+
 from metasequoia_sql.core.objects import *
 from metasequoia_sql.core.parser import *

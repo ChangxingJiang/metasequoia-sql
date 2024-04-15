@@ -35,10 +35,12 @@ class BaseScanner(Generic[T]):
 
     @property
     def elements(self) -> List[T]:
+        """返回扫描器中的所有元素"""
         return self._elements
 
     @property
     def pos(self) -> int:
+        """返回当前扫描指针"""
         return self._pos
 
     @property
@@ -107,6 +109,11 @@ class BaseScanner(Generic[T]):
     def is_finish(self) -> bool:
         """返回当前是否已匹配结束"""
         return self.pos == self._len
+
+    def close(self) -> None:
+        """关闭扫描器，如果扫描器没有遍历完成则抛出异常"""
+        if not self.is_finish:
+            raise ScannerError(f"关闭了没有遍历完成的扫描器 {self}")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} tokens={self.elements[self.pos:]}, pos={self.pos}>"

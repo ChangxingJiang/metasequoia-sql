@@ -7,14 +7,14 @@ import os
 import subprocess
 
 from metasequoia_sql import *
-from scripts.demo import sql_basic_tutorial
+from scripts.demo_sql import sql_basic_tutorial
 
 
 def make_sql_basic_tutorial(force: bool = False):
     """构造《SQL基础教程》代码的单元测试代码"""
     # 计算 Python 单元测试脚本文件的路径
     project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    file_path = os.path.join(project_path, "auto_test", "sql_basic_tutorial.py")
+    file_path = os.path.join(project_path, "scripts", "tests", "test_auto_build.py")
 
     # 执行单元测试，需有限保证旧单元测试正常运行才能重新生成单元测试代码
     if os.path.exists(file_path):
@@ -29,7 +29,7 @@ def make_sql_basic_tutorial(force: bool = False):
         file.write("import unittest\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
-        file.write("from scripts.demo.sql_basic_tutorial import *\n")
+        file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
         file.write("\n")
         file.write("\n")
 
@@ -37,15 +37,14 @@ def make_sql_basic_tutorial(force: bool = False):
         file.write("class TestSqlBasicTutorial(unittest.TestCase):\n")
 
         # 遍历生成每一个 SQL 的解析器
-        for name in dir(sql_basic_tutorial):  # 遍历 scripts.demo.sql_basic.tutorial 中的每一个属性
+        for name in dir(sql_basic_tutorial):  # 遍历 scripts.demo_sql.sql_basic.tutorial 中的每一个属性
             if not name.startswith("SBT"):
                 continue  # 跳过所有不是 SBT 开头的属性
 
             # 词法分析
             sql = getattr(sql_basic_tutorial, name)
-            scanner = build_token_scanner(sql)
 
-            if not check_select_statement(scanner):
+            if not SQLParser.check_select_statement(sql):
                 continue  # 当前只处理 SELECT 语句
 
             # 语法分析并打印结果
@@ -53,12 +52,14 @@ def make_sql_basic_tutorial(force: bool = False):
             print("【原始代码】")
             print(sql.strip("\n"))
 
-            statement = parse_select_statement(scanner)
+            statement = SQLParser.parse_select_statement(sql)
             data_source = DataSource.MYSQL
             if name in {"SBT_CH06_03_SQLSERVER"}:
                 data_source = DataSource.SQL_SERVER
             if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
                 data_source = DataSource.ORACLE
+            if name in {"SBT_CH06_13_DB2", "SBT_CH06_14_DB2", "SBT_CH06_15_DB2", "SBT_CH06_16_DB2"}:
+                data_source = DataSource.DB2
             print("【格式化代码】")
             print(statement.source(data_source))
 
@@ -72,7 +73,7 @@ def make_sql_basic_tutorial(force: bool = False):
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")
-            file.write(f"        statement = parse_select_statement(build_token_scanner({name}))\n")
+            file.write(f"        statement = SQLParser.parse_select_statement({name})\n")
 
             if isinstance(statement, SQLSingleSelectStatement):
                 print(f"DISTINCT: {statement.select_clause.distinct}", )

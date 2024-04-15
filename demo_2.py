@@ -5,7 +5,7 @@
 from metasequoia_sql import *
 
 if __name__ == "__main__":
-    statement = parse_create_table_statement(build_token_scanner("""
+    statement = parse_create_table_statement("""
 CREATE TABLE `manual_annotation` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `video_id` varchar(20) NOT NULL COMMENT '视频ID(B站ID)',
@@ -32,6 +32,6 @@ CREATE TABLE `manual_annotation` (
   KEY `index_start_date` (`start_date`),
   KEY `index_series_id` (`series_id`),
   FULLTEXT KEY `fulltext_video_name` (`video_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频'"""))
+) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频'""")
 
     print(statement)

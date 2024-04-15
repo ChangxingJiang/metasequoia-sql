@@ -1,16 +1,10 @@
 """
-TODO 多语句解析支持
-TODO 支持匹配各种特殊要求，例如：
-    return not scanner.is_finish and (
-            scanner.now.is_maybe_name and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
-            scanner.next1 is not None and scanner.next1.is_parenthesis and
-            scanner.next2 is not None and scanner.next2.equals("OVER") and
-            scanner.next3 is not None and scanner.next3.is_parenthesis)
+抽象语法树扫描器
 """
 
-from typing import List
+from typing import List, Union
 
-from metasequoia_sql import ast
+from metasequoia_sql.ast import AST, ASTParser, ASTMark
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 
@@ -18,7 +12,7 @@ from metasequoia_sql.errors import ScannerError
 class TokenScanner(BaseScanner):
     """Token 扫描器"""
 
-    def __init__(self, elements: List[ast.AST],
+    def __init__(self, elements: List[AST],
                  pos: int = 0,
                  ignore_space: bool = False,
                  ignore_comment: bool = False):
@@ -34,10 +28,10 @@ class TokenScanner(BaseScanner):
         # 根据要求筛选输入元素
         filtered_elements = []
         for element in elements:
-            if element.is_space:
+            if element.equals(ASTMark.SPACE):
                 if ignore_space is False:  # 关闭忽略空白字符的模式
                     filtered_elements.append(element)
-            elif element.is_comment:
+            elif element.equals(ASTMark.COMMENT):
                 if ignore_comment is False:  # 关闭忽略注释的模式
                     filtered_elements.append(element)
             else:
@@ -45,11 +39,7 @@ class TokenScanner(BaseScanner):
 
         super().__init__(filtered_elements, pos)
 
-    @property
-    def now_is_parenthesis(self):
-        return self.now.is_parenthesis
-
-    def search(self, *tokens: str) -> bool:
+    def search(self, *tokens: Union[str, ASTMark]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则返回 True
@@ -61,7 +51,7 @@ class TokenScanner(BaseScanner):
                 return False
         return True
 
-    def search_and_move(self, *tokens: str) -> bool:
+    def search_and_move(self, *tokens: Union[str, ASTMark]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素并返回 True
@@ -71,12 +61,11 @@ class TokenScanner(BaseScanner):
             refer = self._get_by_offset(idx)
             if refer is None or not refer.equals(token):
                 return False
-        else:
-            for _ in range(len(tokens)):
-                self.pop()
-            return True
+        for _ in range(len(tokens)):
+            self.pop()
+        return True
 
-    def match(self, *tokens: str) -> None:
+    def match(self, *tokens: Union[str, ASTMark]) -> None:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素
@@ -96,11 +85,11 @@ class TokenScanner(BaseScanner):
 
     def get_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
         """【不移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.now.children, ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.now.children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def pop_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
         """【移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.pop().children, ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.pop().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def split_by(self,
                  source: str,
@@ -110,7 +99,7 @@ class TokenScanner(BaseScanner):
         result = []
         tokens = []
         while not self.is_finish:
-            token: ast.AST = self.pop()
+            token: AST = self.pop()
             if token.equals(source):
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
@@ -128,7 +117,7 @@ class TokenScanner(BaseScanner):
         """【移动指针】返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
-        for token in self.pop().children:
+        for token in self.pop().children():
             if token.equals(source):
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
@@ -143,8 +132,3 @@ class TokenScanner(BaseScanner):
     def is_finish(self) -> bool:
         """返回是否已匹配结束"""
         return not self._pos < self._len
-
-
-def build_token_scanner(sql: str, ignore_space=True, ignore_comment=True):
-    """根据 sql 语句构造扫描器"""
-    return TokenScanner(ast.parse_as_tokens(sql), ignore_space=ignore_space, ignore_comment=ignore_comment)

@@ -10,13 +10,7 @@ pip install metasequoia-sql
 
 ### 词法分析
 
-对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象语法树节点（详见 demo_1）：
-
-```python
-from metasequoia_sql.ast.functions import parse_as_statements
-
-root = parse_as_statements("your sql")
-```
+对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象语法树节点：
 
 ### 句法分析
 
@@ -25,7 +19,7 @@ root = parse_as_statements("your sql")
 ```python
 from metasequoia_sql import *
 
-statement = parse_create_table_statement(build_token_scanner("your sql"))
+statement = SQLParser.parse_create_table_statement("your sql")
 ```
 
 ### 翻译工具
@@ -35,7 +29,13 @@ statement = parse_create_table_statement(build_token_scanner("your sql"))
 ```python
 from metasequoia_sql import *
 
-statement = parse_create_table_statement(build_token_scanner("your sql"))
+statement = SQLParser.parse_create_table_statement("your sql")
+```
+
+### pylint 自检
+
+```bash
+pylint --max-line-length=120 metasequoia_sql
 ```
 
 ## 实现原理
@@ -114,6 +114,8 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 ## 已知的不兼容
 
 - DB2 的 `CURRENT DATE` 的语法
+
+参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
 
 ## 修改记录
 
