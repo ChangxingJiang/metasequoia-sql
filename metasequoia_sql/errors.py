@@ -2,7 +2,7 @@
 在 metasequoia_sql 中年可能抛出的异常
 """
 
-__all__ = ["SqlParseError", "AstParseError", "UnSupportDataSourceError", "ScannerError"]
+__all__ = ["SqlParseError", "AstParseError", "UnSupportDataSourceError", "ScannerError", "AnalyzerError"]
 
 
 class SqlParseError(Exception):
@@ -25,3 +25,7 @@ class UnSupportDataSourceError(Exception):
 
 class ScannerError(Exception):
     """文本扫描异常"""
+
+
+class AnalyzerError(Exception):
+    """分析器异常"""

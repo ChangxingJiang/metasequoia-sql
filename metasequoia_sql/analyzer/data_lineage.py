@@ -2,29 +2,22 @@
 数据血缘分析器
 """
 
-import abc
-from typing import List, Optional, Any
+from typing import List, Any
 
-from metasequoia_sql import SQLBase, SQLInsertStatement
-from metasequoia_sql.analyzer.base import AnalyzerRecursionBase
-
-
-class CreateTableStatementGetter(abc.ABC):
-    """建表语句获取器的抽象类"""
-
-    @abc.abstractmethod
-    def get_create_table_statement(self, table_name: str) -> str:
-        """获取 table_name 表的建表语句"""
+from metasequoia_sql.core import SQLInsertStatement
+from metasequoia_sql.analyzer.base import AnalyzerBase
+from metasequoia_sql.analyzer.tool import CreateTableStatementGetter, check_node_type
 
 
-class DataLineageAnalyzer(AnalyzerRecursionBase):
+class DataLineageAnalyzer(AnalyzerBase):
     """数据血缘分析器"""
 
     def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
         self.create_table_statement_getter = create_table_statement_getter
 
+    @check_node_type(SQLInsertStatement)
     def handle(self, node: SQLInsertStatement) -> List[Any]:
         """入口函数"""
-
-    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
-        pass
+        # 解析 INSERT INTO 语句中的字段顺序
+        if node.columns is not None:
+            insert_columns = [column for column in node.columns]
