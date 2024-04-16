@@ -3,7 +3,7 @@ MyBatis 语法处理插件
 
 重写词法分析逻辑：
 1. 增加自动机状态类型类（ASTParseStatusMyBatis）
-2. 继承并重写状态机处理方法（ASTParserMyBatis）
+2. 继承并重写支持 MaBatis 语法的状态机处理方法（ASTParserMyBatis）
 
 重写句法分析逻辑：
 1. 增加 MyBatis 元素节点作为一般表达式的子类（SQLMyBatisExpression）
@@ -15,9 +15,10 @@ import enum
 from typing import Union, List, Optional, Any
 
 from metasequoia_sql import DataSource, SQLBase
+from metasequoia_sql.analyzer import AnalyzerRecursionListBase
 from metasequoia_sql.ast import ASTParser, AstParseStatus, ASTSingle, ASTMark
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.core import SQLParser, SQLGeneralExpression, AnalyzerBase, SQLSingleSelectStatement
+from metasequoia_sql.core import SQLParser, SQLGeneralExpression, SQLSingleSelectStatement
 
 
 class ASTParseStatusMyBatis(enum.Enum):
@@ -26,7 +27,7 @@ class ASTParseStatusMyBatis(enum.Enum):
 
 
 class ASTParserMyBatis(ASTParser):
-    """支持 MyBatis 语法的抽象语法树解析器"""
+    """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
     def handle_change(self):
         """处理单个变化"""
@@ -42,10 +43,9 @@ class ASTParserMyBatis(ASTParser):
             if self.scanner.now == "}":
                 self.cache_add_and_handle_end_word()
                 self.set_status(AstParseStatus.WAIT_TOKEN)
-                return
             else:
                 self.cache_add()
-                return
+            return
 
         super().handle_change()
 
@@ -66,9 +66,10 @@ class ASTParserMyBatis(ASTParser):
             return
         super().handle_last()
 
+
 @dataclasses.dataclass(slots=True)
 class SQLMyBatisExpression(SQLGeneralExpression):
-    """MyBatis 元素节点"""
+    """增加 MyBatis 元素节点作为一般表达式的子类"""
 
     mybatis_source: str = dataclasses.field(kw_only=True)
 
@@ -83,6 +84,8 @@ class SQLMyBatisExpression(SQLGeneralExpression):
 
 
 class SQLParserMyBatis(SQLParser):
+    """继承并重写解析器以支持 MyBatis 元素解析"""
+
     @classmethod
     def build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
@@ -100,42 +103,53 @@ class SQLParserMyBatis(SQLParser):
         return super().parse_general_expression_element(scanner, maybe_window)
 
 
-class GetAllMybatisParams(AnalyzerBase):
+class GetAllMybatisParams(AnalyzerRecursionListBase):
     """获取使用的 MyBatis 参数"""
 
-    def custom_handle(self, node: SQLBase) -> Optional[List[Any]]:
+    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+        """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
+        return None
 
 
-class GetMybatisParamInWhereClause(AnalyzerBase):
+class GetMybatisParamInWhereClause(AnalyzerRecursionListBase):
     """获取 WHERE 子句中的 Mybatis 参数"""
 
-    def custom_handle(self, node: SQLBase) -> Optional[List[Any]]:
+    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+        """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
         if isinstance(node, SQLSingleSelectStatement):
-            return self.handle(node.where_clause)
+            return self.handle_node(node.where_clause)
+        return None
 
 
-class GetMybatisParamInGroupByClause(AnalyzerBase):
+class GetMybatisParamInGroupByClause(AnalyzerRecursionListBase):
     """获取 GROUP BY 子句中的 Mybatis 参数"""
 
-    def custom_handle(self, node: SQLBase) -> Optional[List[Any]]:
+    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+        """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
         if isinstance(node, SQLSingleSelectStatement):
-            return self.handle(node.group_by_clause)
+            return self.handle_node(node.group_by_clause)
+        return None
 
 
 if __name__ == "__main__":
-    test_sql = "SELECT shohin_mei FROM Shohin WHERE #{hanbai_tanka} > 500 GROUP BY #{tanka};"
+    def test_main():
+        """测试主逻辑"""
+        test_sql = "SELECT shohin_mei FROM Shohin WHERE #{hanbai_tanka} > 500 GROUP BY #{tanka};"
 
-    statements = SQLParserMyBatis.parse_statements(test_sql)
-    for statement in statements:
-        print(statement)
-        print(statement.source(DataSource.MYSQL))
-        print(statement.get_used_column_list())
-        print(GetAllMybatisParams().handle(statement))
-        print(GetMybatisParamInWhereClause().handle(statement))
-        print(GetMybatisParamInGroupByClause().handle(statement))
+        statements = SQLParserMyBatis.parse_statements(test_sql)
+        for statement in statements:
+            print(statement)
+            print(statement.source(DataSource.MYSQL))
+            print(statement.get_used_column_list())
+            print(GetAllMybatisParams().handle(statement))
+            print(GetMybatisParamInWhereClause().handle(statement))
+            print(GetMybatisParamInGroupByClause().handle(statement))
+
+
+    test_main()

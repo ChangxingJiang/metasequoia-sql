@@ -2,31 +2,29 @@
 数据血缘分析器
 """
 
-from typing import List
+import abc
+from typing import List, Optional, Any
 
-from metasequoia_sql.core import DataSource, SQLParser, SQLInsertStatement
+from metasequoia_sql import SQLBase, SQLInsertStatement
+from metasequoia_sql.analyzer.base import AnalyzerRecursionBase
 
 
-class DataLineageAnalyzer:
-    """
-    数据血缘分析器
-    """
+class CreateTableStatementGetter(abc.ABC):
+    """建表语句获取器的抽象类"""
 
-    def __init__(self, sql: str, data_source: DataSource):
-        # 过滤所有的 INSERT 语句
-        self.statements: List[SQLInsertStatement] = [
-            statement for statement in SQLParser.parse_statements(sql)
-            if isinstance(statement, SQLInsertStatement)]
+    @abc.abstractmethod
+    def get_create_table_statement(self, table_name: str) -> str:
+        """获取 table_name 表的建表语句"""
 
-        # 统计所有 INSERT 语句中涉及的表名
-        self.used_table_set = set()
-        for statement in self.statements:
-            self.used_table_set.add(statement.table_name.source(data_source))
-            self.used_table_set |= set(statement.get_used_table_list())
 
-        # 定义建表语句的清单
-        self.create_table_statements = {}
+class DataLineageAnalyzer(AnalyzerRecursionBase):
+    """数据血缘分析器"""
 
-    def get_table_list(self) -> List[str]:
-        """获取上下游表的列表"""
-        return list(self.used_table_set)
+    def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
+        self.create_table_statement_getter = create_table_statement_getter
+
+    def handle(self, node: SQLInsertStatement) -> List[Any]:
+        """入口函数"""
+
+    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+        pass
