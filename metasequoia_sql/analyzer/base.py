@@ -4,11 +4,15 @@
 
 import abc
 import dataclasses
-from typing import Any, Optional, List
+from typing import Any, Optional, List, Dict
 
-from metasequoia_sql.core.objects import SQLBase
+from metasequoia_sql.analyzer.tool import check_node_type
+from metasequoia_sql.core.objects import SQLBase, SQLSelectStatement, SQLSingleSelectStatement, SQLUnionSelectStatement
+from metasequoia_sql.errors import AnalyzerError
 
-__all__ = ["AnalyzerBase", "AnalyzerRecursionBase", "AnalyzerRecursionListBase"]
+__all__ = ["AnalyzerBase",
+           "AnalyzerRecursionBase", "AnalyzerRecursionListBase",
+           "AnalyzerSelectBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase"]
 
 
 class AnalyzerBase(abc.ABC):
@@ -22,12 +26,12 @@ class AnalyzerRecursionBase(abc.ABC):
     """语法树递归分析器的抽象基类"""
 
     @classmethod
-    def handle(cls, node: SQLBase) -> Any:
+    def handle(cls, node: object) -> Any:
         """入口函数"""
         return cls._collector_get(cls.handle_node(node))
 
     @classmethod
-    def handle_node(cls, node: SQLBase) -> Any:
+    def handle_node(cls, node: object) -> Any:
         """处理 node 节点"""
         result = cls.custom_handle_node(node)
         if result is not None:
@@ -36,7 +40,7 @@ class AnalyzerRecursionBase(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def custom_handle_node(cls, node: SQLBase) -> Optional[Any]:
+    def custom_handle_node(cls, node: object) -> Optional[Any]:
         """自定义的处理规则
 
         如果需要使用处理结果，则返回列表；否则返回 None，由默认规则处理
@@ -53,7 +57,7 @@ class AnalyzerRecursionBase(abc.ABC):
                 next_node = getattr(obj, field.name)
                 cls._collector_merge(collector, cls.handle_node(next_node))
             return collector
-        if isinstance(obj, (list, set)):
+        if isinstance(obj, (list, set, tuple)):
             collector = cls._collector_init()
             for item in obj:
                 cls._collector_merge(collector, cls.handle_node(item))
@@ -91,5 +95,85 @@ class AnalyzerRecursionListBase(AnalyzerRecursionBase, abc.ABC):
 
     @classmethod
     def _collector_get(cls, collector: List[Any]) -> List[Any]:
+        """返回收集器的结果"""
+        return collector
+
+
+class AnalyzerSelectBase(abc.ABC):
+    """SELECT 语句通用分析器的抽象基类"""
+
+    @classmethod
+    @check_node_type(SQLSelectStatement)
+    def handle(cls, node: SQLSelectStatement) -> Any:
+        """处理逻辑"""
+        if isinstance(node, SQLSingleSelectStatement):
+            return cls._collector_get(cls._handle_single_select_statement(node))
+        if isinstance(node, SQLUnionSelectStatement):
+            return cls._collector_get(cls._handle_union_select_statement(node))
+        raise AnalyzerError(f"不满足条件的参数类型: {node.__class__.__name__}")
+
+    @classmethod
+    @abc.abstractmethod
+    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> Any:
+        """处理 SQLSingleSelectStatement 类型节点"""
+
+    @classmethod
+    def _handle_union_select_statement(cls, node: SQLUnionSelectStatement):
+        collector = cls._collector_init()
+        for element in node.elements:
+            if isinstance(element, SQLSingleSelectStatement):
+                cls._collector_merge(collector, cls._handle_single_select_statement(element))
+        return collector
+
+    @classmethod
+    @abc.abstractmethod
+    def _collector_init(cls) -> Any:
+        """初始化收集器"""
+
+    @classmethod
+    @abc.abstractmethod
+    def _collector_merge(cls, collector1: Any, collector2: Any) -> Any:
+        """合并返回结果（在实现上可以修改 collector1 或 collector 并返回，也可以构造新的收集器）"""
+
+    @classmethod
+    @abc.abstractmethod
+    def _collector_get(cls, collector: Any) -> Any:
+        """返回收集器的结果"""
+
+
+class AnalyzerSelectListBase(AnalyzerSelectBase, abc.ABC):
+    """生成列表的 SELECT 语句通用分析器的抽象基类"""
+
+    @classmethod
+    def _collector_init(cls) -> List[Any]:
+        """初始化收集器"""
+        return []
+
+    @classmethod
+    def _collector_merge(cls, collector1: List[Any], collector2: List[Any]) -> None:
+        """将 collector2 合并到 collector1 上"""
+        collector1.extend(collector2)
+
+    @classmethod
+    def _collector_get(cls, collector: List[Any]) -> List[Any]:
+        """返回收集器的结果"""
+        return collector
+
+
+class AnalyzerSelectDictBase(AnalyzerSelectBase, abc.ABC):
+    """生成字典的 SELECT 语句通用分析器的抽象基类"""
+
+    @classmethod
+    def _collector_init(cls) -> Dict[Any, Any]:
+        """初始化收集器"""
+        return {}
+
+    @classmethod
+    def _collector_merge(cls, collector1: Dict[Any, Any], collector2: Dict[Any, Any]) -> None:
+        """将 collector2 合并到 collector1 上"""
+        collector1.update(collector2)
+
+    @classmethod
+    def _collector_get(cls, collector: Dict[Any, Any]) -> Dict[Any, Any]:
         """返回收集器的结果"""
         return collector

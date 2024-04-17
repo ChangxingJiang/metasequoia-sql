@@ -32,6 +32,10 @@ class SourceColumn:
 class QuoteColumn:
     """引用字段（在 GROUP BY、ORDER BY 等子句中使用）"""
 
+    @abc.abstractmethod
+    def source(self):
+        """引用字段的源代码"""
+
 
 @dataclasses.dataclass(slots=True, frozen=True)
 class QuoteNameColumn(QuoteColumn):
@@ -40,6 +44,7 @@ class QuoteNameColumn(QuoteColumn):
     column_name: str = dataclasses.field(kw_only=True)
 
     def source(self):
+        """引用字段的源代码"""
         if self.table_name is not None:
             return f"{self.table_name}.{self.column_name}"
         else:
@@ -50,6 +55,10 @@ class QuoteNameColumn(QuoteColumn):
 class QuoteIndexColumn(QuoteColumn):
     """使用顺序下标引用的字段"""
     column_index: int = dataclasses.field(kw_only=True)
+
+    def source(self):
+        """引用字段的源代码"""
+        return f"{self.column_index}"
 
 
 class CreateTableStatementGetter(abc.ABC):

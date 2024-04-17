@@ -15,7 +15,7 @@ import enum
 from typing import Union, List, Optional, Any
 
 from metasequoia_sql import DataSource, SQLBase
-from metasequoia_sql.analyzer import AnalyzerRecursionListBase
+from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.ast import ASTParser, AstParseStatus, ASTSingle, ASTMark
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, SQLGeneralExpression, SQLSingleSelectStatement
@@ -75,9 +75,6 @@ class SQLMyBatisExpression(SQLGeneralExpression):
 
     def source(self, data_source: DataSource) -> str:
         return self.mybatis_source
-
-    def get_used_column_list(self) -> List[str]:
-        return [self.mybatis_source]
 
     def get_used_table_list(self) -> List[str]:
         return []
@@ -149,7 +146,7 @@ if __name__ == "__main__":
         for statement in statements:
             print(statement)
             print(statement.source(DataSource.MYSQL))
-            print(statement.get_used_column_list())
+            print(CurrentUsedQuoteColumn.handle(statement))
             print(GetAllMybatisParams().handle(statement))
             print(GetMybatisParamInWhereClause().handle(statement))
             print(GetMybatisParamInGroupByClause().handle(statement))

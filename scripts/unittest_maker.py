@@ -1,15 +1,23 @@
 """
 单元测试自动生成工具
-
-TODO 待重新实现自动化生成单元测试工具
 """
 
 import json
 import os
 import subprocess
+from typing import List
 
 from metasequoia_sql import *
+from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, CurrentSelectClauseUsedQuoteColumn,
+                                      CurrentJoinClauseUsedQuoteColumn, CurrentWhereClauseUsedQuoteColumn,
+                                      CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
+                                      CurrentOrderByClauseUsedQuoteColumn)
+from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
+
+
+def format_source_column_list(columns: List[QuoteColumn]) -> List[str]:
+    return ordered_distinct([column.source() for column in columns])
 
 
 def make_sql_basic_tutorial(force: bool = False):
@@ -29,19 +37,18 @@ def make_sql_basic_tutorial(force: bool = False):
     with open(file_path, "w", encoding="UTF-8") as file:
         # 生成引用信息
         file.write("import unittest\n")
+        file.write("from typing import List\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
-        file.write("from metasequoia_sql.analyzer import GetUsedColumns\n")
+        file.write("from metasequoia_sql.analyzer import *\n")
         file.write("from metasequoia_sql.common import ordered_distinct\n")
         file.write("\n")
         file.write("\n")
-        file.write("def format_source_column_list(columns: List[SourceColumn]):\n")
+        file.write("def format_source_column_list(columns: List[QuoteColumn]):\n")
         file.write("    return ordered_distinct([column.source() for column in columns])\n")
         file.write("\n")
         file.write("\n")
-
-        # 生成类名
         file.write("class TestSqlBasicTutorial(unittest.TestCase):\n")
 
         # 遍历生成每一个 SQL 的解析器
@@ -71,14 +78,6 @@ def make_sql_basic_tutorial(force: bool = False):
             print("【格式化代码】")
             print(statement.source(data_source))
 
-            print("【分析结果】")
-            print(f"SELECT_USED_COLUMN: {json.dumps(statement.get_select_used_column_list(), ensure_ascii=False)}")
-            print(f"USED_TABLE: {json.dumps(statement.get_from_used_table_list(), ensure_ascii=False)}")
-            print(f"WHERE_USED_COLUMN: {json.dumps(statement.get_where_used_column_list(), ensure_ascii=False)}")
-            print(f"GROUP_BY_USED_COLUMN: {json.dumps(statement.get_group_by_used_column_list(), ensure_ascii=False)}")
-            print(f"HAVING_USED_COLUMN: {json.dumps(statement.get_having_used_column_list(), ensure_ascii=False)}")
-            print(f"ORDER_BY_USED_COLUMN: {json.dumps(statement.get_order_by_used_column_list(), ensure_ascii=False)}")
-
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")
             file.write(f"        statement = SQLParser.parse_select_statement({name})\n")
@@ -93,18 +92,26 @@ def make_sql_basic_tutorial(force: bool = False):
                 "get_from_used_table_list",
                 "get_join_used_table_list",
                 "get_used_table_list",
-                "get_select_used_column_list",
-                "get_where_used_column_list",
-                "get_group_by_used_column_list",
-                "get_having_used_column_list",
-                "get_order_by_used_column_list",
-                "get_used_column_list"
             ]:
                 method_result = getattr(statement, method_name)()
-                method_result_dump = json.dumps(method_result, ensure_ascii=False)
-                print(f"statement.{method_name}: {method_result_dump}")
                 if len(method_result) > 0:
+                    method_result_dump = json.dumps(method_result, ensure_ascii=False)
                     file.write(f"        self.assertEqual(statement.{method_name}(), {method_result_dump})\n")
+
+            # 分析器测试
+            for check_analyzer in [CurrentUsedQuoteColumn,
+                                   CurrentSelectClauseUsedQuoteColumn,
+                                   CurrentJoinClauseUsedQuoteColumn,
+                                   CurrentWhereClauseUsedQuoteColumn,
+                                   CurrentGroupByClauseUsedQuoteColumn,
+                                   CurrentHavingClauseUsedQuoteColumn,
+                                   CurrentOrderByClauseUsedQuoteColumn]:
+                method_result = format_source_column_list(check_analyzer.handle(statement))
+                if method_result:
+                    method_result_dump = json.dumps(method_result, ensure_ascii=False)
+                    file.write(
+                        f"        self.assertEqual({method_result_dump}, \n"
+                        f"                         format_source_column_list({check_analyzer.__name__}.handle(statement)))\n")
 
             file.write("\n")
 
@@ -115,4 +122,4 @@ def make_sql_basic_tutorial(force: bool = False):
 
 
 if __name__ == "__main__":
-    make_sql_basic_tutorial()
+    make_sql_basic_tutorial(force=True)
