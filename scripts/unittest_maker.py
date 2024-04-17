@@ -1,5 +1,7 @@
 """
 单元测试自动生成工具
+
+TODO 待重新实现自动化生成单元测试工具
 """
 
 import json
@@ -30,6 +32,12 @@ def make_sql_basic_tutorial(force: bool = False):
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
+        file.write("from metasequoia_sql.analyzer import GetUsedColumns\n")
+        file.write("from metasequoia_sql.common import ordered_distinct\n")
+        file.write("\n")
+        file.write("\n")
+        file.write("def format_source_column_list(columns: List[SourceColumn]):\n")
+        file.write("    return ordered_distinct([column.source() for column in columns])\n")
         file.write("\n")
         file.write("\n")
 

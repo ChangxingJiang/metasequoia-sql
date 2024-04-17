@@ -9,22 +9,47 @@ from typing import Type, Optional
 from metasequoia_sql.core import SQLCreateTableStatement, SQLParser, SQLBase
 from metasequoia_sql.errors import AnalyzerError
 
-__all__ = ["CreateTableStatementGetter", "check_node_type", "SelectColumn", "SourceColumn"]
+__all__ = ["CreateTableStatementGetter", "check_node_type", "SelectColumn", "SourceColumn",
+           "QuoteColumn", "QuoteNameColumn", "QuoteIndexColumn"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True)
 class SelectColumn:
-    """SELECT 子句中查询的字段"""
+    """下游表字段（SELECT 子句中的字段）"""
     column_name: str = dataclasses.field(kw_only=True)  # 字段名称
     column_idx: str = dataclasses.field(kw_only=True)  # 字段顺序下标
 
 
 @dataclasses.dataclass(slots=True, frozen=True)
 class SourceColumn:
-    """数据来源字段"""
+    """上游表字段"""
     schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     column_name: str = dataclasses.field(kw_only=True)
+
+
+@dataclasses.dataclass(slots=True, frozen=True)
+class QuoteColumn:
+    """引用字段（在 GROUP BY、ORDER BY 等子句中使用）"""
+
+
+@dataclasses.dataclass(slots=True, frozen=True)
+class QuoteNameColumn(QuoteColumn):
+    """使用表名、字段名（这里的字段名可能是别名）引用的字段"""
+    table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    column_name: str = dataclasses.field(kw_only=True)
+
+    def source(self):
+        if self.table_name is not None:
+            return f"{self.table_name}.{self.column_name}"
+        else:
+            return f"{self.column_name}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True)
+class QuoteIndexColumn(QuoteColumn):
+    """使用顺序下标引用的字段"""
+    column_index: int = dataclasses.field(kw_only=True)
 
 
 class CreateTableStatementGetter(abc.ABC):

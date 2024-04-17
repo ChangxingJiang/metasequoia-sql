@@ -106,7 +106,8 @@ class SQLParserMyBatis(SQLParser):
 class GetAllMybatisParams(AnalyzerRecursionListBase):
     """获取使用的 MyBatis 参数"""
 
-    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+    @classmethod
+    def custom_handle_node(cls, node: SQLBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
@@ -116,24 +117,26 @@ class GetAllMybatisParams(AnalyzerRecursionListBase):
 class GetMybatisParamInWhereClause(AnalyzerRecursionListBase):
     """获取 WHERE 子句中的 Mybatis 参数"""
 
-    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+    @classmethod
+    def custom_handle_node(cls, node: SQLBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
         if isinstance(node, SQLSingleSelectStatement):
-            return self.handle_node(node.where_clause)
+            return cls.handle_node(node.where_clause)
         return None
 
 
 class GetMybatisParamInGroupByClause(AnalyzerRecursionListBase):
     """获取 GROUP BY 子句中的 Mybatis 参数"""
 
-    def custom_handle_node(self, node: SQLBase) -> Optional[List[Any]]:
+    @classmethod
+    def custom_handle_node(cls, node: SQLBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
         if isinstance(node, SQLSingleSelectStatement):
-            return self.handle_node(node.group_by_clause)
+            return cls.handle_node(node.group_by_clause)
         return None
 
 
