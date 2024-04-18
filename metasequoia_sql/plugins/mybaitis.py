@@ -76,9 +76,6 @@ class SQLMyBatisExpression(SQLGeneralExpression):
     def source(self, data_source: DataSource) -> str:
         return self.mybatis_source
 
-    def get_used_table_list(self) -> List[str]:
-        return []
-
 
 class SQLParserMyBatis(SQLParser):
     """继承并重写解析器以支持 MyBatis 元素解析"""

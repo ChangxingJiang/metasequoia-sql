@@ -11,7 +11,8 @@ from metasequoia_sql import *
 from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, CurrentSelectClauseUsedQuoteColumn,
                                       CurrentJoinClauseUsedQuoteColumn, CurrentWhereClauseUsedQuoteColumn,
                                       CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
-                                      CurrentOrderByClauseUsedQuoteColumn)
+                                      CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
+                                      AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn)
 from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
 
@@ -87,17 +88,6 @@ def make_sql_basic_tutorial(force: bool = False):
                 if statement.select_clause.distinct is True:
                     file.write("        self.assertEqual(statement.select_clause.distinct, True)\n")
 
-            # 返回列表的方法
-            for method_name in [
-                "get_from_used_table_list",
-                "get_join_used_table_list",
-                "get_used_table_list",
-            ]:
-                method_result = getattr(statement, method_name)()
-                if len(method_result) > 0:
-                    method_result_dump = json.dumps(method_result, ensure_ascii=False)
-                    file.write(f"        self.assertEqual(statement.{method_name}(), {method_result_dump})\n")
-
             # 分析器测试
             for check_analyzer in [CurrentUsedQuoteColumn,
                                    CurrentSelectClauseUsedQuoteColumn,
@@ -105,7 +95,11 @@ def make_sql_basic_tutorial(force: bool = False):
                                    CurrentWhereClauseUsedQuoteColumn,
                                    CurrentGroupByClauseUsedQuoteColumn,
                                    CurrentHavingClauseUsedQuoteColumn,
-                                   CurrentOrderByClauseUsedQuoteColumn]:
+                                   CurrentOrderByClauseUsedQuoteColumn,
+                                   AllUsedQuoteTables,
+                                   AllFromClauseUsedQuoteColumn,
+                                   AllJoinClauseUsedQuoteColumn
+                                   ]:
                 method_result = format_source_column_list(check_analyzer.handle(statement))
                 if method_result:
                     method_result_dump = json.dumps(method_result, ensure_ascii=False)
@@ -122,4 +116,4 @@ def make_sql_basic_tutorial(force: bool = False):
 
 
 if __name__ == "__main__":
-    make_sql_basic_tutorial(force=True)
+    make_sql_basic_tutorial(force=False)

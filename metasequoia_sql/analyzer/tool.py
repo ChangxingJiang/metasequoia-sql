@@ -10,7 +10,7 @@ from metasequoia_sql.core import SQLCreateTableStatement, SQLParser, SQLBase
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["CreateTableStatementGetter", "check_node_type", "SelectColumn", "SourceColumn",
-           "QuoteColumn", "QuoteNameColumn", "QuoteIndexColumn"]
+           "QuoteColumn", "QuoteNameColumn", "QuoteIndexColumn", "QuoteTable"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True)
@@ -59,6 +59,21 @@ class QuoteIndexColumn(QuoteColumn):
     def source(self):
         """引用字段的源代码"""
         return f"{self.column_index}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True)
+class QuoteTable:
+    """使用模式名、表名引用的表（表名也允许是别名或临时表）"""
+
+    schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    table_name: str
+
+    def source(self):
+        """引用字段的源代码"""
+        if self.schema_name is not None:
+            return f"{self.schema_name}.{self.table_name}"
+        else:
+            return f"{self.table_name}"
 
 
 class CreateTableStatementGetter(abc.ABC):

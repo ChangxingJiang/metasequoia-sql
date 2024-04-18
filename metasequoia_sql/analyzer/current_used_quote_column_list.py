@@ -1,10 +1,11 @@
 """
-获取使用的字段列表
+当前层级，获取使用的引用字段列表
 """
 
 from typing import Optional, List, Dict
 
-from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase)
+from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase,
+                                           AnalyzerSelectBase)
 from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, QuoteColumn
 from metasequoia_sql.core import (SQLBase, SQLColumnNameExpression, DataSource, GLOBAL_VARIABLE_NAME_SET,
                                   SQLSubQueryExpression,
@@ -33,14 +34,6 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
         if (isinstance(node, SQLColumnNameExpression)
                 and node.source(DataSource.DEFAULT) not in GLOBAL_VARIABLE_NAME_SET):
             return [QuoteNameColumn(table_name=node.table, column_name=node.column)]
-        # if isinstance(node, SQLNormalGroupByClause):  # TODO 处理 GROUP BY 和 ORDER BY 语句
-        #     result = []
-        #     for column in node.columns:
-        #         if isinstance(column, SQLLiteralExpression):
-        #             result.append(QuoteIndexColumn(column_index=column.as_int()))
-        #         else:
-        #             result.extend(cls.handle_node(column))
-        #     return result
         if isinstance(node, SQLSubQueryExpression):
             return []
         return None

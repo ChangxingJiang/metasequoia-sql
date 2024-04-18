@@ -11,7 +11,7 @@ from metasequoia_sql.core.objects import SQLBase, SQLSelectStatement, SQLSingleS
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["AnalyzerBase",
-           "AnalyzerRecursionBase", "AnalyzerRecursionListBase",
+           "AnalyzerRecursionBase", "AnalyzerRecursionListBase", "AnalyzerRecursionDictBase",
            "AnalyzerSelectBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase"]
 
 
@@ -95,6 +95,25 @@ class AnalyzerRecursionListBase(AnalyzerRecursionBase, abc.ABC):
 
     @classmethod
     def _collector_get(cls, collector: List[Any]) -> List[Any]:
+        """返回收集器的结果"""
+        return collector
+
+
+class AnalyzerRecursionDictBase(AnalyzerRecursionBase, abc.ABC):
+    """最终返回字典类型的递归分析器"""
+
+    @classmethod
+    def _collector_init(cls) -> Dict[Any, Any]:
+        """初始化收集器"""
+        return {}
+
+    @classmethod
+    def _collector_merge(cls, collector1: Dict[Any, Any], collector2: Dict[Any, Any]) -> None:
+        """将 collector2 合并到 collector1 上"""
+        collector1.update(collector2)
+
+    @classmethod
+    def _collector_get(cls, collector: Dict[Any, Any]) -> Dict[Any, Any]:
         """返回收集器的结果"""
         return collector
 
