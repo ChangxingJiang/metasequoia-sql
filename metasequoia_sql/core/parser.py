@@ -828,7 +828,8 @@ class SQLParser:
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             column_scanner.pop_as_source()
             column_scanner.close()
-        return SQLUniqueIndexExpression(name=name, columns=columns)
+        using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
+        return SQLUniqueIndexExpression(name=name, columns=columns, using=using)
 
     @classmethod
     def check_normal_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -846,7 +847,8 @@ class SQLParser:
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             column_scanner.pop_as_source()
             column_scanner.close()
-        return SQLNormalIndexExpression(name=name, columns=columns)
+        using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
+        return SQLNormalIndexExpression(name=name, columns=columns, using=using)
 
     @classmethod
     def check_fulltext_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -864,7 +866,8 @@ class SQLParser:
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             column_scanner.pop_as_source()
             column_scanner.close()
-        return SQLFulltextIndexExpression(name=name, columns=columns)
+        using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
+        return SQLFulltextIndexExpression(name=name, columns=columns, using=using)
 
     @classmethod
     def parse_define_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLDefineColumnExpression:

@@ -1123,6 +1123,7 @@ class SQLIndexExpression(SQLBaseAlone, abc.ABC):
 
     name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     columns: List[str] = dataclasses.field(kw_only=True)
+    using: Optional[str] = dataclasses.field(kw_only=True, default=None)
 
 
 @dataclasses.dataclass(slots=True)
