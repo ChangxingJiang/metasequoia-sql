@@ -261,10 +261,11 @@ class SQLParser:
         cast_type = cls.parse_cast_data_type(scanner)
         if scanner.search(ASTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()
-            cast_params: Optional[List[SQLGeneralExpression]] = []
+            cast_params: Optional[List[SQLGeneralExpression] | Tuple[SQLGeneralExpression, ...]] = []
             for param_scanner in parenthesis_scanner.split_by(","):
                 cast_params.append(cls.parse_general_expression(param_scanner))
                 param_scanner.close()
+            cast_params = tuple(cast_params)
         else:
             cast_params = None
         scanner.close()
@@ -295,7 +296,7 @@ class SQLParser:
             else:
                 function_params.append(cls.parse_general_expression(param_scanner))
             param_scanner.close()
-        return SQLNormalFunctionExpression(function_name="IF", function_params=function_params)
+        return SQLNormalFunctionExpression(function_name="IF", function_params=tuple(function_params))
 
     @classmethod
     def parse_function_name(cls, scanner_or_string: Union[TokenScanner, str]) -> Tuple[Optional[str], str]:
@@ -343,10 +344,10 @@ class SQLParser:
 
         if schema_name is None and function_name.upper() in AGGREGATION_FUNCTION_NAME_SET:
             return SQLAggregationFunctionExpression(function_name=function_name,
-                                                    function_params=function_params,
+                                                    function_params=tuple(function_params),
                                                     is_distinct=is_distinct)
         return SQLNormalFunctionExpression(schema_name=schema_name, function_name=function_name,
-                                           function_params=function_params)
+                                           function_params=tuple(function_params))
 
     @classmethod
     def parse_function_expression_maybe_with_array_index(
@@ -492,7 +493,7 @@ class SQLParser:
             elements.append(cls.parse_logical_operator(scanner))
             parse_single()
 
-        return SQLConditionExpression(elements=elements)
+        return SQLConditionExpression(elements=tuple(elements))
 
     @classmethod
     def check_case_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -518,7 +519,7 @@ class SQLParser:
             if scanner.search_and_move("ELSE"):
                 else_value = cls.parse_general_expression(scanner)
             scanner.match("END")
-            return SQLCaseExpression(cases=cases, else_value=else_value)
+            return SQLCaseExpression(cases=tuple(cases), else_value=else_value)
         # 第 2 种格式的 CASE 表达式
         case_value = cls.parse_general_expression(scanner)
         cases = []
@@ -531,7 +532,7 @@ class SQLParser:
         if scanner.search_and_move("ELSE"):
             else_value = cls.parse_general_expression(scanner)
         scanner.match("END")
-        return SQLCaseValueExpression(case_value=case_value, cases=cases, else_value=else_value)
+        return SQLCaseValueExpression(case_value=case_value, cases=tuple(cases), else_value=else_value)
 
     @classmethod
     def parse_value_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLValueExpression:
@@ -541,7 +542,7 @@ class SQLParser:
         for value_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             values.append(cls.parse_general_expression(value_scanner))
             value_scanner.close()
-        return SQLValueExpression(values=values)
+        return SQLValueExpression(values=tuple(values))
 
     @classmethod
     def check_sub_query_parenthesis(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -609,7 +610,7 @@ class SQLParser:
             elements.append(cls.parse_general_expression_element(scanner, maybe_window))
         if len(elements) == 1:
             return elements[0]  # 如果只有 1 个元素，则返回该元素的表达式
-        return SQLComputeExpression(elements=elements)  # 如果超过 1 个元素，则返回计算表达式（多项式）
+        return SQLComputeExpression(elements=tuple(elements))  # 如果超过 1 个元素，则返回计算表达式（多项式）
 
     @classmethod
     def parse_config_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLConfigNameExpression:
@@ -720,7 +721,7 @@ class SQLParser:
             for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
                 function_params.append(cls.parse_general_expression(param_scanner))
                 param_scanner.close()
-            return SQLColumnTypeExpression(name=function_name, params=function_params)
+            return SQLColumnTypeExpression(name=function_name, params=tuple(function_params))
         return SQLColumnTypeExpression(name=function_name)
 
     @classmethod
@@ -763,7 +764,7 @@ class SQLParser:
         for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             partition_list.append(cls.parse_equal_expression(partition_scanner))
             partition_scanner.close()
-        return SQLPartitionExpression(partition_list=partition_list)
+        return SQLPartitionExpression(partition_list=tuple(partition_list))
 
     @classmethod
     def check_foreign_key_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -790,9 +791,9 @@ class SQLParser:
             column_scanner.close()
         return SQLForeignKeyExpression(
             constraint_name=constraint_name,
-            slave_columns=slave_columns,
+            slave_columns=tuple(slave_columns),
             master_table_name=master_table_name,
-            master_columns=master_columns
+            master_columns=tuple(master_columns)
         )
 
     @classmethod
@@ -810,7 +811,7 @@ class SQLParser:
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             column_scanner.pop_as_source()
             column_scanner.close()
-        return SQLPrimaryIndexExpression(columns=columns)
+        return SQLPrimaryIndexExpression(columns=tuple(columns))
 
     @classmethod
     def check_unique_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -829,7 +830,7 @@ class SQLParser:
             column_scanner.pop_as_source()
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLUniqueIndexExpression(name=name, columns=columns, using=using)
+        return SQLUniqueIndexExpression(name=name, columns=tuple(columns), using=using)
 
     @classmethod
     def check_normal_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -848,7 +849,7 @@ class SQLParser:
             column_scanner.pop_as_source()
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLNormalIndexExpression(name=name, columns=columns, using=using)
+        return SQLNormalIndexExpression(name=name, columns=tuple(columns), using=using)
 
     @classmethod
     def check_fulltext_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -867,7 +868,7 @@ class SQLParser:
             column_scanner.pop_as_source()
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLFulltextIndexExpression(name=name, columns=columns, using=using)
+        return SQLFulltextIndexExpression(name=name, columns=tuple(columns), using=using)
 
     @classmethod
     def parse_define_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLDefineColumnExpression:
@@ -943,7 +944,7 @@ class SQLParser:
         columns = [cls.parse_column_expression(scanner)]
         while scanner.search_and_move(","):
             columns.append(cls.parse_column_expression(scanner))
-        return SQLSelectClause(distinct=distinct, columns=columns)
+        return SQLSelectClause(distinct=distinct, columns=tuple(columns))
 
     @classmethod
     def check_from_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -959,7 +960,7 @@ class SQLParser:
         tables = [cls.parse_table_expression(scanner)]
         while scanner.search_and_move(","):
             tables.append(cls.parse_table_expression(scanner))
-        return SQLFromClause(tables=tables)
+        return SQLFromClause(tables=tuple(tables))
 
     @classmethod
     def check_lateral_view_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1029,11 +1030,11 @@ class SQLParser:
                     for parenthesis_scanner in parenthesis_scanner_list:
                         cls.parse_general_expression(parenthesis_scanner)
                         parenthesis_scanner.close()
-                    grouping_list.append(columns_list)
+                    grouping_list.append(tuple(columns_list))
                 else:
-                    grouping_list.append([cls.parse_general_expression(grouping_scanner)])
+                    grouping_list.append(tuple([cls.parse_general_expression(grouping_scanner)]))
                 grouping_scanner.close()
-            return SQLGroupingSetsGroupByClause(grouping_list=grouping_list)
+            return SQLGroupingSetsGroupByClause(grouping_list=tuple(grouping_list))
 
         # 处理一般的 GROUP BY 的语法
         columns = [cls.parse_general_expression(scanner)]
@@ -1042,7 +1043,7 @@ class SQLParser:
         with_rollup = False
         if scanner.search_and_move("WITH", "ROLLUP"):
             with_rollup = True
-        return SQLNormalGroupByClause(columns=columns, with_rollup=with_rollup)
+        return SQLNormalGroupByClause(columns=tuple(columns), with_rollup=with_rollup)
 
     @classmethod
     def check_having_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1079,7 +1080,7 @@ class SQLParser:
         while scanner.search_and_move(","):
             parse_single()
 
-        return SQLOrderByClause(columns=columns)
+        return SQLOrderByClause(columns=tuple(columns))
 
     @classmethod
     def check_limit_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1124,7 +1125,7 @@ class SQLParser:
             while scanner.search_and_move(","):
                 table_statement = cls._parse_single_with_table(scanner)
                 tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
-            return SQLWithClause(tables=tables)
+            return SQLWithClause(tables=tuple(tables))
         return SQLWithClause.empty()
 
     @classmethod
@@ -1170,8 +1171,8 @@ class SQLParser:
             with_clause=with_clause,
             select_clause=select_clause,
             from_clause=from_clause,
-            lateral_view_clauses=lateral_view_clauses,
-            join_clauses=join_clause,
+            lateral_view_clauses=tuple(lateral_view_clauses),
+            join_clauses=tuple(join_clause),
             where_clause=where_clause,
             group_by_clause=group_by_clause,
             having_clause=having_clause,
@@ -1196,7 +1197,7 @@ class SQLParser:
 
         if len(result) == 1:
             return result[0]
-        return SQLUnionSelectStatement(with_clause=with_clause, elements=result)
+        return SQLUnionSelectStatement(with_clause=with_clause, elements=tuple(result))
 
     @classmethod
     def check_insert_statement(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -1244,8 +1245,8 @@ class SQLParser:
                 insert_type=insert_type,
                 table_name=table_name,
                 partition=partition,
-                columns=columns,
-                values=values
+                columns=tuple(columns),
+                values=tuple(values)
             )
 
         if scanner.search("SELECT"):
@@ -1255,7 +1256,7 @@ class SQLParser:
                 insert_type=insert_type,
                 table_name=table_name,
                 partition=partition,
-                columns=columns,
+                columns=tuple(columns),
                 select_statement=select_statement
             )
 
@@ -1375,24 +1376,24 @@ class SQLParser:
             table_name_expression=table_name_expression,
             comment=comment,
             if_not_exists=if_not_exists,
-            columns=columns,
+            columns=tuple(columns),
             primary_key=primary_key,
-            unique_key=unique_key,
-            key=key,
-            fulltext_key=fulltext_key,
-            foreign_key=foreign_key,
+            unique_key=tuple(unique_key),
+            key=tuple(key),
+            fulltext_key=tuple(fulltext_key),
+            foreign_key=tuple(foreign_key),
             engine=engine,
             auto_increment=auto_increment,
             default_charset=default_charset,
             collate=collate,
             row_format=row_format,
             states_persistent=states_persistent,
-            partitioned_by=partitioned_by,
+            partitioned_by=tuple(partitioned_by),
             row_format_serde=row_format_serde,
             stored_as_inputformat=stored_as_inputformat,
             outputformat=outputformat,
             location=location,
-            tblproperties=tblproperties
+            tblproperties=tuple(tblproperties)
         )
 
     @classmethod
