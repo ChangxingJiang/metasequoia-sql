@@ -19,6 +19,10 @@ class SelectColumn:
     column_name: str = dataclasses.field(kw_only=True)  # 字段名称
     column_idx: str = dataclasses.field(kw_only=True)  # 字段顺序下标
 
+    def source(self):
+        """引用字段的源代码"""
+        return f"{self.column_name}"
+
 
 @dataclasses.dataclass(slots=True, frozen=True)
 class SourceColumn:

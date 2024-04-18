@@ -5,20 +5,25 @@
 import json
 import os
 import subprocess
-from typing import List
+from typing import List, Dict
 
 from metasequoia_sql import *
 from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, CurrentSelectClauseUsedQuoteColumn,
                                       CurrentJoinClauseUsedQuoteColumn, CurrentWhereClauseUsedQuoteColumn,
                                       CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
                                       CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
-                                      AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn)
+                                      AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
+                                      CurrentColumnSelectToDirectQuoteHash, SelectColumn)
 from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
 
 
-def format_source_column_list(columns: List[QuoteColumn]) -> List[str]:
+def format_rule_1(columns: List[QuoteColumn]) -> List[str]:
     return ordered_distinct([column.source() for column in columns])
+
+
+def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):
+    return {key.source(): format_rule_1(value) for key, value in columns.items()}
 
 
 def make_sql_basic_tutorial(force: bool = False):
@@ -38,7 +43,7 @@ def make_sql_basic_tutorial(force: bool = False):
     with open(file_path, "w", encoding="UTF-8") as file:
         # 生成引用信息
         file.write("import unittest\n")
-        file.write("from typing import List\n")
+        file.write("from typing import List, Dict\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
@@ -46,8 +51,12 @@ def make_sql_basic_tutorial(force: bool = False):
         file.write("from metasequoia_sql.common import ordered_distinct\n")
         file.write("\n")
         file.write("\n")
-        file.write("def format_source_column_list(columns: List[QuoteColumn]):\n")
+        file.write("def format_rule_1(columns: List[QuoteColumn]):\n")
         file.write("    return ordered_distinct([column.source() for column in columns])\n")
+        file.write("\n")
+        file.write("\n")
+        file.write("def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):\n")
+        file.write("    return {key.source(): format_rule_1(value) for key, value in columns.items()}\n")
         file.write("\n")
         file.write("\n")
         file.write("class TestSqlBasicTutorial(unittest.TestCase):\n")
@@ -98,14 +107,25 @@ def make_sql_basic_tutorial(force: bool = False):
                                    CurrentOrderByClauseUsedQuoteColumn,
                                    AllUsedQuoteTables,
                                    AllFromClauseUsedQuoteColumn,
-                                   AllJoinClauseUsedQuoteColumn
+                                   AllJoinClauseUsedQuoteColumn,
                                    ]:
-                method_result = format_source_column_list(check_analyzer.handle(statement))
+                method_result = format_rule_1(check_analyzer.handle(statement))
                 if method_result:
                     method_result_dump = json.dumps(method_result, ensure_ascii=False)
                     file.write(
                         f"        self.assertEqual({method_result_dump}, \n"
-                        f"                         format_source_column_list({check_analyzer.__name__}.handle(statement)))\n")
+                        f"                         format_rule_1({check_analyzer.__name__}.handle(statement)))\n")
+
+            # 分析器测试
+            for check_analyzer in [CurrentColumnSelectToDirectQuoteHash,
+                                   ]:
+                method_result = format_rule_2(check_analyzer.handle(statement))
+                if method_result:
+                    method_result_dump = json.dumps(method_result, ensure_ascii=False)
+                    file.write(
+                        f"        self.assertEqual({method_result_dump}, \n"
+                        f"                         format_rule_2({check_analyzer.__name__}.handle(statement)))\n")
+
 
             file.write("\n")
 

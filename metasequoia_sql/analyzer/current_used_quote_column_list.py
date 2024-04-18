@@ -2,11 +2,11 @@
 当前层级，获取使用的引用字段列表
 """
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 
 from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase,
                                            AnalyzerSelectBase)
-from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, QuoteColumn
+from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, QuoteColumn, SelectColumn, SourceColumn
 from metasequoia_sql.core import (SQLBase, SQLColumnNameExpression, DataSource, GLOBAL_VARIABLE_NAME_SET,
                                   SQLSubQueryExpression,
                                   SQLSingleSelectStatement)
@@ -22,6 +22,7 @@ __all__ = [
     "CurrentGroupByClauseUsedQuoteColumn",
     "CurrentHavingClauseUsedQuoteColumn",
     "CurrentOrderByClauseUsedQuoteColumn",
+    "CurrentColumnSelectToDirectQuoteHash",
 ]
 
 
@@ -206,3 +207,41 @@ class CurrentOrderByClauseUsedQuoteColumn(AnalyzerSelectListBase):
             else:
                 result.append(origin_column)  # 引用是字段名的情况
         return result
+
+
+class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
+    """获取当前层级（不递归分析子查询）中，生成字段与直接引用的引用字段信息
+
+    生成字段信息：字段名、字段序号
+
+    """
+
+    @classmethod
+    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement
+                                        ) -> Dict[SelectColumn, List[SourceColumn]]:
+        result = {}
+        for column_idx, column_expression in enumerate(node.select_clause.columns):
+            if column_expression.alias is not None:
+                select_column = SelectColumn(column_name=column_expression.alias.name, column_idx=column_idx)
+            elif isinstance(column_expression.column, SQLColumnNameExpression):
+                select_column = SelectColumn(column_name=column_expression.column.column, column_idx=column_idx)
+            else:
+                select_column = SelectColumn(column_name=column_expression.column.source(DataSource.DEFAULT),
+                                             column_idx=column_idx)
+            result[select_column] = CurrentUsedQuoteWithAliasIndexColumns.handle(column_expression.column)
+        return result
+
+    @classmethod
+    def _collector_init(cls) -> Any:
+        return {}
+
+    @classmethod
+    def _collector_merge(cls, collector1: Any, collector2: Any) -> Any:
+        for key, value in collector2.items():
+            if key not in collector1:
+                collector1[key] = []
+            collector1[key].extend(value)
+
+    @classmethod
+    def _collector_get(cls, collector: Any) -> Any:
+        return collector
