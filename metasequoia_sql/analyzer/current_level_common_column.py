@@ -1,5 +1,5 @@
 """
-当前层级，获取使用的引用字段列表
+当前层级，基于 SQL 语句的字段相关分析器
 """
 
 from typing import Optional, List, Dict, Any
@@ -218,7 +218,7 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
 
     @classmethod
     def _handle_single_select_statement(cls, node: SQLSingleSelectStatement
-                                        ) -> Dict[SelectColumn, List[SourceColumn]]:
+                                        ) -> Dict[SelectColumn, List[QuoteColumn]]:
         result = {}
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:

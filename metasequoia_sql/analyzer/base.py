@@ -6,13 +6,14 @@ import abc
 import dataclasses
 from typing import Any, Optional, List, Dict
 
-from metasequoia_sql.analyzer.tool import check_node_type
+from metasequoia_sql.analyzer.tool import check_node_type, CreateTableStatementGetter
 from metasequoia_sql.core.objects import SQLBase, SQLSelectStatement, SQLSingleSelectStatement, SQLUnionSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["AnalyzerBase",
            "AnalyzerRecursionBase", "AnalyzerRecursionListBase", "AnalyzerRecursionDictBase",
-           "AnalyzerSelectBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase"]
+           "AnalyzerSelectBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase",
+           "AnalyzerMetaBase"]
 
 
 class AnalyzerBase(abc.ABC):
@@ -196,3 +197,14 @@ class AnalyzerSelectDictBase(AnalyzerSelectBase, abc.ABC):
     def _collector_get(cls, collector: Dict[Any, Any]) -> Dict[Any, Any]:
         """返回收集器的结果"""
         return collector
+
+
+class AnalyzerMetaBase(AnalyzerBase, abc.ABC):
+    """数据血缘分析器"""
+
+    def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
+        self.create_table_statement_getter = create_table_statement_getter
+
+    @abc.abstractmethod
+    def handle(self, node: SQLBase) -> Any:
+        """入口函数"""
