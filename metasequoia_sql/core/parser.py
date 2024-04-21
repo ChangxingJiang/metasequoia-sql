@@ -51,6 +51,11 @@ class SQLParser:
         raise SqlParseError(f"未知的参数类型: {scanner_or_string} (type={type(scanner_or_string)})")
 
     @classmethod
+    def _unify_name(cls, string: str) -> str:
+        """格式化标识符：统一剔除当前引号并添加引号"""
+        return "`" + string.strip("`") + "`"
+
+    @classmethod
     def check_insert_type(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否为插入类型"""
         scanner = cls._unify_input_scanner(scanner_or_string)
@@ -230,9 +235,9 @@ class SQLParser:
             table_name = scanner.pop_as_source()
             scanner.pop()
             column_name = scanner.pop_as_source()
-            return SQLColumnNameExpression(table=table_name, column=column_name)
+            return SQLColumnNameExpression(table=cls._unify_name(table_name), column=cls._unify_name(column_name))
         if scanner.search(ASTMark.NAME) and not scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
-            return SQLColumnNameExpression(column=scanner.pop_as_source())
+            return SQLColumnNameExpression(column=cls._unify_name(scanner.pop_as_source()))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
@@ -307,7 +312,7 @@ class SQLParser:
         if scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS):
             schema_name = scanner.pop_as_source()
             scanner.pop()
-            return schema_name, scanner.pop_as_source()
+            return cls._unify_name(schema_name), cls._unify_name(scanner.pop_as_source())
         raise SqlParseError(f"无法解析为函数表达式: {scanner}")
 
     @classmethod
@@ -636,14 +641,14 @@ class SQLParser:
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
-            return SQLTableNameExpression(schema=schema_name, table=table_name)
+            return SQLTableNameExpression(schema=cls._unify_name(schema_name), table=cls._unify_name(table_name))
         if scanner.search(ASTMark.NAME):
             name_source = scanner.pop_as_source()
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
             else:
                 schema_name, table_name = None, name_source
-            return SQLTableNameExpression(schema=schema_name, table=table_name)
+            return SQLTableNameExpression(schema=cls._unify_name(schema_name), table=cls._unify_name(table_name))
         if cls.check_sub_query_parenthesis(scanner):
             return cls.parse_sub_query_expression(scanner)
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
@@ -916,7 +921,7 @@ class SQLParser:
 
         # 构造 DDL 字段表达式对象
         return SQLDefineColumnExpression(
-            column_name=column_name,
+            column_name=cls._unify_name(column_name),
             column_type=column_type,
             comment=comment,
             is_unsigned=is_unsigned,
