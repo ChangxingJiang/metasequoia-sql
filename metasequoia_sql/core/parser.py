@@ -51,9 +51,11 @@ class SQLParser:
         raise SqlParseError(f"未知的参数类型: {scanner_or_string} (type={type(scanner_or_string)})")
 
     @classmethod
-    def _unify_name(cls, string: str) -> str:
-        """格式化标识符：统一剔除当前引号并添加引号"""
-        return "`" + string.strip("`") + "`"
+    def _unify_name(cls, string: Optional[str]) -> Optional[str]:
+        """格式化名称标识符：统一剔除当前引号并添加引号"""
+        if string is not None:
+            return "`" + string.strip("`") + "`"
+        return None
 
     @classmethod
     def check_insert_type(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
