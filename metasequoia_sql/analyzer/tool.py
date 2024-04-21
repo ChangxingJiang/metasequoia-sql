@@ -29,8 +29,8 @@ class SelectColumn:
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SourceColumn:
     """上游表字段"""
-    schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    schema_name: Optional[str] = dataclasses.field(kw_only=True, default="")
+    table_name: Optional[str] = dataclasses.field(kw_only=True, default="")
     column_name: str = dataclasses.field(kw_only=True)
 
 
@@ -46,7 +46,8 @@ class QuoteColumn:
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class QuoteNameColumn(QuoteColumn):
     """使用表名、字段名（这里的字段名可能是别名）引用的字段"""
-    table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+
+    table_name: Optional[str] = dataclasses.field(kw_only=True, default="")
     column_name: str = dataclasses.field(kw_only=True)
 
     def source(self):
@@ -71,7 +72,7 @@ class QuoteIndexColumn(QuoteColumn):
 class QuoteTable:
     """使用模式名、表名引用的表（表名也允许是别名或临时表）"""
 
-    schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    schema_name: Optional[str] = dataclasses.field(kw_only=True, default="")
     table_name: str
 
     def source(self):
@@ -86,7 +87,7 @@ class QuoteTable:
 class SourceTable:
     """使用 "模式名 + 表名" 或 "表名" 引用的源表（别名允许是 with 语句产生的临时表）"""
 
-    schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    schema_name: Optional[str] = dataclasses.field(kw_only=True, default="")
     table_name: str
 
     def source(self):

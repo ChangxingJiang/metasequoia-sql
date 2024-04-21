@@ -30,11 +30,12 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
     """获取当前层级（不递归分析子查询）中，直接使用的字段名称（包含字段名、别名、列序号 3 种类型）"""
 
     @classmethod
-    def custom_handle_node(cls, node: SQLBase) -> Optional[List[QuoteColumn]]:
+    def custom_handle_node(cls, node: SQLBase) -> Optional[List[QuoteNameColumn]]:
         """自定义的处理规则"""
         if (isinstance(node, SQLColumnNameExpression)
                 and node.source(DataSource.DEFAULT) not in GLOBAL_VARIABLE_NAME_SET):
-            return [QuoteNameColumn(table_name=node.table, column_name=node.column)]
+            table_name = node.table if node.table is not None else ""
+            return [QuoteNameColumn(table_name=table_name, column_name=node.column)]
         if isinstance(node, SQLSubQueryExpression):
             return []
         return None
@@ -218,7 +219,7 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
 
     @classmethod
     def _handle_single_select_statement(cls, node: SQLSingleSelectStatement
-                                        ) -> Dict[SelectColumn, List[QuoteColumn]]:
+                                        ) -> Dict[SelectColumn, List[QuoteNameColumn]]:
         result = {}
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:
