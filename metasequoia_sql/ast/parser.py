@@ -180,7 +180,9 @@ class ASTParser:
         self.handle_last()
 
         if len(self.stack) > 1:
-            raise AstParseError("'(' 数量大于 ')'")
+            for item in self.stack:
+                print(item)
+            raise AstParseError(f"在解析过程中，`(` 数量大于 `)`，相差数量 = {len(self.stack) - 1}")
 
     def handle_change(self):
         """处理一次的变化"""
