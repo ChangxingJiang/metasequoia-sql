@@ -1453,6 +1453,10 @@ class SQLStatement(SQLBase, abc.ABC):
 class SQLSelectStatement(SQLStatement, abc.ABC):
     """SELECT 语句"""
 
+    @abc.abstractmethod
+    def set_with_clauses(self, with_clause: Optional[SQLWithClause]) -> "SQLSelectStatement":
+        """设置 WITH 语句"""
+
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SQLSingleSelectStatement(SQLSelectStatement):
@@ -1479,6 +1483,20 @@ class SQLSingleSelectStatement(SQLSelectStatement):
                 result.append(clause.source(data_source))
         return with_clause_str + "\n".join(result)
 
+    def set_with_clauses(self, with_clause: Optional[SQLWithClause]) -> SQLSelectStatement:
+        return SQLSingleSelectStatement(
+            with_clause=with_clause,
+            select_clause=self.select_clause,
+            from_clause=self.from_clause,
+            lateral_view_clauses=self.lateral_view_clauses,
+            join_clauses=self.join_clauses,
+            where_clause=self.where_clause,
+            group_by_clause=self.group_by_clause,
+            having_clause=self.having_clause,
+            order_by_clause=self.order_by_clause,
+            limit_clause=self.limit_clause
+        )
+
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SQLUnionSelectStatement(SQLSelectStatement):
@@ -1490,6 +1508,12 @@ class SQLUnionSelectStatement(SQLSelectStatement):
         """返回语法节点的 SQL 源码"""
         with_clause_str = self.with_clause.source(data_source) + "\n" if not self.with_clause.is_empty() else ""
         return with_clause_str + "\n".join(element.source(data_source) for element in self.elements)
+
+    def set_with_clauses(self, with_clause: Optional[SQLWithClause]) -> SQLSelectStatement:
+        return SQLUnionSelectStatement(
+            with_clause=with_clause,
+            elements=self.elements
+        )
 
 
 # ---------------------------------------- INSERT 语句 ----------------------------------------

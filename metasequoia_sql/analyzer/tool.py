@@ -21,7 +21,7 @@ class SelectColumn:
     """下游表字段（SELECT 子句中的字段）"""
 
     column_name: str = dataclasses.field(kw_only=True)  # 字段名称
-    column_idx: str = dataclasses.field(kw_only=True)  # 字段顺序下标
+    column_idx: int = dataclasses.field(kw_only=True)  # 字段顺序下标
 
     def source(self):
         """引用字段的源代码"""

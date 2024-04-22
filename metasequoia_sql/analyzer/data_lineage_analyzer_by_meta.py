@@ -3,7 +3,7 @@
 """
 
 import collections
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from metasequoia_sql.analyzer.base import AnalyzerBase, AnalyzerMetaBase
 from metasequoia_sql.analyzer.current_level_common_column import CurrentColumnSelectToDirectQuoteHash
@@ -11,7 +11,7 @@ from metasequoia_sql.analyzer.current_level_common_table import CurrentTableAlia
     CurrentTableAliasToSubQueryHash
 from metasequoia_sql.analyzer.tool import check_node_type, SelectColumn, SourceColumn, QuoteTable, \
     SourceTable, QuoteNameColumn
-from metasequoia_sql.core import SQLSelectStatement, SQLCreateTableStatement
+from metasequoia_sql.core import SQLSelectStatement, SQLCreateTableStatement, SQLInsertStatement, DataSource, SQLInsertValuesStatement, SQLInsertSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 
@@ -34,7 +34,7 @@ class SelectColumnFromCreateTableStatement(AnalyzerBase):
 
 
 class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
-    """分析从 SelectColumn 到 SourceColumn 的映射关系
+    """分析 SELECT 语句中，从 SelectColumn 到 SourceColumn 的映射关系
 
     - SelectColumn：包含结果表中的列名和列序号
     - SourceColumn：包含源表中的模式名、表名和列名
@@ -72,7 +72,8 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                 table_name_to_column_detail_hash[quote_table] = with_clauses_hash[quote_table.table_name]
             else:
                 create_table_statement = self.create_table_statement_getter.get_statement(source_table.source())
-                select_column_to_source_column_hash = SelectColumnFromCreateTableStatement.handle(create_table_statement)
+                select_column_to_source_column_hash = SelectColumnFromCreateTableStatement.handle(
+                    create_table_statement)
                 table_name_to_column_detail_hash[quote_table] = select_column_to_source_column_hash
 
         # 遍历所有别名到子查询的哈希关系
@@ -104,4 +105,51 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                         source_column_list.extend(source_column_group[0])
             result[select_column] = source_column_list
 
+        return result
+
+
+class InsertColumnToSourceColumnHash(AnalyzerMetaBase):
+    """分析 SELECT 语句中，从 SelectColumn 到 SourceColumn 的映射关系
+
+    - SelectColumn：包含结果表中的列名和列序号
+    - SourceColumn：包含源表中的模式名、表名和列名
+
+    TODO 兼容通配符
+    TODO 兼容相关子查询
+    TODO 兼容 COUNT(*) 的场景
+    """
+
+    @check_node_type(SQLInsertSelectStatement)
+    def handle(self, node: SQLInsertSelectStatement) -> Dict[SourceColumn, List[SourceColumn]]:
+        """处理逻辑"""
+        if node.columns is not None:
+            insert_columns = [SourceColumn(schema_name=node.table_name.schema,
+                                           table_name=node.table_name.table,
+                                           column_name=column.column)
+                              for column in node.columns]
+        else:
+            full_table_name = node.table_name.source(DataSource.DEFAULT)
+            create_table_statement = self.create_table_statement_getter.get_statement(full_table_name)
+            # TODO 兼容动态分区和非动态分区
+            insert_columns = [SourceColumn(schema_name=node.table_name.schema,
+                                           table_name=node.table_name.table,
+                                           column_name=column.column_name)
+                              for column in create_table_statement.columns]
+
+        select_statement = node.select_statement.set_with_clauses(node.with_clause)
+        select_column_to_source_column_hash = SelectColumnToSourceColumnHash(
+            self.create_table_statement_getter
+        ).handle(select_statement)
+
+        if len(insert_columns) != len(select_column_to_source_column_hash):
+            raise AnalyzerError("写入字段数量与读取字段数量不一致")
+
+        # 获取 SELECT 每个列顺序对应的源字段
+        select_columns: List[Optional[List[SourceColumn]]] = [None] * len(insert_columns)
+        for select_column, source_column_list in select_column_to_source_column_hash.items():
+            select_columns[select_column.column_idx] = source_column_list
+
+        result = {}
+        for idx, insert_column in enumerate(insert_columns):
+            result[insert_column] = select_columns[idx]
         return result
