@@ -1215,9 +1215,13 @@ class SQLParser:
 
     @classmethod
     def parse_insert_statement(cls, scanner_or_string: Union[TokenScanner, str],
-                               with_clause: SQLWithClause) -> SQLInsertStatement:
+                               with_clause: Optional[SQLWithClause]) -> SQLInsertStatement:
         """解析 INSERT 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
+
+        if with_clause is None:
+            with_clause = cls.parse_with_clause(scanner)
+
         insert_type = cls.parse_insert_type(scanner)
 
         # 匹配可能包含的 TABLE 关键字
@@ -1253,7 +1257,7 @@ class SQLParser:
                 insert_type=insert_type,
                 table_name=table_name,
                 partition=partition,
-                columns=tuple(columns),
+                columns=tuple(columns) if columns is not None else None,
                 values=tuple(values)
             )
 
@@ -1264,7 +1268,7 @@ class SQLParser:
                 insert_type=insert_type,
                 table_name=table_name,
                 partition=partition,
-                columns=tuple(columns),
+                columns=tuple(columns) if columns is not None else None,
                 select_statement=select_statement
             )
 
