@@ -680,7 +680,7 @@ class SQLParser:
             scanner.search_and_move("AS")
         if not scanner.search(ASTMark.NAME):
             raise SqlParseError(f"无法解析为别名表达式: {scanner}")
-        return SQLAlisaExpression(name=scanner.pop_as_source())
+        return SQLAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
 
     @classmethod
     def check_join_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
