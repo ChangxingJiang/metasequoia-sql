@@ -46,11 +46,21 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
     @check_node_type(SQLSelectStatement)
     def handle(self, node: SQLSelectStatement) -> Dict[SelectColumn, List[SourceColumn]]:
         """处理逻辑"""
+        if node.with_clause is None:
+            return self._handle_select_without_with_clause(node, {})
+
+        # 逐个处理 WITH 语句中的临时表
+        with_clauses_hash = {}
+        for table_name, select_statement in node.with_clause.tables:
+            with_clauses_hash[table_name] = self._handle_select_without_with_clause(select_statement, with_clauses_hash)
+
+        return self._handle_select_without_with_clause(node, with_clauses_hash)
+
+    def _handle_select_without_with_clause(self, node: SQLSelectStatement,
+                                           with_clauses_hash: Dict[str, Dict[SelectColumn, List[SourceColumn]]]):
         # 计算当前层级的源表信息
         alias_to_quote_hash: Dict[QuoteTable, SourceTable] = CurrentTableAliasToQuoteHash.handle(node)
         alias_to_sub_query_hash: Dict[QuoteTable, SQLSelectStatement] = CurrentTableAliasToSubQueryHash.handle(node)
-
-        # 获取当前所有表别名与原始表的映射关系
 
         # 计算当前所有源表汇总的 QuoteColumn 到 SourceColumn 的映射关系
         table_name_to_column_detail_hash = {}
@@ -58,9 +68,12 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
         # -------------------- 获取所有表表名到表中字段信息的映射关系 --------------------
         # 遍历所有别名到引用名的哈希关系
         for quote_table, source_table in alias_to_quote_hash.items():
-            create_table_statement = self.create_table_statement_getter.get_statement(source_table.source())
-            select_column_to_source_column_hash = SelectColumnFromCreateTableStatement.handle(create_table_statement)
-            table_name_to_column_detail_hash[quote_table] = select_column_to_source_column_hash
+            if quote_table.table_name in with_clauses_hash:
+                table_name_to_column_detail_hash[quote_table] = with_clauses_hash[quote_table.table_name]
+            else:
+                create_table_statement = self.create_table_statement_getter.get_statement(source_table.source())
+                select_column_to_source_column_hash = SelectColumnFromCreateTableStatement.handle(create_table_statement)
+                table_name_to_column_detail_hash[quote_table] = select_column_to_source_column_hash
 
         # 遍历所有别名到子查询的哈希关系
         for quote_table, select_statement in alias_to_sub_query_hash.items():
@@ -74,18 +87,21 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                 quote_table_column = QuoteNameColumn(table_name=quote_table.table_name,
                                                      column_name=select_column.column_name)
                 quote_column = QuoteNameColumn(column_name=select_column.column_name)
-                quote_column_to_source_column_hash[quote_table_column].append(source_column_list)
-                quote_column_to_source_column_hash[quote_column].append(source_column_list)
+                if quote_table in alias_to_quote_hash:
+                    quote_column_to_source_column_hash[quote_table_column].append(source_column_list)
+                    quote_column_to_source_column_hash[quote_column].append(source_column_list)
 
         # 获取当前层级所有结果字段和源字段的映射关系
         result = {}
         for select_column, quote_column_list in CurrentColumnSelectToDirectQuoteHash.handle(node).items():
             source_column_list = []
             for quote_column in quote_column_list:
-                source_column = quote_column_to_source_column_hash.get(quote_column)
-                if len(source_column) != 1:
-                    raise AnalyzerError(f"引用字段 {quote_column} 无法找到唯一的源字段")
-                source_column_list.extend(source_column[0])
+                source_column_group = quote_column_to_source_column_hash.get(quote_column)
+                if source_column_group is None or len(source_column_group) != 1:
+                    raise AnalyzerError(f"引用字段 {quote_column} 无法找到唯一的源字段: {source_column_group}")
+                for source_column in source_column_group[0]:
+                    if source_column not in source_column_list:
+                        source_column_list.extend(source_column_group[0])
             result[select_column] = source_column_list
 
         return result

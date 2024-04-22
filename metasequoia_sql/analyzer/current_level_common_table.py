@@ -7,7 +7,7 @@ from typing import Optional, List, Dict
 from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerRecursionDictBase)
 from metasequoia_sql.analyzer.tool import QuoteTable, SourceTable
 from metasequoia_sql.core import (SQLBase, SQLSubQueryExpression, SQLTableExpression, SQLTableNameExpression,
-                                  SQLSelectStatement)
+                                  SQLSelectStatement, SQLWithClause)
 
 __all__ = ["CurrentUsedQuoteWithAliasTables",
            "CurrentTableAliasToQuoteHash",
@@ -27,6 +27,8 @@ class CurrentUsedQuoteWithAliasTables(AnalyzerRecursionListBase):
                 table_name = node.table
                 return [QuoteTable(schema_name=table_name.schema, table_name=table_name.table)]
         if isinstance(node, SQLSubQueryExpression):
+            return []
+        if isinstance(node, SQLWithClause):
             return []
         return None
 
@@ -48,6 +50,8 @@ class CurrentTableAliasToQuoteHash(AnalyzerRecursionDictBase):
                 return {alias_name: table_name}
         if isinstance(node, SQLSubQueryExpression):
             return {}
+        if isinstance(node, SQLWithClause):
+            return {}
         return None
 
 
@@ -62,5 +66,7 @@ class CurrentTableAliasToSubQueryHash(AnalyzerRecursionDictBase):
             alias_name = QuoteTable(table_name=node.alias.name)
             return {alias_name: node.table.select_statement}
         if isinstance(node, SQLSubQueryExpression):
+            return {}
+        if isinstance(node, SQLWithClause):
             return {}
         return None
