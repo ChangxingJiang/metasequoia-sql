@@ -1117,7 +1117,7 @@ class SQLParser:
     def _parse_single_with_table(cls, scanner_or_string: Union[TokenScanner, str]) -> Tuple[str, SQLSelectStatement]:
         """解析一个 WITH 临时表"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        table_name = scanner.pop_as_source()
+        table_name = cls._unify_name(scanner.pop_as_source())
         scanner.match("AS")
         parenthesis_scanner = scanner.pop_as_children_scanner()
         table_statement = cls.parse_select_statement(parenthesis_scanner, with_clause=SQLWithClause.empty())
