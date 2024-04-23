@@ -1,5 +1,7 @@
 """
 当前层级基于元数据的分析器
+
+TODO 修复通配符外有 ` 的问题
 """
 
 import collections
@@ -9,9 +11,9 @@ from metasequoia_sql.analyzer.base import AnalyzerBase, AnalyzerMetaBase
 from metasequoia_sql.analyzer.current_level_common_column import CurrentColumnSelectToDirectQuoteHash
 from metasequoia_sql.analyzer.current_level_common_table import CurrentTableAliasToQuoteHash, \
     CurrentTableAliasToSubQueryHash
-from metasequoia_sql.analyzer.tool import check_node_type, SelectColumn, SourceColumn, QuoteTable, \
-    SourceTable, QuoteNameColumn
-from metasequoia_sql.core import SQLSelectStatement, SQLCreateTableStatement, SQLInsertStatement, DataSource, SQLInsertValuesStatement, SQLInsertSelectStatement
+from metasequoia_sql.analyzer.tool import check_node_type, SelectColumn, SourceColumn, SourceTable, QuoteNameColumn
+from metasequoia_sql.core import SQLSelectStatement, SQLCreateTableStatement, DataSource, \
+    SQLInsertSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 
@@ -59,42 +61,91 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
     def _handle_select_without_with_clause(self, node: SQLSelectStatement,
                                            with_clauses_hash: Dict[str, Dict[SelectColumn, List[SourceColumn]]]):
         # 计算当前层级的源表信息
-        alias_to_quote_hash: Dict[QuoteTable, SourceTable] = CurrentTableAliasToQuoteHash.handle(node)
-        alias_to_sub_query_hash: Dict[QuoteTable, SQLSelectStatement] = CurrentTableAliasToSubQueryHash.handle(node)
+        alias_to_quote_hash: Dict[str, SourceTable] = CurrentTableAliasToQuoteHash.handle(node)
+        alias_to_sub_query_hash: Dict[str, SQLSelectStatement] = CurrentTableAliasToSubQueryHash.handle(node)
 
         # 计算当前所有源表汇总的 QuoteColumn 到 SourceColumn 的映射关系
         table_name_to_column_detail_hash = {}
 
         # -------------------- 获取所有表表名到表中字段信息的映射关系 --------------------
         # 遍历所有别名到引用名的哈希关系
-        for quote_table, source_table in alias_to_quote_hash.items():
-            if quote_table.table_name in with_clauses_hash:
-                table_name_to_column_detail_hash[quote_table] = with_clauses_hash[quote_table.table_name]
+        for table_name, source_table in alias_to_quote_hash.items():
+            if table_name in with_clauses_hash:
+                table_name_to_column_detail_hash[table_name] = with_clauses_hash[table_name]
             else:
                 create_table_statement = self.create_table_statement_getter.get_statement(source_table.source())
                 select_column_to_source_column_hash = SelectColumnFromCreateTableStatement.handle(
                     create_table_statement)
-                table_name_to_column_detail_hash[quote_table] = select_column_to_source_column_hash
+                table_name_to_column_detail_hash[table_name] = select_column_to_source_column_hash
 
         # 遍历所有别名到子查询的哈希关系
-        for quote_table, select_statement in alias_to_sub_query_hash.items():
+        for table_name, select_statement in alias_to_sub_query_hash.items():
             select_column_to_source_column_hash = self.handle(select_statement)
-            table_name_to_column_detail_hash[quote_table] = select_column_to_source_column_hash
+            table_name_to_column_detail_hash[table_name] = select_column_to_source_column_hash
 
         # -------------------- 构造每个字段名到源字段的映射关系 --------------------
         quote_column_to_source_column_hash = collections.defaultdict(list)
-        for quote_table, select_column_to_source_column_hash in table_name_to_column_detail_hash.items():
+        for table_name, select_column_to_source_column_hash in table_name_to_column_detail_hash.items():
+            # 逐个添加每一个字段名到源字段的映射关系
             for select_column, source_column_list in select_column_to_source_column_hash.items():
-                quote_table_column = QuoteNameColumn(table_name=quote_table.table_name,
-                                                     column_name=select_column.column_name)
+                quote_table_column = QuoteNameColumn(table_name=table_name, column_name=select_column.column_name)
                 quote_column = QuoteNameColumn(column_name=select_column.column_name)
-                if quote_table in alias_to_quote_hash:
+                if table_name in alias_to_quote_hash:
                     quote_column_to_source_column_hash[quote_table_column].append(source_column_list)
                     quote_column_to_source_column_hash[quote_column].append(source_column_list)
 
-        # 获取当前层级所有结果字段和源字段的映射关系
+            # 添加通配符到源字段的映射关系
+            all_source_column_set = set()
+            for source_column_list in select_column_to_source_column_hash.values():
+                for source_column in source_column_list:
+                    if source_column not in all_source_column_set:
+                        all_source_column_set.add(source_column)
+            all_source_column_list = list(all_source_column_set)
+            quote_table_column = QuoteNameColumn(table_name=table_name, column_name="`*`")
+            quote_column = QuoteNameColumn(column_name="`*`")
+            quote_column_to_source_column_hash[quote_table_column].append(all_source_column_list)
+            quote_column_to_source_column_hash[quote_column].append(all_source_column_list)
+
+        # -------------------- 获取当前层级所有结果字段和源字段的映射关系 --------------------
+        # 获取当前层级产出字段到源字段的映射关系
+        select_to_direct_hash = CurrentColumnSelectToDirectQuoteHash.handle(node)
+
+        # 兼容通配符
+        new_column_idx = 0
+        new_select_to_direct_list = []
+        for select_column, quote_column_list in sorted(select_to_direct_hash.items(), key=lambda x: x[0].column_idx):
+            if select_column.column_name != "`*`":  # 非通配符时仅处理当前字段
+                new_select_column = SelectColumn(column_name=select_column.column_name, column_idx=new_column_idx)
+                new_select_to_direct_list.append((new_select_column, quote_column_list))
+                new_column_idx += 1
+            else:  # 通配符时添加所有字段
+                table_name = quote_column_list[0].table_name
+                if table_name != "":  # 指定表的通配符
+                    for real_select_column, real_quote_column_list in table_name_to_column_detail_hash[
+                        table_name].items():
+                        new_select_column = SelectColumn(column_name=real_select_column.column_name,
+                                                         column_idx=new_column_idx)
+                        new_quote_column_list = [QuoteNameColumn(table_name=table_name,
+                                                                 column_name=quote_column.column_name)
+                                                 for quote_column in real_quote_column_list]
+                        new_select_to_direct_list.append((new_select_column, new_quote_column_list))
+                        new_column_idx += 1
+                else:  # 未指定表的通配符
+                    for table_name in table_name_to_column_detail_hash:
+                        for real_select_column, real_quote_column_list in table_name_to_column_detail_hash[
+                            table_name].items():
+                            new_select_column = SelectColumn(column_name=real_select_column.column_name,
+                                                             column_idx=new_column_idx)
+                            new_quote_column_list = [QuoteNameColumn(table_name=table_name,
+                                                                     column_name=quote_column.column_name)
+                                                     for quote_column in real_quote_column_list]
+                            new_select_to_direct_list.append((new_select_column, new_quote_column_list))
+                            new_column_idx += 1
+
+        print("new_select_to_direct_list:", new_select_to_direct_list)
+
         result = {}
-        for select_column, quote_column_list in CurrentColumnSelectToDirectQuoteHash.handle(node).items():
+        for select_column, quote_column_list in new_select_to_direct_list:
             source_column_list = []
             for quote_column in quote_column_list:
                 source_column_group = quote_column_to_source_column_hash.get(quote_column)
