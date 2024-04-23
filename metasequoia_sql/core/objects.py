@@ -1107,13 +1107,15 @@ class SQLForeignKeyExpression(SQLBaseAlone):
     slave_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
     master_table_name: str = dataclasses.field(kw_only=True)
     master_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
+    on_delete_cascade: bool = dataclasses.field(kw_only=True)
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
+        on_delete_cascade_str = " ON DELETE CASCADE" if self.on_delete_cascade else ""
         return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) "
-                f"REFERENCES {self.master_table_name}({master_columns_str})")
+                f"REFERENCES {self.master_table_name}({master_columns_str}){on_delete_cascade_str}")
 
 
 # ---------------------------------------- 声明索引表达式 ----------------------------------------

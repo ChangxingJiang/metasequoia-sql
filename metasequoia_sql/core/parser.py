@@ -790,19 +790,21 @@ class SQLParser:
         scanner.match("FOREIGN", "KEY")
         slave_columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            column_scanner.pop_as_source()
+            slave_columns.append(column_scanner.pop_as_source())
             column_scanner.close()
         scanner.match("REFERENCES")
         master_table_name = scanner.pop_as_source()
         master_columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            column_scanner.pop_as_source()
+            master_columns.append(column_scanner.pop_as_source())
             column_scanner.close()
+        on_delete_cascade = scanner.search_and_move("ON", "DELETE", "CASCADE")
         return SQLForeignKeyExpression(
             constraint_name=constraint_name,
             slave_columns=tuple(slave_columns),
             master_table_name=master_table_name,
-            master_columns=tuple(master_columns)
+            master_columns=tuple(master_columns),
+            on_delete_cascade=on_delete_cascade
         )
 
     @classmethod
