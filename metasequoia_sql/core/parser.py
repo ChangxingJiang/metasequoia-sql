@@ -54,7 +54,7 @@ class SQLParser:
     def _unify_name(cls, string: Optional[str]) -> Optional[str]:
         """格式化名称标识符：统一剔除当前引号并添加引号"""
         if string is not None:
-            return "`" + string.strip("`") + "`"
+            return string.strip("`")
         return None
 
     @classmethod

@@ -520,7 +520,10 @@ class SQLColumnNameExpression(SQLGeneralExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        result = f"{self.table}.{self.column}" if self.table is not None else f"{self.column}"
+        if self.column != "*":  # TODO 统一兼容通配符
+            result = f"`{self.table}`.`{self.column}`" if self.table is not None else f"`{self.column}`"
+        else:
+            result = f"`{self.table}`.{self.column}" if self.table is not None else f"{self.column}"
         if data_source == DataSource.DB2:
             # 兼容 DB2 的 CURRENT DATE、CURRENT TIME、CURRENT TIMESTAMP 语法
             result = result.replace("CURRENT_DATE", "CURRENT DATE")
@@ -574,7 +577,7 @@ class SQLFunctionExpression(SQLGeneralExpression, abc.ABC):
     function_name: str = dataclasses.field(kw_only=True)  # 函数名称
 
     def _get_function_str(self) -> str:
-        return f"{self.schema_name}.{self.function_name}" if self.schema_name is not None else f"{self.function_name}"
+        return f"`{self.schema_name}`.{self.function_name}" if self.schema_name is not None else f"{self.function_name}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -965,7 +968,7 @@ class SQLTableNameExpression(SQLBase):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self.schema}.{self.table}" if self.schema is not None else f"{self.table}"
+        return f"`{self.schema}`.`{self.table}`" if self.schema is not None else f"`{self.table}`"
 
 
 # ---------------------------------------- 别名表达式 ----------------------------------------
@@ -1191,7 +1194,7 @@ class SQLDefineColumnExpression(SQLBaseAlone):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        res = f"{self.column_name} {self.column_type.source(data_source)}"
+        res = f"`{self.column_name}` {self.column_type.source(data_source)}"
         if self.is_unsigned is True and data_source == DataSource.MYSQL:
             res += " UNSIGNED"
         if self.is_zerofill is True and data_source == DataSource.MYSQL:

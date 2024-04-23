@@ -87,7 +87,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_column_name_expression("2.5 WHERE"))
         self.assertTrue(SQLParser.check_column_name_expression("column_name WHERE"))
         self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(DataSource.MYSQL), "schema.column")
-        self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(DataSource.MYSQL), "`s`.`c`")
+        self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(DataSource.MYSQL), "s.c")
         self.assertEqual(SQLParser.parse_column_name_expression("column_name WHERE").source(DataSource.MYSQL), "column_name")
 
     def test_function_expression(self):
@@ -100,7 +100,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(SQLParser.parse_function_expression("schema.function(param) AND").source(DataSource.MYSQL),
                          "schema.function(param)")
         self.assertEqual(SQLParser.parse_function_expression("`schema`.`function`(param) AND").source(DataSource.MYSQL),
-                         "`schema`.`function`(param)")
+                         "schema.function(param)")
         self.assertEqual(SQLParser.parse_function_expression("trim(column_name) AND").source(DataSource.MYSQL),
                          "trim(column_name)")
 
