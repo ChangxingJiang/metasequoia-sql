@@ -8,6 +8,7 @@
 TODO 使用 search 替代直接使用 now 判断
 TODO 将 CAST_DATA_TYPE 提出作为一个基础类型节点
 TODO 将 function_name 提出作为一个专有表达式
+TODO 清理只调用一次的单行函数
 """
 
 from typing import Optional, Tuple, List, Union
@@ -816,10 +817,11 @@ class SQLParser:
         scanner.match("PRIMARY", "KEY")
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            column_scanner.pop_as_source()
+            columns.append(column_scanner.pop_as_source())
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLPrimaryIndexExpression(columns=tuple(columns), using=using)
+        comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
+        return SQLPrimaryIndexExpression(columns=tuple(columns), using=using, comment=comment)
 
     @classmethod
     def check_unique_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -835,10 +837,11 @@ class SQLParser:
         name = scanner.pop_as_source()
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            column_scanner.pop_as_source()
+            columns.append(column_scanner.pop_as_source())
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLUniqueIndexExpression(name=name, columns=tuple(columns), using=using)
+        comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
+        return SQLUniqueIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment)
 
     @classmethod
     def check_normal_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -854,10 +857,11 @@ class SQLParser:
         name = scanner.pop_as_source()
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            column_scanner.pop_as_source()
+            columns.append(column_scanner.pop_as_source())
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLNormalIndexExpression(name=name, columns=tuple(columns), using=using)
+        comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
+        return SQLNormalIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment)
 
     @classmethod
     def check_fulltext_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -873,10 +877,11 @@ class SQLParser:
         name = scanner.pop_as_source()
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            column_scanner.pop_as_source()
+            columns.append(column_scanner.pop_as_source())
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
-        return SQLFulltextIndexExpression(name=name, columns=tuple(columns), using=using)
+        comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
+        return SQLFulltextIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment)
 
     @classmethod
     def parse_define_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLDefineColumnExpression:

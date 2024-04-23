@@ -9,7 +9,7 @@
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
-TODO 统一处理 ` 符号
+TODO 移除 SQLBaseAlone 类
 """
 
 import abc
@@ -1125,6 +1125,7 @@ class SQLIndexExpression(SQLBaseAlone, abc.ABC):
     name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
     using: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1668,17 +1669,17 @@ class SQLCreateTableStatement(SQLBaseAlone):
             result += ",\n".join(columns_and_keys)
             result += "\n)"
             if self.engine is not None:
-                result += f" ENGINE = {self.engine}"
+                result += f" ENGINE={self.engine}"
             if self.auto_increment is not None:
-                result += f" AUTO_INCREMENT = {self.auto_increment}"
+                result += f" AUTO_INCREMENT={self.auto_increment}"
             if self.default_charset is not None:
-                result += f" DEFAULT CHARSET = {self.default_charset}"
+                result += f" DEFAULT CHARSET={self.default_charset}"
             if self.collate is not None:
-                result += f" COLLATE = {self.collate}"
+                result += f" COLLATE={self.collate}"
             if self.states_persistent is not None:
-                result += f" STATS_PERSISTENT = {self.states_persistent}"
+                result += f" STATS_PERSISTENT={self.states_persistent}"
             if self.comment is not None:
-                result += f" COMMENT = {self.comment}"
+                result += f" COMMENT={self.comment}"
             return result
         if data_source == DataSource.HIVE:
             indentation = " " * n_indent  # 缩进字符串
