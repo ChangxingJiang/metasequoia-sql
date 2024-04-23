@@ -10,6 +10,7 @@
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
 TODO 移除 SQLBaseAlone 类
+TODO 重新实现支持 None 的 __eq__ 方法
 """
 
 import abc
@@ -121,7 +122,7 @@ __all__ = [
 
     # 专有表达式：声明索引表达式
     "SQLIndexExpression", "SQLPrimaryIndexExpression", "SQLUniqueIndexExpression", "SQLNormalIndexExpression",
-    "SQLFulltextIndexExpression",
+    "SQLFulltextIndexExpression", "SQLIndexColumn",
 
     # 专有表达式：声明字段表达式
     "SQLDefineColumnExpression",
@@ -1119,11 +1120,25 @@ class SQLForeignKeyExpression(SQLBaseAlone):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class SQLIndexColumn(SQLBase):
+    """索引声明表达式中的字段"""
+
+    name: str = dataclasses.field(kw_only=True)  # 字段名
+    max_length: Optional[int] = dataclasses.field(kw_only=True, default=None)  # 最大长度
+
+    def source(self, data_source: DataSource) -> str:
+        """返回语法节点的 SQL 源码"""
+        if self.max_length is None:
+            return f"`{self.name}`"
+        return f"`{self.name}`({self.max_length})"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SQLIndexExpression(SQLBaseAlone, abc.ABC):
     """声明索引表达式"""
 
     name: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[SQLIndexColumn, ...] = dataclasses.field(kw_only=True)
     using: Optional[str] = dataclasses.field(kw_only=True, default=None)
     comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
 
@@ -1134,7 +1149,7 @@ class SQLPrimaryIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column}" for column in self.columns])
+        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
         return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
 
 
@@ -1144,7 +1159,7 @@ class SQLUniqueIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column}" for column in self.columns])
+        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
         return f"UNIQUE KEY {self.name} ({columns_str})"
 
 
@@ -1154,7 +1169,7 @@ class SQLNormalIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column}" for column in self.columns])
+        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
         return f"KEY {self.name} ({columns_str})"
 
 
@@ -1164,7 +1179,7 @@ class SQLFulltextIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column}" for column in self.columns])
+        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
         return f"FULLTEXT KEY {self.name} ({columns_str})"
 
 

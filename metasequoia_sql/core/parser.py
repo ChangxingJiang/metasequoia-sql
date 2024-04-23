@@ -805,6 +805,18 @@ class SQLParser:
         )
 
     @classmethod
+    def parse_index_column(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLIndexColumn:
+        """解析索引声明表达式中的字段"""
+        scanner = cls._unify_input_scanner(scanner_or_string)
+        name = scanner.pop_as_source()
+        max_length = None
+        if scanner.search(ASTMark.PARENTHESIS):
+            parenthesis_scanner = scanner.pop_as_children_scanner()
+            max_length = int(parenthesis_scanner.pop_as_source())
+            parenthesis_scanner.close()
+        return SQLIndexColumn(name=name, max_length=max_length)
+
+    @classmethod
     def check_primary_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否为主键表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
@@ -817,7 +829,7 @@ class SQLParser:
         scanner.match("PRIMARY", "KEY")
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(column_scanner.pop_as_source())
+            columns.append(cls.parse_index_column(column_scanner))
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
@@ -837,7 +849,7 @@ class SQLParser:
         name = scanner.pop_as_source()
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(column_scanner.pop_as_source())
+            columns.append(cls.parse_index_column(column_scanner))
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
@@ -857,7 +869,7 @@ class SQLParser:
         name = scanner.pop_as_source()
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(column_scanner.pop_as_source())
+            columns.append(cls.parse_index_column(column_scanner))
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
@@ -877,7 +889,7 @@ class SQLParser:
         name = scanner.pop_as_source()
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(column_scanner.pop_as_source())
+            columns.append(cls.parse_index_column(column_scanner))
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
