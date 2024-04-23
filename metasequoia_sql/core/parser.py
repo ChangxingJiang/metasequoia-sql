@@ -834,7 +834,13 @@ class SQLParser:
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        return SQLPrimaryIndexExpression(columns=tuple(columns), using=using, comment=comment)
+        if scanner.search_and_move("KEY_BLOCK_SIZE"):
+            scanner.match("=")
+            key_block_size = int(scanner.pop_as_source())
+        else:
+            key_block_size = None
+        return SQLPrimaryIndexExpression(columns=tuple(columns), using=using, comment=comment,
+                                         key_block_size=key_block_size)
 
     @classmethod
     def check_unique_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -854,7 +860,13 @@ class SQLParser:
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        return SQLUniqueIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment)
+        if scanner.search_and_move("KEY_BLOCK_SIZE"):
+            scanner.match("=")
+            key_block_size = int(scanner.pop_as_source())
+        else:
+            key_block_size = None
+        return SQLUniqueIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment,
+                                        key_block_size=key_block_size)
 
     @classmethod
     def check_normal_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -874,7 +886,13 @@ class SQLParser:
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        return SQLNormalIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment)
+        if scanner.search_and_move("KEY_BLOCK_SIZE"):
+            scanner.match("=")
+            key_block_size = int(scanner.pop_as_source())
+        else:
+            key_block_size = None
+        return SQLNormalIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment,
+                                        key_block_size=key_block_size)
 
     @classmethod
     def check_fulltext_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -894,7 +912,13 @@ class SQLParser:
             column_scanner.close()
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        return SQLFulltextIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment)
+        if scanner.search_and_move("KEY_BLOCK_SIZE"):
+            scanner.match("=")
+            key_block_size = int(scanner.pop_as_source())
+        else:
+            key_block_size = None
+        return SQLFulltextIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment,
+                                          key_block_size=key_block_size)
 
     @classmethod
     def parse_define_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLDefineColumnExpression:

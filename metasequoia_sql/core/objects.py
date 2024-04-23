@@ -1135,12 +1135,16 @@ class SQLIndexColumn(SQLBase):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SQLIndexExpression(SQLBaseAlone, abc.ABC):
-    """声明索引表达式"""
+    """声明索引表达式
+
+    TODO 将 key_block_size 改为配置
+    """
 
     name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     columns: Tuple[SQLIndexColumn, ...] = dataclasses.field(kw_only=True)
     using: Optional[str] = dataclasses.field(kw_only=True, default=None)
     comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    key_block_size: Optional[int] = dataclasses.field(kw_only=True, default=None)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1150,7 +1154,8 @@ class SQLPrimaryIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
-        return f"PRIMARY KEY ({columns_str})" if self.columns is not None else ""
+        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
+        return f"PRIMARY KEY ({columns_str}){config_str}" if self.columns is not None else ""
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1160,7 +1165,8 @@ class SQLUniqueIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
-        return f"UNIQUE KEY {self.name} ({columns_str})"
+        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
+        return f"UNIQUE KEY {self.name} ({columns_str}){config_str}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1170,7 +1176,8 @@ class SQLNormalIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
-        return f"KEY {self.name} ({columns_str})"
+        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
+        return f"KEY {self.name} ({columns_str}){config_str}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1180,7 +1187,8 @@ class SQLFulltextIndexExpression(SQLIndexExpression):
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
-        return f"FULLTEXT KEY {self.name} ({columns_str})"
+        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
+        return f"FULLTEXT KEY {self.name} ({columns_str}){config_str}"
 
 
 # ---------------------------------------- 声明字段表达式 ----------------------------------------
@@ -1188,7 +1196,10 @@ class SQLFulltextIndexExpression(SQLIndexExpression):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SQLDefineColumnExpression(SQLBaseAlone):
-    """声明字段表达式"""
+    """声明字段表达式
+
+    TODO 将各种标识添加为一个集合
+    """
 
     column_name: str = dataclasses.field(kw_only=True)
     column_type: SQLColumnTypeExpression = dataclasses.field(kw_only=True)
