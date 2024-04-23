@@ -9,6 +9,7 @@ TODO 使用 search 替代直接使用 now 判断
 TODO 将 CAST_DATA_TYPE 提出作为一个基础类型节点
 TODO 将 function_name 提出作为一个专有表达式
 TODO 清理只调用一次的单行函数
+TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 """
 
 from typing import Optional, Tuple, List, Union
@@ -808,7 +809,7 @@ class SQLParser:
     def parse_index_column(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLIndexColumn:
         """解析索引声明表达式中的字段"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        name = scanner.pop_as_source()
+        name = cls._unify_name(scanner.pop_as_source())
         max_length = None
         if scanner.search(ASTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()

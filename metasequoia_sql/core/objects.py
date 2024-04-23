@@ -521,7 +521,7 @@ class SQLColumnNameExpression(SQLGeneralExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.column != "*":  # TODO 统一兼容通配符
+        if self.column not in {"*", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP"}:  # TODO 统一兼容通配符
             result = f"`{self.table}`.`{self.column}`" if self.table is not None else f"`{self.column}`"
         else:
             result = f"`{self.table}`.{self.column}" if self.table is not None else f"{self.column}"
