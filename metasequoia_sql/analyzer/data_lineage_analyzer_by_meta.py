@@ -101,8 +101,8 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                     if source_column not in all_source_column_set:
                         all_source_column_set.add(source_column)
             all_source_column_list = list(all_source_column_set)
-            quote_table_column = QuoteNameColumn(table_name=table_name, column_name="`*`")
-            quote_column = QuoteNameColumn(column_name="`*`")
+            quote_table_column = QuoteNameColumn(table_name=table_name, column_name="*")
+            quote_column = QuoteNameColumn(column_name="*")
             quote_column_to_source_column_hash[quote_table_column].append(all_source_column_list)
             quote_column_to_source_column_hash[quote_column].append(all_source_column_list)
 
@@ -114,8 +114,9 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
         new_column_idx = 0
         new_select_to_direct_list = []
         for select_column, quote_column_list in sorted(select_to_direct_hash.items(), key=lambda x: x[0].column_idx):
-            if select_column.column_name != "`*`":  # 非通配符时仅处理当前字段
+            if select_column.column_name != "*":  # 非通配符时仅处理当前字段
                 new_select_column = SelectColumn(column_name=select_column.column_name, column_idx=new_column_idx)
+                print("非通配符:", new_select_column, quote_column_list)
                 new_select_to_direct_list.append((new_select_column, quote_column_list))
                 new_column_idx += 1
             else:  # 通配符时添加所有字段
@@ -128,6 +129,7 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                         new_quote_column_list = [QuoteNameColumn(table_name=table_name,
                                                                  column_name=quote_column.column_name)
                                                  for quote_column in real_quote_column_list]
+                        print("通配符(指定表):", new_select_column, new_quote_column_list)
                         new_select_to_direct_list.append((new_select_column, new_quote_column_list))
                         new_column_idx += 1
                 else:  # 未指定表的通配符
@@ -139,10 +141,12 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                             new_quote_column_list = [QuoteNameColumn(table_name=table_name,
                                                                      column_name=quote_column.column_name)
                                                      for quote_column in real_quote_column_list]
+                            print("通配符(未指定表):", new_select_column, new_quote_column_list)
                             new_select_to_direct_list.append((new_select_column, new_quote_column_list))
                             new_column_idx += 1
 
         print("new_select_to_direct_list:", new_select_to_direct_list)
+        print("quote_column_to_source_column_hash:", quote_column_to_source_column_hash)
 
         result = {}
         for select_column, quote_column_list in new_select_to_direct_list:

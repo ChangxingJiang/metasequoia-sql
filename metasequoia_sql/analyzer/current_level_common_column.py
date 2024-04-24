@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 
 from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase,
                                            AnalyzerSelectBase)
-from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, QuoteColumn, SelectColumn, SourceColumn
+from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, SelectColumn
 from metasequoia_sql.core import (SQLBase, SQLColumnNameExpression, DataSource, GLOBAL_VARIABLE_NAME_SET,
                                   SQLSubQueryExpression,
                                   SQLSingleSelectStatement)
@@ -34,8 +34,7 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
         """自定义的处理规则"""
         if (isinstance(node, SQLColumnNameExpression)
                 and node.source(DataSource.DEFAULT) not in GLOBAL_VARIABLE_NAME_SET):
-            table_name = node.table if node.table is not None else ""
-            return [QuoteNameColumn(table_name=table_name, column_name=node.column)]
+            return [QuoteNameColumn(table_name=node.table, column_name=node.column)]
         if isinstance(node, SQLSubQueryExpression):
             return []
         return None

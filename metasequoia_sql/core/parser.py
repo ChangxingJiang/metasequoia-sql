@@ -15,7 +15,7 @@ TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处�
 from typing import Optional, Tuple, List, Union
 
 from metasequoia_sql.lexical import (AST, ASTMark, ASTSingle, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
-                                 ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull, ASTParser)
+                                     ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull, ASTParser)
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core.objects import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
