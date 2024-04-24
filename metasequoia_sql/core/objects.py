@@ -969,7 +969,7 @@ class SQLTableNameExpression(SQLBase):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"`{self.schema}`.`{self.table}`" if self.schema is not None else f"`{self.table}`"
+        return f"`{self.schema}.{self.table}`" if self.schema is not None else f"`{self.table}`"
 
 
 # ---------------------------------------- 别名表达式 ----------------------------------------
@@ -1028,7 +1028,8 @@ class SQLColumnTypeExpression(SQLBaseAlone):
         """返回语法节点的 SQL 源码"""
         if self.params is None or data_source == DataSource.HIVE:
             return self.name
-        type_params = "(" + ", ".join([param.source(data_source) for param in self.params]) + ")"
+        # MySQL 标准导出逗号间没有空格
+        type_params = "(" + ",".join([param.source(data_source) for param in self.params]) + ")"
         return f"{self.name}{type_params}"
 
 
@@ -1114,8 +1115,8 @@ class SQLForeignKeyExpression(SQLBaseAlone):
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
         on_delete_cascade_str = " ON DELETE CASCADE" if self.on_delete_cascade else ""
-        return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY({slave_columns_str}) "
-                f"REFERENCES {self.master_table_name}({master_columns_str}){on_delete_cascade_str}")
+        return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY ({slave_columns_str}) "
+                f"REFERENCES {self.master_table_name} ({master_columns_str}){on_delete_cascade_str}")
 
 
 # ---------------------------------------- 声明索引表达式 ----------------------------------------
@@ -1155,9 +1156,11 @@ class SQLPrimaryIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
+        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
+        using_str = f" USING {self.using}" if self.using is not None else ""
+        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
         config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"PRIMARY KEY ({columns_str}){config_str}" if self.columns is not None else ""
+        return f"PRIMARY KEY ({columns_str}){using_str}{comment_str}{config_str}" if self.columns is not None else ""
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1166,9 +1169,11 @@ class SQLUniqueIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
+        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
+        using_str = f" USING {self.using}" if self.using is not None else ""
+        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
         config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"UNIQUE KEY {self.name} ({columns_str}){config_str}"
+        return f"UNIQUE KEY {self.name} ({columns_str}){using_str}{comment_str}{config_str}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1177,9 +1182,11 @@ class SQLNormalIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
+        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
+        using_str = f" USING {self.using}" if self.using is not None else ""
+        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
         config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"KEY {self.name} ({columns_str}){config_str}"
+        return f"KEY {self.name} ({columns_str}){using_str}{comment_str}{config_str}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1188,9 +1195,11 @@ class SQLFulltextIndexExpression(SQLIndexExpression):
 
     def source(self, data_source: DataSource) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ", ".join([f"{column.source(data_source)}" for column in self.columns])
+        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
+        using_str = f" USING {self.using}" if self.using is not None else ""
+        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
         config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"FULLTEXT KEY {self.name} ({columns_str}){config_str}"
+        return f"FULLTEXT KEY {self.name} ({columns_str}){using_str}{comment_str}{config_str}"
 
 
 # ---------------------------------------- 声明字段表达式 ----------------------------------------
@@ -1676,11 +1685,11 @@ class SQLCreateTableStatement(SQLBaseAlone):
         table_params["partitioned_by"] += (column,)
         return SQLCreateTableStatement(**table_params)
 
-    def source(self, data_source: DataSource, n_indent: int = 4) -> str:
+    def source(self, data_source: DataSource, n_indent: int = 2) -> str:
         """返回语法节点的 SQL 源码"""
         if data_source == DataSource.MYSQL:
             indentation = " " * n_indent  # 缩进字符串
-            result = f" {self._title_str(data_source)}(\n"
+            result = f"{self._title_str(data_source)} (\n"
             columns_and_keys = []
             for column in self.columns:
                 columns_and_keys.append(f"{indentation}{column.source(data_source)}")
@@ -1704,6 +1713,8 @@ class SQLCreateTableStatement(SQLBaseAlone):
                 result += f" DEFAULT CHARSET={self.default_charset}"
             if self.collate is not None:
                 result += f" COLLATE={self.collate}"
+            if self.row_format is not None:
+                result += f" ROW_FORMAT={self.row_format}"
             if self.states_persistent is not None:
                 result += f" STATS_PERSISTENT={self.states_persistent}"
             if self.comment is not None:
