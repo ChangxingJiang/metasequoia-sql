@@ -1,4 +1,4 @@
-"""将每个 Mysql 类型转换为 Hive 类型"""
+# 将每个 Mysql 类型转换为 Hive 类型  TODO 待整理所有主逻辑中未使用的静态常量
 HASHMAP_MYSQL_TO_HIVE = {
     # 串数据类型
     "CHAR": "STRING",
