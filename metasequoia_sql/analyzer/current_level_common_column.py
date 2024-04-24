@@ -215,6 +215,7 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
 
     生成字段信息：字段名、字段序号
 
+    TODO 聚集函数的结果需要修复（可以从单元测试中拿 Case）
     """
 
     @classmethod

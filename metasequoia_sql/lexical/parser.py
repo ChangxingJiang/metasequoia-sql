@@ -6,7 +6,7 @@ import enum
 import re
 from typing import List, Union
 
-from metasequoia_sql.ast.nodes import (AST, ASTMark, ASTSingle, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
+from metasequoia_sql.lexical.nodes import (AST, ASTMark, ASTSingle, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
                                        ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull, ASTParenthesis)
 from metasequoia_sql.common.text_scanner import TextScanner
 from metasequoia_sql.errors import AstParseError

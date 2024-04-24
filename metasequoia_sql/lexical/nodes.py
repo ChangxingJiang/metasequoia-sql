@@ -11,7 +11,7 @@ import abc
 import enum
 from typing import List, Optional, Any, Set, Union
 
-from metasequoia_sql.ast.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
+from metasequoia_sql.lexical.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
 from metasequoia_sql.errors import AstParseError
 
 __all__ = [

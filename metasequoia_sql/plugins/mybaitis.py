@@ -16,7 +16,7 @@ from typing import Union, List, Optional, Any
 
 from metasequoia_sql import DataSource, SQLBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
-from metasequoia_sql.ast import ASTParser, AstParseStatus, ASTSingle, ASTMark
+from metasequoia_sql.lexical import ASTParser, AstParseStatus, ASTSingle, ASTMark
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, SQLGeneralExpression, SQLSingleSelectStatement
 

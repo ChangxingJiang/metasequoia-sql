@@ -551,7 +551,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"COUNT(shiire_tanka)": ["shiire_tanka"]}, 
+        self.assertEqual({"COUNT(`shiire_tanka`)": ["shiire_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_04(self):
@@ -564,7 +564,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"SUM(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"SUM(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_05(self):
@@ -577,7 +577,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"SUM(hanbai_tanka)": ["hanbai_tanka"], "SUM(shiire_tanka)": ["shiire_tanka"]}, 
+        self.assertEqual({"SUM(`hanbai_tanka`)": ["hanbai_tanka"], "SUM(`shiire_tanka`)": ["shiire_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_06(self):
@@ -590,7 +590,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"AVG(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"AVG(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_07(self):
@@ -603,7 +603,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"AVG(hanbai_tanka)": ["hanbai_tanka"], "AVG(shiire_tanka)": ["shiire_tanka"]}, 
+        self.assertEqual({"AVG(`hanbai_tanka`)": ["hanbai_tanka"], "AVG(`shiire_tanka`)": ["shiire_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_08(self):
@@ -616,7 +616,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"MAX(hanbai_tanka)": ["hanbai_tanka"], "MIN(shiire_tanka)": ["shiire_tanka"]}, 
+        self.assertEqual({"MAX(`hanbai_tanka`)": ["hanbai_tanka"], "MIN(`shiire_tanka`)": ["shiire_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_09(self):
@@ -629,7 +629,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"MAX(torokubi)": ["torokubi"], "MIN(torokubi)": ["torokubi"]}, 
+        self.assertEqual({"MAX(`torokubi`)": ["torokubi"], "MIN(`torokubi`)": ["torokubi"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_10(self):
@@ -642,7 +642,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"COUNT(DISTINCT shohin_bunrui)": ["shohin_bunrui"]}, 
+        self.assertEqual({"COUNT(DISTINCT `shohin_bunrui`)": ["shohin_bunrui"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_11(self):
@@ -656,7 +656,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"COUNT(shohin_bunrui)": ["shohin_bunrui"]}, 
+        self.assertEqual({"COUNT(`shohin_bunrui`)": ["shohin_bunrui"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_12(self):
@@ -669,7 +669,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"SUM(hanbai_tanka)": ["hanbai_tanka"], "SUM(DISTINCT hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"SUM(`hanbai_tanka`)": ["hanbai_tanka"], "SUM(DISTINCT `hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_13(self):
@@ -736,11 +736,11 @@ class TestSqlBasicTutorial(unittest.TestCase):
 
     def test_sbt_ch03_17(self):
         statement = SQLParser.parse_select_statement(SBT_CH03_17)
-        self.assertEqual(["shohin_bunrui", "*"], 
+        self.assertEqual(["shohin_bunrui", "*", "sb"], 
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["shohin_bunrui", "*"], 
                          format_rule_1(CurrentSelectClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual(["shohin_bunrui"], 
+        self.assertEqual(["sb"], 
                          format_rule_1(CurrentGroupByClauseUsedQuoteColumn.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
@@ -825,7 +825,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "AVG(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "AVG(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_23(self):
@@ -842,7 +842,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "AVG(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "AVG(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch03_24(self):
@@ -971,11 +971,11 @@ class TestSqlBasicTutorial(unittest.TestCase):
 
     def test_sbt_ch03_32(self):
         statement = SQLParser.parse_select_statement(SBT_CH03_32)
-        self.assertEqual(["shohin_id", "shohin_mei", "hanbai_tanka", "shiire_tanka"], 
+        self.assertEqual(["shohin_id", "shohin_mei", "hanbai_tanka", "shiire_tanka", "ht", "id"], 
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["shohin_id", "shohin_mei", "hanbai_tanka", "shiire_tanka"], 
                          format_rule_1(CurrentSelectClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual(["hanbai_tanka", "shohin_id"], 
+        self.assertEqual(["ht", "id"], 
                          format_rule_1(CurrentOrderByClauseUsedQuoteColumn.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
@@ -1085,7 +1085,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "SUM(hanbai_tanka)": ["hanbai_tanka"], "SUM(shiire_tanka)": ["shiire_tanka"]}, 
+        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "SUM(`hanbai_tanka`)": ["hanbai_tanka"], "SUM(`shiire_tanka`)": ["shiire_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch05_03(self):
@@ -1163,7 +1163,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"AVG(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"AVG(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch05_12(self):
@@ -1208,7 +1208,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "AVG(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "AVG(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch05_15(self):
@@ -1223,7 +1223,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"AVG(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"AVG(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch05_16_oracle(self):
@@ -1694,7 +1694,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["SampleStr"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"COALESCE(str2, 'taNULL')": ["str2"]}, 
+        self.assertEqual({"COALESCE(`str2`, 'taNULL')": ["str2"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch06_22(self):
@@ -2511,11 +2511,11 @@ class TestSqlBasicTutorial(unittest.TestCase):
 
     def test_sbt_ch08_09(self):
         statement = SQLParser.parse_select_statement(SBT_CH08_09)
-        self.assertEqual(["shohin_mei", "shohin_bunrui", "hanbai_tanka"], 
+        self.assertEqual(["shohin_mei", "shohin_bunrui", "hanbai_tanka", "ranking"], 
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["shohin_mei", "shohin_bunrui", "hanbai_tanka"], 
                          format_rule_1(CurrentSelectClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual(["hanbai_tanka"], 
+        self.assertEqual(["ranking"], 
                          format_rule_1(CurrentOrderByClauseUsedQuoteColumn.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
@@ -2536,7 +2536,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "SUM(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "SUM(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch08_11(self):
@@ -2551,7 +2551,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "SUM(hanbai_tanka)": ["hanbai_tanka"]}, 
+        self.assertEqual({"shohin_bunrui": ["shohin_bunrui"], "SUM(`hanbai_tanka`)": ["hanbai_tanka"]}, 
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch08_12_mysql(self):

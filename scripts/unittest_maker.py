@@ -136,4 +136,4 @@ def make_sql_basic_tutorial(force: bool = False):
 
 
 if __name__ == "__main__":
-    make_sql_basic_tutorial(force=False)
+    make_sql_basic_tutorial(force=True)
