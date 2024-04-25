@@ -18,11 +18,9 @@ import enum
 from typing import Optional, Tuple, Union, Dict, Set
 
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
+from metasequoia_sql.core.node.sql_type import SQLType
 
 __all__ = [
-    # ------------------------------ SQL 数据源类型 ------------------------------
-    "SQLType",
-
     # ------------------------------ 抽象基类 ------------------------------
     "ASTBase",
 
@@ -179,17 +177,6 @@ __all__ = [
 
 
 # ---------------------------------------- 所有 SQL 语句对象节点的抽象基类 ----------------------------------------
-
-
-class SQLType(enum.Enum):
-    """数据源类型（即 SQL 语句类型）"""
-    MYSQL = "MySQL"
-    HIVE = "Hive"
-    ORACLE = "Oracle"
-    DB2 = "DB2"
-    POSTGRE_SQL = "PostgreSQL"
-    SQL_SERVER = "SQL Server"
-    DEFAULT = "DEFAULT"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
