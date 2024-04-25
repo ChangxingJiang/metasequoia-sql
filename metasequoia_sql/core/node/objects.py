@@ -8,8 +8,6 @@
 在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
-
-TODO 重新实现支持 None 的 __eq__ 方法
 """
 
 import abc
@@ -83,13 +81,13 @@ __all__ = [
     # 一般表达式：计算表达式
     "ASTComputeExpression",
 
-    # 一般表达式：值表达式
-    "ASTValueExpression",
-
     # 一般表达式：子查询表达式
     "ASTSubQueryExpression",
 
     # ------------------------------ 专有表达式 ------------------------------
+    # 专有表达式：值表达式
+    "ASTValueExpression",
+
     # 专有表达式：表名表达式
     "ASTTableNameExpression",
 
@@ -914,7 +912,7 @@ class ASTComputeExpression(ASTGeneralExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTValueExpression(ASTGeneralExpression):
+class ASTValueExpression(ASTBase):
     """INSERT INTO 表达式中，VALUES 里的表达式"""
 
     values: Tuple[ASTGeneralExpression, ...] = dataclasses.field(kw_only=True)

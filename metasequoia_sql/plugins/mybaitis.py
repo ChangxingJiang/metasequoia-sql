@@ -67,7 +67,7 @@ class ASTParserMyBatis(ASTParser):
         super().handle_last()
 
 
-@dataclasses.dataclass(slots=True)
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SQLMyBatisExpression(ASTGeneralExpression):
     """增加 MyBatis 元素节点作为一般表达式的子类"""
 
