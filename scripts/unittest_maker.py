@@ -92,7 +92,7 @@ def make_sql_basic_tutorial(force: bool = False):
             file.write(f"    def test_{name.lower()}(self):\n")
             file.write(f"        statement = SQLParser.parse_select_statement({name})\n")
 
-            if isinstance(statement, SQLSingleSelectStatement):
+            if isinstance(statement, ASTSingleSelectStatement):
                 print(f"DISTINCT: {statement.select_clause.distinct}", )
                 if statement.select_clause.distinct is True:
                     file.write("        self.assertEqual(statement.select_clause.distinct, True)\n")

@@ -8,7 +8,7 @@ import abc
 import dataclasses
 from typing import Type, Optional
 
-from metasequoia_sql.core import SQLCreateTableStatement, SQLParser, SQLBase
+from metasequoia_sql.core import ASTCreateTableStatement, SQLParser, ASTBase
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["CreateTableStatementGetter", "check_node_type",
@@ -106,7 +106,7 @@ class CreateTableStatementGetter(abc.ABC):
     def __init__(self):
         self._cache = {}
 
-    def get_statement(self, full_table_name: str) -> SQLCreateTableStatement:
+    def get_statement(self, full_table_name: str) -> ASTCreateTableStatement:
         """获取 table_name 的语法树节点"""
         if full_table_name not in self._cache:
             self._cache[full_table_name] = SQLParser.parse_create_table_statement(self.get_sql(full_table_name))
@@ -117,7 +117,7 @@ class CreateTableStatementGetter(abc.ABC):
         """获取 table_name 表的建表语句"""
 
 
-def check_node_type(node_type: Type[SQLBase]):
+def check_node_type(node_type: Type[ASTBase]):
     """检查节点类型"""
 
     def wrapper(func):

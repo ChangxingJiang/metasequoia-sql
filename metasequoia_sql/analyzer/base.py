@@ -7,7 +7,7 @@ import dataclasses
 from typing import Any, Optional, List, Dict
 
 from metasequoia_sql.analyzer.tool import check_node_type, CreateTableStatementGetter
-from metasequoia_sql.core.objects import SQLBase, SQLSelectStatement, SQLSingleSelectStatement, SQLUnionSelectStatement
+from metasequoia_sql.core.objects import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["AnalyzerBase",
@@ -19,7 +19,7 @@ __all__ = ["AnalyzerBase",
 class AnalyzerBase(abc.ABC):
     @classmethod
     @abc.abstractmethod
-    def handle(cls, node: SQLBase) -> Any:
+    def handle(cls, node: ASTBase) -> Any:
         """入口函数"""
 
 
@@ -52,7 +52,7 @@ class AnalyzerRecursionBase(abc.ABC):
         """默认的处理规则（递归聚合包含元素的结果）"""
         if obj is None:
             return cls._collector_init()
-        if isinstance(obj, SQLBase):
+        if isinstance(obj, ASTBase):
             collector = cls._collector_init()
             for field in dataclasses.fields(obj):
                 next_node = getattr(obj, field.name)
@@ -123,25 +123,25 @@ class AnalyzerSelectBase(abc.ABC):
     """SELECT 语句通用分析器的抽象基类"""
 
     @classmethod
-    @check_node_type(SQLSelectStatement)
-    def handle(cls, node: SQLSelectStatement) -> Any:
+    @check_node_type(ASTSelectStatement)
+    def handle(cls, node: ASTSelectStatement) -> Any:
         """处理逻辑"""
-        if isinstance(node, SQLSingleSelectStatement):
+        if isinstance(node, ASTSingleSelectStatement):
             return cls._collector_get(cls._handle_single_select_statement(node))
-        if isinstance(node, SQLUnionSelectStatement):
+        if isinstance(node, ASTUnionSelectStatement):
             return cls._collector_get(cls._handle_union_select_statement(node))
         raise AnalyzerError(f"不满足条件的参数类型: {node.__class__.__name__}")
 
     @classmethod
     @abc.abstractmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> Any:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> Any:
         """处理 SQLSingleSelectStatement 类型节点"""
 
     @classmethod
-    def _handle_union_select_statement(cls, node: SQLUnionSelectStatement):
+    def _handle_union_select_statement(cls, node: ASTUnionSelectStatement):
         collector = cls._collector_init()
         for element in node.elements:
-            if isinstance(element, SQLSingleSelectStatement):
+            if isinstance(element, ASTSingleSelectStatement):
                 cls._collector_merge(collector, cls._handle_single_select_statement(element))
         return collector
 
@@ -206,5 +206,5 @@ class AnalyzerMetaBase(AnalyzerBase, abc.ABC):
         self.create_table_statement_getter = create_table_statement_getter
 
     @abc.abstractmethod
-    def handle(self, node: SQLBase) -> Any:
+    def handle(self, node: ASTBase) -> Any:
         """入口函数"""

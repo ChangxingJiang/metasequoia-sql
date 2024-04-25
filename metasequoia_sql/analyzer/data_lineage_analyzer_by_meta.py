@@ -12,8 +12,8 @@ from metasequoia_sql.analyzer.current_level_common_column import CurrentColumnSe
 from metasequoia_sql.analyzer.current_level_common_table import CurrentTableAliasToQuoteHash, \
     CurrentTableAliasToSubQueryHash
 from metasequoia_sql.analyzer.tool import check_node_type, SelectColumn, SourceColumn, SourceTable, QuoteNameColumn
-from metasequoia_sql.core import SQLSelectStatement, SQLCreateTableStatement, DataSource, \
-    SQLInsertSelectStatement
+from metasequoia_sql.core import ASTSelectStatement, ASTCreateTableStatement, DataSource, \
+    ASTInsertSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 
@@ -21,8 +21,8 @@ class SelectColumnFromCreateTableStatement(AnalyzerBase):
     """根据建表语句，构造 SelectColumn 到 SourceColumn 的映射关系"""
 
     @classmethod
-    @check_node_type(SQLCreateTableStatement)
-    def handle(cls, node: SQLCreateTableStatement) -> Dict[SelectColumn, List[SourceColumn]]:
+    @check_node_type(ASTCreateTableStatement)
+    def handle(cls, node: ASTCreateTableStatement) -> Dict[SelectColumn, List[SourceColumn]]:
         """处理逻辑"""
         result = {}
         schema_name = node.table_name_expression.schema if node.table_name_expression.schema is not None else ""
@@ -45,8 +45,8 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
     TODO 兼容相关子查询
     """
 
-    @check_node_type(SQLSelectStatement)
-    def handle(self, node: SQLSelectStatement) -> Dict[SelectColumn, List[SourceColumn]]:
+    @check_node_type(ASTSelectStatement)
+    def handle(self, node: ASTSelectStatement) -> Dict[SelectColumn, List[SourceColumn]]:
         """处理逻辑"""
         if node.with_clause is None:
             return self._handle_select_without_with_clause(node, {})
@@ -58,11 +58,11 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
 
         return self._handle_select_without_with_clause(node, with_clauses_hash)
 
-    def _handle_select_without_with_clause(self, node: SQLSelectStatement,
+    def _handle_select_without_with_clause(self, node: ASTSelectStatement,
                                            with_clauses_hash: Dict[str, Dict[SelectColumn, List[SourceColumn]]]):
         # 计算当前层级的源表信息
         alias_to_quote_hash: Dict[str, SourceTable] = CurrentTableAliasToQuoteHash.handle(node)
-        alias_to_sub_query_hash: Dict[str, SQLSelectStatement] = CurrentTableAliasToSubQueryHash.handle(node)
+        alias_to_sub_query_hash: Dict[str, ASTSelectStatement] = CurrentTableAliasToSubQueryHash.handle(node)
 
         # 计算当前所有源表汇总的 QuoteColumn 到 SourceColumn 的映射关系
         table_name_to_column_detail_hash = {}
@@ -174,8 +174,8 @@ class InsertColumnToSourceColumnHash(AnalyzerMetaBase):
     TODO 兼容 COUNT(*) 的场景
     """
 
-    @check_node_type(SQLInsertSelectStatement)
-    def handle(self, node: SQLInsertSelectStatement) -> Dict[SourceColumn, List[SourceColumn]]:
+    @check_node_type(ASTInsertSelectStatement)
+    def handle(self, node: ASTInsertSelectStatement) -> Dict[SourceColumn, List[SourceColumn]]:
         """处理逻辑"""
         if node.columns is not None:
             insert_columns = [SourceColumn(schema_name=node.table_name.schema,

@@ -14,11 +14,11 @@ import dataclasses
 import enum
 from typing import Union, List, Optional, Any
 
-from metasequoia_sql import DataSource, SQLBase
+from metasequoia_sql import DataSource, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.core import SQLParser, SQLGeneralExpression, SQLSingleSelectStatement
+from metasequoia_sql.core import SQLParser, ASTGeneralExpression, ASTSingleSelectStatement
 
 
 class ASTParseStatusMyBatis(enum.Enum):
@@ -68,7 +68,7 @@ class ASTParserMyBatis(ASTParser):
 
 
 @dataclasses.dataclass(slots=True)
-class SQLMyBatisExpression(SQLGeneralExpression):
+class SQLMyBatisExpression(ASTGeneralExpression):
     """增加 MyBatis 元素节点作为一般表达式的子类"""
 
     mybatis_source: str = dataclasses.field(kw_only=True)
@@ -89,7 +89,7 @@ class SQLParserMyBatis(SQLParser):
 
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
-                                         maybe_window: bool) -> SQLGeneralExpression:
+                                         maybe_window: bool) -> ASTGeneralExpression:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search(AMTMark.CUSTOM):
@@ -101,7 +101,7 @@ class GetAllMybatisParams(AnalyzerRecursionListBase):
     """获取使用的 MyBatis 参数"""
 
     @classmethod
-    def custom_handle_node(cls, node: SQLBase) -> Optional[List[Any]]:
+    def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
@@ -112,11 +112,11 @@ class GetMybatisParamInWhereClause(AnalyzerRecursionListBase):
     """获取 WHERE 子句中的 Mybatis 参数"""
 
     @classmethod
-    def custom_handle_node(cls, node: SQLBase) -> Optional[List[Any]]:
+    def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
-        if isinstance(node, SQLSingleSelectStatement):
+        if isinstance(node, ASTSingleSelectStatement):
             return cls.handle_node(node.where_clause)
         return None
 
@@ -125,11 +125,11 @@ class GetMybatisParamInGroupByClause(AnalyzerRecursionListBase):
     """获取 GROUP BY 子句中的 Mybatis 参数"""
 
     @classmethod
-    def custom_handle_node(cls, node: SQLBase) -> Optional[List[Any]]:
+    def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
             return [node.source(DataSource.DEFAULT)[2:-1]]
-        if isinstance(node, SQLSingleSelectStatement):
+        if isinstance(node, ASTSingleSelectStatement):
             return cls.handle_node(node.group_by_clause)
         return None
 

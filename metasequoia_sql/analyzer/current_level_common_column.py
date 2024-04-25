@@ -7,9 +7,9 @@ from typing import Optional, List, Dict, Any
 from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase,
                                            AnalyzerSelectBase)
 from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, SelectColumn
-from metasequoia_sql.core import (SQLBase, SQLColumnNameExpression, DataSource, GLOBAL_VARIABLE_NAME_SET,
-                                  SQLSubQueryExpression,
-                                  SQLSingleSelectStatement)
+from metasequoia_sql.core import (ASTBase, ASTColumnNameExpression, DataSource, GLOBAL_VARIABLE_NAME_SET,
+                                  ASTSubQueryExpression,
+                                  ASTSingleSelectStatement)
 
 __all__ = [
     "CurrentUsedQuoteWithAliasIndexColumns",
@@ -30,12 +30,12 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
     """获取当前层级（不递归分析子查询）中，直接使用的字段名称（包含字段名、别名、列序号 3 种类型）"""
 
     @classmethod
-    def custom_handle_node(cls, node: SQLBase) -> Optional[List[QuoteNameColumn]]:
+    def custom_handle_node(cls, node: ASTBase) -> Optional[List[QuoteNameColumn]]:
         """自定义的处理规则"""
-        if (isinstance(node, SQLColumnNameExpression)
+        if (isinstance(node, ASTColumnNameExpression)
                 and node.source(DataSource.DEFAULT) not in GLOBAL_VARIABLE_NAME_SET):
             return [QuoteNameColumn(table_name=node.table, column_name=node.column)]
-        if isinstance(node, SQLSubQueryExpression):
+        if isinstance(node, ASTSubQueryExpression):
             return []
         return None
 
@@ -44,7 +44,7 @@ class CurrentColumnAliasToQuoteHash(AnalyzerSelectDictBase):
     """获取当前层级（不递归分析子查询）中，别名到引用字段的映射关系"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement
                                         ) -> Dict[QuoteNameColumn, List[QuoteNameColumn]]:
         """处理 SQLSingleSelectStatement 类型节点"""
         result = {}
@@ -59,7 +59,7 @@ class CurrentColumnIndexToQuoteHash(AnalyzerSelectDictBase):
     """获取当前层级（不递归分析子查询）中，列序号到引用字段的映射关系"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement
                                         ) -> Dict[QuoteIndexColumn, List[QuoteNameColumn]]:
         """处理逻辑"""
         result = {}
@@ -73,7 +73,7 @@ class CurrentUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -93,7 +93,7 @@ class CurrentSelectClauseUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）的 SELECT 子句中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node.select_clause)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -113,7 +113,7 @@ class CurrentJoinClauseUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）的 JOIN 子句中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node.join_clauses)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -133,7 +133,7 @@ class CurrentWhereClauseUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）的 WHERE 子句中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node.where_clause)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -153,7 +153,7 @@ class CurrentGroupByClauseUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）的 GROUP BY 子句中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node.group_by_clause)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -173,7 +173,7 @@ class CurrentHavingClauseUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）的 HAVING 子句中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node.having_clause)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -193,7 +193,7 @@ class CurrentOrderByClauseUsedQuoteColumn(AnalyzerSelectListBase):
     """获取当前层级（不递归分析子查询）的 GROUP BY 子句中，直接使用的字段引用名称（仅包含字段名的格式，并将别名、列序号映射为字段名）"""
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement) -> List[QuoteNameColumn]:
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement) -> List[QuoteNameColumn]:
         """处理逻辑"""
         origin_columns = CurrentUsedQuoteWithAliasIndexColumns.handle(node.order_by_clause)
         column_alias_to_quote_hash = CurrentColumnAliasToQuoteHash.handle(node)
@@ -218,13 +218,13 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
     """
 
     @classmethod
-    def _handle_single_select_statement(cls, node: SQLSingleSelectStatement
+    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement
                                         ) -> Dict[SelectColumn, List[QuoteNameColumn]]:
         result = {}
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:
                 select_column = SelectColumn(column_name=column_expression.alias.name, column_idx=column_idx)
-            elif isinstance(column_expression.column, SQLColumnNameExpression):
+            elif isinstance(column_expression.column, ASTColumnNameExpression):
                 select_column = SelectColumn(column_name=column_expression.column.column, column_idx=column_idx)
             else:
                 select_column = SelectColumn(column_name=column_expression.column.source(DataSource.DEFAULT),
