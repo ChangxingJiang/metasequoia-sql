@@ -86,9 +86,11 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_column_name_expression("trim(column_name) AND"))
         self.assertFalse(SQLParser.check_column_name_expression("2.5 WHERE"))
         self.assertTrue(SQLParser.check_column_name_expression("column_name WHERE"))
-        self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(SQLType.MYSQL), "`schema`.`column`")
+        self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(SQLType.MYSQL),
+                         "`schema`.`column`")
         self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(SQLType.MYSQL), "`s`.`c`")
-        self.assertEqual(SQLParser.parse_column_name_expression("column_name WHERE").source(SQLType.MYSQL), "`column_name`")
+        self.assertEqual(SQLParser.parse_column_name_expression("column_name WHERE").source(SQLType.MYSQL),
+                         "`column_name`")
 
     def test_function_expression(self):
         """测试判断、解析函数表达式"""
@@ -108,7 +110,8 @@ class TestCoreParser(unittest.TestCase):
         """测试解析布尔值表达式"""
         self.assertEqual(SQLParser.parse_bool_expression("column1 > 3").source(SQLType.MYSQL), "`column1` > 3")
         self.assertEqual(SQLParser.parse_bool_expression("t2.column1 > 3").source(SQLType.MYSQL), "`t2`.`column1` > 3")
-        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 + 3 > 3").source(SQLType.MYSQL), "`t2`.`column1` + 3 > 3")
+        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 + 3 > 3").source(SQLType.MYSQL),
+                         "`t2`.`column1` + 3 > 3")
         self.assertEqual(SQLParser.parse_bool_expression("column1 BETWEEN 3 AND 4").source(SQLType.MYSQL),
                          "`column1` BETWEEN 3 AND 4")
         self.assertEqual(SQLParser.parse_bool_expression("column1 + 3 BETWEEN 3 AND 4").source(SQLType.MYSQL),
@@ -116,12 +119,14 @@ class TestCoreParser(unittest.TestCase):
 
     def test_window_expression(self):
         """测试判断、解析窗口表达式"""
-        self.assertTrue(SQLParser.check_window_expression("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
+        self.assertTrue(
+            SQLParser.check_window_expression("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
         self.assertFalse(SQLParser.check_window_expression("3 + 5"))
         self.assertEqual(
-            SQLParser.parse_window_expression("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3").source(
+            SQLParser.parse_window_expression(
+                "ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3").source(
                 SQLType.MYSQL),
-            "ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2)")
+            "ROW_NUMBER() OVER (PARTITION BY `column1` ORDER BY `column2`)")
 
     def test_wildcard_expression(self):
         """测试判断、解析通配符表达式"""
@@ -133,8 +138,9 @@ class TestCoreParser(unittest.TestCase):
 
     def test_condition_expression(self):
         """测试解析条件表达式"""
-        self.assertEqual(SQLParser.parse_condition_expression("column1 > 3 AND column2 > 2 WHERE").source(SQLType.MYSQL),
-                         "`column1` > 3 AND `column2` > 2")
+        self.assertEqual(
+            SQLParser.parse_condition_expression("column1 > 3 AND column2 > 2 WHERE").source(SQLType.MYSQL),
+            "`column1` > 3 AND `column2` > 2")
         self.assertEqual(SQLParser.parse_condition_expression("column1 > 3 OR column2 > 2 WHERE").source(SQLType.MYSQL),
                          "`column1` > 3 OR `column2` > 2")
         self.assertEqual(
@@ -150,7 +156,8 @@ class TestCoreParser(unittest.TestCase):
 
     def test_table_name_expression(self):
         """测试解析报名表达式"""
-        self.assertEqual(SQLParser.parse_table_name_expression("table1.column1 AS t1").source(SQLType.MYSQL), "table1.column1")
+        self.assertEqual(SQLParser.parse_table_name_expression("schema1.table1 AS t1").source(SQLType.MYSQL),
+                         "`schema1.table1`")
 
     def test_alias_expression(self):
         """测试判断、解析别名表达式"""
@@ -163,16 +170,16 @@ class TestCoreParser(unittest.TestCase):
     def test_join_expression(self):
         """测试解析关联表达式"""
         self.assertEqual(SQLParser.parse_join_expression("ON t1.column1 = t2.column2").source(SQLType.MYSQL),
-                         "ON t1.column1 = t2.column2")
+                         "ON `t1`.`column1` = `t2`.`column2`")
         self.assertEqual(SQLParser.parse_join_expression("USING(column1, column2)").source(SQLType.MYSQL),
-                         "USING(column1, column2)")
+                         "USING(`column1`, `column2`)")
         self.assertEqual(SQLParser.parse_join_expression("using(column1, column2)").source(SQLType.MYSQL),
-                         "using(column1, column2)")
+                         "using(`column1`, `column2`)")
 
     def test_table_expression(self):
         """测试解析表表达式"""
         self.assertEquals(SQLParser.parse_table_expression("schema1.table1 AS t1").source(SQLType.MYSQL),
-                          "schema1.table1 AS t1")
+                          "`schema1.table1` AS t1")
 
     def test_column_expression(self):
         """测试解析列表达式"""
@@ -189,9 +196,11 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_select_clause("SELECT column1 AS c1"))
         self.assertFalse(SQLParser.check_select_clause("FROM table1"))
         self.assertEqual(
-            SQLParser.parse_select_clause("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1").source(SQLType.MYSQL),
-            "SELECT column1 AS c1, TRIM(column2) AS c2")
-        self.assertEqual(SQLParser.parse_select_clause("SELECT column1 AS c1").source(SQLType.MYSQL), "SELECT column1 AS c1")
+            SQLParser.parse_select_clause("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1").source(
+                SQLType.MYSQL),
+            "SELECT `column1` AS c1, TRIM(`column2`) AS c2")
+        self.assertEqual(SQLParser.parse_select_clause("SELECT column1 AS c1").source(SQLType.MYSQL),
+                         "SELECT `column1` AS c1")
 
     def test_from_clause(self):
         """测试判断、解析 FROM 子句"""
@@ -200,8 +209,9 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_from_clause("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
         self.assertEqual(SQLParser.parse_from_clause("FROM schema1.table1 AS t1").source(SQLType.MYSQL),
                          "FROM `schema1.table1` AS t1")
-        self.assertEqual(SQLParser.parse_from_clause("FROM schema1.table1 AS t1, schema2.table2 AS t2").source(SQLType.MYSQL),
-                         "FROM `schema1.table1` AS t1, `schema2.table2` AS t2")
+        self.assertEqual(
+            SQLParser.parse_from_clause("FROM schema1.table1 AS t1, schema2.table2 AS t2").source(SQLType.MYSQL),
+            "FROM `schema1.table1` AS t1, `schema2.table2` AS t2")
 
     def test_join_clause(self):
         """测试判断、解析 JOIN 子句"""
@@ -210,10 +220,11 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_join_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertEqual(
             SQLParser.parse_join_clause("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1").source(SQLType.MYSQL),
-            "LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1")
+            "LEFT JOIN `table2` AS t2 ON `t1`.`column1` = `t2`.`column1`")
         self.assertEqual(
-            SQLParser.parse_join_clause("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1").source(SQLType.MYSQL),
-            "LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1")
+            SQLParser.parse_join_clause("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1").source(
+                SQLType.MYSQL),
+            "LEFT JOIN `schema2.table2` AS t2 ON `t1`.`column1` = `t2`.`column1`")
 
     def test_where_clause(self):
         """测试判断、解析 WHERE 子句"""
@@ -222,11 +233,12 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_where_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertFalse(SQLParser.check_where_clause("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertEqual(SQLParser.parse_where_clause("WHERE column1 > 3 AND column2 > 2").source(SQLType.MYSQL),
-                         "WHERE column1 > 3 AND column2 > 2")
+                         "WHERE `column1` > 3 AND `column2` > 2")
         self.assertEqual(SQLParser.parse_where_clause("WHERE column1 > 3 OR column2 > 2").source(SQLType.MYSQL),
-                         "WHERE column1 > 3 OR column2 > 2")
-        self.assertEqual(SQLParser.parse_where_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4").source(SQLType.MYSQL),
-                         "WHERE column1 > 3 OR column2 BETWEEN 2 AND 4")
+                         "WHERE `column1` > 3 OR `column2` > 2")
+        self.assertEqual(
+            SQLParser.parse_where_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4").source(SQLType.MYSQL),
+            "WHERE `column1` > 3 OR `column2` BETWEEN 2 AND 4")
 
     def test_group_by_clause(self):
         """测试判断、解析 GROUP BY 子句"""
@@ -234,9 +246,9 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_group_by_clause("GROUP BY trim(column1) ASC, column2"))
         self.assertFalse(SQLParser.check_group_by_clause("WHERE trim(column1) IS NOT NULL"))
         self.assertEqual(SQLParser.parse_group_by_clause("GROUP BY column1, column2").source(SQLType.MYSQL),
-                         "GROUP BY column1, column2")
+                         "GROUP BY `column1`, `column2`")
         self.assertEqual(SQLParser.parse_group_by_clause("GROUP BY trim(column1), column2").source(SQLType.MYSQL),
-                         "GROUP BY trim(column1), column2")
+                         "GROUP BY trim(`column1`), `column2`")
 
     def test_having_clause(self):
         """测试判断、解析 HAVING 子句"""
@@ -245,11 +257,12 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_having_clause("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertFalse(SQLParser.check_having_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertEqual(SQLParser.parse_having_clause("HAVING column1 > 3 AND column2 > 2").source(SQLType.MYSQL),
-                         "HAVING column1 > 3 AND column2 > 2")
+                         "HAVING `column1` > 3 AND `column2` > 2")
         self.assertEqual(SQLParser.parse_having_clause("HAVING column1 > 3 OR column2 > 2").source(SQLType.MYSQL),
-                         "HAVING column1 > 3 OR column2 > 2")
-        self.assertEqual(SQLParser.parse_having_clause("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4").source(SQLType.MYSQL),
-                         "HAVING column1 > 3 OR column2 BETWEEN 2 AND 4")
+                         "HAVING `column1` > 3 OR `column2` > 2")
+        self.assertEqual(
+            SQLParser.parse_having_clause("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4").source(SQLType.MYSQL),
+            "HAVING `column1` > 3 OR `column2` BETWEEN 2 AND 4")
 
     def test_order_by_clause(self):
         """测试判断、解析 ORDER BY 子句"""
@@ -258,11 +271,11 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_order_by_clause("ORDER BY trim(column1) ASC, column2"))
         self.assertFalse(SQLParser.check_order_by_clause("WHERE trim(column1) IS NOT NULL"))
         self.assertEqual(SQLParser.parse_order_by_clause("ORDER BY column1, column2").source(SQLType.MYSQL),
-                         "ORDER BY column1, column2")
+                         "ORDER BY `column1`, `column2`")
         self.assertEqual(SQLParser.parse_order_by_clause("ORDER BY column1, column2 DESC").source(SQLType.MYSQL),
-                         "ORDER BY column1, column2 DESC")
+                         "ORDER BY `column1`, `column2` DESC")
         self.assertEqual(SQLParser.parse_order_by_clause("ORDER BY trim(column1) ASC, column2").source(SQLType.MYSQL),
-                         "ORDER BY trim(column1), column2")
+                         "ORDER BY trim(`column1`), `column2`")
 
     def test_limit_clause(self):
         """测试判断、解析 LIMIT 子句"""
