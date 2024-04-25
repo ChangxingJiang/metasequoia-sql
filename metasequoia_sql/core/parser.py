@@ -14,8 +14,8 @@ TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处�
 
 from typing import Optional, Tuple, List, Union
 
-from metasequoia_sql.lexical import (AST, ASTMark, ASTSingle, ASTLiteralInteger, ASTLiteralFloat, ASTLiteralString,
-                                     ASTLiteralHex, ASTLiteralBool, ASTLiteralBit, ASTLiteralNull, ASTParser)
+from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, AMTLiteralInteger, AMTLiteralFloat, AMTLiteralString,
+                                     AMTLiteralHex, AMTLiteralBool, AMTLiteralBit, AMTLiteralNull, ASTParser)
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core.objects import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
@@ -187,31 +187,31 @@ class SQLParser:
     def check_literal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        return scanner.search(ASTMark.LITERAL) or scanner.search("-")
+        return scanner.search(AMTMark.LITERAL) or scanner.search("-")
 
     @classmethod
     def parse_literal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLLiteralExpression:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        token: AST = scanner.pop()
-        if isinstance(token, ASTLiteralInteger):
+        token: AMTBase = scanner.pop()
+        if isinstance(token, AMTLiteralInteger):
             return SQLLiteralIntegerExpression(value=token.literal_value)
-        if isinstance(token, ASTLiteralFloat):
+        if isinstance(token, AMTLiteralFloat):
             return SQLLiteralFloatExpression(value=token.literal_value)
-        if isinstance(token, ASTLiteralString):
+        if isinstance(token, AMTLiteralString):
             return SQLLiteralStringExpression(value=token.literal_value)
-        if isinstance(token, ASTLiteralHex):
+        if isinstance(token, AMTLiteralHex):
             return SQLLiteralHexExpression(value=token.literal_value)
-        if isinstance(token, ASTLiteralBool):
+        if isinstance(token, AMTLiteralBool):
             return SQLLiteralBoolExpression(value=token.literal_value)
-        if isinstance(token, ASTLiteralBit):
+        if isinstance(token, AMTLiteralBit):
             return SQLLiteralBitExpression(value=token.literal_value)
-        if isinstance(token, ASTLiteralNull):
+        if isinstance(token, AMTLiteralNull):
             return SQLLiteralNullExpression()
-        if token.equals("-") and isinstance(scanner.now, ASTLiteralInteger):
+        if token.equals("-") and isinstance(scanner.now, AMTLiteralInteger):
             next_token = scanner.pop()
             return SQLLiteralIntegerExpression(value=-next_token.literal_value)
-        if token.equals("-") and isinstance(scanner.now, ASTLiteralFloat):
+        if token.equals("-") and isinstance(scanner.now, AMTLiteralFloat):
             next_token = scanner.pop()
             return SQLLiteralFloatExpression(value=-next_token.literal_value)
         raise SqlParseError(f"未知的字面值: {token}")
@@ -221,26 +221,26 @@ class SQLParser:
         """是否可能为列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         return not scanner.is_finish and (
-                (scanner.now.equals(ASTMark.NAME) and
+                (scanner.now.equals(AMTMark.NAME) and
                  (scanner.next1 is None or (
-                         not scanner.next1.equals(".") and not scanner.next1.equals(ASTMark.PARENTHESIS)))) or
-                (scanner.now.equals(ASTMark.NAME) and
+                         not scanner.next1.equals(".") and not scanner.next1.equals(AMTMark.PARENTHESIS)))) or
+                (scanner.now.equals(AMTMark.NAME) and
                  scanner.next1 is not None and scanner.next1.equals(".") and
-                 scanner.next2 is not None and scanner.next2.equals(ASTMark.NAME) and
-                 (scanner.next3 is None or not scanner.next3.equals(ASTMark.PARENTHESIS)))
+                 scanner.next2 is not None and scanner.next2.equals(AMTMark.NAME) and
+                 (scanner.next3 is None or not scanner.next3.equals(AMTMark.PARENTHESIS)))
         )
 
     @classmethod
     def parse_column_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLColumnNameExpression:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if (scanner.search(ASTMark.NAME, ".", ASTMark.NAME) and
-                not scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS)):
+        if (scanner.search(AMTMark.NAME, ".", AMTMark.NAME) and
+                not scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS)):
             table_name = scanner.pop_as_source()
             scanner.pop()
             column_name = scanner.pop_as_source()
             return SQLColumnNameExpression(table=cls._unify_name(table_name), column=cls._unify_name(column_name))
-        if scanner.search(ASTMark.NAME) and not scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.NAME) and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS):
             return SQLColumnNameExpression(column=cls._unify_name(scanner.pop_as_source()))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
@@ -248,8 +248,8 @@ class SQLParser:
     def check_function_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """是否可能为函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        return (scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS) or
-                scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS))
+        return (scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS) or
+                scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS))
 
     @classmethod
     def parse_cast_data_type(cls, scanner_or_string: Union[TokenScanner, str]) -> EnumCastDataType:
@@ -268,7 +268,7 @@ class SQLParser:
         scanner.match("AS")
         signed = scanner.search_and_move("SIGNED")
         cast_type = cls.parse_cast_data_type(scanner)
-        if scanner.search(ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()
             cast_params: Optional[List[SQLGeneralExpression] | Tuple[SQLGeneralExpression, ...]] = []
             for param_scanner in parenthesis_scanner.split_by(","):
@@ -311,9 +311,9 @@ class SQLParser:
     def parse_function_name(cls, scanner_or_string: Union[TokenScanner, str]) -> Tuple[Optional[str], str]:
         """解析函数表达式函数的 schema 名和 function 名"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search(ASTMark.NAME, ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS):
             return None, scanner.pop_as_source()
-        if scanner.search(ASTMark.NAME, ".", ASTMark.NAME, ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             return cls._unify_name(schema_name), cls._unify_name(scanner.pop_as_source())
@@ -336,7 +336,7 @@ class SQLParser:
         if function_name.upper() == "SUBSTRING":
             # 将 MySQL 和 PostgreSQL 中的 "SUBSTRING(str1 FROM 3 FOR 2)" 格式化为 "SUBSTRING(str1, 3, 2)"
             parenthesis_scanner = TokenScanner([
-                element if not element.equals("FROM") and not element.equals("FOR") else ASTSingle(",")
+                element if not element.equals("FROM") and not element.equals("FOR") else AMTBaseSingle(",")
                 for element in parenthesis_scanner.elements])
 
         is_distinct = False
@@ -365,7 +365,7 @@ class SQLParser:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         array_expression = cls.parse_function_expression(scanner)
-        if scanner.is_finish or not scanner.search(ASTMark.ARRAY_INDEX):
+        if scanner.is_finish or not scanner.search(AMTMark.ARRAY_INDEX):
             return array_expression
         idx = int(scanner.pop_as_source().lstrip("[").rstrip("]"))
         return SQLArrayIndexExpression(array_expression=array_expression, idx=idx)
@@ -408,10 +408,10 @@ class SQLParser:
         """判断是否可能为窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         return not scanner.is_finish and (
-                scanner.now.equals(ASTMark.NAME) and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
-                scanner.next1 is not None and scanner.next1.equals(ASTMark.PARENTHESIS) and
+                scanner.now.equals(AMTMark.NAME) and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
+                scanner.next1 is not None and scanner.next1.equals(AMTMark.PARENTHESIS) and
                 scanner.next2 is not None and scanner.next2.equals("OVER") and
-                scanner.next3 is not None and scanner.next3.equals(ASTMark.PARENTHESIS))
+                scanner.next3 is not None and scanner.next3.equals(AMTMark.PARENTHESIS))
 
     @classmethod
     def parse_window_row(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLWindowRow:
@@ -468,7 +468,7 @@ class SQLParser:
     def check_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否可能为通配符表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        return scanner.search("*") or scanner.search(ASTMark.NAME, ".", "*")
+        return scanner.search("*") or scanner.search(AMTMark.NAME, ".", "*")
 
     @classmethod
     def parse_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> SQLWildcardExpression:
@@ -476,7 +476,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search_and_move("*"):
             return SQLWildcardExpression()
-        if scanner.search(ASTMark.NAME, ".", "*"):
+        if scanner.search(AMTMark.NAME, ".", "*"):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             scanner.pop()
@@ -489,7 +489,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
 
         def parse_single():
-            if scanner.search(ASTMark.PARENTHESIS):
+            if scanner.search(AMTMark.PARENTHESIS):
                 parenthesis_scanner = scanner.pop_as_children_scanner()
                 elements.append(cls.parse_condition_expression(parenthesis_scanner))  # 插入语，子句也应该是一个条件表达式
                 parenthesis_scanner.close()
@@ -602,7 +602,7 @@ class SQLParser:
             return cls.parse_literal_expression(scanner)
         if cls.check_column_name_expression(scanner):
             return cls.parse_column_name_expression(scanner)
-        if scanner.search(ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.PARENTHESIS):
             return cls._parse_general_parenthesis(scanner)
         if cls.check_wildcard_expression(scanner):
             return cls.parse_wildcard_expression(scanner)
@@ -641,12 +641,12 @@ class SQLParser:
                                     ) -> Union[SQLTableNameExpression, SQLSubQueryExpression]:
         """解析表名表达式或子查询表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search(ASTMark.NAME, ".", ASTMark.NAME):
+        if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
             return SQLTableNameExpression(schema=cls._unify_name(schema_name), table=cls._unify_name(table_name))
-        if scanner.search(ASTMark.NAME):
+        if scanner.search(AMTMark.NAME):
             name_source = scanner.pop_as_source()
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
@@ -661,7 +661,7 @@ class SQLParser:
     def check_alias_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否可能为别名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        return not scanner.is_finish and (scanner.search("AS") or scanner.search(ASTMark.NAME))
+        return not scanner.is_finish and (scanner.search("AS") or scanner.search(AMTMark.NAME))
 
     @classmethod
     def parse_alias_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -680,7 +680,7 @@ class SQLParser:
             scanner.match("AS")
         else:
             scanner.search_and_move("AS")
-        if not scanner.search(ASTMark.NAME):
+        if not scanner.search(AMTMark.NAME):
             raise SqlParseError(f"无法解析为别名表达式: {scanner}")
         return SQLAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
 
@@ -725,7 +725,7 @@ class SQLParser:
         function_name: str = scanner.pop_as_source()
 
         # 解析字段类型参数
-        if scanner.search(ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.PARENTHESIS):
             function_params: List[SQLGeneralExpression] = []
             for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
                 function_params.append(cls.parse_general_expression(param_scanner))
@@ -813,7 +813,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         name = cls._unify_name(scanner.pop_as_source())
         max_length = None
-        if scanner.search(ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()
             max_length = int(parenthesis_scanner.pop_as_source())
             parenthesis_scanner.close()
@@ -1076,7 +1076,7 @@ class SQLParser:
             # 处理 GROUPING SETS 的语法
             grouping_list = []
             for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-                if grouping_scanner.search(ASTMark.PARENTHESIS):
+                if grouping_scanner.search(AMTMark.PARENTHESIS):
                     parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
                     columns_list = []
                     for parenthesis_scanner in parenthesis_scanner_list:
@@ -1281,7 +1281,7 @@ class SQLParser:
             partition = None
 
         # 匹配列名列表
-        if scanner.search(ASTMark.PARENTHESIS):
+        if scanner.search(AMTMark.PARENTHESIS):
             columns = []
             for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
                 columns.append(cls.parse_column_name_expression(column_scanner))
@@ -1292,7 +1292,7 @@ class SQLParser:
         # 匹配 VALUES 类型
         if scanner.search_and_move("VALUES"):
             values = []
-            while scanner.search(ASTMark.PARENTHESIS):
+            while scanner.search(AMTMark.PARENTHESIS):
                 values.append(cls.parse_value_expression(scanner))
                 scanner.search_and_move(",")
 

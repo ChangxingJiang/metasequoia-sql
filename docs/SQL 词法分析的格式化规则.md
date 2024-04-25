@@ -1,19 +1,3 @@
-## 单个元素节点
-
-| 节点名       | 节点类                    | 样例                   |
-| ------------ | ------------------------- | ---------------------- |
-| 空格         | `ast.ASTSpace`            | ` `（半角空格）        |
-| 换行符       | `ast.ASTLineBreak`        | `\n`（换行符）         |
-| 逗号         | `ast.ASTComma`            | `,`                    |
-| 分号         | `ast.ASTSemicolon`        | `;`                    |
-| 字面值整数   | `ast.ASTLiteralInteger`   | `123`                  |
-| 字面值浮点数 | `ast.ASTLiteralFloat`     | `123.45`               |
-| 字面值字符串 | `ast.ASTLiteralString`    | `"12345"` 或 `'12345'` |
-| 显式标识符   | `ast.ASTIdentifier`       | 使用 ` 框柱的字符串    |
-| 多行注释     | `ast.ASTMultiLineComment` | `/* abc */`            |
-
-
-
 状态机开发经验：
 
 - 使用一个类来维护状态机的所有上下文

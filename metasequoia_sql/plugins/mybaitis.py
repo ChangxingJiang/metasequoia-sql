@@ -16,7 +16,7 @@ from typing import Union, List, Optional, Any
 
 from metasequoia_sql import DataSource, SQLBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
-from metasequoia_sql.lexical import ASTParser, AstParseStatus, ASTSingle, ASTMark
+from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, SQLGeneralExpression, SQLSingleSelectStatement
 
@@ -54,7 +54,7 @@ class ASTParserMyBatis(ASTParser):
         origin = self.cache_get()
         if origin.startswith("#{") and origin.endswith("}"):
             self.cache_reset()
-            self.stack[-1].append(ASTSingle(origin, {ASTMark.NAME, ASTMark.CUSTOM}))
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME, AMTMark.CUSTOM}))
             return
         super().handle_end_word()
 
@@ -92,7 +92,7 @@ class SQLParserMyBatis(SQLParser):
                                          maybe_window: bool) -> SQLGeneralExpression:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search(ASTMark.CUSTOM):
+        if scanner.search(AMTMark.CUSTOM):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
         return super().parse_general_expression_element(scanner, maybe_window)
 

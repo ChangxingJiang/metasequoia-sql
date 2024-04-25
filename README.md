@@ -10,11 +10,11 @@ pip install metasequoia-sql
 
 ### 词法分析
 
-对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象语法树节点：
+对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象词法树节点（abstract morphology tree，AMT）。
 
 ### 句法分析
 
-对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
+对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的抽象语法树节点（abstract syntax tree，AST）：
 
 ```python
 from metasequoia_sql import *
@@ -46,7 +46,7 @@ pylint --max-line-length=120 metasequoia_sql
 FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
 
 - `analyzer`：分析器
-- `ast`：词法分析（主要使用有限状态自动机实现）
+- `lexical`：词法分析
 - `common`：遍历器工具
 - `core`：句法分析节点类
   - `abc`：抽象类（节点中不包含解析方法）
@@ -61,7 +61,7 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 字面值类型：[参考文档](https://deepinout.com/mysql/mysql-top-articles-mysql/1694052463_j_mysql-literals.html)
 
-- `ASTLiteralString`：字符串字面值
+- `AMTLiteralString`：字符串字面值
 
 ### 句法分析
 

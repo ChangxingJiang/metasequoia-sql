@@ -86,9 +86,9 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_column_name_expression("trim(column_name) AND"))
         self.assertFalse(SQLParser.check_column_name_expression("2.5 WHERE"))
         self.assertTrue(SQLParser.check_column_name_expression("column_name WHERE"))
-        self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(DataSource.MYSQL), "schema.column")
-        self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(DataSource.MYSQL), "s.c")
-        self.assertEqual(SQLParser.parse_column_name_expression("column_name WHERE").source(DataSource.MYSQL), "column_name")
+        self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(DataSource.MYSQL), "`schema`.`column`")
+        self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(DataSource.MYSQL), "`s`.`c`")
+        self.assertEqual(SQLParser.parse_column_name_expression("column_name WHERE").source(DataSource.MYSQL), "`column_name`")
 
     def test_function_expression(self):
         """测试判断、解析函数表达式"""
@@ -98,21 +98,21 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_function_expression("2.5 WHERE"))
         self.assertFalse(SQLParser.check_function_expression("column_name WHERE"))
         self.assertEqual(SQLParser.parse_function_expression("schema.function(param) AND").source(DataSource.MYSQL),
-                         "schema.function(param)")
+                         "`schema`.function(`param`)")
         self.assertEqual(SQLParser.parse_function_expression("`schema`.`function`(param) AND").source(DataSource.MYSQL),
-                         "schema.function(param)")
-        self.assertEqual(SQLParser.parse_function_expression("trim(column_name) AND").source(DataSource.MYSQL),
-                         "trim(column_name)")
+                         "`schema`.function(`param`)")
+        self.assertEqual(SQLParser.parse_function_expression("trim(`column_name`) AND").source(DataSource.MYSQL),
+                         "trim(`column_name`)")
 
     def test_bool_expression(self):
         """测试解析布尔值表达式"""
-        self.assertEqual(SQLParser.parse_bool_expression("column1 > 3").source(DataSource.MYSQL), "column1 > 3")
-        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 > 3").source(DataSource.MYSQL), "t2.column1 > 3")
-        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 + 3 > 3").source(DataSource.MYSQL), "t2.column1 + 3 > 3")
+        self.assertEqual(SQLParser.parse_bool_expression("column1 > 3").source(DataSource.MYSQL), "`column1` > 3")
+        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 > 3").source(DataSource.MYSQL), "`t2`.`column1` > 3")
+        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 + 3 > 3").source(DataSource.MYSQL), "`t2`.`column1` + 3 > 3")
         self.assertEqual(SQLParser.parse_bool_expression("column1 BETWEEN 3 AND 4").source(DataSource.MYSQL),
-                         "column1 BETWEEN 3 AND 4")
+                         "`column1` BETWEEN 3 AND 4")
         self.assertEqual(SQLParser.parse_bool_expression("column1 + 3 BETWEEN 3 AND 4").source(DataSource.MYSQL),
-                         "column1 + 3 BETWEEN 3 AND 4")
+                         "`column1` + 3 BETWEEN 3 AND 4")
 
     def test_window_expression(self):
         """测试判断、解析窗口表达式"""
@@ -134,19 +134,19 @@ class TestCoreParser(unittest.TestCase):
     def test_condition_expression(self):
         """测试解析条件表达式"""
         self.assertEqual(SQLParser.parse_condition_expression("column1 > 3 AND column2 > 2 WHERE").source(DataSource.MYSQL),
-                         "column1 > 3 AND column2 > 2")
+                         "`column1` > 3 AND `column2` > 2")
         self.assertEqual(SQLParser.parse_condition_expression("column1 > 3 OR column2 > 2 WHERE").source(DataSource.MYSQL),
-                         "column1 > 3 OR column2 > 2")
+                         "`column1` > 3 OR `column2` > 2")
         self.assertEqual(
             SQLParser.parse_condition_expression("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE").source(DataSource.MYSQL),
-            "column1 > 3 OR column2 BETWEEN 2 AND 4")
+            "`column1` > 3 OR `column2` BETWEEN 2 AND 4")
 
     def test_case_expression(self):
         """测试判断、解析 CASE 表达式"""
         self.assertTrue(SQLParser.check_case_expression("CASE WHEN 2 THEN 3 ELSE 4 END"))
         self.assertFalse(SQLParser.check_case_expression("3 + 5"))
         self.assertEqual(SQLParser.parse_case_expression("CASE WHEN a > 2 THEN 3 ELSE 4 END").source(DataSource.MYSQL),
-                         "CASE WHEN a > 2 THEN 3 ELSE 4 END")
+                         "CASE WHEN `a` > 2 THEN 3 ELSE 4 END")
 
     def test_table_name_expression(self):
         """测试解析报名表达式"""
@@ -177,11 +177,11 @@ class TestCoreParser(unittest.TestCase):
     def test_column_expression(self):
         """测试解析列表达式"""
         self.assertEqual(SQLParser.parse_column_expression("table1.column1 AS t1").source(DataSource.MYSQL),
-                         "table1.column1 AS t1")
+                         "`table1`.`column1` AS t1")
         self.assertEqual(SQLParser.parse_column_expression("3 + 5 AS t1").source(DataSource.MYSQL),
                          "3 + 5 AS t1")
         self.assertEqual(SQLParser.parse_column_expression("TRIM(column1) AS t1").source(DataSource.MYSQL),
-                         "TRIM(column1) AS t1")
+                         "TRIM(`column1`) AS t1")
 
     def test_select_clause(self):
         """测试判断、解析 SELECT 子句"""
@@ -199,9 +199,9 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_from_clause("FROM schema1.table1 AS t1, schema2.table2 AS t2"))
         self.assertFalse(SQLParser.check_from_clause("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
         self.assertEqual(SQLParser.parse_from_clause("FROM schema1.table1 AS t1").source(DataSource.MYSQL),
-                         "FROM schema1.table1 AS t1")
+                         "FROM `schema1.table1` AS t1")
         self.assertEqual(SQLParser.parse_from_clause("FROM schema1.table1 AS t1, schema2.table2 AS t2").source(DataSource.MYSQL),
-                         "FROM schema1.table1 AS t1, schema2.table2 AS t2")
+                         "FROM `schema1.table1` AS t1, `schema2.table2` AS t2")
 
     def test_join_clause(self):
         """测试判断、解析 JOIN 子句"""

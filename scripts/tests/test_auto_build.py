@@ -736,11 +736,11 @@ class TestSqlBasicTutorial(unittest.TestCase):
 
     def test_sbt_ch03_17(self):
         statement = SQLParser.parse_select_statement(SBT_CH03_17)
-        self.assertEqual(["shohin_bunrui", "*", "sb"], 
+        self.assertEqual(["shohin_bunrui", "*"],
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["shohin_bunrui", "*"], 
                          format_rule_1(CurrentSelectClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual(["sb"], 
+        self.assertEqual(["shohin_bunrui"],
                          format_rule_1(CurrentGroupByClauseUsedQuoteColumn.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
@@ -971,11 +971,11 @@ class TestSqlBasicTutorial(unittest.TestCase):
 
     def test_sbt_ch03_32(self):
         statement = SQLParser.parse_select_statement(SBT_CH03_32)
-        self.assertEqual(["shohin_id", "shohin_mei", "hanbai_tanka", "shiire_tanka", "ht", "id"], 
+        self.assertEqual(["shohin_id", "shohin_mei", "hanbai_tanka", "shiire_tanka"],
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["shohin_id", "shohin_mei", "hanbai_tanka", "shiire_tanka"], 
                          format_rule_1(CurrentSelectClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual(["ht", "id"], 
+        self.assertEqual(["hanbai_tanka", "shohin_id"],
                          format_rule_1(CurrentOrderByClauseUsedQuoteColumn.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
@@ -2511,11 +2511,11 @@ class TestSqlBasicTutorial(unittest.TestCase):
 
     def test_sbt_ch08_09(self):
         statement = SQLParser.parse_select_statement(SBT_CH08_09)
-        self.assertEqual(["shohin_mei", "shohin_bunrui", "hanbai_tanka", "ranking"], 
+        self.assertEqual(["shohin_mei", "shohin_bunrui", "hanbai_tanka"],
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["shohin_mei", "shohin_bunrui", "hanbai_tanka"], 
                          format_rule_1(CurrentSelectClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual(["ranking"], 
+        self.assertEqual(["hanbai_tanka"],
                          format_rule_1(CurrentOrderByClauseUsedQuoteColumn.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
