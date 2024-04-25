@@ -17,7 +17,7 @@ from typing import Optional, Tuple, List, Union
 from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, AMTLiteralInteger, AMTLiteralFloat, AMTLiteralString,
                                      AMTLiteralHex, AMTLiteralBool, AMTLiteralBit, AMTLiteralNull, ASTParser)
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.core.objects import *
+from metasequoia_sql.core.node import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
 

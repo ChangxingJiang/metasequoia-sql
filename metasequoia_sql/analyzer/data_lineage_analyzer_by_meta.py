@@ -12,7 +12,7 @@ from metasequoia_sql.analyzer.current_level_common_column import CurrentColumnSe
 from metasequoia_sql.analyzer.current_level_common_table import CurrentTableAliasToQuoteHash, \
     CurrentTableAliasToSubQueryHash
 from metasequoia_sql.analyzer.tool import check_node_type, SelectColumn, SourceColumn, SourceTable, QuoteNameColumn
-from metasequoia_sql.core import ASTSelectStatement, ASTCreateTableStatement, DataSource, \
+from metasequoia_sql.core import ASTSelectStatement, ASTCreateTableStatement, SQLType, \
     ASTInsertSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
@@ -183,7 +183,7 @@ class InsertColumnToSourceColumnHash(AnalyzerMetaBase):
                                            column_name=column.column)
                               for column in node.columns]
         else:
-            full_table_name = node.table_name.source(DataSource.DEFAULT)
+            full_table_name = node.table_name.source(SQLType.DEFAULT)
             create_table_statement = self.create_table_statement_getter.get_statement(full_table_name)
             # TODO 兼容动态分区和非动态分区
             insert_columns = [SourceColumn(schema_name=node.table_name.schema,

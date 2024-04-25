@@ -7,7 +7,7 @@ import dataclasses
 from typing import Any, Optional, List, Dict
 
 from metasequoia_sql.analyzer.tool import check_node_type, CreateTableStatementGetter
-from metasequoia_sql.core.objects import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
+from metasequoia_sql.core.node import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["AnalyzerBase",

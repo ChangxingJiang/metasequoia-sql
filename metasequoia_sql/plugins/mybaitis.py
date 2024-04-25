@@ -14,7 +14,7 @@ import dataclasses
 import enum
 from typing import Union, List, Optional, Any
 
-from metasequoia_sql import DataSource, ASTBase
+from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
 from metasequoia_sql.common import TokenScanner
@@ -73,7 +73,7 @@ class SQLMyBatisExpression(ASTGeneralExpression):
 
     mybatis_source: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: DataSource) -> str:
+    def source(self, data_source: SQLType) -> str:
         return self.mybatis_source
 
 
@@ -104,7 +104,7 @@ class GetAllMybatisParams(AnalyzerRecursionListBase):
     def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(DataSource.DEFAULT)[2:-1]]
+            return [node.source(SQLType.DEFAULT)[2:-1]]
         return None
 
 
@@ -115,7 +115,7 @@ class GetMybatisParamInWhereClause(AnalyzerRecursionListBase):
     def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(DataSource.DEFAULT)[2:-1]]
+            return [node.source(SQLType.DEFAULT)[2:-1]]
         if isinstance(node, ASTSingleSelectStatement):
             return cls.handle_node(node.where_clause)
         return None
@@ -128,7 +128,7 @@ class GetMybatisParamInGroupByClause(AnalyzerRecursionListBase):
     def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(DataSource.DEFAULT)[2:-1]]
+            return [node.source(SQLType.DEFAULT)[2:-1]]
         if isinstance(node, ASTSingleSelectStatement):
             return cls.handle_node(node.group_by_clause)
         return None
@@ -142,7 +142,7 @@ if __name__ == "__main__":
         statements = SQLParserMyBatis.parse_statements(test_sql)
         for statement in statements:
             print(statement)
-            print(statement.source(DataSource.MYSQL))
+            print(statement.source(SQLType.MYSQL))
             print(CurrentUsedQuoteColumn.handle(statement))
             print(GetAllMybatisParams().handle(statement))
             print(GetMybatisParamInWhereClause().handle(statement))
