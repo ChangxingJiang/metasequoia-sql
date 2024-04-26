@@ -20,7 +20,7 @@ class StandardTable:
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class StandColumn:
+class StandardColumn:
     """标准字段对象"""
 
     column_idx: int = dataclasses.field(kw_only=True)  # 字段序号
