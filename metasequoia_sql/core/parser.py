@@ -1429,7 +1429,7 @@ class SQLParser:
         scanner.search_and_move(";")
 
         return ASTCreateTableStatement(
-            table_name_expression=table_name_expression,
+            table_name=table_name_expression,
             comment=comment,
             if_not_exists=if_not_exists,
             columns=tuple(columns),

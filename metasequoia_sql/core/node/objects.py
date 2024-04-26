@@ -1404,7 +1404,7 @@ class ASTSetStatement(ASTBase):
 class ASTCreateTableStatement(ASTBase):
     """【DDL】CREATE TABLE 语句"""
 
-    table_name_expression: ASTTableNameExpression = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     if_not_exists: bool = dataclasses.field(kw_only=True)
     columns: Optional[Tuple[ASTDefineColumnExpression, ...]] = dataclasses.field(kw_only=True)
     primary_key: Optional[ASTPrimaryIndexExpression] = dataclasses.field(kw_only=True)
@@ -1427,7 +1427,7 @@ class ASTCreateTableStatement(ASTBase):
     tblproperties: Optional[Tuple[Tuple[ASTConfigNameExpression, ASTConfigValueExpression], ...]] = dataclasses.field(
         kw_only=True, default=None)  # Hive
 
-    def set_table_name_expression(self, table_name_expression: ASTTableNameExpression):
+    def set_table_name(self, table_name_expression: ASTTableNameExpression):
         table_params = self.get_params_dict()
         table_params["table_name_expression"] = table_name_expression
         return ASTCreateTableStatement(**table_params)
@@ -1525,4 +1525,4 @@ class ASTCreateTableStatement(ASTBase):
 
     def _title_str(self, data_source: SQLType) -> str:
         is_not_exists_str = " IF NOT EXISTS" if self.if_not_exists is True else ""
-        return f"CREATE TABLE{is_not_exists_str} {self.table_name_expression.source(data_source)}"
+        return f"CREATE TABLE{is_not_exists_str} {self.table_name.source(data_source)}"

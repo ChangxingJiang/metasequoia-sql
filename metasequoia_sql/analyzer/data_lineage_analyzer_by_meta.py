@@ -25,8 +25,8 @@ class SelectColumnFromCreateTableStatement(AnalyzerBase):
     def handle(cls, node: ASTCreateTableStatement) -> Dict[SelectColumn, List[SourceColumn]]:
         """处理逻辑"""
         result = {}
-        schema_name = node.table_name_expression.schema if node.table_name_expression.schema is not None else ""
-        table_name = node.table_name_expression.table
+        schema_name = node.table_name.schema if node.table_name.schema is not None else ""
+        table_name = node.table_name.table
         for column_idx, column_expression in enumerate(node.columns):
             column_name = column_expression.column_name
             select_column = SelectColumn(column_idx=column_idx, column_name=column_name)
