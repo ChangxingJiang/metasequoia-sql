@@ -1429,7 +1429,7 @@ class ASTCreateTableStatement(ASTBase):
 
     def set_table_name(self, table_name_expression: ASTTableNameExpression):
         table_params = self.get_params_dict()
-        table_params["table_name_expression"] = table_name_expression
+        table_params["table_name"] = table_name_expression
         return ASTCreateTableStatement(**table_params)
 
     def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):
