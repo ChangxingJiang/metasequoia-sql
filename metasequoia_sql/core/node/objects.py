@@ -10,6 +10,7 @@
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
 TODO 继续拆分抽象语法树节点文件
+TODO 尽可能移除固定数量的元组
 """
 
 import abc
@@ -911,6 +912,7 @@ class ASTIndexExpression(ASTBase, abc.ABC):
     """声明索引表达式
 
     TODO 将 key_block_size 改为配置
+    TODO 合并不同索引类型的 source 函数
     """
 
     name: Optional[str] = dataclasses.field(kw_only=True, default=None)
@@ -1027,7 +1029,7 @@ class ASTDefineColumnExpression(ASTBase):
 
 
 # ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
-
+# TODO 移除 ConfigName 和 ConfigValue 类型，合并为一整条 ConfigValue 类型
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTConfigNameExpression(ASTBase):

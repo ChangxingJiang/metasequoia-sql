@@ -1,5 +1,7 @@
 """
 枚举类抽象语法树节点
+
+TODO 统一枚举类节点值，统一为列表格式
 """
 
 import dataclasses
@@ -47,11 +49,11 @@ class EnumInsertType(enum.Enum):
 class ASTInsertType(ASTBase):
     """插入类型"""
 
-    insert_type: EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
+    enum: EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(self.insert_type.value)
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 关联类型 ----------------------------------------
@@ -74,11 +76,11 @@ class EnumJoinType(enum.Enum):
 class ASTJoinType(ASTBase):
     """关联类型"""
 
-    join_type: EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
+    enum: EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(self.join_type.value)
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 排序类型 ----------------------------------------
@@ -94,11 +96,11 @@ class EnumOrderType(enum.Enum):
 class ASTOrderType(ASTBase):
     """排序类型"""
 
-    order_type: EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
+    enum: EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return self.order_type.value
+        return self.enum.value
 
 
 # ---------------------------------------- 组合类型 ----------------------------------------
@@ -117,11 +119,11 @@ class EnumUnionType(enum.Enum):
 class ASTUnionType(ASTBase):
     """组合类型"""
 
-    union_type: EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
+    enum: EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(self.union_type.value)
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 比较运算符 ----------------------------------------
@@ -146,11 +148,11 @@ class EnumCompareOperator(enum.Enum):
 class ASTCompareOperator(ASTBase):
     """比较运算符"""
 
-    compare_operator: EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
+    enum: EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return self.compare_operator.value
+        return self.enum.value
 
 
 # ---------------------------------------- 计算运算符 ----------------------------------------
@@ -169,16 +171,16 @@ class EnumComputeOperator(enum.Enum):
 class ASTComputeOperator(ASTBase):
     """计算运算符"""
 
-    compute_operator: EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
+    enum: EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.compute_operator == EnumComputeOperator.MOD and data_source != SQLType.SQL_SERVER:
+        if self.enum == EnumComputeOperator.MOD and data_source != SQLType.SQL_SERVER:
             raise UnSupportDataSourceError(f"{data_source} 不支持使用 % 运算符")
-        if (self.compute_operator == EnumComputeOperator.CONCAT
+        if (self.enum == EnumComputeOperator.CONCAT
                 and data_source not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
             raise UnSupportDataSourceError(f"{data_source} 不支持使用 || 运算符")
-        return self.compute_operator.value
+        return self.enum.value
 
 
 # ---------------------------------------- 逻辑运算符 ----------------------------------------
@@ -195,8 +197,8 @@ class EnumLogicalOperator(enum.Enum):
 class ASTLogicalOperator(ASTBase):
     """逻辑运算符"""
 
-    logical_operator: EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
+    enum: EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return self.logical_operator.value
+        return self.enum.value

@@ -5,6 +5,8 @@
 - 定值叶节点：不包含子节点，且 source 返回定值的对象
 - 非定值叶节点：不包含子节点，但 source 返回值不固定的对象
 - 中间节点（插入语节点）：包含子节点的节点
+
+TODO 优化字面值的处理规则
 """
 
 import abc
@@ -18,7 +20,6 @@ __all__ = [
     "AMTBase", "AMTMark", "AMTBaseSingle", "AMTBaseParenthesis", "AMTLiteralInteger", "AMTLiteralFloat",
     "AMTLiteralString", "AMTLiteralHex", "AMTLiteralBool", "AMTLiteralBit", "AMTLiteralNull"
 ]
-
 
 
 class AMTMark(enum.Enum):

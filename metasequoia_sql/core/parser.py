@@ -70,9 +70,9 @@ class SQLParser:
         """解析插入类型"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search_and_move("INSERT", "INTO"):
-            return ASTInsertType(insert_type=EnumInsertType.INSERT_INTO)
+            return ASTInsertType(enum=EnumInsertType.INSERT_INTO)
         if scanner.search_and_move("INSERT", "OVERWRITE"):
-            return ASTInsertType(insert_type=EnumInsertType.INSERT_OVERWRITE)
+            return ASTInsertType(enum=EnumInsertType.INSERT_OVERWRITE)
         raise SqlParseError(f"未知的 INSERT 类型: {scanner}")
 
     @classmethod
@@ -90,7 +90,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         for join_type in EnumJoinType:
             if scanner.search_and_move(*join_type.value):
-                return ASTJoinType(join_type=join_type)
+                return ASTJoinType(enum=join_type)
         raise SqlParseError(f"无法解析的关联类型: {scanner}")
 
     @classmethod
@@ -103,10 +103,10 @@ class SQLParser:
         """解析排序类型"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search_and_move("DESC"):
-            return ASTOrderType(order_type=EnumOrderType.DESC)
+            return ASTOrderType(enum=EnumOrderType.DESC)
         if scanner.search_and_move("ASC"):
-            return ASTOrderType(order_type=EnumOrderType.ASC)
-        return ASTOrderType(order_type=EnumOrderType.ASC)
+            return ASTOrderType(enum=EnumOrderType.ASC)
+        return ASTOrderType(enum=EnumOrderType.ASC)
 
     @classmethod
     def check_union_type(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -123,7 +123,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         for union_type in EnumUnionType:
             if scanner.search_and_move(*union_type.value):
-                return ASTUnionType(union_type=union_type)
+                return ASTUnionType(enum=union_type)
         raise SqlParseError(f"无法解析的组合类型: {scanner}")
 
     @classmethod
@@ -147,7 +147,7 @@ class SQLParser:
         }
         compare_operator = compare_operator_hash.get(scanner.pop_as_source())
         if compare_operator is not None:
-            return ASTCompareOperator(compare_operator=compare_operator)
+            return ASTCompareOperator(enum=compare_operator)
         raise SqlParseError(f"无法解析的比较运算符: {scanner}")
 
     @classmethod
@@ -165,7 +165,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         for compute_operator in EnumComputeOperator:
             if scanner.search_and_move(compute_operator.value):
-                return ASTComputeOperator(compute_operator=compute_operator)
+                return ASTComputeOperator(enum=compute_operator)
         raise SqlParseError(f"无法解析的计算运算符: {scanner}")
 
     @classmethod
@@ -180,7 +180,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         for logical_operator in EnumLogicalOperator:
             if scanner.search_and_move(logical_operator.value):
-                return ASTLogicalOperator(logical_operator=logical_operator)
+                return ASTLogicalOperator(enum=logical_operator)
         raise SqlParseError(f"无法解析的逻辑运算符: {scanner}")
 
     @classmethod

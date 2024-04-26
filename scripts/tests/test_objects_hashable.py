@@ -24,7 +24,7 @@ class TestObjectsHashable(unittest.TestCase):
         self.assertEqual("node3", test_dict[node3])
 
     def test_insert_type(self):
-        hash(node.ASTInsertType(insert_type=node.EnumInsertType.INSERT_INTO))
+        hash(node.ASTInsertType(enum=node.EnumInsertType.INSERT_INTO))
 
     def test_normal_function_expression(self):
         hash(node.ASTNormalFunctionExpression(function_name="TEST", function_params=tuple()))
