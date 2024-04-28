@@ -22,11 +22,12 @@
 from typing import List, Tuple
 
 from metasequoia_sql.analyzer.data_linage import node
+from metasequoia_sql.core import ASTCreateTableStatement
 
-__all__ = ["TableLineageAnalyzer"]
+__all__ = ["TableLineage"]
 
 
-class TableLineageAnalyzer:
+class TableLineage:
     """表数据血缘分析器"""
 
     def __init__(self, data_lineage: List[Tuple[node.StandardColumn, List[node.SourceColumn]]]):
@@ -38,6 +39,18 @@ class TableLineageAnalyzer:
             self._column_name_list.append(column_name)
             self._column_name_to_standard_column_hash[column_name] = standard_column
             self._column_name_to_source_column_list_hash[column_name] = source_column_list
+
+    @staticmethod
+    def by_create_table_statement(ast: ASTCreateTableStatement):
+        data_lineage = []
+        schema_name = ast.table_name.schema if ast.table_name.schema is not None else ""
+        table_name = ast.table_name.table
+        for column_idx, column_expression in enumerate(ast.columns):
+            column_name = column_expression.column_name
+            select_column = node.StandardColumn(column_idx=column_idx, column_name=column_name)
+            source_column = node.SourceColumn(schema_name=schema_name, table_name=table_name, column_name=column_name)
+            data_lineage.append((select_column, [source_column]))
+        return TableLineage(data_lineage)
 
     def has_column(self, column_name: str) -> bool:
         """查询是否包含字段名：如果包含该字段名则返回 True，否则返回 False（不支持通配符）"""

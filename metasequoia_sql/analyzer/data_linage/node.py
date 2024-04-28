@@ -20,6 +20,10 @@ class StandardTable:
     schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 所属模式名
     table_name: str = dataclasses.field(kw_only=True)  # 表名
 
+    def source(self):
+        """引用字段的源代码"""
+        return f"{self.schema_name}.{self.table_name}" if self.schema_name else f"{self.table_name}"
+
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class StandardColumn:
