@@ -1,10 +1,29 @@
 """
 数据血缘分析器
+
+描述一个表的数据血缘，这个表可以是 `WITH` 语句生成的临时表，子查询的中间表或 `SELECT` 语句返回的表结果。
+
+这个对象是固定的，一旦构造完成后，仅允许查询，不允许修改。
+
+该对象存储如下信息：
+
+- 表中的所有字段（有序）
+- 表中每个字段对应的源数据字段
+
+该对象支持如下查询方法：
+
+- 查询是否包含字段名（`has_column`）：如果包含该字段名则返回 True，否则返回 False（不支持通配符）
+- 返回字段名的标准字段对象（`get_standard_column`）：返回指定字段名的标准字段对象（不支持通配符）
+- 返回字段名的上游源字段对象的列表（`get_source_column_list`）：返回指定字段名的源字段对象的列表（不支持通配符）
+- 返回所有标准字段对象的列表（`get_all_standard_columns`）：返回所有标准字段对象的有序列表（通配符场景）
+- 返回所有上游源字段对象的列表的列表（`get_all_source_column_lists`）：返回所有上游源字段对象的列表的有序列表（通配符场景）
 """
 
 from typing import List, Tuple
 
 from metasequoia_sql.analyzer.data_linage import node
+
+__all__ = ["TableLineageAnalyzer"]
 
 
 class TableLineageAnalyzer:
