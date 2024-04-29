@@ -13,7 +13,8 @@ from metasequoia_sql.errors import AnalyzerError
 __all__ = ["AnalyzerBase",
            "AnalyzerRecursionBase", "AnalyzerRecursionListBase", "AnalyzerRecursionDictBase",
            "AnalyzerSelectBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase",
-           "AnalyzerMetaBase"]
+           "AnalyzerMetaBase",
+           "AnalyzerRecursionASTToDictBase"]
 
 
 class AnalyzerBase(abc.ABC):
@@ -208,3 +209,29 @@ class AnalyzerMetaBase(AnalyzerBase, abc.ABC):
     @abc.abstractmethod
     def handle(self, node: ASTBase) -> Any:
         """入口函数"""
+
+
+class AnalyzerRecursionASTToDictBase(abc.ABC):
+    """语法树递归，并返回字典的分析器的抽象基类"""
+
+    @classmethod
+    @abc.abstractmethod
+    def handle(cls, node: object) -> dict:
+        """入口函数"""
+
+    @classmethod
+    def default_handle_node(cls, obj: object) -> dict:
+        """默认的处理规则（递归聚合包含元素的结果）"""
+        if obj is None:
+            return {}
+        if isinstance(obj, ASTBase):
+            collector = {}
+            for field in dataclasses.fields(obj):
+                collector.update(cls.handle(getattr(obj, field.name)))
+            return collector
+        if isinstance(obj, (list, set, tuple)):
+            collector = {}
+            for item in obj:
+                collector.update(cls.handle(item))
+            return collector
+        return {}

@@ -21,6 +21,8 @@
   - 如果引用字段对象有所属表名，且为通配符，则调用 `get_table` 方法获取表数据血缘对象，然后调用表数据血缘对象的 `get_all_source_column_lists` 方法
   - 如果引用字段对象没有所属表名，且不是通配符，则遍历当前层所有上游表，逐个使用 `has_column` 查询是否存在字段，如果存在；如果存在超过 2 个，则抛出异常；如果存在 1个，则然后调用表数据血缘对象的 `get_source_column_list` 方法
   - 如果引用字段对象没有所属表名，且为通配符，则遍历当前层所有上游表，逐个调用表数据血缘对象的 `get_all_source_column_lists` 方法
+
+TODO 增加对相关子查询的支持
 """
 
 from typing import Dict, List
@@ -29,10 +31,10 @@ from metasequoia_sql.analyzer.data_linage.table_lineage import TableLineage
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter
 from metasequoia_sql.analyzer.data_linage.node import StandardTable
 
-__all__ = ["TableLineageManager"]
+__all__ = ["TableLineageAnalyzer"]
 
 
-class TableLineageManager:
+class TableLineageAnalyzer:
     """表数据血缘管理器"""
 
     def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
