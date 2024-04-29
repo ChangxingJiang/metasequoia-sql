@@ -1,35 +1,14 @@
 """
 表数据血缘分析器
-
-类名：`TableLineageAnalyzer`
-
-构造方法：提供一个建表语句获取器。
-
-提供的核心方法：
-- 添加临时表：输入 `WITH` 生成的临时表名，以及对应的表数据血缘容器（`TableDataLineageContainer`）
-- 进入子查询层级：进入某一个子查询时执行，创建新的中间表命名空间
-- 添加中间表（到当前命名空间）：输入子查询生成的中间表名（别名），以及对应的表数据血缘容器（`TableDataLineageContainer`）
-- 离开子查询层级：退出某一个子查询时执行，关闭当前子查询的命名空间，并回退到上一层命名空间
-- 获取表数据血缘容器（`get_table`）：输入表名或表别名，返回表对应的 **表血缘分析器**。
-  1. 在当前子查询层级的命名空间中搜索
-  2. 若搜索不到，则在更上一层的命名空间中查找（相关子查询）
-  3. 若在上层命名空间中都搜索不到，则在临时表中搜索
-  4. 若在临时表中也搜索不到，则使用建表语句获取器获取建表语句，并根据建表语句构造表数据血缘容器
-  5. 若均无法获取，则抛出异常
-- 查询引用字段的上游源字段（`get_source_column`）：输入 **引用字段对象**，返回上游表的 **源字段对象** 的列表
-  - 如果引用字段对象有所属表名，且不是通配符，则调用 `get_table` 方法获取表数据血缘对象，然后调用表数据血缘对象的 `get_source_column_list` 方法
-  - 如果引用字段对象有所属表名，且为通配符，则调用 `get_table` 方法获取表数据血缘对象，然后调用表数据血缘对象的 `get_all_source_column_lists` 方法
-  - 如果引用字段对象没有所属表名，且不是通配符，则遍历当前层所有上游表，逐个使用 `has_column` 查询是否存在字段，如果存在；如果存在超过 2 个，则抛出异常；如果存在 1个，则然后调用表数据血缘对象的 `get_source_column_list` 方法
-  - 如果引用字段对象没有所属表名，且为通配符，则遍历当前层所有上游表，逐个调用表数据血缘对象的 `get_all_source_column_lists` 方法
-
-TODO 增加对相关子查询的支持
 """
 
-from typing import Dict, List
+from typing import Optional
 
+from metasequoia_sql import core
 from metasequoia_sql.analyzer.data_linage.table_lineage import TableLineage
+from metasequoia_sql.analyzer.data_linage.table_lineage_storage import TableLineageStorage
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter
-from metasequoia_sql.analyzer.data_linage.node import StandardTable
+from metasequoia_sql.analyzer.toolkit import CurrentLevelSubQuery
 
 __all__ = ["TableLineageAnalyzer"]
 
@@ -38,33 +17,36 @@ class TableLineageAnalyzer:
     """表数据血缘管理器"""
 
     def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
-        self._with_table: Dict[str, TableLineage] = {}  # WITH 语句生成的临时表
-        self._sub_query_stack: List[Dict[str, TableLineage]] = [{}]  # 子查询生成的临时表
         self._create_table_statement_getter = create_table_statement_getter  # 建表语句查询器
 
-    def add_with_table(self, table_name: str, table_lineage: TableLineage):
-        """添加一个临时表"""
-        self._with_table[table_name] = table_lineage
+    def get_table_lineage(self,
+                          select_statement: core.ASTSelectStatement,
+                          table_lineage_storage: Optional[TableLineageStorage] = None) -> TableLineage:
+        """获取表数据血缘对象
 
-    def enter_sub_query(self):
-        """进入子查询层级"""
-        self._sub_query_stack.append({})
+        TODO 增加对相关子查询的支持
 
-    def add_sub_query_table(self, table_name: str, table_lineage: TableLineage):
-        """添加一个子查询的临时表"""
-        self._sub_query_stack[-1][table_name] = table_lineage
+        Parameters
+        ----------
+        select_statement: core.ASTSelectStatement
+            查询语句
+        table_lineage_storage: Optional[TableLineageStorage], default = None
+            在这个表之前的 WITH 临时表存储器（用于递归调用）
+        """
+        # 初始化表数据血缘存储器
+        if table_lineage_storage is None:
+            table_lineage_storage = TableLineageStorage(self._create_table_statement_getter)
 
-    def exit_sub_query(self):
-        """退出子查询层级"""
-        self._sub_query_stack.pop()
+        # 逐个遍历 WITH 子句
+        for table_name, with_select_statement in select_statement.with_clause.tables:
+            table_lineage = self.get_table_lineage(with_select_statement, table_lineage_storage)
+            table_lineage_storage.add_with_table(table_name=table_name, table_lineage=table_lineage)
 
-    def get_table_lineage(self, table: StandardTable):
-        """获取表数据血缘对象 TODO 增加对相关子查询的支持"""
-        if table.table_name in self._sub_query_stack[-1]:
-            return self._sub_query_stack[-1][table.table_name]
-        if table.table_name in self._with_table:
-            return self._with_table[table.table_name]
-        create_table_statement = self._create_table_statement_getter.get_statement(table.source())
-        # TODO
-        # select_column_to_source_column_hash = SelectColumnFromCreateTableStatement.handle(
-        #             create_table_statement)
+        # 遍历当前层级的所有子查询
+        current_level_sub_query = CurrentLevelSubQuery(select_statement)
+        sub_query_lineage = {}
+        for alias_name in current_level_sub_query.get_all_sub_query_alias_name():
+            sub_query_select_statement = current_level_sub_query.get_sub_query_statement(alias_name)
+            sub_query_lineage[alias_name] = self.get_table_lineage(sub_query_select_statement, table_lineage_storage)
+
+        # 处理当前层级的引用字段逻辑
