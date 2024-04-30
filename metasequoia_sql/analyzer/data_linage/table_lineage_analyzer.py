@@ -9,6 +9,7 @@ from metasequoia_sql.analyzer.data_linage.table_lineage import TableLineage
 from metasequoia_sql.analyzer.data_linage.table_lineage_storage import TableLineageStorage
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter
 from metasequoia_sql.analyzer.toolkit import CurrentLevelSubQuery
+from metasequoia_sql.analyzer.data_linage.current_level_standard_column_used_quote_columns import CurrentLevelStandardColumnUsedQuoteColumns
 
 __all__ = ["TableLineageAnalyzer"]
 
@@ -50,3 +51,8 @@ class TableLineageAnalyzer:
             sub_query_lineage[alias_name] = self.get_table_lineage(sub_query_select_statement, table_lineage_storage)
 
         # 处理当前层级的引用字段逻辑
+        # result = []
+        # for standard_column, quote_columns in CurrentLevelStandardColumnUsedQuoteColumns.handle(select_statement):
+        #     for quote_column in quote_columns:
+
+

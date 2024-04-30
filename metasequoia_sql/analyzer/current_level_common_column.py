@@ -5,7 +5,7 @@
 from typing import Optional, List, Dict, Any
 
 from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase,
-                                           AnalyzerSelectBase)
+                                           AnalyzerSelectASTToDictBase)
 from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, SelectColumn
 from metasequoia_sql.core import (ASTBase, ASTColumnNameExpression, SQLType, GLOBAL_VARIABLE_NAME_SET,
                                   ASTSubQueryExpression,
@@ -209,7 +209,7 @@ class CurrentOrderByClauseUsedQuoteColumn(AnalyzerSelectListBase):
         return result
 
 
-class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
+class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectASTToDictBase):
     """获取当前层级（不递归分析子查询）中，生成字段与直接引用的引用字段信息
 
     生成字段信息：字段名、字段序号
@@ -218,8 +218,8 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectBase):
     """
 
     @classmethod
-    def _handle_single_select_statement(cls, node: ASTSingleSelectStatement
-                                        ) -> Dict[SelectColumn, List[QuoteNameColumn]]:
+    def handle_single_select_statement(cls, node: ASTSingleSelectStatement
+                                       ) -> Dict[SelectColumn, List[QuoteNameColumn]]:
         result = {}
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:
