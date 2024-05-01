@@ -41,7 +41,8 @@ class ASTParserMyBatis(ASTParser):
         # 处理 MyBatis 匹配状态
         if self.status == ASTParseStatusMyBatis.IN_MYBATIS:
             if self.scanner.now == "}":
-                self.cache_add_and_handle_end_word()
+                self.cache_add()
+                self.cache_reset_and_handle()
                 self.set_status(AstParseStatus.WAIT_TOKEN)
             else:
                 self.cache_add()
@@ -49,19 +50,19 @@ class ASTParserMyBatis(ASTParser):
 
         super().handle_change()
 
-    def handle_end_word(self):
+    def cache_reset_and_handle(self):
         """处理词语"""
         origin = self.cache_get()
         if origin.startswith("#{") and origin.endswith("}"):
             self.cache_reset()
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME, AMTMark.CUSTOM}))
             return
-        super().handle_end_word()
+        super().cache_reset_and_handle()
 
     def handle_last(self):
         """处理最后一个词语是 MyBatis 参数的情况"""
         if self.status == ASTParseStatusMyBatis.IN_MYBATIS:
-            self.handle_end_word()
+            self.cache_reset_and_handle()
             self.set_status(AstParseStatus.WAIT_TOKEN)
             return
         super().handle_last()

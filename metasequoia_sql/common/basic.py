@@ -6,7 +6,7 @@ import re
 from typing import List, Any, Iterable
 
 __all__ = ["ordered_distinct", "chain_list", "is_hex_literal", "is_bit_literal", "is_float_literal",
-           "is_string_literal", "is_int_literal", "is_bool_literal", "is_null_literal"]
+           "is_string_literal", "is_int_literal", "is_bool_literal", "is_null_literal", "is_literal"]
 
 
 def ordered_distinct(elements: List[Any]):
@@ -28,7 +28,7 @@ def chain_list(elements: Iterable[List[Any]]):
     return result
 
 
-# ------------------------------ 字面值判断工具函数 ------------------------------
+# ------------------------------ 词法元素类型判断工具函数 ------------------------------
 
 HEX_LITERAL_1 = re.compile(r"^[xX]['\"]([0-9ABCDEFabcdef]+)['\"]$")
 HEX_LITERAL_2 = re.compile(r"^0x([0-9ABCDEFabcdef]+)$")
@@ -38,7 +38,7 @@ FLOAT_LITERAL = re.compile(r"^[+-]?\d+.\d+(E\d+)?$")
 INTEGER_LITERAL = re.compile(r"^[+-]?\d+$")
 
 
-def is_hex_literal(s: str):
+def is_hex_literal(s: str) -> bool:
     """判断是否为十六进制字面值
 
     常见的十六机制字面值有如下 2 种格式：
@@ -48,7 +48,7 @@ def is_hex_literal(s: str):
     return HEX_LITERAL_1.match(s) is not None or HEX_LITERAL_2.match(s) is not None
 
 
-def is_bit_literal(s: str):
+def is_bit_literal(s: str) -> bool:
     """判断是否为二进制字面值
 
     常见的二机制字面值有如下 2 种格式：
@@ -58,26 +58,35 @@ def is_bit_literal(s: str):
     return BIT_LITERAL_1.match(s) is not None or BIT_LITERAL_2.match(s) is not None
 
 
-def is_float_literal(s: str):
+def is_float_literal(s: str) -> bool:
     """判断是否为浮点数字面值"""
     return FLOAT_LITERAL.match(s) is not None
 
 
-def is_int_literal(s: str):
+def is_int_literal(s: str) -> bool:
     """判断是否为整型字面值"""
-    return re.match(r"^[+-]?\d+$", s)
+    return re.match(r"^[+-]?\d+$", s) is not None
 
 
-def is_string_literal(s: str):
+def is_string_literal(s: str) -> bool:
     """判断是否为字符串字面值"""
     return (s.startswith("\"") and s.endswith("\"")) or (s.startswith("'") and s.endswith("'"))
 
 
-def is_bool_literal(s: str):
+def is_bool_literal(s: str) -> bool:
     """判断是否为布尔值字面值"""
     return s.upper() in {"TRUE", "FALSE"}
 
 
-def is_null_literal(s: str):
+def is_null_literal(s: str) -> bool:
     """判断是否为空值字面值"""
     return s.upper() == "NULL"
+
+
+def is_literal(s: str) -> bool:
+    """判断是否为字面值"""
+    for check_function in [is_hex_literal, is_bit_literal, is_float_literal, is_int_literal, is_string_literal,
+                           is_bool_literal, is_null_literal]:
+        if check_function(s) is True:
+            return True
+    return False

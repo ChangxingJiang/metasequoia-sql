@@ -5,11 +5,10 @@
 import enum
 from typing import List, Union
 
-from metasequoia_sql.common.basic import (is_hex_literal, is_float_literal, is_string_literal, is_bool_literal,
-                                          is_bit_literal, is_int_literal, is_null_literal)
+from metasequoia_sql.common.basic import is_literal
 from metasequoia_sql.common.text_scanner import TextScanner
 from metasequoia_sql.errors import AMTParseError
-from metasequoia_sql.lexical.amt_node import (AMTBase, AMTMark, AMTBaseSingle, AMTBaseParenthesis)
+from metasequoia_sql.lexical.amt_node import AMTBase, AMTMark, AMTBaseSingle, AMTBaseParenthesis
 
 
 class AstParseStatus(enum.Enum):
@@ -30,7 +29,7 @@ class ASTParser:
     ----------
     _stack : List[List[AMTBase]]
         当前已解析的节点树。使用多层栈维护，每一层栈表示一层插入语。
-    _scanner : TextScanner
+    scanner : TextScanner
         源代码遍历器
     _status : AstParseStatus
         状态机状态
@@ -77,7 +76,7 @@ class ASTParser:
 
     def cache_add(self) -> None:
         """将当前指针位置的字符添加到缓存，并移动指针位置"""
-        self._cache.append(self._scanner.pop())
+        self._cache.append(self.scanner.pop())
 
     def cache_reset_and_add(self) -> None:
         """【移动指针】重置当前正在缓存的词语，然后将当前指针位置的字符添加到缓存，并移动指针位置"""
@@ -106,7 +105,7 @@ class ASTParser:
         tokens = self.stack.pop()
         self.stack[-1].append(AMTBaseParenthesis(tokens, {AMTMark.PARENTHESIS}))
 
-    def handle_end_word(self) -> None:
+    def cache_reset_and_handle(self) -> None:
         """【不移动指针】处理在当前指针位置的前一个字符结束的缓存词语（即当前指针位置是下一个词语的第一个字符）
 
         1. 获取并重置缓存词语
@@ -114,42 +113,21 @@ class ASTParser:
         3. 将状态更新为等待下一个节点
         """
         origin = self.cache_get_and_reset()
-        # 空格、换行符
-        if origin in {" ", "\n"}:
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.SPACE}))
         # 逗号、分号、点号、等号、计算运算符（含通配符）、比较运算符、子句核心关键词、逻辑运算符
-        elif origin.upper() in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">=",
-                                "SELECT", "FROM", "LATERAL", "VIEW", "LEFT", "RIGHT", "INNER", "OUTER", "FULL", "JOIN",
-                                "ON", "WHERE", "GROUP", "BY", "HAVING",
-                                "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT",
-                                "AND", "NOT", "OR"}:
+        if origin.upper() in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">=",
+                              "SELECT", "FROM", "LATERAL", "VIEW", "LEFT", "RIGHT", "INNER", "OUTER", "FULL", "JOIN",
+                              "ON", "WHERE", "GROUP", "BY", "HAVING", "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS",
+                              "INTERSECT", "AND", "NOT", "OR"}:
             self.stack[-1].append(AMTBaseSingle(origin))
         # 下标
         elif origin.startswith("[") and origin.endswith("]"):
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.ARRAY_INDEX}))
         # 整数字面值、小数字面值、浮点数字面值、十六进制字面值、布尔值字面值、位值字面值、空值字面值
-        elif (is_int_literal(origin) or is_float_literal(origin) or is_hex_literal(origin)
-              or is_bool_literal(origin) or is_bit_literal(origin) or is_null_literal(origin)):
+        elif is_literal(origin):
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL}))
-        # 字面值字符串（包含字面值日期和时间）
-        elif is_string_literal(origin):
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
-        # 显式标识符
-        elif origin.startswith("`") and origin.endswith("`"):
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME}))
-        # 单行注释
-        elif origin.startswith("#") or origin.startswith("--"):
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
-        # 多行注释
-        elif origin.startswith("/*") and origin.endswith("*/"):
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
+        # 其他字符、显式标识符
         else:
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME}))
-
-    def cache_add_and_handle_end_word(self) -> None:
-        """【移动指针】先将当前指针位置的字符添加到缓存并移动指针位置，然后处理在刚缓存的字符结束的缓存词语（即调用时的指针位置为当前词语的最后一个字符）"""
-        self.cache_add()
-        self.handle_end_word()
 
     # ------------------------------ 私有处理方法 ------------------------------
 
@@ -175,37 +153,43 @@ class ASTParser:
         """处理一次的变化"""
         if self.status == AstParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
             if self.scanner.now == "/" and self.scanner.next1 == "*":
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                self.cache_add()
                 self.cache_add()
                 self.set_status(AstParseStatus.IN_EXPLAIN_2)
-            elif self.scanner.now in {" ", "\n", ",", ";", "=", "+", "*", "/", ".", "%"}:
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
-                self.handle_end_word()
-            elif self.scanner.now == "-" and not (self.scanner.last == "-" or self.scanner.next1 == "-"):
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
-                self.handle_end_word()
+            elif self.scanner.now == "-" and self.scanner.next1 == "-":
+                self.cache_add()
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_1)
+            elif self.scanner.now in {" ", "\n"}:
+                self.stack[-1].append(AMTBaseSingle(self.scanner.pop(), {AMTMark.SPACE}))
+            elif self.scanner.now in {",", ";", "=", "+", "-", "*", "/", ".", "%"}:
+                self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                self.cache_reset_and_handle()
             elif self.scanner.now == "\"":
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
             elif self.scanner.now == "'":
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
             elif self.scanner.now == "`":
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_BACK_QUOTE)
-            elif self.scanner.now == "#" or (self.scanner.now == "-" and self.scanner.next1 == "-"):
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+            elif self.scanner.now == "#":
+                self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_EXPLAIN_1)
             elif self.scanner.now == "(":
                 self.start_parenthesis()  # 【移动指针】处理当前指针位置的左括号
             elif self.scanner.now == ")":
                 self.end_parenthesis()  # 【移动指针】处理当前指针位置的右括号
             else:
-                self.cache_reset_and_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
+                self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_WORD)
         elif (self.status == AstParseStatus.IN_DOUBLE_QUOTE and
               self.scanner.last != "\\" and self.scanner.now == "\"" and not self.scanner.next1 == "\""):
-            self.cache_add_and_handle_end_word()
+            # 字面值字符串（包含字面值日期和时间）
+            self.cache_add()
+            origin = self.cache_get_and_reset()
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
             self.set_status(AstParseStatus.WAIT_TOKEN)
         # 当前指针位置字符为双引号字符串中的 "" 转义中的第 1 个字符
         elif (self.status == AstParseStatus.IN_DOUBLE_QUOTE and
@@ -214,7 +198,10 @@ class ASTParser:
             self.cache_add()
         elif (self.status == AstParseStatus.IN_SINGLE_QUOTE and
               self.scanner.last != "\\" and self.scanner.now == "'" and not self.scanner.next1 == "'"):
-            self.cache_add_and_handle_end_word()
+            # 字面值字符串（包含字面值日期和时间）
+            self.cache_add()
+            origin = self.cache_get_and_reset()
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
             self.set_status(AstParseStatus.WAIT_TOKEN)
         # 当前指针位置字符为单引号字符串中的 '' 转义中的第 1 个字符
         elif (self.status == AstParseStatus.IN_SINGLE_QUOTE and
@@ -222,53 +209,38 @@ class ASTParser:
             self.cache_add()
             self.cache_add()
         elif self.status == AstParseStatus.IN_BACK_QUOTE and self.scanner.now == "`":
-            self.cache_add_and_handle_end_word()
+            # 显式标识符
+            self.cache_add()
+            origin = self.cache_get_and_reset()
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME}))
             self.set_status(AstParseStatus.WAIT_TOKEN)
         elif self.status == AstParseStatus.IN_EXPLAIN_1 and self.scanner.now == "\n":
-            self.handle_end_word()
+            # 单行注释
+            origin = self.cache_get_and_reset()
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
             self.set_status(AstParseStatus.WAIT_TOKEN)
         elif self.status == AstParseStatus.IN_EXPLAIN_2 and self.scanner.last == "*" and self.scanner.now == "/":
-            self.cache_add_and_handle_end_word()
+            # 多行注释
+            self.cache_add()
+            origin = self.cache_get_and_reset()
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
             self.set_status(AstParseStatus.WAIT_TOKEN)
         elif self.status == AstParseStatus.IN_WORD:
-            if self.scanner.now in {" ", "\n", ",", ";", "+", "-", "*", "/", "`", "<", "!", "%", ""}:
-                self.handle_end_word()
+            if (self.scanner.now in {" ", "\n", ",", ";", "+", "-", "*", "/", "`", "<", "!", "%", "(", ")"} or
+                    (self.scanner.now == "|" and self.scanner.last != "|") or
+                    (self.scanner.now == "=" and self.scanner.last not in {"!", "<", ">"}) or
+                    (self.scanner.now == ">" and self.scanner.last != "<") or
+                    (self.scanner.now == "." and not self.cache_get().isnumeric()) or
+                    (self.scanner.now in {"\"", "'"} and self.cache_get() not in {"b", "B", "x", "X"})
+            ):
+                self.cache_reset_and_handle()
                 self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == "|" and self.scanner.last != "|":
-                self.handle_end_word()
-                self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == "=" and self.scanner.last not in {"!", "<", ">"}:
-                self.handle_end_word()
-                self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == ">" and self.scanner.last != "<":
-                self.handle_end_word()
-                self.set_status(AstParseStatus.WAIT_TOKEN)
-            # 前面不完全为数字时，出现点号
-            elif self.scanner.now == "." and not self.cache_get().isnumeric():
-                self.handle_end_word()
-                self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == "\"":
-                if self.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
-                    self.cache_add()
-                    self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
-                else:
-                    self.handle_end_word()
-                    self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == "'":
-                if self.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
-                    self.cache_add()
-                    self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
-                else:
-                    self.handle_end_word()
-                    self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == "(":
-                self.handle_end_word()
-                self.start_parenthesis()  # 【移动指针】处理当前指针位置的左括号
-                self.set_status(AstParseStatus.WAIT_TOKEN)
-            elif self.scanner.now == ")":
-                self.handle_end_word()
-                self.end_parenthesis()  # 【移动指针】处理当前指针位置的右括号
-                self.set_status(AstParseStatus.WAIT_TOKEN)
+            elif self.scanner.now == "\"" and self.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+            elif self.scanner.now == "'" and self.cache_get() in {"b", "B", "x", "X"}:  # 位值字面值和十六进制字面值
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
             else:
                 self.cache_add()
         else:
@@ -277,7 +249,7 @@ class ASTParser:
     def handle_last(self):
         """处理字符串扫描后的情况"""
         if self.status == AstParseStatus.IN_WORD:
-            self.handle_end_word()
+            self.cache_reset_and_handle()
             self.set_status(AstParseStatus.WAIT_TOKEN)
 
     def result(self):

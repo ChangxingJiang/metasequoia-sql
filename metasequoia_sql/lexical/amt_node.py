@@ -9,7 +9,7 @@
 
 import abc
 import enum
-from typing import List, Optional, Any, Set, Union
+from typing import List, Optional, Set, Union
 
 __all__ = ["AMTBase", "AMTMark", "AMTBaseSingle", "AMTBaseParenthesis"]
 
@@ -55,11 +55,6 @@ class AMTBase(abc.ABC):
         if other.startswith("<") and other.endswith(">"):
             return MARK_HASH.get(other) in self.marks  # 字符串格式的类型标记
         return self.source.upper() == other.upper()  # 字符串格式文本
-
-    @property
-    def literal_value(self) -> Any:
-        """字面值的值"""
-        return None
 
 
 class AMTBaseSingle(AMTBase):
