@@ -34,11 +34,15 @@ class TableLineage:
         self._column_name_list = []  # 字段名的有序列表
         self._column_name_to_standard_column_hash = {}  # 字段名到标准字段对象的哈希映射
         self._column_name_to_source_column_list_hash = {}  # 字段名到源字段对象列表的哈希映射
+        self._standard_table_set = set()  # 使用的上游表列表
         for standard_column, source_column_list in data_lineage:
             column_name = standard_column.column_name
             self._column_name_list.append(column_name)
             self._column_name_to_standard_column_hash[column_name] = standard_column
             self._column_name_to_source_column_list_hash[column_name] = source_column_list
+            for source_column in source_column_list:
+                self._standard_table_set.add(node.StandardTable(schema_name=source_column.schema_name,
+                                                                table_name=source_column.table_name))
 
     @staticmethod
     def by_create_table_statement(ast: ASTCreateTableStatement):
@@ -53,23 +57,30 @@ class TableLineage:
         return TableLineage(data_lineage)
 
     def has_column(self, column_name: str) -> bool:
-        """查询是否包含字段名：如果包含该字段名则返回 True，否则返回 False（不支持通配符）"""
-        return column_name in self._column_name_list
-
-    def get_standard_column(self, column_name: str) -> node.StandardColumn:
-        """返回指定字段名的标准字段对象（不支持通配符）"""
-        return self._column_name_to_standard_column_hash[column_name]
-
-    def get_source_column_list(self, column_name: str) -> List[node.SourceColumn]:
-        """返回指定字段名的源字段对象的列表（不支持通配符）"""
-        return self._column_name_to_source_column_list_hash[column_name]
+        """查询是否包含字段名：如果包含该字段名则返回 True，否则返回 False（支持通配符）"""
+        return column_name in self._column_name_list or column_name == "*"
 
     def get_all_standard_columns(self) -> List[node.StandardColumn]:
         """返回所有标准字段对象的有序列表（通配符场景）"""
         return [self._column_name_to_standard_column_hash[column_name]
                 for column_name in self._column_name_list]
 
-    def get_all_source_column_lists(self) -> List[List[node.SourceColumn]]:
-        """返回所有上游源字段对象的列表的有序列表（通配符场景）"""
-        return [self._column_name_to_source_column_list_hash[column_name]
-                for column_name in self._column_name_list]
+    def get_source_column_list(self, column_name: str) -> List[node.SourceColumn]:
+        """返回指定字段名的源字段对象的列表（支持通配符）"""
+        if column_name != "*":
+            return self._column_name_to_source_column_list_hash[column_name]
+        all_source_column_list = []
+        for source_column_list in self._column_name_to_source_column_list_hash.values():
+            all_source_column_list.extend(source_column_list)
+        return all_source_column_list
+
+    def get_standard_table_list(self) -> List[node.StandardTable]:
+        """获取上游表的列表"""
+        return list(self._standard_table_set)
+
+    def all_columns(self) -> List[Tuple[node.StandardColumn, List[node.SourceColumn]]]:
+        data_lineage = []
+        for column_name in self._column_name_list:
+            data_lineage.append((self._column_name_to_standard_column_hash.get(column_name),
+                                 self._column_name_to_source_column_list_hash.get(column_name)))
+        return data_lineage

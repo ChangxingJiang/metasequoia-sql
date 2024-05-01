@@ -41,7 +41,7 @@ class QuoteColumn:
     """引用字段对象"""
 
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 所属表名
-    column_name: str = dataclasses.field(kw_only=True)  # 字段名
+    column_name: Optional[str] = dataclasses.field(kw_only=True)  # 字段名（为空时表示没有直接使用字段的聚集函数）
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -50,4 +50,4 @@ class SourceColumn:
 
     schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 所属模式名
     table_name: str = dataclasses.field(kw_only=True)  # 所属表名
-    column_name: str = dataclasses.field(kw_only=True)  # 字段名
+    column_name: Optional[str] = dataclasses.field(kw_only=True)  # 字段名（为空时表示没有直接使用字段的聚集函数）
