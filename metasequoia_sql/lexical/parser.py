@@ -6,10 +6,12 @@ import enum
 import re
 from typing import List, Union
 
-from metasequoia_sql.lexical.nodes import (AMTBase, AMTMark, AMTBaseSingle, AMTLiteralInteger, AMTLiteralFloat, AMTLiteralString,
-                                           AMTLiteralHex, AMTLiteralBool, AMTLiteralBit, AMTLiteralNull, AMTBaseParenthesis)
 from metasequoia_sql.common.text_scanner import TextScanner
 from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.lexical.nodes import (AMTBase, AMTMark, AMTBaseSingle, AMTLiteralInteger, AMTLiteralFloat,
+                                           AMTLiteralString,
+                                           AMTLiteralHex, AMTLiteralBool, AMTLiteralBit, AMTLiteralNull,
+                                           AMTBaseParenthesis)
 
 
 class AstParseStatus(enum.Enum):
@@ -119,7 +121,8 @@ class ASTParser:
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.SPACE}))
         # 逗号、分号、点号、等号、计算运算符（含通配符）、比较运算符、子句核心关键词、逻辑运算符
         elif origin.upper() in {",", ";", ".", "=", "+", "-", "/", "%", "||", "<>", "!=", "<", "<=", ">", ">=",
-                                "SELECT", "FROM", "LATERAL", "VIEW", "JOIN", "ON", "WHERE", "GROUP", "BY", "HAVING",
+                                "SELECT", "FROM", "LATERAL", "VIEW", "LEFT", "RIGHT", "INNER", "OUTER", "FULL", "JOIN",
+                                "ON", "WHERE", "GROUP", "BY", "HAVING",
                                 "ORDER", "LIMIT", "UNION", "EXCEPT", "MINUS", "INTERSECT",
                                 "AND", "NOT", "OR"}:
             self.stack[-1].append(AMTBaseSingle(origin))
