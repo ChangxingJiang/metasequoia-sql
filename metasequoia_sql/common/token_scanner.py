@@ -4,7 +4,7 @@
 
 from typing import List, Union
 
-from metasequoia_sql.ast import AST, ASTParser, ASTMark
+from metasequoia_sql.lexical import AMTBase, AMTMark
 from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
 
@@ -12,7 +12,7 @@ from metasequoia_sql.errors import ScannerError
 class TokenScanner(BaseScanner):
     """Token 扫描器"""
 
-    def __init__(self, elements: List[AST],
+    def __init__(self, elements: List[AMTBase],
                  pos: int = 0,
                  ignore_space: bool = False,
                  ignore_comment: bool = False):
@@ -28,10 +28,10 @@ class TokenScanner(BaseScanner):
         # 根据要求筛选输入元素
         filtered_elements = []
         for element in elements:
-            if element.equals(ASTMark.SPACE):
+            if element.equals(AMTMark.SPACE):
                 if ignore_space is False:  # 关闭忽略空白字符的模式
                     filtered_elements.append(element)
-            elif element.equals(ASTMark.COMMENT):
+            elif element.equals(AMTMark.COMMENT):
                 if ignore_comment is False:  # 关闭忽略注释的模式
                     filtered_elements.append(element)
             else:
@@ -39,7 +39,7 @@ class TokenScanner(BaseScanner):
 
         super().__init__(filtered_elements, pos)
 
-    def search(self, *tokens: Union[str, ASTMark]) -> bool:
+    def search(self, *tokens: Union[str, AMTMark]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则返回 True
@@ -51,7 +51,7 @@ class TokenScanner(BaseScanner):
                 return False
         return True
 
-    def search_and_move(self, *tokens: Union[str, ASTMark]) -> bool:
+    def search_and_move(self, *tokens: Union[str, AMTMark]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素并返回 True
@@ -65,7 +65,7 @@ class TokenScanner(BaseScanner):
             self.pop()
         return True
 
-    def match(self, *tokens: Union[str, ASTMark]) -> None:
+    def match(self, *tokens: Union[str, AMTMark]) -> None:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素
@@ -99,7 +99,7 @@ class TokenScanner(BaseScanner):
         result = []
         tokens = []
         while not self.is_finish:
-            token: AST = self.pop()
+            token: AMTBase = self.pop()
             if token.equals(source):
                 if len(tokens) > 0:
                     result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))

@@ -5,9 +5,25 @@
 import json
 import os
 import subprocess
+from typing import List, Dict
 
 from metasequoia_sql import *
+from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, CurrentSelectClauseUsedQuoteColumn,
+                                      CurrentJoinClauseUsedQuoteColumn, CurrentWhereClauseUsedQuoteColumn,
+                                      CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
+                                      CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
+                                      AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
+                                      CurrentColumnSelectToDirectQuoteHash, SelectColumn)
+from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
+
+
+def format_rule_1(columns: List[QuoteColumn]) -> List[str]:
+    return ordered_distinct([column.source() for column in columns])
+
+
+def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):
+    return {key.source(): format_rule_1(value) for key, value in columns.items()}
 
 
 def make_sql_basic_tutorial(force: bool = False):
@@ -27,13 +43,22 @@ def make_sql_basic_tutorial(force: bool = False):
     with open(file_path, "w", encoding="UTF-8") as file:
         # 生成引用信息
         file.write("import unittest\n")
+        file.write("from typing import List, Dict\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
+        file.write("from metasequoia_sql.analyzer import *\n")
+        file.write("from metasequoia_sql.common import ordered_distinct\n")
         file.write("\n")
         file.write("\n")
-
-        # 生成类名
+        file.write("def format_rule_1(columns: List[QuoteColumn]):\n")
+        file.write("    return ordered_distinct([column.source() for column in columns])\n")
+        file.write("\n")
+        file.write("\n")
+        file.write("def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):\n")
+        file.write("    return {key.source(): format_rule_1(value) for key, value in columns.items()}\n")
+        file.write("\n")
+        file.write("\n")
         file.write("class TestSqlBasicTutorial(unittest.TestCase):\n")
 
         # 遍历生成每一个 SQL 的解析器
@@ -53,50 +78,54 @@ def make_sql_basic_tutorial(force: bool = False):
             print(sql.strip("\n"))
 
             statement = SQLParser.parse_select_statement(sql)
-            data_source = DataSource.MYSQL
+            data_source = SQLType.MYSQL
             if name in {"SBT_CH06_03_SQLSERVER"}:
-                data_source = DataSource.SQL_SERVER
+                data_source = SQLType.SQL_SERVER
             if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
-                data_source = DataSource.ORACLE
+                data_source = SQLType.ORACLE
             if name in {"SBT_CH06_13_DB2", "SBT_CH06_14_DB2", "SBT_CH06_15_DB2", "SBT_CH06_16_DB2"}:
-                data_source = DataSource.DB2
+                data_source = SQLType.DB2
             print("【格式化代码】")
             print(statement.source(data_source))
-
-            print("【分析结果】")
-            print(f"SELECT_USED_COLUMN: {json.dumps(statement.get_select_used_column_list(), ensure_ascii=False)}")
-            print(f"USED_TABLE: {json.dumps(statement.get_from_used_table_list(), ensure_ascii=False)}")
-            print(f"WHERE_USED_COLUMN: {json.dumps(statement.get_where_used_column_list(), ensure_ascii=False)}")
-            print(f"GROUP_BY_USED_COLUMN: {json.dumps(statement.get_group_by_used_column_list(), ensure_ascii=False)}")
-            print(f"HAVING_USED_COLUMN: {json.dumps(statement.get_having_used_column_list(), ensure_ascii=False)}")
-            print(f"ORDER_BY_USED_COLUMN: {json.dumps(statement.get_order_by_used_column_list(), ensure_ascii=False)}")
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")
             file.write(f"        statement = SQLParser.parse_select_statement({name})\n")
 
-            if isinstance(statement, SQLSingleSelectStatement):
+            if isinstance(statement, ASTSingleSelectStatement):
                 print(f"DISTINCT: {statement.select_clause.distinct}", )
                 if statement.select_clause.distinct is True:
                     file.write("        self.assertEqual(statement.select_clause.distinct, True)\n")
 
-            # 返回列表的方法
-            for method_name in [
-                "get_from_used_table_list",
-                "get_join_used_table_list",
-                "get_used_table_list",
-                "get_select_used_column_list",
-                "get_where_used_column_list",
-                "get_group_by_used_column_list",
-                "get_having_used_column_list",
-                "get_order_by_used_column_list",
-                "get_used_column_list"
-            ]:
-                method_result = getattr(statement, method_name)()
-                method_result_dump = json.dumps(method_result, ensure_ascii=False)
-                print(f"statement.{method_name}: {method_result_dump}")
-                if len(method_result) > 0:
-                    file.write(f"        self.assertEqual(statement.{method_name}(), {method_result_dump})\n")
+            # 分析器测试
+            for check_analyzer in [CurrentUsedQuoteColumn,
+                                   CurrentSelectClauseUsedQuoteColumn,
+                                   CurrentJoinClauseUsedQuoteColumn,
+                                   CurrentWhereClauseUsedQuoteColumn,
+                                   CurrentGroupByClauseUsedQuoteColumn,
+                                   CurrentHavingClauseUsedQuoteColumn,
+                                   CurrentOrderByClauseUsedQuoteColumn,
+                                   AllUsedQuoteTables,
+                                   AllFromClauseUsedQuoteColumn,
+                                   AllJoinClauseUsedQuoteColumn,
+                                   ]:
+                method_result = format_rule_1(check_analyzer.handle(statement))
+                if method_result:
+                    method_result_dump = json.dumps(method_result, ensure_ascii=False)
+                    file.write(
+                        f"        self.assertEqual({method_result_dump}, \n"
+                        f"                         format_rule_1({check_analyzer.__name__}.handle(statement)))\n")
+
+            # 分析器测试
+            for check_analyzer in [CurrentColumnSelectToDirectQuoteHash,
+                                   ]:
+                method_result = format_rule_2(check_analyzer.handle(statement))
+                if method_result:
+                    method_result_dump = json.dumps(method_result, ensure_ascii=False)
+                    file.write(
+                        f"        self.assertEqual({method_result_dump}, \n"
+                        f"                         format_rule_2({check_analyzer.__name__}.handle(statement)))\n")
+
 
             file.write("\n")
 
@@ -107,4 +136,4 @@ def make_sql_basic_tutorial(force: bool = False):
 
 
 if __name__ == "__main__":
-    make_sql_basic_tutorial()
+    make_sql_basic_tutorial(force=True)

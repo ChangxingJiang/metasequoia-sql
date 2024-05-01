@@ -29,4 +29,4 @@ CREATE TABLE `manual_annotation` (
   KEY `index_series_id` (`series_id`),
   FULLTEXT KEY `fulltext_video_name` (`video_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=659 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Bilibili历史类视频'""")
-    print(statement.source(DataSource.HIVE))
+    print(statement.source(SQLType.HIVE))

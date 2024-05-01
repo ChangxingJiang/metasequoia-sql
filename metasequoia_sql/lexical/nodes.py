@@ -1,26 +1,28 @@
 """
-抽象语法树（AST）的节点类
+抽象词法树（AMT）的节点类
 
-所有抽象语法树的节点类均继承自抽象基类 AST 类，除 AST 类外，其他节点可以分为如下三种类型：
+所有抽象词法树的节点类均继承自抽象基类 AMT 类，除 AMT 类外，其他节点可以分为如下三种类型：
 - 定值叶节点：不包含子节点，且 source 返回定值的对象
 - 非定值叶节点：不包含子节点，但 source 返回值不固定的对象
 - 中间节点（插入语节点）：包含子节点的节点
+
+TODO 优化字面值的处理规则
 """
 
 import abc
 import enum
 from typing import List, Optional, Any, Set, Union
 
-from metasequoia_sql.ast.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
-from metasequoia_sql.errors import AstParseError
+from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.lexical.static import HEXADECIMAL_CHARACTER_SET, BINARY_CHARACTER_SET
 
 __all__ = [
-    "AST", "ASTMark", "ASTSingle", "ASTParenthesis", "ASTLiteralInteger", "ASTLiteralFloat", "ASTLiteralString",
-    "ASTLiteralHex", "ASTLiteralBool", "ASTLiteralBit", "ASTLiteralNull"
+    "AMTBase", "AMTMark", "AMTBaseSingle", "AMTBaseParenthesis", "AMTLiteralInteger", "AMTLiteralFloat",
+    "AMTLiteralString", "AMTLiteralHex", "AMTLiteralBool", "AMTLiteralBit", "AMTLiteralNull"
 ]
 
 
-class ASTMark(enum.Enum):
+class AMTMark(enum.Enum):
     """抽象语法树节点标记"""
     SPACE = "<space>"
     NAME = "<name>"
@@ -28,20 +30,21 @@ class ASTMark(enum.Enum):
     LITERAL = "<literal>"
     COMMENT = "<comment>"
     ARRAY_INDEX = "<array_index>"
+    CUSTOM = "<custom>"  # 自定义标记（用于插件开发）
 
 
 # 抽象语法树节点标记映射
-MARK_HASH = {mark.value: mark for mark in ASTMark}
+MARK_HASH = {mark.value: mark for mark in AMTMark}
 
 
 # ------------------------------ 抽象节点类 ------------------------------
 
 
-class AST(abc.ABC):
-    """抽象语法树（AST）节点类的抽象基类"""
+class AMTBase(abc.ABC):
+    """抽象词法树（AMT）节点类的抽象基类"""
 
-    def __init__(self, marks: Optional[Set[ASTMark]] = None):
-        self.marks: Set[ASTMark] = marks if marks is not None else set()
+    def __init__(self, marks: Optional[Set[AMTMark]] = None):
+        self.marks: Set[AMTMark] = marks if marks is not None else set()
 
     @property
     @abc.abstractmethod
@@ -49,13 +52,13 @@ class AST(abc.ABC):
         """返回当前节点的源代码"""
 
     @abc.abstractmethod
-    def children(self) -> List["AST"]:
+    def children(self) -> List["AMTBase"]:
         """返回所有下游节点，若为叶子节点，则返回空列表"""
         return []
 
-    def equals(self, other: Union[str, ASTMark]) -> bool:
-        """判断当前 AST 节点是否与一段源代码相同"""
-        if isinstance(other, ASTMark):
+    def equals(self, other: Union[str, AMTMark]) -> bool:
+        """判断当前 AMT 节点是否与一段源代码相同"""
+        if isinstance(other, AMTMark):
             return other in self.marks  # 枚举类的类型标记
         if other.startswith("<") and other.endswith(">"):
             return MARK_HASH.get(other) in self.marks  # 字符串格式的类型标记
@@ -67,10 +70,10 @@ class AST(abc.ABC):
         return None
 
 
-class ASTSingle(AST):
+class AMTBaseSingle(AMTBase):
     """单元素节点"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(marks)
         self._source = source
 
@@ -79,7 +82,7 @@ class ASTSingle(AST):
         """当前节点的源代码"""
         return self._source
 
-    def children(self) -> List["AST"]:
+    def children(self) -> List["AMTBase"]:
         """返回所有下游节点，若为叶子节点，则返回空列表"""
         return []
 
@@ -88,14 +91,14 @@ class ASTSingle(AST):
         return f"<{self.__class__.__name__} source={format_source}>"
 
 
-class ASTParenthesis(AST):
+class AMTBaseParenthesis(AMTBase):
     """插入语节点"""
 
-    def __init__(self, tokens: List[AST], marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, tokens: List[AMTBase], marks: Optional[Set[AMTMark]] = None):
         super().__init__(marks)
-        self._tokens: List[AST] = tokens
+        self._tokens: List[AMTBase] = tokens
 
-    def children(self) -> List["AST"]:
+    def children(self) -> List["AMTBase"]:
         return self._tokens
 
     @property
@@ -106,10 +109,10 @@ class ASTParenthesis(AST):
         return f"<{self.__class__.__name__} children={self.children()}>"
 
 
-class ASTLiteralInteger(ASTSingle):
+class AMTLiteralInteger(AMTBaseSingle):
     """字面值整数"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(source, marks)
         self._value = int(source)
 
@@ -122,10 +125,10 @@ class ASTLiteralInteger(ASTSingle):
         return f"{self._value}"
 
 
-class ASTLiteralFloat(ASTSingle):
+class AMTLiteralFloat(AMTBaseSingle):
     """字面值浮点数"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(source, marks)
         self._value = float(source)
 
@@ -138,10 +141,10 @@ class ASTLiteralFloat(ASTSingle):
         return f"{self._value}"
 
 
-class ASTLiteralString(ASTSingle):
+class AMTLiteralString(AMTBaseSingle):
     """字面值字符串"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(source, marks)
         self._value = source[1:-1]  # 不包含引号的部分
 
@@ -154,14 +157,14 @@ class ASTLiteralString(ASTSingle):
         return f"'{self._value}'"
 
 
-class ASTLiteralHex(ASTSingle):
+class AMTLiteralHex(AMTBaseSingle):
     """十六进制字面值"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(source, marks)
         self._value = self._get_value(source)  # 获取十六进制字面值中的十六进制数值，如果格式不满足则返回 None
         if self._value is None:
-            raise AstParseError(f"十六进制数不满足字符集要求: {source}")
+            raise AMTParseError(f"十六进制数不满足字符集要求: {source}")
 
     @classmethod
     def check(cls, origin: str):
@@ -197,10 +200,10 @@ class ASTLiteralHex(ASTSingle):
         return f"x'{self._value}'"
 
 
-class ASTLiteralBool(ASTSingle):
+class AMTLiteralBool(AMTBaseSingle):
     """布尔字面值"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(source, marks)
         self._value: bool = source.upper() == "TRUE"
 
@@ -218,14 +221,14 @@ class ASTLiteralBool(ASTSingle):
         return "TRUE" if self._value is True else "FALSE"
 
 
-class ASTLiteralBit(ASTSingle):
+class AMTLiteralBit(AMTBaseSingle):
     """位值字面值"""
 
-    def __init__(self, source: str, marks: Optional[Set[ASTMark]] = None):
+    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
         super().__init__(source, marks)
         self._value = self._get_value(source)  # 获取二进制字面值中的二进制数值，如果格式不满足则返回 None
         if self._value is None:
-            raise AstParseError(f"不满足格式要求的二进制字面值: origin={source}")
+            raise AMTParseError(f"不满足格式要求的二进制字面值: origin={source}")
 
     @classmethod
     def check(cls, origin: str):
@@ -261,7 +264,7 @@ class ASTLiteralBit(ASTSingle):
         return f"b'{self._value}'"
 
 
-class ASTLiteralNull(ASTSingle):
+class AMTLiteralNull(AMTBaseSingle):
     """空值字面值"""
 
     @classmethod

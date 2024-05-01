@@ -7,8 +7,8 @@ with open("README.md", "r", encoding="UTF-8") as file:
 
 setup(
     name="metasequoia-sql",
-    version="0.3.0",
-    description="SQL解析器：提供词法解析、句法解析和不同SQL类型翻译的功能",
+    version="0.4.0",
+    description="SQL解析器：提供词法解析、句法解析以及配套的分析器、插件功能",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="changxing",
@@ -23,7 +23,9 @@ setup(
         "Operating System :: OS Independent",
         "Natural Language :: Chinese (Simplified)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Topic :: Software Development :: Libraries"
     ]
 )

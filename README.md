@@ -10,11 +10,11 @@ pip install metasequoia-sql
 
 ### 词法分析
 
-对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象语法树节点：
+对 SQL 语句进行句法分析，将 SQL 语句中的每个部分拆分为一个抽象词法树节点（abstract morphology tree，AMT）。
 
 ### 句法分析
 
-对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的对象（详见 demo_2）：
+对 SQL 语句进行语法分析，将 SQL 语句转化为对应可操作的抽象语法树节点（abstract syntax tree，AST）：
 
 ```python
 from metasequoia_sql import *
@@ -46,12 +46,12 @@ pylint --max-line-length=120 metasequoia_sql
 FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，可以避免开发网状结构的转换器，而只需要开发星星转换器即可。
 
 - `analyzer`：分析器
-- `ast`：词法分析（主要使用有限状态自动机实现）
+- `lexical`：词法分析
 - `common`：遍历器工具
 - `core`：句法分析节点类
-  - `abc`：抽象类（节点中不包含解析方法）
-  - `element`：元素类节点（不会引用其他节点）
-  - `general_expression`：一般表达式节点（可能引用元素类节点和其他一般表达式节点）
+    - `abc`：抽象类（节点中不包含解析方法）
+    - `element`：元素类节点（不会引用其他节点）
+    - `general_expression`：一般表达式节点（可能引用元素类节点和其他一般表达式节点）
 - `objects`：SQL语句对象
 - `parser`：SQL语句解析器
 
@@ -61,7 +61,7 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 字面值类型：[参考文档](https://deepinout.com/mysql/mysql-top-articles-mysql/1694052463_j_mysql-literals.html)
 
-- `ASTLiteralString`：字符串字面值
+- `AMTLiteralString`：字符串字面值
 
 ### 句法分析
 
@@ -74,7 +74,7 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 - `SQLVariable`：变量引用。不包含插入语。例如 `CURRENT_DATE` 等。
 - `SQLLiteral`：字面值。没有依赖的列名。
 - 计算运算符
-  - `SQLPlus`：
+    - `SQLPlus`：
 - `SQLCompareOperator`：比较运算符。
 
 - `SQLColumnName`：列名。
@@ -119,6 +119,27 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 ## 修改记录
 
+#### 0.3.0 > 0.4.0
+
+新增：
+
+- 分析器框架 & 基本分析器 & 数据血缘分析器
+- 插件框架 & MyBatis 插件
+
+优化：
+
+- 优化词法分析节点，调整模块名，调整文件结构，将节点改为不可变
+- 统一标识符引号的相关逻辑
+- 兼容建表语句的索引包含 `COMMENT`、`KEY_BLOCK_SIZE` 的逻辑
+- 兼容建表语句的外键中包含 `ON DELETE CASCADE` 的逻辑
+- 兼容 Hive 建表语句
+
+修复：
+
+- 无法解析 MySQL 建表语句索引使用 USING 子句的 Bug
+- 在 `INSERT INTO` 语句中未指定列报错的 Bug
+- 各种原因导致解析后的 SQL 与原始 SQL 不一致的 Bug
+
 #### 0.2.0 > 0.3.0
 
 新增：
@@ -142,15 +163,18 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 #### 0.1.0 > 0.2.0
 
 新增：
+
 - `INSERT` 语句解析逻辑
 - 一次性解析多条 SQL 语句
 
 优化：
+
 - 统一 `CREATE TABLE` 解析逻辑（使用 `TokenScanner`，改造节点对象，改造解析逻辑，改造 Hive 源码生成逻辑）
 - 整理 objects 的节点和 parse 中的方法，清理多余对象，优化引用路径
 - 统一 TokenScanner 使用方法
 
 修复：
+
 - `WITH` 语句解析报错的 Bug 修复
 - Hive 建表语句的类型包含参数的 Bug 修复
 

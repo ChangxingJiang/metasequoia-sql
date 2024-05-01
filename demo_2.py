@@ -2,10 +2,10 @@
 解析 MySQL 建表语句
 """
 
-from metasequoia_sql import *
+from metasequoia_sql import SQLParser
 
 if __name__ == "__main__":
-    statement = parse_create_table_statement("""
+    statement = SQLParser.parse_create_table_statement("""
 CREATE TABLE `manual_annotation` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `video_id` varchar(20) NOT NULL COMMENT '视频ID(B站ID)',
