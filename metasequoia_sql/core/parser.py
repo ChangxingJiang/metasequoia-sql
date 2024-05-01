@@ -381,6 +381,9 @@ class SQLParser:
         if scanner.search_and_move("LIKE"):
             after_value = cls.parse_general_expression(scanner)
             return ASTBoolLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if scanner.search_and_move("RLIKE"):
+            after_value = cls.parse_general_expression(scanner)
+            return ASTBoolRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if cls.check_compare_operator(scanner):  # "... > ..."
             compare_operator = cls.parse_compare_operator(scanner)
             after_value = cls.parse_general_expression(scanner)

@@ -32,7 +32,7 @@ class ASTParserMyBatis(ASTParser):
     def handle_change(self):
         """处理单个变化"""
         # 进入 MyBatis 匹配状态
-        if self.status == AstParseStatus.WAIT_TOKEN and self.scanner.now == "#" and self.scanner.next1 == "{":
+        if self.status == AstParseStatus.WAIT_TOKEN and self.scanner.now == "#" and self.scanner.next == "{":
             self.set_status(ASTParseStatusMyBatis.IN_MYBATIS)
             self.cache_add()
             self.cache_add()

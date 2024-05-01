@@ -14,12 +14,17 @@ from metasequoia_sql.lexical.amt_node import AMTBase, AMTMark, AMTBaseSingle, AM
 class AstParseStatus(enum.Enum):
     """SQL 源码的解析状态"""
     WAIT_TOKEN = enum.auto()  # 前一个字符是开头、空白字符或上一个 token 的结尾，正等待新的 token
+    AFTER_2D = enum.auto()  # 在 - 符号之后
+    AFTER_2F = enum.auto()  # 在 / 符号之后
     IN_WORD = enum.auto()  # 当前正在正常词语中
-    IN_DOUBLE_QUOTE = enum.auto()  # 当前正在双引号 " 中
-    IN_SINGLE_QUOTE = enum.auto()  # 当前正在单引号 ' 中
+    IN_DOUBLE_QUOTE = enum.auto()  # 双引号中
+    IN_DOUBLE_QUOTE_AFTER_5C = enum.auto()  # 双引号中：在 \ 之后
+    IN_SINGLE_QUOTE = enum.auto()  # 单引号中
+    IN_SINGLE_QUOTE_AFTER_5C = enum.auto()  # 单引号中：在 \ 之后
     IN_BACK_QUOTE = enum.auto()  # 当前正在反引号 ` 中
     IN_EXPLAIN_1 = enum.auto()  # 当前在 # 或 -- 标记的单行注释中
-    IN_EXPLAIN_2 = enum.auto()  # 当前在 /* 和 */ 标注的多行注释中
+    IN_EXPLAIN_2 = enum.auto()  # 在多行注释中（用 /* 和 */ 标注）
+    IN_EXPLAIN_2_AFTER_2A = enum.auto()  # 在多行注释中（用 /* 和 */ 标注），且在 * 符号之后
 
 
 class ASTParser:
@@ -29,7 +34,7 @@ class ASTParser:
     ----------
     _stack : List[List[AMTBase]]
         当前已解析的节点树。使用多层栈维护，每一层栈表示一层插入语。
-    scanner : TextScanner
+    _scanner : TextScanner
         源代码遍历器
     _status : AstParseStatus
         状态机状态
@@ -77,11 +82,6 @@ class ASTParser:
     def cache_add(self) -> None:
         """将当前指针位置的字符添加到缓存，并移动指针位置"""
         self._cache.append(self.scanner.pop())
-
-    def cache_reset_and_add(self) -> None:
-        """【移动指针】重置当前正在缓存的词语，然后将当前指针位置的字符添加到缓存，并移动指针位置"""
-        self.cache_reset()
-        self.cache_add()
 
     def cache_get_and_reset(self) -> str:
         """获取当前正在缓存的词语，并重置词语缓存"""
@@ -152,19 +152,19 @@ class ASTParser:
     def handle_change(self):
         """处理一次的变化"""
         if self.status == AstParseStatus.WAIT_TOKEN:  # 前一个字符是空白字符
-            if self.scanner.now == "/" and self.scanner.next1 == "*":
+            if self.scanner.now == "/":
                 self.cache_add()
+                self.set_status(AstParseStatus.AFTER_2F)
+            elif self.scanner.now == "-":
                 self.cache_add()
-                self.set_status(AstParseStatus.IN_EXPLAIN_2)
-            elif self.scanner.now == "-" and self.scanner.next1 == "-":
-                self.cache_add()
-                self.cache_add()
-                self.set_status(AstParseStatus.IN_EXPLAIN_1)
+                self.set_status(AstParseStatus.AFTER_2D)
             elif self.scanner.now in {" ", "\n"}:
                 self.stack[-1].append(AMTBaseSingle(self.scanner.pop(), {AMTMark.SPACE}))
-            elif self.scanner.now in {",", ";", "=", "+", "-", "*", "/", ".", "%"}:
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            elif self.scanner.now in {",", ";", "=", "+", "*", ".", "%"}:
                 self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.cache_reset_and_handle()
+                self.set_status(AstParseStatus.WAIT_TOKEN)
             elif self.scanner.now == "\"":
                 self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
@@ -184,47 +184,98 @@ class ASTParser:
             else:
                 self.cache_add()  # 【移动指针】重置当前缓存词语，并将当前指针位置字符添加到缓存
                 self.set_status(AstParseStatus.IN_WORD)
-        elif (self.status == AstParseStatus.IN_DOUBLE_QUOTE and
-              self.scanner.last != "\\" and self.scanner.now == "\"" and not self.scanner.next1 == "\""):
-            # 字面值字符串（包含字面值日期和时间）
+        elif self.status == AstParseStatus.AFTER_2D:
+            if self.scanner.now == "-":
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_1)
+            else:
+                self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset()))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+        elif self.status == AstParseStatus.AFTER_2F:
+            if self.scanner.now == "*":
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_2)
+            else:
+                self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset()))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+        elif self.status == AstParseStatus.IN_DOUBLE_QUOTE:
+            if self.scanner.now == "\\":
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_DOUBLE_QUOTE_AFTER_5C)
+            elif self.scanner.now == "\"" and self.scanner.next == "\"":
+                # 当前指针位置字符为双引号字符串中的 "" 转义中的第 1 个字符
+                self.cache_add()
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+            elif self.scanner.now == "\"" and not self.scanner.next == "\"":
+                # 字面值字符串（包含字面值日期和时间）
+                self.cache_add()
+                origin = self.cache_get_and_reset()
+                self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+        elif self.status == AstParseStatus.IN_DOUBLE_QUOTE_AFTER_5C:
             self.cache_add()
-            origin = self.cache_get_and_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
-            self.set_status(AstParseStatus.WAIT_TOKEN)
-        # 当前指针位置字符为双引号字符串中的 "" 转义中的第 1 个字符
-        elif (self.status == AstParseStatus.IN_DOUBLE_QUOTE and
-              self.scanner.last != "\\" and self.scanner.now == "\"" and self.scanner.next1 == "\""):
+            self.set_status(AstParseStatus.IN_DOUBLE_QUOTE)
+        elif self.status == AstParseStatus.IN_SINGLE_QUOTE:
+            if self.scanner.now == "\\":
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_SINGLE_QUOTE_AFTER_5C)
+            elif self.scanner.now == "'" and self.scanner.next == "'":
+                # 当前指针位置字符为单引号字符串中的 '' 转义中的第 1 个字符
+                self.cache_add()
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
+            elif self.scanner.now == "'" and not self.scanner.next == "'":
+                # 字面值字符串（包含字面值日期和时间）
+                self.cache_add()
+                origin = self.cache_get_and_reset()
+                self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
+        elif self.status == AstParseStatus.IN_SINGLE_QUOTE_AFTER_5C:
             self.cache_add()
-            self.cache_add()
-        elif (self.status == AstParseStatus.IN_SINGLE_QUOTE and
-              self.scanner.last != "\\" and self.scanner.now == "'" and not self.scanner.next1 == "'"):
-            # 字面值字符串（包含字面值日期和时间）
-            self.cache_add()
-            origin = self.cache_get_and_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
-            self.set_status(AstParseStatus.WAIT_TOKEN)
-        # 当前指针位置字符为单引号字符串中的 '' 转义中的第 1 个字符
-        elif (self.status == AstParseStatus.IN_SINGLE_QUOTE and
-              self.scanner.last != "\\" and self.scanner.now == "'" and self.scanner.next1 == "'"):
-            self.cache_add()
-            self.cache_add()
-        elif self.status == AstParseStatus.IN_BACK_QUOTE and self.scanner.now == "`":
-            # 显式标识符
-            self.cache_add()
-            origin = self.cache_get_and_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME}))
-            self.set_status(AstParseStatus.WAIT_TOKEN)
-        elif self.status == AstParseStatus.IN_EXPLAIN_1 and self.scanner.now == "\n":
-            # 单行注释
-            origin = self.cache_get_and_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
-            self.set_status(AstParseStatus.WAIT_TOKEN)
-        elif self.status == AstParseStatus.IN_EXPLAIN_2 and self.scanner.last == "*" and self.scanner.now == "/":
-            # 多行注释
-            self.cache_add()
-            origin = self.cache_get_and_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
-            self.set_status(AstParseStatus.WAIT_TOKEN)
+            self.set_status(AstParseStatus.IN_SINGLE_QUOTE)
+        elif self.status == AstParseStatus.IN_BACK_QUOTE:
+            if self.scanner.now == "`":
+                # 显式标识符
+                self.cache_add()
+                origin = self.cache_get_and_reset()
+                self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME}))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_BACK_QUOTE)
+        elif self.status == AstParseStatus.IN_EXPLAIN_1:
+            if self.scanner.now == "\n":
+                # 单行注释
+                origin = self.cache_get_and_reset()
+                self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_1)
+        elif self.status == AstParseStatus.IN_EXPLAIN_2:
+            if self.scanner.now == "*":
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_2_AFTER_2A)
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_2)
+        elif self.status == AstParseStatus.IN_EXPLAIN_2_AFTER_2A:
+            if self.scanner.now == "/":
+                # 多行注释
+                self.cache_add()
+                origin = self.cache_get_and_reset()
+                self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.COMMENT}))
+                self.set_status(AstParseStatus.WAIT_TOKEN)
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.IN_EXPLAIN_2)
         elif self.status == AstParseStatus.IN_WORD:
             if (self.scanner.now in {" ", "\n", ",", ";", "+", "-", "*", "/", "`", "<", "!", "%", "(", ")"} or
                     (self.scanner.now == "|" and self.scanner.last != "|") or

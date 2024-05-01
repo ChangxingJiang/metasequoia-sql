@@ -42,7 +42,7 @@ __all__ = [
 
     # 一般表达式：布尔值表达式
     "ASTBoolExpression", "ASTBoolCompareExpression", "ASTBoolIsExpression", "ASTBoolInExpression",
-    "ASTBoolLikeExpression", "ASTBoolExistsExpression", "ASTBoolBetweenExpression",
+    "ASTBoolLikeExpression", "ASTBoolExistsExpression", "ASTBoolBetweenExpression", "ASTBoolRlikeExpression",
 
     # 一般表达式：数组下标表达式
     "ASTArrayIndexExpression",
@@ -215,6 +215,7 @@ class ASTColumnNameExpression(ASTGeneralExpression):
 
 class EnumCastDataType(enum.Enum):
     """CAST 函数的字段类型"""
+    # MySQL 类型
     CHAR = "CHAR"
     ENUM = "ENUM"
     LONGTEXT = "LONGTEXT"
@@ -245,6 +246,9 @@ class EnumCastDataType(enum.Enum):
     MEDIUMBLOB = "MEDIUMBLOB"
     LONGBLOB = "LONGBLOB"
     TINYBLOB = "TINYBLOB"
+
+    # Hive 类型
+    STRING = "STRING"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -390,6 +394,16 @@ class ASTBoolLikeExpression(SQLBoolOperatorExpression):
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT LIKE" if self.is_not else "LIKE"
+        return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTBoolRlikeExpression(SQLBoolOperatorExpression):
+    """RLIKE 运算符关联表达式"""
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT RLIKE" if self.is_not else "RLIKE"
         return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
 
 
