@@ -5,7 +5,7 @@ from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToListBase
 from metasequoia_sql.analyzer.data_linage.node import QuoteColumn
 
 
-class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionASTToListBase):
+class CurrentLevelUsedQuoteColumn(AnalyzerRecursionASTToListBase):
     """获取当前层级（不递归分析子查询）中，直接使用的引用字段对象"""
 
     @classmethod

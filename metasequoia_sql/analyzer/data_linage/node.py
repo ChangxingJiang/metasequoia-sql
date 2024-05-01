@@ -15,7 +15,10 @@ __all__ = ["StandardTable", "StandardColumn", "QuoteColumn", "SourceColumn"]
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class StandardTable:
-    """标准表名对象"""
+    """标准表名对象
+
+    TODO 待支持子查询的形式
+    """
 
     schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 所属模式名
     table_name: str = dataclasses.field(kw_only=True)  # 表名
