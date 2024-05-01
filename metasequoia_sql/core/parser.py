@@ -14,12 +14,12 @@ TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处�
 
 from typing import Optional, Tuple, List, Union
 
-from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, AMTLiteralInteger, AMTLiteralFloat, AMTLiteralString,
-                                     AMTLiteralHex, AMTLiteralBool, AMTLiteralBit, AMTLiteralNull, ASTParser)
 from metasequoia_sql.common import TokenScanner
+from metasequoia_sql.common.basic import is_float_literal, is_int_literal
 from metasequoia_sql.core.node import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
+from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, ASTParser)
 
 __all__ = ["SQLParser"]
 
@@ -194,26 +194,11 @@ class SQLParser:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         token: AMTBase = scanner.pop()
-        if isinstance(token, AMTLiteralInteger):
-            return ASTLiteralIntegerExpression(value=token.literal_value)
-        if isinstance(token, AMTLiteralFloat):
-            return ASTLiteralFloatExpression(value=token.literal_value)
-        if isinstance(token, AMTLiteralString):
-            return ASTLiteralStringExpression(value=token.literal_value)
-        if isinstance(token, AMTLiteralHex):
-            return ASTLiteralHexExpression(value=token.literal_value)
-        if isinstance(token, AMTLiteralBool):
-            return ASTLiteralBoolExpression(value=token.literal_value)
-        if isinstance(token, AMTLiteralBit):
-            return ASTLiteralBitExpression(value=token.literal_value)
-        if isinstance(token, AMTLiteralNull):
-            return ASTLiteralNullExpression()
-        if token.equals("-") and isinstance(scanner.now, AMTLiteralInteger):
+        if isinstance(token, AMTBaseSingle):
+            return ASTLiteralExpression(value=token.source)
+        if token.equals("-") and (is_int_literal(scanner.get_as_source()) or is_float_literal(scanner.get_as_source())):
             next_token = scanner.pop()
-            return ASTLiteralIntegerExpression(value=-next_token.literal_value)
-        if token.equals("-") and isinstance(scanner.now, AMTLiteralFloat):
-            next_token = scanner.pop()
-            return ASTLiteralFloatExpression(value=-next_token.literal_value)
+            return ASTLiteralExpression(value=f"{-next_token.source}")
         raise SqlParseError(f"未知的字面值: {token}")
 
     @classmethod

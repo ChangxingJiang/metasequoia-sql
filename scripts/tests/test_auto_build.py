@@ -78,7 +78,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"'商品编号'": ["shohin_id"], "'商品名称'": ["shohin_mei"], "'进货单价'": ["shiire_tanka"]}, 
+        self.assertEqual({"\"商品编号\"": ["shohin_id"], "\"商品名称\"": ["shohin_mei"], "\"进货单价\"": ["shiire_tanka"]},
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch02_06(self):
@@ -232,7 +232,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["Shohin"], 
                          format_rule_1(AllFromClauseUsedQuoteColumn.handle(statement)))
-        self.assertEqual({"shohin_mei": ["shohin_mei"], "hanbai_tanka": ["hanbai_tanka"], "'hanbai_tanka_x2'": ["hanbai_tanka"]}, 
+        self.assertEqual({"shohin_mei": ["shohin_mei"], "hanbai_tanka": ["hanbai_tanka"], "\"hanbai_tanka_x2\"": ["hanbai_tanka"]},
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch02_18(self):

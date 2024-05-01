@@ -18,6 +18,7 @@ import dataclasses
 import enum
 from typing import Optional, Tuple, Union, Dict, Set
 
+from metasequoia_sql.common.basic import is_int_literal
 from metasequoia_sql.core.node.abc_node import ASTBase
 from metasequoia_sql.core.node.enum_node import (ASTInsertType, ASTJoinType, ASTOrderType, ASTUnionType,
                                                  ASTCompareOperator, ASTComputeOperator, ASTLogicalOperator)
@@ -30,8 +31,7 @@ __all__ = [
     "ASTGeneralExpression",
 
     # 一般表达式：字面值表达式
-    "ASTLiteralExpression", "ASTLiteralIntegerExpression", "ASTLiteralFloatExpression", "ASTLiteralStringExpression",
-    "ASTLiteralHexExpression", "ASTLiteralBitExpression", "ASTLiteralBoolExpression", "ASTLiteralNullExpression",
+    "ASTLiteralExpression",
 
     # 一般表达式：列名表达式
     "ASTColumnNameExpression",
@@ -165,119 +165,25 @@ class ASTGeneralExpression(ASTBase, abc.ABC):
 # ---------------------------------------- 字面值表达式 ----------------------------------------
 
 
-class ASTLiteralExpression(ASTGeneralExpression, abc.ABC):
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTLiteralExpression(ASTGeneralExpression):
     """字面值表达式"""
 
-    def as_int(self) -> Optional[int]:
+    value: str = dataclasses.field(kw_only=True)  # 字面值
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        return self.value
+
+    def as_int(self) -> int:
         """将字面值作为整形返回"""
-        return None
+        if is_int_literal(self.value):
+            return int(self.value)
+        raise SqlParseError(f"无法字面值 {self.value} 转化为整型")
 
     def as_string(self) -> str:
         """将字面值作为字符串返回"""
-        return self.source(SQLType.DEFAULT)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralIntegerExpression(ASTLiteralExpression):
-    """整数字面值"""
-
-    value: int = dataclasses.field(kw_only=True)  # 字面值
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.value}"
-
-    def as_int(self) -> int:
         return self.value
-
-    def as_string(self) -> str:
-        return f"{self.value}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralFloatExpression(ASTLiteralExpression):
-    """浮点数字面值"""
-
-    value: float = dataclasses.field(kw_only=True)  # 字面值
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.value}"
-
-    def as_string(self) -> str:
-        return f"{self.value}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralStringExpression(ASTLiteralExpression):
-    """字符串字面值"""
-
-    value: str = dataclasses.field(kw_only=True)  # 字面值
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"'{self.value}'"
-
-    def as_int(self) -> Optional[int]:
-        if self.value.isdigit():
-            return int(self.value)
-        return None
-
-    def as_string(self) -> Optional[str]:
-        return self.value
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralHexExpression(ASTLiteralExpression):
-    """十六进制字面值"""
-
-    value: str = dataclasses.field(kw_only=True)  # 字面值
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"x'{self.value}'"
-
-    def as_string(self) -> str:
-        return f"{self.value}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralBitExpression(ASTLiteralExpression):
-    """位值字面值"""
-
-    value: str = dataclasses.field(kw_only=True)  # 字面值
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"b'{self.value}'"
-
-    def as_string(self) -> str:
-        return f"{self.value}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralBoolExpression(ASTLiteralExpression):
-    """布尔值字面值"""
-
-    value: bool = dataclasses.field(kw_only=True)  # 字面值
-
-    def as_int(self) -> int:
-        return 1 if self.value is True else 0
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return "TRUE" if self.value is True else "FALSE"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralNullExpression(ASTLiteralExpression):
-    """空值字面值"""
-
-    value: None = dataclasses.field(init=False, repr=False, compare=False, default=None)  # 字面值
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return "NULL"
 
 
 # ---------------------------------------- 列名表达式 ----------------------------------------
@@ -703,7 +609,7 @@ class ASTComputeExpression(ASTGeneralExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTValueExpression(ASTBase):
+class ASTValueExpression(ASTGeneralExpression):
     """INSERT INTO 表达式中，VALUES 里的表达式"""
 
     values: Tuple[ASTGeneralExpression, ...] = dataclasses.field(kw_only=True)

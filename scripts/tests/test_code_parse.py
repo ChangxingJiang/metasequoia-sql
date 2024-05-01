@@ -69,12 +69,12 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(SQLParser.parse_literal_expression("1 WHERE").source(SQLType.MYSQL), "1")
         self.assertEqual(SQLParser.parse_literal_expression("2.5 WHERE").source(SQLType.MYSQL), "2.5")
         self.assertEqual(SQLParser.parse_literal_expression("'a' WHERE").source(SQLType.MYSQL), "'a'")
-        self.assertEqual(SQLParser.parse_literal_expression("x'3f' WHERE").source(SQLType.MYSQL), "x'3F'")
+        self.assertEqual(SQLParser.parse_literal_expression("x'3f' WHERE").source(SQLType.MYSQL), "x'3f'")
         self.assertEqual(SQLParser.parse_literal_expression("TRUE WHERE").source(SQLType.MYSQL), "TRUE")
-        self.assertEqual(SQLParser.parse_literal_expression("true WHERE").source(SQLType.MYSQL), "TRUE")
-        self.assertEqual(SQLParser.parse_literal_expression("False WHERE").source(SQLType.MYSQL), "FALSE")
+        self.assertEqual(SQLParser.parse_literal_expression("true WHERE").source(SQLType.MYSQL), "true")
+        self.assertEqual(SQLParser.parse_literal_expression("False WHERE").source(SQLType.MYSQL), "False")
         self.assertEqual(SQLParser.parse_literal_expression("b'1' WHERE").source(SQLType.MYSQL), "b'1'")
-        self.assertEqual(SQLParser.parse_literal_expression("null WHERE").source(SQLType.MYSQL), "NULL")
+        self.assertEqual(SQLParser.parse_literal_expression("null WHERE").source(SQLType.MYSQL), "null")
         self.assertEqual(SQLParser.parse_literal_expression("NULL WHERE").source(SQLType.MYSQL), "NULL")
 
     def test_column_name_expression(self):

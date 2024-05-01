@@ -3,15 +3,13 @@
 """
 
 import enum
-import re
 from typing import List, Union
 
+from metasequoia_sql.common.basic import (is_hex_literal, is_float_literal, is_string_literal, is_bool_literal,
+                                          is_bit_literal, is_int_literal, is_null_literal)
 from metasequoia_sql.common.text_scanner import TextScanner
 from metasequoia_sql.errors import AMTParseError
-from metasequoia_sql.lexical.nodes import (AMTBase, AMTMark, AMTBaseSingle, AMTLiteralInteger, AMTLiteralFloat,
-                                           AMTLiteralString,
-                                           AMTLiteralHex, AMTLiteralBool, AMTLiteralBit, AMTLiteralNull,
-                                           AMTBaseParenthesis)
+from metasequoia_sql.lexical.amt_node import (AMTBase, AMTMark, AMTBaseSingle, AMTBaseParenthesis)
 
 
 class AstParseStatus(enum.Enum):
@@ -129,27 +127,13 @@ class ASTParser:
         # 下标
         elif origin.startswith("[") and origin.endswith("]"):
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.ARRAY_INDEX}))
-        # 字面值整数
-        elif re.match(r"^[+-]?\d+$", origin):
-            self.stack[-1].append(AMTLiteralInteger(origin, {AMTMark.LITERAL}))
-        # 字面值小数或浮点数
-        elif re.match(r"^[+-]?\d+.\d+(E\d+)?$", origin):
-            self.stack[-1].append(AMTLiteralFloat(origin, {AMTMark.LITERAL}))
+        # 整数字面值、小数字面值、浮点数字面值、十六进制字面值、布尔值字面值、位值字面值、空值字面值
+        elif (is_int_literal(origin) or is_float_literal(origin) or is_hex_literal(origin)
+              or is_bool_literal(origin) or is_bit_literal(origin) or is_null_literal(origin)):
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL}))
         # 字面值字符串（包含字面值日期和时间）
-        elif (origin.startswith("\"") and origin.endswith("\"")) or (origin.startswith("'") and origin.endswith("'")):
-            self.stack[-1].append(AMTLiteralString(origin, {AMTMark.LITERAL, AMTMark.NAME}))
-        # 十六进制字面值节点
-        elif AMTLiteralHex.check(origin) is True:
-            self.stack[-1].append(AMTLiteralHex(origin, {AMTMark.LITERAL}))
-        # 布尔字面值节点
-        elif AMTLiteralBool.check(origin) is True:
-            self.stack[-1].append(AMTLiteralBool(origin, {AMTMark.LITERAL}))
-        # 位值字面值节点
-        elif AMTLiteralBit.check(origin) is True:
-            self.stack[-1].append(AMTLiteralBit(origin, {AMTMark.LITERAL}))
-        # 空值字面值节点
-        elif AMTLiteralNull.check(origin) is True:
-            self.stack[-1].append(AMTLiteralNull(origin, {AMTMark.LITERAL}))
+        elif is_string_literal(origin):
+            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.LITERAL, AMTMark.NAME}))
         # 显式标识符
         elif origin.startswith("`") and origin.endswith("`"):
             self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME}))
