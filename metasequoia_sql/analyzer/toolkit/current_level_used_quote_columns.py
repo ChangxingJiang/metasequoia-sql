@@ -3,6 +3,7 @@ from typing import List
 from metasequoia_sql import core
 from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToListBase
 from metasequoia_sql.analyzer.data_linage.node import QuoteColumn
+from metasequoia_sql.common import name_set
 
 
 class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
@@ -19,7 +20,7 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
             else:
                 return [QuoteColumn(column_name=None)]
         if (isinstance(node, core.ASTColumnNameExpression)
-                and node.source(core.SQLType.DEFAULT) not in core.GLOBAL_VARIABLE_NAME_SET):
+                and node.source(core.SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
             return [QuoteColumn(table_name=node.table, column_name=node.column)]
         if isinstance(node, core.ASTSubQueryExpression):
             return []

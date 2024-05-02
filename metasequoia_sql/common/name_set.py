@@ -1,5 +1,5 @@
 """
-静态常量
+名称集的静态常量
 """
 
 __all__ = ["WINDOW_FUNCTION_NAME_SET", "AGGREGATION_FUNCTION_NAME_SET", "GLOBAL_VARIABLE_NAME_SET"]

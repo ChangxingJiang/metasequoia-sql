@@ -15,9 +15,9 @@ TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处�
 from typing import Optional, Tuple, List, Union
 
 from metasequoia_sql.common import TokenScanner
+from metasequoia_sql.common import name_set
 from metasequoia_sql.common.basic import is_float_literal, is_int_literal
 from metasequoia_sql.core.node import *
-from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTSingle, FSMMachine)
 
@@ -323,7 +323,8 @@ class SQLParser:
                 for element in parenthesis_scanner.elements])
 
         is_distinct = False
-        if function_name.upper() in AGGREGATION_FUNCTION_NAME_SET and parenthesis_scanner.search_and_move("DISTINCT"):
+        if (function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET
+                and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
         function_params: List[ASTGeneralExpression] = []
@@ -334,7 +335,7 @@ class SQLParser:
 
         parenthesis_scanner.close()
 
-        if schema_name is None and function_name.upper() in AGGREGATION_FUNCTION_NAME_SET:
+        if schema_name is None and function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET:
             return ASTAggregationFunctionExpression(function_name=function_name,
                                                     function_params=tuple(function_params),
                                                     is_distinct=is_distinct)
@@ -394,7 +395,7 @@ class SQLParser:
         """判断是否可能为窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         return not scanner.is_finish and (
-                scanner.now.equals(AMTMark.NAME) and scanner.now.source.upper() in WINDOW_FUNCTION_NAME_SET and
+                scanner.now.equals(AMTMark.NAME) and scanner.now.source.upper() in name_set.WINDOW_FUNCTION_NAME_SET and
                 scanner.next1 is not None and scanner.next1.equals(AMTMark.PARENTHESIS) and
                 scanner.next2 is not None and scanner.next2.equals("OVER") and
                 scanner.next3 is not None and scanner.next3.equals(AMTMark.PARENTHESIS))

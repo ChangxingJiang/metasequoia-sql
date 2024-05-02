@@ -7,7 +7,8 @@ from typing import Optional, List, Dict, Any
 from metasequoia_sql.analyzer.base import (AnalyzerRecursionListBase, AnalyzerSelectDictBase, AnalyzerSelectListBase,
                                            AnalyzerSelectASTToDictBase)
 from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, SelectColumn
-from metasequoia_sql.core import (ASTBase, ASTColumnNameExpression, SQLType, GLOBAL_VARIABLE_NAME_SET,
+from metasequoia_sql.common import name_set
+from metasequoia_sql.core import (ASTBase, ASTColumnNameExpression, SQLType,
                                   ASTSubQueryExpression,
                                   ASTSingleSelectStatement)
 
@@ -33,7 +34,7 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
     def custom_handle_node(cls, node: ASTBase) -> Optional[List[QuoteNameColumn]]:
         """自定义的处理规则"""
         if (isinstance(node, ASTColumnNameExpression)
-                and node.source(SQLType.DEFAULT) not in GLOBAL_VARIABLE_NAME_SET):
+                and node.source(SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
             return [QuoteNameColumn(table_name=node.table, column_name=node.column)]
         if isinstance(node, ASTSubQueryExpression):
             return []
