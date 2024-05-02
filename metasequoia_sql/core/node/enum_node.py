@@ -1,7 +1,5 @@
 """
 枚举类抽象语法树节点
-
-TODO 统一枚举类节点值，统一为列表格式
 """
 
 import dataclasses
@@ -32,7 +30,6 @@ __all__ = [
 
     # 逻辑运算符
     "EnumLogicalOperator", "ASTLogicalOperator"
-
 ]
 
 
@@ -88,8 +85,8 @@ class ASTJoinType(ASTBase):
 
 class EnumOrderType(enum.Enum):
     """排序类型的枚举类"""
-    ASC = "ASC"  # 升序
-    DESC = "DESC"  # 降序
+    ASC = ["ASC"]  # 升序
+    DESC = ["DESC"]  # 降序
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -100,7 +97,7 @@ class ASTOrderType(ASTBase):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return self.enum.value
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 组合类型 ----------------------------------------
@@ -130,18 +127,18 @@ class ASTUnionType(ASTBase):
 
 class EnumCompareOperator(enum.Enum):
     """比较运算符的枚举类"""
-    EQ = "="
-    EQUAL_TO = "="
-    NEQ = "!="
-    NOT_EQUAL_TO = "!="
-    LT = "<"
-    LESS_THAN = "<"
-    LTE = "<="
-    LESS_THAN_OR_EQUAL = "<="
-    GT = ">"
-    GREATER_THAN = ">"
-    GTE = ">="
-    GREATER_THAN_OR_EQUAL = ">="
+    EQ = ["="]
+    EQUAL_TO = ["="]
+    NEQ = ["!="]
+    NOT_EQUAL_TO = ["!="]
+    LT = ["<"]
+    LESS_THAN = ["<"]
+    LTE = ["<="]
+    LESS_THAN_OR_EQUAL = ["<="]
+    GT = [">"]
+    GREATER_THAN = [">"]
+    GTE = [">="]
+    GREATER_THAN_OR_EQUAL = [">="]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -152,19 +149,19 @@ class ASTCompareOperator(ASTBase):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return self.enum.value
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 计算运算符 ----------------------------------------
 
 class EnumComputeOperator(enum.Enum):
     """计算运算符的枚举类"""
-    PLUS = "+"  # 加法运算符
-    SUBTRACT = "-"  # 减法运算符
-    MULTIPLE = "*"  # 乘法运算符
-    DIVIDE = "/"  # 除法运算符
-    MOD = "%"  # 取模运算符
-    CONCAT = "||"  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
+    PLUS = ["+"]  # 加法运算符
+    SUBTRACT = ["-"]  # 减法运算符
+    MULTIPLE = ["*"]  # 乘法运算符
+    DIVIDE = ["/"]  # 除法运算符
+    MOD = ["%"]  # 取模运算符
+    CONCAT = ["||"]  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -180,7 +177,7 @@ class ASTComputeOperator(ASTBase):
         if (self.enum == EnumComputeOperator.CONCAT
                 and data_source not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
             raise UnSupportDataSourceError(f"{data_source} 不支持使用 || 运算符")
-        return self.enum.value
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 逻辑运算符 ----------------------------------------
@@ -188,9 +185,9 @@ class ASTComputeOperator(ASTBase):
 
 class EnumLogicalOperator(enum.Enum):
     """逻辑运算符的枚举类"""
-    AND = "AND"
-    OR = "OR"
-    NOT = "NOT"
+    AND = ["AND"]
+    OR = ["OR"]
+    NOT = ["NOT"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -201,4 +198,4 @@ class ASTLogicalOperator(ASTBase):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return self.enum.value
+        return " ".join(self.enum.value)

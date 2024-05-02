@@ -154,7 +154,7 @@ class SQLParser:
         """判断是否为计算运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         for compute_operator in node.EnumComputeOperator:
-            if scanner.search(compute_operator.value):
+            if scanner.search(*compute_operator.value):
                 return True
         return False
 
@@ -163,7 +163,7 @@ class SQLParser:
         """解析计算运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         for compute_operator in node.EnumComputeOperator:
-            if scanner.search_and_move(compute_operator.value):
+            if scanner.search_and_move(*compute_operator.value):
                 return node.ASTComputeOperator(enum=compute_operator)
         raise SqlParseError(f"无法解析的计算运算符: {scanner}")
 
@@ -178,7 +178,7 @@ class SQLParser:
         """解析逻辑运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         for logical_operator in node.EnumLogicalOperator:
-            if scanner.search_and_move(logical_operator.value):
+            if scanner.search_and_move(*logical_operator.value):
                 return node.ASTLogicalOperator(enum=logical_operator)
         raise SqlParseError(f"无法解析的逻辑运算符: {scanner}")
 
