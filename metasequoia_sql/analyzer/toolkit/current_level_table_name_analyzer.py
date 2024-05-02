@@ -6,7 +6,7 @@ from typing import Dict, Optional, List
 
 from metasequoia_sql import core
 from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToDictBase
-from metasequoia_sql.analyzer.data_linage.node import StandardTable
+from metasequoia_sql.analyzer.node import StandardTable
 
 
 class CurrentLevelTableNameAnalyzer(AnalyzerRecursionASTToDictBase):

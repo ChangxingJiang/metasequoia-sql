@@ -5,7 +5,7 @@
 from typing import Optional, List, Tuple
 
 from metasequoia_sql import core
-from metasequoia_sql.analyzer.data_linage.node import StandardColumn, QuoteColumn, SourceColumn
+from metasequoia_sql.analyzer.node import StandardColumn, QuoteColumn, SourceColumn
 from metasequoia_sql.analyzer.data_linage.table_lineage import SelectTableLineage, InsertTableLineage
 from metasequoia_sql.analyzer.data_linage.table_lineage_storage import TableLineageStorage
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter

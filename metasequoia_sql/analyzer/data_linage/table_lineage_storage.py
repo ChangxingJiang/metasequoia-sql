@@ -4,7 +4,7 @@
 
 from typing import Dict
 
-from metasequoia_sql.analyzer.data_linage.node import StandardTable
+from metasequoia_sql.analyzer.node import StandardTable
 from metasequoia_sql.analyzer.data_linage.table_lineage import SelectTableLineage
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter
 

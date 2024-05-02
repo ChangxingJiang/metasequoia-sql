@@ -21,7 +21,7 @@
 
 from typing import List, Tuple
 
-from metasequoia_sql.analyzer.data_linage import node
+from metasequoia_sql.analyzer import node
 from metasequoia_sql.core import ASTCreateTableStatement
 
 __all__ = ["SelectTableLineage", "InsertTableLineage"]

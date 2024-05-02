@@ -2,7 +2,7 @@ from typing import List
 
 from metasequoia_sql import core
 from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToListBase
-from metasequoia_sql.analyzer.data_linage.node import QuoteColumn
+from metasequoia_sql.analyzer.node import QuoteColumn
 from metasequoia_sql.common import name_set
 
 
