@@ -116,7 +116,6 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
         for select_column, quote_column_list in sorted(select_to_direct_hash.items(), key=lambda x: x[0].column_idx):
             if select_column.column_name != "*":  # 非通配符时仅处理当前字段
                 new_select_column = SelectColumn(column_name=select_column.column_name, column_idx=new_column_idx)
-                print("非通配符:", new_select_column, quote_column_list)
                 new_select_to_direct_list.append((new_select_column, quote_column_list))
                 new_column_idx += 1
             else:  # 通配符时添加所有字段
@@ -129,7 +128,6 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                         new_quote_column_list = [QuoteNameColumn(table_name=table_name,
                                                                  column_name=quote_column.column_name)
                                                  for quote_column in real_quote_column_list]
-                        print("通配符(指定表):", new_select_column, new_quote_column_list)
                         new_select_to_direct_list.append((new_select_column, new_quote_column_list))
                         new_column_idx += 1
                 else:  # 未指定表的通配符
@@ -141,12 +139,8 @@ class SelectColumnToSourceColumnHash(AnalyzerMetaBase):
                             new_quote_column_list = [QuoteNameColumn(table_name=table_name,
                                                                      column_name=quote_column.column_name)
                                                      for quote_column in real_quote_column_list]
-                            print("通配符(未指定表):", new_select_column, new_quote_column_list)
                             new_select_to_direct_list.append((new_select_column, new_quote_column_list))
                             new_column_idx += 1
-
-        print("new_select_to_direct_list:", new_select_to_direct_list)
-        print("quote_column_to_source_column_hash:", quote_column_to_source_column_hash)
 
         result = {}
         for select_column, quote_column_list in new_select_to_direct_list:
@@ -169,9 +163,7 @@ class InsertColumnToSourceColumnHash(AnalyzerMetaBase):
     - SelectColumn：包含结果表中的列名和列序号
     - SourceColumn：包含源表中的模式名、表名和列名
 
-    TODO 兼容通配符
-    TODO 兼容相关子查询
-    TODO 兼容 COUNT(*) 的场景
+    TODO 兼容动态分区和非动态分区
     """
 
     @check_node_type(ASTInsertSelectStatement)
@@ -185,7 +177,6 @@ class InsertColumnToSourceColumnHash(AnalyzerMetaBase):
         else:
             full_table_name = node.table_name.source(SQLType.DEFAULT)
             create_table_statement = self.create_table_statement_getter.get_statement(full_table_name)
-            # TODO 兼容动态分区和非动态分区
             insert_columns = [SourceColumn(schema_name=node.table_name.schema,
                                            table_name=node.table_name.table,
                                            column_name=column.column_name)
