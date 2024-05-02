@@ -6,7 +6,7 @@ import re
 from typing import List, Any, Iterable
 
 __all__ = ["ordered_distinct", "chain_list", "is_hex_literal", "is_bit_literal", "is_float_literal",
-           "is_string_literal", "is_int_literal", "is_bool_literal", "is_null_literal", "is_literal"]
+           "is_string_literal", "is_int_literal", "is_bool_literal", "is_null_literal"]
 
 
 def ordered_distinct(elements: List[Any]):
@@ -81,12 +81,3 @@ def is_bool_literal(s: str) -> bool:
 def is_null_literal(s: str) -> bool:
     """判断是否为空值字面值"""
     return s.upper() == "NULL"
-
-
-def is_literal(s: str) -> bool:
-    """判断是否为字面值"""
-    for check_function in [is_hex_literal, is_bit_literal, is_float_literal, is_int_literal, is_string_literal,
-                           is_bool_literal, is_null_literal]:
-        if check_function(s) is True:
-            return True
-    return False

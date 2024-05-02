@@ -20,9 +20,22 @@ class AMTMark(enum.Enum):
     NAME = "<name>"
     PARENTHESIS = "<parenthesis>"
     LITERAL = "<literal>"
+    LITERAL_HEX = "<literal_hex>"
+    LITERAL_BIT = "<literal_bit>"
+    LITERAL_INT = "<literal_int>"
+    LITERAL_FLOAT = "<literal_float>"
     COMMENT = "<comment>"
     ARRAY_INDEX = "<array_index>"
-    CUSTOM = "<custom>"  # 自定义标记（用于插件开发）
+    CUSTOM_1 = "<custom_1>"  # 自定义标记（用于插件开发）
+    CUSTOM_2 = "<custom_2>"  # 自定义标记（用于插件开发）
+    CUSTOM_3 = "<custom_3>"  # 自定义标记（用于插件开发）
+    CUSTOM_4 = "<custom_4>"  # 自定义标记（用于插件开发）
+    CUSTOM_5 = "<custom_5>"  # 自定义标记（用于插件开发）
+    CUSTOM_6 = "<custom_6>"  # 自定义标记（用于插件开发）
+    CUSTOM_7 = "<custom_7>"  # 自定义标记（用于插件开发）
+    CUSTOM_8 = "<custom_8>"  # 自定义标记（用于插件开发）
+    CUSTOM_9 = "<custom_9>"  # 自定义标记（用于插件开发）
+    CUSTOM_10 = "<custom_10>"  # 自定义标记（用于插件开发）
 
 
 # 抽象语法树节点标记映射

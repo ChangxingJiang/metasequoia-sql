@@ -11,61 +11,45 @@ MyBatis 语法处理插件
 """
 
 import dataclasses
-import enum
 from typing import Union, List, Optional, Any
 
 from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
-from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, ASTGeneralExpression, ASTSingleSelectStatement
-
-
-class ASTParseStatusMyBatis(enum.Enum):
-    """新增的 MyBaits 匹配状态"""
-    IN_MYBATIS = enum.auto()
+from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
+from metasequoia_sql.errors import AMTParseError
 
 
 class ASTParserMyBatis(ASTParser):
     """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
-    def handle_change(self):
+    def handle_change(self, ch: str):
         """处理单个变化"""
-        # 进入 MyBatis 匹配状态
-        if self.status == AstParseStatus.WAIT_TOKEN and self.scanner.now == "#" and self.scanner.next == "{":
-            self.set_status(ASTParseStatusMyBatis.IN_MYBATIS)
+        if self.status == AstParseStatus.WAIT and self.scanner.now == "#":
             self.cache_add()
-            self.cache_add()
-            return
-
-        # 处理 MyBatis 匹配状态
-        if self.status == ASTParseStatusMyBatis.IN_MYBATIS:
-            if self.scanner.now == "}":
+            self.set_status(AstParseStatus.CUSTOM_1)
+        elif self.status == AstParseStatus.CUSTOM_1:  # 在 # 之后
+            if self.scanner.now == "{":
                 self.cache_add()
-                self.cache_reset_and_handle()
-                self.set_status(AstParseStatus.WAIT_TOKEN)
+                self.set_status(AstParseStatus.CUSTOM_2)
+            elif self.scanner.now == "<END>":
+                self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
             else:
                 self.cache_add()
-            return
-
-        super().handle_change()
-
-    def cache_reset_and_handle(self):
-        """处理词语"""
-        origin = self.cache_get()
-        if origin.startswith("#{") and origin.endswith("}"):
-            self.cache_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME, AMTMark.CUSTOM}))
-            return
-        super().cache_reset_and_handle()
-
-    def handle_last(self):
-        """处理最后一个词语是 MyBatis 参数的情况"""
-        if self.status == ASTParseStatusMyBatis.IN_MYBATIS:
-            self.cache_reset_and_handle()
-            self.set_status(AstParseStatus.WAIT_TOKEN)
-            return
-        super().handle_last()
+                self.set_status(AstParseStatus.IN_EXPLAIN_1)
+        elif self.status == AstParseStatus.CUSTOM_2:  # MyBatis 匹配状态
+            if self.scanner.now == "}":
+                self.cache_add()
+                self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
+                self.set_status(AstParseStatus.WAIT)
+            elif self.scanner.now == "<END>":
+                raise AMTParseError(f"当前状态={self.status} 出现结束标记符")
+            else:
+                self.cache_add()
+                self.set_status(AstParseStatus.CUSTOM_2)
+        else:
+            super().handle_change(ch)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -93,7 +77,7 @@ class SQLParserMyBatis(SQLParser):
                                          maybe_window: bool) -> ASTGeneralExpression:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search(AMTMark.CUSTOM):
+        if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
         return super().parse_general_expression_element(scanner, maybe_window)
 

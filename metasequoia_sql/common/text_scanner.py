@@ -29,17 +29,10 @@ class TextScanner:
         self._pos = pos
         self._len = len(elements)
 
-        self._last = elements[pos - 1] if pos > 0 else None  # 上一个元素
-
     @property
     def pos(self) -> int:
         """返回当前扫描指针"""
         return self._pos
-
-    @property
-    def last(self) -> Optional[str]:
-        """当前指针位置的上一个字符"""
-        return self._last
 
     @property
     def now(self) -> Optional[str]:
@@ -54,11 +47,6 @@ class TextScanner:
             return None
         return self._elements[self._pos]
 
-    @property
-    def next(self) -> Optional[str]:
-        """当前指针位置的下一个字符"""
-        return self._get_by_offset(1)
-
     def pop(self) -> str:
         """获取当前指针位置元素，并移动指针
 
@@ -67,17 +55,9 @@ class TextScanner:
         if self.pos >= self._len:
             raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self.pos + 1} {self}")
 
-        self._last = self.now  # 更新上一个元素
         result = self._elements[self.pos]
         self._pos += 1  # 移动指针
         return result
-
-    def _get_by_offset(self, idx: int) -> Optional[str]:
-        """获取当前指针位置 + idx 位置的元素，但不一定指针
-        """
-        if self.pos + idx >= self._len:
-            return None
-        return self._elements[self.pos + idx]
 
     @property
     def is_finish(self) -> bool:

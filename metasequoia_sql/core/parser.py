@@ -1225,6 +1225,7 @@ class SQLParser:
                                with_clause: Optional[ASTWithClause] = None) -> ASTSelectStatement:
         """解析 SELECT 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
+        print(scanner)
         if with_clause is None:
             with_clause = cls.parse_with_clause(scanner)
         result = [cls.parse_single_select_statement(scanner, with_clause=with_clause)]
