@@ -34,28 +34,27 @@ class FSMMachineMyBatis(FSMMachine):
             if ch == "{":
                 self.cache.append(ch)
                 self.status = FSMStatus.CUSTOM_2
-                return True
+                need_move = True
             elif ch == "<END>":
                 self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
-                return False
+                need_move = False
             else:
                 self.cache.append(ch)
                 self.status = FSMStatus.IN_EXPLAIN_1
-                return True
-        elif self.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
+                need_move = True
+            return need_move
+        if self.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
             if ch == "}":
                 self.cache.append(ch)
                 self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
                 self.status = FSMStatus.WAIT
-                return True
             elif ch == "<END>":
                 raise AMTParseError(f"当前状态={self.status} 出现结束标记符")
             else:
                 self.cache.append(ch)
                 self.status = FSMStatus.CUSTOM_2
-                return True
-        else:
-            return super().handle(ch)
+            return True
+        return super().handle(ch)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
