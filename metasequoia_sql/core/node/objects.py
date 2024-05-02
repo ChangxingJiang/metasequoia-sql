@@ -18,11 +18,11 @@ TODO 移除 ConfigName 和 ConfigValue 类型，合并为一整条 ConfigValue �
 import abc
 import dataclasses
 import enum
-from typing import Optional, Tuple, Union, Dict, Set
+from typing import Optional, Tuple, Union, Set
 
 from metasequoia_sql.common.basic import is_int_literal
 from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.enum_node import (ASTInsertType, ASTJoinType, ASTOrderType, ASTUnionType,
+from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType,
                                                  ASTCompareOperator, ASTComputeOperator, ASTLogicalOperator)
 from metasequoia_sql.core.node.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
@@ -80,30 +80,11 @@ __all__ = [
     # 专有表达式：关联表达式
     "ASTJoinExpression", "ASTJoinOnExpression", "ASTJoinUsingExpression",
 
-    # 专有表达式：字段类型表达式
-    "ASTColumnTypeExpression",
-
     # 专有表达式：表表达式
     "ASTTableExpression",
 
     # 专有表达式：列表达式
     "ASTColumnExpression",
-
-    # 专有表达式：等式表达式
-    "ASTEqualExpression",
-
-    # 专有表达式：分区表达式
-    "ASTPartitionExpression",
-
-    # 专有表达式：声明外键表达式
-    "ASTForeignKeyExpression",
-
-    # 专有表达式：声明索引表达式
-    "ASTIndexExpression", "ASTPrimaryIndexExpression", "ASTUniqueIndexExpression", "ASTNormalIndexExpression",
-    "ASTFulltextIndexExpression", "ASTIndexColumn",
-
-    # 专有表达式：声明字段表达式
-    "ASTDefineColumnExpression",
 
     # 专有表达式：配置名称表达式和配置值表达式
     "ASTConfigNameExpression", "ASTConfigValueExpression",
@@ -145,15 +126,6 @@ __all__ = [
 
     # SELECT 语句
     "ASTSelectStatement", "ASTSingleSelectStatement", "ASTUnionSelectStatement",
-
-    # INSERT 语句
-    "ASTInsertStatement", "ASTInsertSelectStatement", "ASTInsertValuesStatement",
-
-    # SET 语句
-    "ASTSetStatement",
-
-    # CREATE TABLE 语句
-    "ASTCreateTableStatement",
 ]
 
 
@@ -708,24 +680,6 @@ class ASTJoinUsingExpression(ASTJoinExpression):
         return f"{self.using_function.source(data_source)}"
 
 
-# ---------------------------------------- 字段类型表达式 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTColumnTypeExpression(ASTBase):
-    """字段类型表达式"""
-
-    name: str = dataclasses.field(kw_only=True)
-    params: Optional[Tuple[ASTGeneralExpression, ...]] = dataclasses.field(kw_only=True, default=None)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.params is None or data_source == SQLType.HIVE:
-            return self.name
-        # MySQL 标准导出逗号间没有空格
-        type_params = "(" + ",".join([param.source(data_source) for param in self.params]) + ")"
-        return f"{self.name}{type_params}"
-
-
 # ---------------------------------------- 表表达式 ----------------------------------------
 
 
@@ -758,184 +712,6 @@ class ASTColumnExpression(ASTBase):
         if self.alias is not None:
             return f"{self.column.source(data_source)} {self.alias.source(data_source)}"
         return f"{self.column.source(data_source)}"
-
-
-# ---------------------------------------- 等式表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTEqualExpression(ASTBase):
-    """等式表达式"""
-
-    before_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
-    after_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(data_source)} = {self.after_value.source(data_source)}"
-
-
-# ---------------------------------------- 分区表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPartitionExpression(ASTBase):
-    """分区表达式：PARTITION (<partition_expression>)"""
-
-    partition_list: Tuple[ASTEqualExpression, ...] = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        partition_list_str = ", ".join(partition.source(data_source) for partition in self.partition_list)
-        return f"PARTITION ({partition_list_str})"
-
-
-# ---------------------------------------- 声明外键表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTForeignKeyExpression(ASTBase):
-    """声明外键表达式"""
-
-    constraint_name: str = dataclasses.field(kw_only=True)
-    slave_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
-    master_table_name: str = dataclasses.field(kw_only=True)
-    master_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
-    on_delete_cascade: bool = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
-        master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
-        on_delete_cascade_str = " ON DELETE CASCADE" if self.on_delete_cascade else ""
-        return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY ({slave_columns_str}) "
-                f"REFERENCES {self.master_table_name} ({master_columns_str}){on_delete_cascade_str}")
-
-
-# ---------------------------------------- 声明索引表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTIndexColumn(ASTBase):
-    """索引声明表达式中的字段"""
-
-    name: str = dataclasses.field(kw_only=True)  # 字段名
-    max_length: Optional[int] = dataclasses.field(kw_only=True, default=None)  # 最大长度
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.max_length is None:
-            return f"`{self.name}`"
-        return f"`{self.name}`({self.max_length})"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTIndexExpression(ASTBase, abc.ABC):
-    """声明索引表达式"""
-
-    name: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    columns: Tuple[ASTIndexColumn, ...] = dataclasses.field(kw_only=True)
-    using: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    key_block_size: Optional[int] = dataclasses.field(kw_only=True, default=None)
-
-    def _source(self, data_source: SQLType, index_type: str):
-        name_str = f" {self.name}" if self.name is not None else ""
-        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])
-        using_str = f" USING {self.using}" if self.using is not None else ""
-        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
-        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"{index_type}{name_str} ({columns_str}){using_str}{comment_str}{config_str}" if self.columns is not None else ""
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPrimaryIndexExpression(ASTIndexExpression):
-    """主键索引声明表达式"""
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "PRIMARY KEY")
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTUniqueIndexExpression(ASTIndexExpression):
-    """唯一键索引声明表达式"""
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "UNIQUE KEY")
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTNormalIndexExpression(ASTIndexExpression):
-    """普通索引声明表达式"""
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "KEY")
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFulltextIndexExpression(ASTIndexExpression):
-    """全文本索引声明表达式"""
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "FULLTEXT KEY")
-
-
-# ---------------------------------------- 声明字段表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTDefineColumnExpression(ASTBase):
-    """声明字段表达式
-
-    TODO 将各种标识添加为一个集合
-    """
-
-    column_name: str = dataclasses.field(kw_only=True)
-    column_type: ASTColumnTypeExpression = dataclasses.field(kw_only=True)
-    comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    is_unsigned: bool = dataclasses.field(kw_only=True, default=False)
-    is_zerofill: bool = dataclasses.field(kw_only=True, default=False)
-    character_set: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    collate: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    is_allow_null: bool = dataclasses.field(kw_only=True, default=False)
-    is_not_null: bool = dataclasses.field(kw_only=True, default=False)
-    is_auto_increment: bool = dataclasses.field(kw_only=True, default=False)
-    default: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True, default=None)
-    on_update: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True, default=None)
-
-    @property
-    def column_name_without_quote(self) -> str:
-        """返回没有被引号框柱的列名"""
-        return self.column_name
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        res = f"`{self.column_name}` {self.column_type.source(data_source)}"
-        if self.is_unsigned is True and data_source == SQLType.MYSQL:
-            res += " UNSIGNED"
-        if self.is_zerofill is True and data_source == SQLType.MYSQL:
-            res += " ZEROFILL"
-        if self.character_set is not None and data_source == SQLType.MYSQL:
-            res += f" CHARACTER SET {self.character_set}"
-        if self.collate is not None and data_source == SQLType.MYSQL:
-            res += f" COLLATE {self.collate}"
-        if self.is_allow_null is True and data_source == SQLType.MYSQL:
-            res += " NULL"
-        if self.is_not_null is True and data_source == SQLType.MYSQL:
-            res += " NOT NULL"
-        if self.is_auto_increment is True and data_source == SQLType.MYSQL:
-            res += " AUTO_INCREMENT"
-        if self.default is not None and data_source == SQLType.MYSQL:
-            res += f" DEFAULT {self.default.source(data_source)}"
-        if self.on_update is not None and data_source == SQLType.MYSQL:
-            res += f" ON UPDATE {self.on_update.source(data_source)}"
-        if self.comment is not None:
-            res += f" COMMENT {self.comment}"
-        return res
 
 
 # ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
@@ -1182,6 +958,7 @@ class ASTSelectStatement(ASTStatement, abc.ABC):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSingleSelectStatement(ASTSelectStatement):
+    # pylint: disable=R0902 忽略对象属性过多的问题
     """单个 SELECT 表达式"""
 
     with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True)
@@ -1236,203 +1013,3 @@ class ASTUnionSelectStatement(ASTSelectStatement):
             with_clause=with_clause,
             elements=self.elements
         )
-
-
-# ---------------------------------------- INSERT 语句 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertStatement(ASTStatement, abc.ABC):
-    """INSERT 表达式
-
-    两个子类包含 VALUES 和 SELECT 两种方式
-
-    INSERT {INTO|OVERWRITE} [TABLE] <table_name_expression> [PARTITION (<partition_expression>)]
-    [(<colum_name_expression [,<column_name_expression> ...]>)]
-    {VALUES <value_expression> [,<value_expression> ...] | <select_statement>}
-    """
-
-    insert_type: ASTInsertType = dataclasses.field(kw_only=True)
-    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
-    partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True)
-    columns: Optional[Tuple[ASTColumnNameExpression, ...]] = dataclasses.field(kw_only=True)
-
-    def _insert_str(self, data_source: SQLType) -> str:
-        insert_type_str = self.insert_type.source(data_source)
-        table_keyword_str = "TABLE " if data_source == SQLType.HIVE else ""
-        partition_str = self.partition.source(data_source) + " " if self.partition is not None else ""
-        if self.columns is not None:
-            columns_str = "(" + ", ".join(column.source(data_source) for column in self.columns) + ") "
-        else:
-            columns_str = ""
-        return (f"{insert_type_str} {table_keyword_str}{self.table_name.source(data_source)} "
-                f"{partition_str}{columns_str}")
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertValuesStatement(ASTInsertStatement):
-    """INSERT ... VALUES ... 语句"""
-
-    values: Tuple[ASTValueExpression, ...] = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        values_str = ", ".join(value.source(data_source) for value in self.values)
-        return f"{self._insert_str(data_source)}VALUES {values_str}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertSelectStatement(ASTInsertStatement):
-    """INSERT ... SELECT ... 语句"""
-
-    select_statement: ASTSelectStatement = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self._insert_str(data_source)} {self.select_statement.source(data_source)}"
-
-
-# ---------------------------------------- SET 语句 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSetStatement(ASTBase):
-    """SQL 语句"""
-
-    config_name: ASTConfigNameExpression = dataclasses.field(kw_only=True)
-    config_value: ASTConfigValueExpression = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"SET {self.config_name.source(data_source)} = {self.config_value.source(data_source)}"
-
-
-# ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCreateTableStatement(ASTBase):
-    """【DDL】CREATE TABLE 语句"""
-
-    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
-    if_not_exists: bool = dataclasses.field(kw_only=True)
-    columns: Optional[Tuple[ASTDefineColumnExpression, ...]] = dataclasses.field(kw_only=True)
-    primary_key: Optional[ASTPrimaryIndexExpression] = dataclasses.field(kw_only=True)
-    unique_key: Optional[Tuple[ASTUniqueIndexExpression, ...]] = dataclasses.field(kw_only=True)
-    key: Optional[Tuple[ASTNormalIndexExpression, ...]] = dataclasses.field(kw_only=True)
-    fulltext_key: Optional[Tuple[ASTFulltextIndexExpression, ...]] = dataclasses.field(kw_only=True)
-    foreign_key: Tuple[ASTForeignKeyExpression, ...] = dataclasses.field(kw_only=True)
-    partitioned_by: Tuple[ASTDefineColumnExpression, ...] = dataclasses.field(kw_only=True)
-    comment: Optional[str] = dataclasses.field(kw_only=True)
-    engine: Optional[str] = dataclasses.field(kw_only=True)
-    auto_increment: Optional[int] = dataclasses.field(kw_only=True)
-    default_charset: Optional[str] = dataclasses.field(kw_only=True)
-    collate: Optional[str] = dataclasses.field(kw_only=True)
-    row_format: Optional[str] = dataclasses.field(kw_only=True)
-    states_persistent: Optional[str] = dataclasses.field(kw_only=True)
-    row_format_serde: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
-    stored_as_inputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
-    outputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
-    location: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
-    tblproperties: Optional[Tuple[Tuple[ASTConfigNameExpression, ASTConfigValueExpression], ...]] = dataclasses.field(
-        kw_only=True, default=None)  # Hive
-
-    def set_table_name(self, table_name_expression: ASTTableNameExpression) -> "ASTCreateTableStatement":
-        """设置表名并返回新对象"""
-        table_params = self.get_params_dict()
-        table_params["table_name"] = table_name_expression
-        return ASTCreateTableStatement(**table_params)
-
-    def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):
-        """更新每个字段的变量类型"""
-        table_params = self.get_params_dict()
-        new_columns = []
-        for old_column in self.columns:
-            column_params = old_column.get_params_dict()
-            column_params["column_type"] = ASTColumnTypeExpression(
-                name=hashmap[old_column.column_type.name.upper()],
-                params=None if remove_param else old_column.column_type.params)
-            new_columns.append(ASTDefineColumnExpression(**column_params))
-        table_params["columns"] = new_columns
-        return ASTCreateTableStatement(**table_params)
-
-    def append_column(self, column: ASTDefineColumnExpression):
-        """添加字段"""
-        table_params = self.get_params_dict()
-        table_params["columns"] += (column,)
-        return ASTCreateTableStatement(**table_params)
-
-    def append_partition_by_column(self, column: ASTDefineColumnExpression):
-        """添加分区字段"""
-        table_params = self.get_params_dict()
-        table_params["partitioned_by"] += (column,)
-        return ASTCreateTableStatement(**table_params)
-
-    def source(self, data_source: SQLType, n_indent: int = 2) -> str:
-        """返回语法节点的 SQL 源码"""
-        if data_source == SQLType.MYSQL:
-            indentation = " " * n_indent  # 缩进字符串
-            result = f"{self._title_str(data_source)} (\n"
-            columns_and_keys = []
-            for column in self.columns:
-                columns_and_keys.append(f"{indentation}{column.source(data_source)}")
-            if self.primary_key is not None:
-                columns_and_keys.append(f"{indentation}{self.primary_key.source(data_source)}")
-            for unique_key in self.unique_key:
-                columns_and_keys.append(f"{indentation}{unique_key.source(data_source)}")
-            for key in self.key:
-                columns_and_keys.append(f"{indentation}{key.source(data_source)}")
-            for fulltext_key in self.fulltext_key:
-                columns_and_keys.append(f"{indentation}{fulltext_key.source(data_source)}")
-            for foreign_key in self.foreign_key:
-                columns_and_keys.append(f"{indentation}{foreign_key.source(data_source)}")
-            result += ",\n".join(columns_and_keys)
-            result += "\n)"
-            if self.engine is not None:
-                result += f" ENGINE={self.engine}"
-            if self.auto_increment is not None:
-                result += f" AUTO_INCREMENT={self.auto_increment}"
-            if self.default_charset is not None:
-                result += f" DEFAULT CHARSET={self.default_charset}"
-            if self.collate is not None:
-                result += f" COLLATE={self.collate}"
-            if self.row_format is not None:
-                result += f" ROW_FORMAT={self.row_format}"
-            if self.states_persistent is not None:
-                result += f" STATS_PERSISTENT={self.states_persistent}"
-            if self.comment is not None:
-                result += f" COMMENT={self.comment}"
-            return result
-        if data_source == SQLType.HIVE:
-            indentation = " " * n_indent  # 缩进字符串
-            result = f" {self._title_str(data_source)}(\n"
-            columns_and_keys = []
-            for column in self.columns:
-                columns_and_keys.append(f"{indentation}{column.source(data_source)}")
-            result += ",\n".join(columns_and_keys)
-            result += "\n)"
-            if self.comment is not None:
-                result += f" COMMENT {self.comment}"
-            if len(self.partitioned_by) > 0:
-                partition_columns = []
-                for column in self.partitioned_by:
-                    partition_columns.append(column.source(data_source))
-                partition_str = ", ".join(partition_columns)
-                result += f" PARTITIONED BY ({partition_str})"
-            if self.row_format_serde is not None:
-                result += f" ROW FORMAT SERDE {self.row_format_serde}"
-            if self.stored_as_inputformat is not None:
-                result += f" STORED AS INPUTFORMAT {self.stored_as_inputformat}"
-            if self.outputformat is not None:
-                result += f" OUTPUTFORMAT {self.outputformat}"
-            if self.location is not None:
-                result += f" LOCATION {self.location}"
-            if len(self.tblproperties) > 0:
-                tblproperties_str = ", ".join([f"{config_name.source(data_source)}={config_value.source(data_source)}"
-                                               for config_name, config_value in self.tblproperties])
-                result += f"TBLPROPERTIES ({tblproperties_str})"
-            return result
-        raise SqlParseError(f"暂不支持的数据类型: {data_source}")
-
-    def _title_str(self, data_source: SQLType) -> str:
-        is_not_exists_str = " IF NOT EXISTS" if self.if_not_exists is True else ""
-        return f"CREATE TABLE{is_not_exists_str} {self.table_name.source(data_source)}"

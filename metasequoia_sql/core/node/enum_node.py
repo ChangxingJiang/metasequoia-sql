@@ -1,5 +1,5 @@
 """
-枚举类抽象语法树节点
+抽象语法树（AST）枚举类节点
 """
 
 import dataclasses
