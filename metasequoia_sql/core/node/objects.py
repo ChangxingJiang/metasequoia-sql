@@ -11,6 +11,8 @@
 
 TODO 继续拆分抽象语法树节点文件
 TODO 尽可能移除固定数量的元组
+TODO 统一兼容通配符
+TODO 移除 ConfigName 和 ConfigValue 类型，合并为一整条 ConfigValue 类型
 """
 
 import abc
@@ -198,7 +200,7 @@ class ASTColumnNameExpression(ASTGeneralExpression):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.column not in {"*", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP"}:  # TODO 统一兼容通配符
+        if self.column not in {"*", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP"}:
             result = f"`{self.table}`.`{self.column}`" if self.table is not None else f"`{self.column}`"
         else:
             result = f"`{self.table}`.{self.column}" if self.table is not None else f"{self.column}"
@@ -949,7 +951,6 @@ class ASTDefineColumnExpression(ASTBase):
 
 
 # ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
-# TODO 移除 ConfigName 和 ConfigValue 类型，合并为一整条 ConfigValue 类型
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTConfigNameExpression(ASTBase):
@@ -1347,7 +1348,8 @@ class ASTCreateTableStatement(ASTBase):
     tblproperties: Optional[Tuple[Tuple[ASTConfigNameExpression, ASTConfigValueExpression], ...]] = dataclasses.field(
         kw_only=True, default=None)  # Hive
 
-    def set_table_name(self, table_name_expression: ASTTableNameExpression):
+    def set_table_name(self, table_name_expression: ASTTableNameExpression) -> "ASTCreateTableStatement":
+        """设置表名并返回新对象"""
         table_params = self.get_params_dict()
         table_params["table_name"] = table_name_expression
         return ASTCreateTableStatement(**table_params)

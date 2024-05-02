@@ -6,18 +6,19 @@ import abc
 import dataclasses
 from typing import Any, Optional, List, Dict
 
-from metasequoia_sql.analyzer.tool import check_node_type, CreateTableStatementGetter
+from metasequoia_sql.analyzer.tool import check_node_type
 from metasequoia_sql.core.node import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["AnalyzerBase",
            "AnalyzerRecursionBase", "AnalyzerRecursionListBase", "AnalyzerRecursionDictBase",
            "AnalyzerSelectASTToDictBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase",
-           "AnalyzerMetaBase",
            "AnalyzerRecursionASTToDictBase"]
 
 
 class AnalyzerBase(abc.ABC):
+    """分析器的抽象基类"""
+
     @classmethod
     @abc.abstractmethod
     def handle(cls, node: ASTBase) -> Any:
@@ -200,17 +201,6 @@ class AnalyzerSelectDictBase(AnalyzerSelectBase, abc.ABC):
         return collector
 
 
-class AnalyzerMetaBase(AnalyzerBase, abc.ABC):
-    """数据血缘分析器"""
-
-    def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
-        self.create_table_statement_getter = create_table_statement_getter
-
-    @abc.abstractmethod
-    def handle(self, node: ASTBase) -> Any:
-        """入口函数"""
-
-
 class AnalyzerRecursionASTToDictBase(abc.ABC):
     """语法树递归，并返回字典的分析器的抽象基类"""
 
@@ -283,6 +273,7 @@ class AnalyzerSelectASTToDictBase(abc.ABC):
 
     @classmethod
     def handle_union_select_statement(cls, node: ASTUnionSelectStatement) -> dict:
+        """处理 ASTUnionSelectStatement 类型节点"""
         collector = {}
         for element in node.elements:
             if isinstance(element, ASTSingleSelectStatement):

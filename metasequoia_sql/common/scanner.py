@@ -58,11 +58,6 @@ class TokenScanner:
         return self._pos
 
     @property
-    def last(self) -> Optional[AMTBase]:
-        """当前指针位置的上一个字符"""
-        return self._get_by_offset(-1)
-
-    @property
     def now(self) -> Optional[AMTBase]:
         """当前指针位置的字符"""
         return self.get()
@@ -81,11 +76,6 @@ class TokenScanner:
     def next3(self) -> Optional[AMTBase]:
         """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
         return self._get_by_offset(3)
-
-    @property
-    def next4(self) -> Optional[AMTBase]:
-        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
-        return self._get_by_offset(4)
 
     def get(self) -> Optional[AMTBase]:
         """获取当前指针位置元素，但不移动指针
@@ -218,4 +208,4 @@ class TokenScanner:
     @property
     def is_finish(self) -> bool:
         """返回是否已匹配结束"""
-        return not self._pos < self._len
+        return self._pos >= self._len

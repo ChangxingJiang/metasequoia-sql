@@ -1,3 +1,7 @@
+"""
+当前层级使用的引用字段对象分析器
+"""
+
 from typing import List
 
 from metasequoia_sql import core
@@ -17,8 +21,7 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
             quote_column_list = cls.default_handle_node(node)
             if len(quote_column_list) > 0:
                 return quote_column_list
-            else:
-                return [QuoteColumn(column_name=None)]
+            return [QuoteColumn(column_name=None)]
         if (isinstance(node, core.ASTColumnNameExpression)
                 and node.source(core.SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
             return [QuoteColumn(table_name=node.table, column_name=node.column)]

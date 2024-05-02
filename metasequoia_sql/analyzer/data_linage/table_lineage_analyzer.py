@@ -39,7 +39,6 @@ class TableLineageAnalyzer:
         table_lineage_storage: Optional[TableLineageStorage], default = None
             在这个表之前的 WITH 临时表存储器（用于递归调用）
         """
-        print("----------------------------------------")
         # 初始化表数据血缘存储器
         if table_lineage_storage is None:
             table_lineage_storage = TableLineageStorage(self._create_table_statement_getter)
@@ -56,16 +55,11 @@ class TableLineageAnalyzer:
             table_lineage = self.get_select_table_lineage(sub_query_select_statement, table_lineage_storage)
             table_lineage_storage.add_sub_query_table(table_name=alias_name, table_lineage=table_lineage)
 
-        print(f"time_lineage_storage: {list(table_lineage_storage._with_table.keys())}")
-
         # 初始化当前层级的表名规范器
         table_name_analyzer = CurrentLevelTableNameAnalyzer(select_statement)
-        print(f"table_name_analyzer: {table_name_analyzer}")
 
         # 获取当前层级使用的 LATERAL VIEW 字段属性
-        lateral_view_columns = {column_name: quote_column_list
-                                for column_name, quote_column_list
-                                in self.get_lateral_view_clause_column_name_to_quote_columns(select_statement)}
+        lateral_view_columns = dict(self.get_lateral_view_clause_column_name_to_quote_columns(select_statement))
 
         # 处理当前层级的引用字段逻辑
         data_lineage = []
@@ -189,7 +183,11 @@ class TableLineageAnalyzer:
             table_lineage_storage: TableLineageStorage,
             table_name_analyzer: CurrentLevelTableNameAnalyzer
     ) -> List[Tuple[StandardColumn, List[QuoteColumn]]]:
-        """获取 ASTSingleSelectStatement 节点当前层级标准字段对象和使用的应用字段对象的映射关系"""
+        """获取 ASTSingleSelectStatement 节点当前层级标准字段对象和使用的应用字段对象的映射关系
+
+        TODO 待修改属性名：column.column_value.column_name
+        TODO 多个表的有序性
+        """
         result = []
         column_idx = 1
         for column in select_statement.select_clause.columns:
@@ -198,7 +196,6 @@ class TableLineageAnalyzer:
                 column_idx += 1
                 result.append((standard_column, CurrentNodeUsedQuoteColumn.handle(column.column)))
             elif isinstance(column.column, core.ASTColumnNameExpression):  # 直接使用字段的情况
-                # TODO 待修改属性名：column.column_value.column_name
                 if column.column.column == "*":  # 通配符
                     if column.column.table is not None:  # 有表名的通配符
                         standard_table = table_name_analyzer.get_standard_table(column.column.table)
@@ -211,7 +208,6 @@ class TableLineageAnalyzer:
                                                        column_name=from_standard_column.column_name)
                             result.append((standard_column, [quote_column]))
                     else:  # 没有表名的通配符
-                        # TODO 多个表的有序性
                         for standard_table in table_name_analyzer.get_all_standard_table():
                             table_lineage = table_lineage_storage.get_table_lineage(standard_table)
                             for from_standard_column in table_lineage.get_all_standard_columns():
@@ -243,7 +239,7 @@ class TableLineageAnalyzer:
             return self.get_single_lateral_view_clause_column_name_to_quote_columns(select_statement)
         # 处理 UNION 多个 SELECT 语句
         if isinstance(select_statement, core.ASTUnionSelectStatement):
-            result = None
+            result: Optional[List[Tuple[str, List[QuoteColumn]]]] = None
             for element in select_statement.elements:
                 if not isinstance(element, core.ASTSingleSelectStatement):
                     continue

@@ -47,6 +47,7 @@ class SelectTableLineage:
 
     @staticmethod
     def by_create_table_statement(ast: ASTCreateTableStatement):
+        """使用 CREATE TABLE 表达式对象实例化"""
         data_lineage = []
         schema_name = ast.table_name.schema if ast.table_name.schema is not None else ""
         table_name = ast.table_name.table
@@ -84,6 +85,7 @@ class SelectTableLineage:
         return list(self._standard_table_set)
 
     def all_columns(self) -> List[Tuple[node.StandardColumn, List[node.SourceColumn]]]:
+        """获取所有字段的标准字段对象和源字段对象列表的元组的列表"""
         data_lineage = []
         for column_name in self._column_name_list:
             data_lineage.append((self._column_name_to_standard_column_hash.get(column_name),
@@ -110,6 +112,7 @@ class InsertTableLineage:
         return self._down_column_name_list
 
     def all_columns(self) -> List[Tuple[node.SourceColumn, List[node.SourceColumn]]]:
+        """获取所有字段的下游表字段对象和上游表源字段对象列表的元组的列表"""
         data_lineage = []
         for down_column in self._down_column_name_list:
             data_lineage.append((down_column, self._column_name_to_source_column_list_hash[down_column.column_name]))

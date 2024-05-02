@@ -46,10 +46,7 @@ class QuoteNameColumn(QuoteColumn):
 
     def source(self):
         """引用字段的源代码"""
-        if self.table_name:
-            return f"{self.table_name}.{self.column_name}"
-        else:
-            return f"{self.column_name}"
+        return f"{self.table_name}.{self.column_name}" if self.table_name else f"{self.column_name}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -71,10 +68,7 @@ class QuoteTable:
 
     def source(self):
         """引用字段的源代码"""
-        if self.schema_name:
-            return f"{self.schema_name}.{self.table_name}"
-        else:
-            return f"{self.table_name}"
+        return f"{self.schema_name}.{self.table_name}" if self.schema_name else f"{self.table_name}"
 
 
 class CreateTableStatementGetter(abc.ABC):
