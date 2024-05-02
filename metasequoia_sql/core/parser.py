@@ -15,11 +15,11 @@ TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处�
 from typing import Optional, Tuple, List, Union
 
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.common.basic import is_float_literal, is_int_literal
+from metasequoia_sql.common.basic import is_float_literal, is_int_literal, preproc_sql
 from metasequoia_sql.core.node import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, ASTParser)
+from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, FSMMachine)
 
 __all__ = ["SQLParser"]
 
@@ -35,7 +35,7 @@ class SQLParser:
     @classmethod
     def build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
-        context_automaton = ASTParser(string)
+        context_automaton = FSMMachine(preproc_sql(string))
         context_automaton.parse()
         return TokenScanner(context_automaton.result(), ignore_space=True, ignore_comment=True)
 

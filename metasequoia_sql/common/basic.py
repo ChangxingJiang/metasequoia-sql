@@ -5,8 +5,13 @@
 import re
 from typing import List, Any, Iterable
 
-__all__ = ["ordered_distinct", "chain_list", "is_hex_literal", "is_bit_literal", "is_float_literal",
+__all__ = ["preproc_sql", "ordered_distinct", "chain_list", "is_hex_literal", "is_bit_literal", "is_float_literal",
            "is_string_literal", "is_int_literal", "is_bool_literal", "is_null_literal"]
+
+
+def preproc_sql(text: str):
+    """预处理 SQL 语句"""
+    return text.replace("\r\n", "\n").replace("\t", " ").replace("　", " ")
 
 
 def ordered_distinct(elements: List[Any]):

@@ -30,20 +30,15 @@ class TextScanner:
         self._len = len(elements)
 
     @property
-    def pos(self) -> int:
-        """返回当前扫描指针"""
-        return self._pos
-
-    @property
     def now(self) -> Optional[str]:
         """获取当前指针位置元素，但不移动指针
 
         - 如果指针已到达字符串末尾，则返回 None
         - 如果指针超出字符串长度，则抛出异常
         """
-        if self.pos > self._len:
-            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self.pos}")
-        if self.pos == self._len:
+        if self._pos > self._len:
+            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos}")
+        if self._pos == self._len:
             return None
         return self._elements[self._pos]
 
@@ -52,17 +47,17 @@ class TextScanner:
 
         - 如果要移动到的指针位置超出字符串长度，则抛出异常
         """
-        if self.pos >= self._len:
-            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self.pos + 1} {self}")
+        if self._pos >= self._len:
+            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1} {self}")
 
-        result = self._elements[self.pos]
+        result = self._elements[self._pos]
         self._pos += 1  # 移动指针
         return result
 
     @property
     def is_finish(self) -> bool:
         """返回当前是否已匹配结束"""
-        return self.pos == self._len
+        return self._pos == self._len
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} tokens={self._elements[self.pos:]}, pos={self.pos}>"
+        return f"<{self.__class__.__name__} tokens={self._elements[self._pos:]}, pos={self._pos}>"

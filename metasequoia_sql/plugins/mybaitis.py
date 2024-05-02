@@ -13,41 +13,42 @@ MyBatis 语法处理插件
 import dataclasses
 from typing import Union, List, Optional, Any
 
+from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, ASTGeneralExpression, ASTSingleSelectStatement
-from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
+from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTBaseSingle, AMTMark
 from metasequoia_sql.errors import AMTParseError
 
 
-class ASTParserMyBatis(ASTParser):
+class FSMMachineMyBatis(FSMMachine):
     """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
     def handle_change(self, ch: str):
         """处理单个变化"""
-        if self.status == AstParseStatus.WAIT and self.scanner.now == "#":
-            self.cache_add()
-            self.set_status(AstParseStatus.CUSTOM_1)
-        elif self.status == AstParseStatus.CUSTOM_1:  # 在 # 之后
+        if self.status == FSMStatus.WAIT and self.scanner.now == "#":
+            self._cache.append(self.scanner.pop())
+            self.set_status(FSMStatus.CUSTOM_1)
+        elif self.status == FSMStatus.CUSTOM_1:  # 在 # 之后
             if self.scanner.now == "{":
-                self.cache_add()
-                self.set_status(AstParseStatus.CUSTOM_2)
+                self._cache.append(self.scanner.pop())
+                self.set_status(FSMStatus.CUSTOM_2)
             elif self.scanner.now == "<END>":
                 self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
             else:
-                self.cache_add()
-                self.set_status(AstParseStatus.IN_EXPLAIN_1)
-        elif self.status == AstParseStatus.CUSTOM_2:  # MyBatis 匹配状态
+                self._cache.append(self.scanner.pop())
+                self.set_status(FSMStatus.IN_EXPLAIN_1)
+        elif self.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
             if self.scanner.now == "}":
-                self.cache_add()
+                self._cache.append(self.scanner.pop())
                 self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
-                self.set_status(AstParseStatus.WAIT)
+                self.set_status(FSMStatus.WAIT)
             elif self.scanner.now == "<END>":
                 raise AMTParseError(f"当前状态={self.status} 出现结束标记符")
             else:
-                self.cache_add()
-                self.set_status(AstParseStatus.CUSTOM_2)
+                self._cache.append(self.scanner.pop())
+                self.set_status(FSMStatus.CUSTOM_2)
         else:
             super().handle_change(ch)
 
@@ -68,7 +69,7 @@ class SQLParserMyBatis(SQLParser):
     @classmethod
     def build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
-        context_automaton = ASTParserMyBatis(string)
+        context_automaton = FSMMachineMyBatis(preproc_sql(string))
         context_automaton.parse()
         return TokenScanner(context_automaton.result(), ignore_space=True, ignore_comment=True)
 
