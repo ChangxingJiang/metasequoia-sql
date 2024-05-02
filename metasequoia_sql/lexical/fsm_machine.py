@@ -6,6 +6,7 @@ TODO 增加各种元素在末尾的单元测试
 
 from typing import List, Union
 
+from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTBase, AMTMark, AMTSingle, AMTParenthesis
 from metasequoia_sql.lexical.fsm_operate import FSMOperate, FSMOperateType
@@ -22,19 +23,47 @@ class FSMMachine:
     ----------
     stack : List[List[AMTBase]]
         当前已解析的节点树。使用多层栈维护，每一层栈表示一层插入语。
-    text : str
-        源代码遍历器
     status : FSMStatus
         状态机状态
     cache : List[str]
         当前正在缓存的词语
     """
 
-    def __init__(self, text: str):
+    def __init__(self):
         self.stack: List[List[AMTBase]] = [[]]
-        self.text: str = text
         self.status: Union[FSMStatus, object] = FSMStatus.WAIT
         self.cache: List[str] = []
+
+    @classmethod
+    def parse(cls, text: str) -> List[AMTBase]:
+        """使用词法分析的有限状态机将 SQL 源代码解析为 AMT 抽象词法树
+
+        Parameters
+        ----------
+        text : str
+            SQL 源代码
+
+        Returns
+        -------
+        amt_list : List[AMTBase]
+            首层抽象词法树节点的列表
+        """
+        text = preproc_sql(text)
+        fsm_machine = cls()
+
+        idx = 0
+        while idx < len(text):
+            if fsm_machine.handle(text[idx]):
+                idx += 1
+        fsm_machine.handle(END)  # 处理结束标记
+
+        if fsm_machine.status != FSMStatus.END:
+            raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {fsm_machine.status}")
+
+        if len(fsm_machine.stack) > 1:
+            raise AMTParseError("词法分析有限状态机，解析到的 `(` 数量大于 `)`")
+
+        return fsm_machine.stack[0]
 
     # ------------------------------ 当前缓存词语的相关方法 ------------------------------
 
@@ -44,7 +73,7 @@ class FSMMachine:
         self.cache = []
         return result
 
-    def cache_reset_and_handle(self) -> None:
+    def _cache_reset_and_handle(self) -> None:
         """【不移动指针】处理在当前指针位置的前一个字符结束的缓存词语（即当前指针位置是下一个词语的第一个字符）
 
         1. 获取并重置缓存词语
@@ -62,22 +91,7 @@ class FSMMachine:
         else:
             self.stack[-1].append(AMTSingle(origin, {AMTMark.NAME}))
 
-    # ------------------------------ 自动机执行方法 ------------------------------
-    def parse(self):
-        """执行文本解析自动机"""
-        idx = 0
-        while idx < len(self.text):
-            if self.handle_ch(self.text[idx]):
-                idx += 1
-        self.handle_ch(END)  # 处理结束标记
-
-        if self.status != FSMStatus.END:
-            raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {self.status}")
-
-        if len(self.stack) > 1:
-            raise AMTParseError("词法分析有限状态机，解析到的 `(` 数量大于 `)`")
-
-    def handle_ch(self, ch: str) -> bool:
+    def handle(self, ch: str) -> bool:
         """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
         if self.status not in FSM_OPERATION_MAP:
             raise AMTParseError(f"未定义处理规则的状态: {self.status}")
@@ -90,38 +104,36 @@ class FSMMachine:
         if operate.type == FSMOperateType.ADD_CACHE:
             self.cache.append(ch)
             self.status = operate.new_status
-            return True
-        if operate.type == FSMOperateType.HANDLE_CACHE:
+            need_move = True
+        elif operate.type == FSMOperateType.HANDLE_CACHE:
             self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), operate.marks))
             self.status = operate.new_status
-            return False
-        if operate.type == FSMOperateType.HANDLE_CACHE_WORD:
-            self.cache_reset_and_handle()
+            need_move = False
+        elif operate.type == FSMOperateType.HANDLE_CACHE_WORD:
+            self._cache_reset_and_handle()
             self.status = operate.new_status
-            return False
-        if operate.type == FSMOperateType.ADD_AND_HANDLE_CACHE:
+            need_move = False
+        elif operate.type == FSMOperateType.ADD_AND_HANDLE_CACHE:
             self.cache.append(ch)
             self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), operate.marks))
             self.status = operate.new_status
-            return True
-        if operate.type == FSMOperateType.START_PARENTHESIS:
+            need_move = True
+        elif operate.type == FSMOperateType.START_PARENTHESIS:
             self.stack.append([])
-            return True
-        if operate.type == FSMOperateType.END_PARENTHESIS:
+            need_move = True
+        elif operate.type == FSMOperateType.END_PARENTHESIS:
             if len(self.stack) <= 1:
                 raise AMTParseError("当前 ')' 数量大于 '('")
             tokens = self.stack.pop()
             self.stack[-1].append(AMTParenthesis(tokens, {AMTMark.PARENTHESIS}))
-            return True
-        if operate.type == FSMOperateType.SET_STATUS:
+            need_move = True
+        elif operate.type == FSMOperateType.SET_STATUS:
             self.status = operate.new_status
-            return False
-        if operate.type == FSMOperateType.RAISE:
+            need_move = False
+        elif operate.type == FSMOperateType.RAISE:
             if ch == END:
                 raise AMTParseError(f"当前状态={self.status.name}({self.status.value}) 出现非法结束符")
             raise AMTParseError(f"当前状态={self.status.name}({self.status.value}) 出现非法字符: {ch}")
-        raise AMTParseError(f"未知状态行为: {operate.type}")
-
-    def result(self):
-        """获取自动机运行结果"""
-        return self.stack[0]
+        else:
+            raise AMTParseError(f"未知状态行为: {operate.type}")
+        return need_move
