@@ -2,14 +2,15 @@
 抽象语法树扫描器
 """
 
-from typing import List, Union
+from typing import List, Union, Optional
 
-from metasequoia_sql.lexical import AMTBase, AMTMark
-from metasequoia_sql.common.base_scanner import BaseScanner
 from metasequoia_sql.errors import ScannerError
+from metasequoia_sql.lexical import AMTBase, AMTMark
+
+__all__ = ["TokenScanner"]
 
 
-class TokenScanner(BaseScanner):
+class TokenScanner:
     """Token 扫描器"""
 
     def __init__(self, elements: List[AMTBase],
@@ -37,7 +38,93 @@ class TokenScanner(BaseScanner):
             else:
                 filtered_elements.append(element)
 
-        super().__init__(filtered_elements, pos)
+        if pos < 0:
+            raise ScannerError(f"初始化的指针小于 0: pos={pos}")
+        if pos > len(elements):
+            raise ScannerError(f"初始化指针大于字符串长度: len(text)={len(elements)}, pos={pos}")
+
+        self._elements = filtered_elements
+        self._pos = pos
+        self._len = len(filtered_elements)
+
+    @property
+    def elements(self) -> List[AMTBase]:
+        """返回扫描器中的所有元素"""
+        return self._elements
+
+    @property
+    def pos(self) -> int:
+        """返回当前扫描指针"""
+        return self._pos
+
+    @property
+    def last(self) -> Optional[AMTBase]:
+        """当前指针位置的上一个字符"""
+        return self._get_by_offset(-1)
+
+    @property
+    def now(self) -> Optional[AMTBase]:
+        """当前指针位置的字符"""
+        return self.get()
+
+    @property
+    def next1(self) -> Optional[AMTBase]:
+        """当前指针位置的下一个字符"""
+        return self._get_by_offset(1)
+
+    @property
+    def next2(self) -> Optional[AMTBase]:
+        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
+        return self._get_by_offset(2)
+
+    @property
+    def next3(self) -> Optional[AMTBase]:
+        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
+        return self._get_by_offset(3)
+
+    @property
+    def next4(self) -> Optional[AMTBase]:
+        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
+        return self._get_by_offset(4)
+
+    def get(self) -> Optional[AMTBase]:
+        """获取当前指针位置元素，但不移动指针
+
+        - 如果指针已到达字符串末尾，则返回 None
+        - 如果指针超出字符串长度，则抛出异常
+        """
+        if self.pos > self._len:
+            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self.pos}")
+        if self.pos == self._len:
+            return None
+        return self._elements[self._pos]
+
+    def pop(self) -> AMTBase:
+        """获取当前指针位置元素，并移动指针
+
+        - 如果要移动到的指针位置超出字符串长度，则抛出异常
+        """
+        if self.pos >= self._len:
+            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self.pos + 1} {self}")
+
+        result = self._elements[self.pos]
+        self._pos += 1  # 移动指针
+        return result
+
+    def _get_by_offset(self, idx: int) -> Optional[AMTBase]:
+        """获取当前指针位置 + idx 位置的元素，但不一定指针
+        """
+        if self.pos + idx >= self._len or self.pos + idx < 0:
+            return None
+        return self._elements[self.pos + idx]
+
+    def close(self) -> None:
+        """关闭扫描器，如果扫描器没有遍历完成则抛出异常"""
+        if not self.is_finish:
+            raise ScannerError(f"关闭了没有遍历完成的扫描器 {self}")
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} tokens={self.elements[self.pos:]}, pos={self.pos}>"
 
     def search(self, *tokens: Union[str, AMTMark]) -> bool:
         """从当前配置开始匹配 tokens

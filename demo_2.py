@@ -6,7 +6,7 @@ from metasequoia_sql import SQLParser
 from scripts.demo_sql.sql_basic_tutorial import *
 
 if __name__ == "__main__":
-    statement = SQLParser.parse_select_statement(SBT_CH02_36)
+    statement = SQLParser.parse_select_statement(SBT_CH02_01)
     SQLParser.check_literal_expression("x'3f' WHERE")
 
     SQLParser.check_literal_expression("1 WHERE")
