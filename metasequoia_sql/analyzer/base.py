@@ -10,19 +10,9 @@ from metasequoia_sql.analyzer.tool import check_node_type
 from metasequoia_sql.core.node import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
-__all__ = ["AnalyzerBase",
-           "AnalyzerRecursionBase", "AnalyzerRecursionListBase", "AnalyzerRecursionDictBase",
+__all__ = ["AnalyzerRecursionBase", "AnalyzerRecursionListBase", "AnalyzerRecursionDictBase",
            "AnalyzerSelectASTToDictBase", "AnalyzerSelectListBase", "AnalyzerSelectDictBase",
            "AnalyzerRecursionASTToDictBase"]
-
-
-class AnalyzerBase(abc.ABC):
-    """分析器的抽象基类"""
-
-    @classmethod
-    @abc.abstractmethod
-    def handle(cls, node: ASTBase) -> Any:
-        """入口函数"""
 
 
 class AnalyzerRecursionBase(abc.ABC):
