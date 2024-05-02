@@ -63,7 +63,7 @@ MYSQL_DATA_TYPE = {
     "LONGBLOB": (0, 1),  # 二进制数据类型，最大长度为 4GB
 }
 
-# 将每个 Mysql 类型转换为 Hive 类型  TODO 待整理所有主逻辑中未使用的静态常量
+# 将每个 Mysql 类型转换为 Hive 类型
 HASHMAP_MYSQL_TO_HIVE = {
     # 串数据类型
     "CHAR": "STRING",
