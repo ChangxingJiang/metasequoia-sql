@@ -8,7 +8,6 @@
 TODO 使用 search 替代直接使用 now 判断
 TODO 将 CAST_DATA_TYPE 提出作为一个基础类型节点
 TODO 将 function_name 提出作为一个专有表达式
-TODO 清理只调用一次的单行函数
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 """
 

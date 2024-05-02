@@ -831,17 +831,21 @@ class ASTIndexColumn(ASTBase):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTIndexExpression(ASTBase, abc.ABC):
-    """声明索引表达式
-
-    TODO 将 key_block_size 改为配置
-    TODO 合并不同索引类型的 source 函数
-    """
+    """声明索引表达式"""
 
     name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     columns: Tuple[ASTIndexColumn, ...] = dataclasses.field(kw_only=True)
     using: Optional[str] = dataclasses.field(kw_only=True, default=None)
     comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
     key_block_size: Optional[int] = dataclasses.field(kw_only=True, default=None)
+
+    def _source(self, data_source: SQLType, index_type: str):
+        name_str = f" {self.name}" if self.name is not None else ""
+        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])
+        using_str = f" USING {self.using}" if self.using is not None else ""
+        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
+        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
+        return f"{index_type}{name_str} ({columns_str}){using_str}{comment_str}{config_str}" if self.columns is not None else ""
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -850,11 +854,7 @@ class ASTPrimaryIndexExpression(ASTIndexExpression):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
-        using_str = f" USING {self.using}" if self.using is not None else ""
-        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
-        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"PRIMARY KEY ({columns_str}){using_str}{comment_str}{config_str}" if self.columns is not None else ""
+        return self._source(data_source, "PRIMARY KEY")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -863,11 +863,7 @@ class ASTUniqueIndexExpression(ASTIndexExpression):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
-        using_str = f" USING {self.using}" if self.using is not None else ""
-        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
-        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"UNIQUE KEY {self.name} ({columns_str}){using_str}{comment_str}{config_str}"
+        return self._source(data_source, "UNIQUE KEY")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -876,11 +872,7 @@ class ASTNormalIndexExpression(ASTIndexExpression):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
-        using_str = f" USING {self.using}" if self.using is not None else ""
-        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
-        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"KEY {self.name} ({columns_str}){using_str}{comment_str}{config_str}"
+        return self._source(data_source, "KEY")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -889,11 +881,7 @@ class ASTFulltextIndexExpression(ASTIndexExpression):
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])  # MySQL 标准导出逗号间没有空格
-        using_str = f" USING {self.using}" if self.using is not None else ""
-        comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
-        config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
-        return f"FULLTEXT KEY {self.name} ({columns_str}){using_str}{comment_str}{config_str}"
+        return self._source(data_source, "FULLTEXT KEY")
 
 
 # ---------------------------------------- 声明字段表达式 ----------------------------------------
