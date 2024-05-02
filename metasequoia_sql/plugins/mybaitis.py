@@ -13,44 +13,50 @@ MyBatis 语法处理插件
 import dataclasses
 from typing import Union, List, Optional, Any
 
-from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.common import TokenScanner
+from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql.core import SQLParser, ASTGeneralExpression, ASTSingleSelectStatement
-from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTBaseSingle, AMTMark
 from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTSingle, AMTMark
 
 
 class FSMMachineMyBatis(FSMMachine):
     """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
-    def handle_change(self, ch: str):
+    def handle_ch(self, ch: str) -> bool:
         """处理单个变化"""
-        if self.status == FSMStatus.WAIT and self.scanner.now == "#":
-            self._cache.append(self.scanner.pop())
-            self.set_status(FSMStatus.CUSTOM_1)
-        elif self.status == FSMStatus.CUSTOM_1:  # 在 # 之后
-            if self.scanner.now == "{":
-                self._cache.append(self.scanner.pop())
-                self.set_status(FSMStatus.CUSTOM_2)
-            elif self.scanner.now == "<END>":
-                self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
+        if self.status == FSMStatus.WAIT and ch == "#":
+            self.cache.append(ch)
+            self._status = FSMStatus.CUSTOM_1
+            return True
+        if self.status == FSMStatus.CUSTOM_1:  # 在 # 之后
+            if ch == "{":
+                self.cache.append(ch)
+                self._status = FSMStatus.CUSTOM_2
+                return True
+            elif ch == "<END>":
+                self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
+                return False
             else:
-                self._cache.append(self.scanner.pop())
-                self.set_status(FSMStatus.IN_EXPLAIN_1)
+                self.cache.append(ch)
+                self._status = FSMStatus.IN_EXPLAIN_1
+                return True
         elif self.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
-            if self.scanner.now == "}":
-                self._cache.append(self.scanner.pop())
-                self.stack[-1].append(AMTBaseSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
-                self.set_status(FSMStatus.WAIT)
-            elif self.scanner.now == "<END>":
+            if ch == "}":
+                self.cache.append(ch)
+                self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
+                self._status = FSMStatus.WAIT
+                return True
+            elif ch == "<END>":
                 raise AMTParseError(f"当前状态={self.status} 出现结束标记符")
             else:
-                self._cache.append(self.scanner.pop())
-                self.set_status(FSMStatus.CUSTOM_2)
+                self.cache.append(ch)
+                self._status = FSMStatus.CUSTOM_2
+                return True
         else:
-            super().handle_change(ch)
+            return super().handle_ch(ch)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

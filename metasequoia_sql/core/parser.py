@@ -19,7 +19,7 @@ from metasequoia_sql.common.basic import is_float_literal, is_int_literal, prepr
 from metasequoia_sql.core.node import *
 from metasequoia_sql.core.static import AGGREGATION_FUNCTION_NAME_SET, WINDOW_FUNCTION_NAME_SET
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTBaseSingle, FSMMachine)
+from metasequoia_sql.lexical import (AMTBase, AMTMark, AMTSingle, FSMMachine)
 
 __all__ = ["SQLParser"]
 
@@ -194,7 +194,7 @@ class SQLParser:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         token: AMTBase = scanner.pop()
-        if isinstance(token, AMTBaseSingle):
+        if isinstance(token, AMTSingle):
             return ASTLiteralExpression(value=token.source)
         if token.equals("-") and (is_int_literal(scanner.get_as_source()) or is_float_literal(scanner.get_as_source())):
             next_token = scanner.pop()
@@ -321,7 +321,7 @@ class SQLParser:
         if function_name.upper() == "SUBSTRING":
             # 将 MySQL 和 PostgreSQL 中的 "SUBSTRING(str1 FROM 3 FOR 2)" 格式化为 "SUBSTRING(str1, 3, 2)"
             parenthesis_scanner = TokenScanner([
-                element if not element.equals("FROM") and not element.equals("FOR") else AMTBaseSingle(",")
+                element if not element.equals("FROM") and not element.equals("FOR") else AMTSingle(",")
                 for element in parenthesis_scanner.elements])
 
         is_distinct = False
@@ -1225,7 +1225,6 @@ class SQLParser:
                                with_clause: Optional[ASTWithClause] = None) -> ASTSelectStatement:
         """解析 SELECT 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        print(scanner)
         if with_clause is None:
             with_clause = cls.parse_with_clause(scanner)
         result = [cls.parse_single_select_statement(scanner, with_clause=with_clause)]

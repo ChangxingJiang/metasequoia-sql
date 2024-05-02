@@ -11,7 +11,7 @@ import abc
 import enum
 from typing import List, Optional, Set, Union
 
-__all__ = ["AMTBase", "AMTMark", "AMTBaseSingle", "AMTBaseParenthesis"]
+__all__ = ["AMTBase", "AMTMark", "AMTSingle", "AMTParenthesis"]
 
 
 class AMTMark(enum.Enum):
@@ -70,7 +70,7 @@ class AMTBase(abc.ABC):
         return self.source.upper() == other.upper()  # 字符串格式文本
 
 
-class AMTBaseSingle(AMTBase):
+class AMTSingle(AMTBase):
     """单元素节点"""
 
     def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
@@ -91,7 +91,7 @@ class AMTBaseSingle(AMTBase):
         return f"<{self.__class__.__name__} source={format_source}>"
 
 
-class AMTBaseParenthesis(AMTBase):
+class AMTParenthesis(AMTBase):
     """插入语节点"""
 
     def __init__(self, tokens: List[AMTBase], marks: Optional[Set[AMTMark]] = None):
