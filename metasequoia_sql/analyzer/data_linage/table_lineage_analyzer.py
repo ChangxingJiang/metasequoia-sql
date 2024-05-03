@@ -5,12 +5,11 @@
 from typing import Optional, List, Tuple
 
 from metasequoia_sql import core
+from metasequoia_sql.analyzer import toolkit
 from metasequoia_sql.analyzer.data_linage.table_lineage import SelectTableLineage, InsertTableLineage
 from metasequoia_sql.analyzer.data_linage.table_lineage_storage import TableLineageStorage
 from metasequoia_sql.analyzer.node import StandardColumn, QuoteColumn, SourceColumn
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter
-from metasequoia_sql.analyzer.toolkit import CurrentLevelSubQuery, CurrentLevelTableNameAnalyzer, \
-    CurrentNodeUsedQuoteColumn
 from metasequoia_sql.errors import AnalyzerError
 
 __all__ = ["TableLineageAnalyzer"]
@@ -47,7 +46,7 @@ class TableLineageAnalyzer:
         self._analyze_sub_query(table_lineage_storage, select_statement)  # 处理子查询中临时表的数据血缘
 
         # 初始化当前层级的表名规范器
-        table_name_analyzer = CurrentLevelTableNameAnalyzer(select_statement)
+        table_name_analyzer = toolkit.CurrentLevelTableNameAnalyzer(select_statement)
 
         # 获取当前层级使用的 LATERAL VIEW 字段属性
         lateral_view_columns = dict(self.get_lateral_view_clause_column_name_to_quote_columns(select_statement))
@@ -58,7 +57,7 @@ class TableLineageAnalyzer:
                 select_statement=select_statement,
                 table_lineage_storage=table_lineage_storage,
                 table_name_analyzer=table_name_analyzer):
-            # 处理使用 LATERAL VIEW 子句中字段的情况
+            # 将使用的 LATERAL VIEW 子句中字段，映射为原始的引用字段对象
             new_quote_column: List[QuoteColumn] = []
             for quote_column in quote_columns:
                 if (quote_column.table_name is None and quote_column.column_name is not None
@@ -67,38 +66,12 @@ class TableLineageAnalyzer:
                 else:
                     new_quote_column.append(quote_column)
 
-            # 使用不包含 LATERAL VIEW 子句的其他字段
+            # 处理引用字段的情况
             source_column_list = []
             for quote_column in new_quote_column:
-                if quote_column.table_name is not None:
-                    from_standard_table = table_name_analyzer.get_standard_table(quote_column.table_name)
-                    from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
-                    source_column_list.extend(
-                        from_table_lineage.get_source_column_list_by_name(quote_column.column_name))
-                elif quote_column.column_name is None:  # 兼容聚集函数的参数中没有直接使用字段的情况，则直接标记引用了所有上游表
-                    for from_standard_table in table_name_analyzer.get_all_standard_table():
-                        from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
-                        for source_table in from_table_lineage.get_standard_table_list():
-                            source_column_list.append(SourceColumn(schema_name=source_table.schema_name,
-                                                                   table_name=source_table.table_name,
-                                                                   column_name=None))
-                else:
-                    already_match = False  # 是否已经匹配到上游表
-                    for from_standard_table in table_name_analyzer.get_all_standard_table():
-                        from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
-                        if not from_table_lineage.has_column(quote_column.column_name):
-                            continue
-                        if already_match is True:
-                            raise AnalyzerError("同一个字段可以匹配到多个上游表")
-                        already_match = True
-                        source_column_list.extend(
-                            from_table_lineage.get_source_column_list_by_name(quote_column.column_name))
-                    if already_match is False:
-                        for from_standard_table in table_name_analyzer.get_all_standard_table():
-                            from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
-                            print(from_standard_table.table_name, ":", from_table_lineage.all_columns())
-                        raise AnalyzerError(f"没有匹配到合适的上游表字段: 字段={quote_column}, "
-                                            f"上游表={table_name_analyzer.get_all_standard_table()}")
+                source_column_list.extend(self._analyze_quote_column(table_lineage_storage=table_lineage_storage,
+                                                                     table_name_analyzer=table_name_analyzer,
+                                                                     quote_column=quote_column))
             data_lineage.append((standard_column, source_column_list))
         return SelectTableLineage(data_lineage=data_lineage)
 
@@ -110,11 +83,54 @@ class TableLineageAnalyzer:
 
     def _analyze_sub_query(self, table_lineage_storage: TableLineageStorage, select_statement: core.ASTSelectStatement):
         """处理子查询中临时表的数据血缘"""
-        current_level_sub_query = CurrentLevelSubQuery(select_statement)
+        current_level_sub_query = toolkit.CurrentLevelSubQuery(select_statement)
         for alias_name in current_level_sub_query.get_all_sub_query_alias_name():
             sub_query_select_statement = current_level_sub_query.get_sub_query_statement(alias_name)
             table_lineage = self.get_select_table_lineage(sub_query_select_statement, table_lineage_storage)
             table_lineage_storage.add_sub_query_table(table_name=alias_name, table_lineage=table_lineage)
+
+    @staticmethod
+    def _analyze_quote_column(table_lineage_storage: TableLineageStorage,
+                              table_name_analyzer: toolkit.CurrentLevelTableNameAnalyzer,
+                              quote_column: QuoteColumn
+                              ) -> List[SourceColumn]:
+        """计算引用字段的上游源字段"""
+        # 表名不为空、字段名不为空的引用字段对象：获取上游表指定字段的上游源字段
+        if quote_column.table_name is not None:
+            from_standard_table = table_name_analyzer.get_standard_table(quote_column.table_name)
+            from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
+            return from_table_lineage.get_source_column_list_by_name(quote_column.column_name)
+
+        # 处理表名和字段名均为空的引用对象（聚集函数的参数没有直接使用字段的情况）：获取所有上游表、字段为 None 的源字段对象
+        if quote_column.column_name is None:
+            source_column_list = []
+            for from_standard_table in table_name_analyzer.get_all_standard_table():
+                from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
+                for source_table in from_table_lineage.get_standard_table_list():
+                    source_column_list.append(SourceColumn(schema_name=source_table.schema_name,
+                                                           table_name=source_table.table_name,
+                                                           column_name=None))
+            return source_column_list
+
+        # 处理表名为空，字段名不为空的引用字段对象：在各个上游表中寻找，若能且仅能匹配到一个上游表字段则返回该字段的上游源字段
+        source_column_list = []
+        already_match = False  # 是否已经匹配到上游表
+        for from_standard_table in table_name_analyzer.get_all_standard_table():
+            from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
+            if not from_table_lineage.has_column(quote_column.column_name):
+                continue
+            if already_match is True:
+                raise AnalyzerError("同一个字段可以匹配到多个上游表")
+            already_match = True
+            source_column_list.extend(
+                from_table_lineage.get_source_column_list_by_name(quote_column.column_name))
+        if already_match is False:
+            for from_standard_table in table_name_analyzer.get_all_standard_table():
+                from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
+                print(from_standard_table.table_name, ":", from_table_lineage.all_columns())
+            raise AnalyzerError(f"没有匹配到合适的上游表字段: 字段={quote_column}, "
+                                f"上游表={table_name_analyzer.get_all_standard_table()}")
+        return source_column_list
 
     def get_insert_table_lineage(self, insert_statement: core.ASTInsertSelectStatement) -> InsertTableLineage:
         """获取 INSERT 语句中的表数据血缘对象"""
@@ -147,7 +163,7 @@ class TableLineageAnalyzer:
             self,
             select_statement: core.ASTSelectStatement,
             table_lineage_storage: TableLineageStorage,
-            table_name_analyzer: CurrentLevelTableNameAnalyzer
+            table_name_analyzer: toolkit.CurrentLevelTableNameAnalyzer
     ) -> List[Tuple[StandardColumn, List[QuoteColumn]]]:
         """获取 ASTSelectStatement 节点当前层级标准字段对象和使用的应用字段对象的映射关系"""
         if isinstance(select_statement, core.ASTSingleSelectStatement):
@@ -189,7 +205,7 @@ class TableLineageAnalyzer:
             cls,
             select_statement: core.ASTSingleSelectStatement,
             table_lineage_storage: TableLineageStorage,
-            table_name_analyzer: CurrentLevelTableNameAnalyzer
+            table_name_analyzer: toolkit.CurrentLevelTableNameAnalyzer
     ) -> List[Tuple[StandardColumn, List[QuoteColumn]]]:
         """获取 ASTSingleSelectStatement 节点当前层级标准字段对象和使用的引用字段对象的映射关系
 
@@ -201,7 +217,7 @@ class TableLineageAnalyzer:
             if column.alias is not None:  # 有别名的情况（此时一定不是通配符）
                 standard_column = StandardColumn(column_name=column.alias.name, column_idx=column_idx)
                 column_idx += 1
-                result.append((standard_column, CurrentNodeUsedQuoteColumn.handle(column.column_value)))
+                result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.column_value)))
             elif isinstance(column.column_value, core.ASTWildcardExpression):  # 通配符的情况
                 if column.column_value.table_name is not None:  # 有表名的通配符
                     standard_table = table_name_analyzer.get_standard_table(column.column_value.table_name)
@@ -233,7 +249,7 @@ class TableLineageAnalyzer:
                 standard_column = StandardColumn(column_name=column.column_value.source(core.SQLType.DEFAULT),
                                                  column_idx=column_idx)
                 column_idx += 1
-                result.append((standard_column, CurrentNodeUsedQuoteColumn.handle(column.column_value)))
+                result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.column_value)))
         return result
 
     def get_lateral_view_clause_column_name_to_quote_columns(
@@ -272,5 +288,5 @@ class TableLineageAnalyzer:
         result = []
         for lateral_view_clause in select_statement.lateral_view_clauses:  # 遍历 LATERAL VIEW 子句中的所有字段
             result.append((lateral_view_clause.alias.name,
-                           CurrentNodeUsedQuoteColumn.handle(lateral_view_clause.function)))
+                           toolkit.CurrentNodeUsedQuoteColumn.handle(lateral_view_clause.function)))
         return result
