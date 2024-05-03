@@ -1462,14 +1462,36 @@ class SQLParser:
         )
 
     @classmethod
+    def parse_drop_table_statement(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTDropTableStatement:
+        """解析 DROP TABLE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string)
+        scanner.match("DROP", "TABLE")
+        if_exists = scanner.search_and_move("IF", "EXISTS")
+        table_name = cls.parse_table_name_expression(scanner)
+        return node.ASTDropTableStatement(if_exists=if_exists, table_name=table_name)
+
+    @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str]) -> List[node.ASTStatement]:
         """解析一段 SQL 语句，返回表达式的列表"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         statement_list = []
         for statement_scanner in scanner.split_by(";"):
             # 解析 SET 语句
-            if cls.check_set_statement(statement_scanner):
+            if statement_scanner.search("SET"):
                 statement_list.append(cls.parse_set_statement(statement_scanner))
+                statement_scanner.close()
+                continue
+
+            # 解析 DROP TABLE 语句
+            if statement_scanner.search("DROP", "TABLE"):
+                statement_list.append(cls.parse_drop_table_statement(statement_scanner))
+                statement_scanner.close()
+                continue
+
+            # 解析 CREATE TABLE 语句
+            if statement_scanner.search("CREATE", "TABLE"):
+                statement_list.append(cls.parse_create_table_statement(statement_scanner))
+                statement_scanner.close()
                 continue
 
             # 先尝试解析 WITH 语句

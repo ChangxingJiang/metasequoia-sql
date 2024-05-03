@@ -1,5 +1,5 @@
 """
-抽象语法树（AST）的 DDL 类节点
+抽象语法树（AST）节点：CREATE TABLE 语句
 """
 
 import abc
@@ -282,7 +282,7 @@ class ASTCreateTableStatement(ASTBase):
         params["partitioned_by"] += (column,)
         return ASTCreateTableStatement(**params)
 
-    def source(self, sql_type: SQLType, n_indent: int = 2) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT, n_indent: int = 2) -> str:
         """返回语法节点的 SQL 源码"""
         if sql_type == SQLType.MYSQL:
             return self._source_mysql(n_indent=n_indent)
