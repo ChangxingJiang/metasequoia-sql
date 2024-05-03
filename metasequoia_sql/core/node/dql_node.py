@@ -6,7 +6,6 @@
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
 TODO 尽可能移除固定数量的元组
-TODO 统一兼容通配符
 """
 
 import abc
@@ -392,11 +391,11 @@ class ASTWindowExpression(ASTGeneralExpression):
 class ASTWildcardExpression(ASTGeneralExpression):
     """通配符表达式"""
 
-    schema: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self.schema}.*" if self.schema is not None else "*"
+        return f"{self.table_name}.*" if self.table_name is not None else "*"
 
 
 # ---------------------------------------- 条件表达式 ----------------------------------------

@@ -10,7 +10,7 @@ from metasequoia_sql.analyzer.tool import QuoteNameColumn, QuoteIndexColumn, Sel
 from metasequoia_sql.common import name_set
 from metasequoia_sql.core import (ASTBase, ASTColumnNameExpression, SQLType,
                                   ASTSubQueryExpression,
-                                  ASTSingleSelectStatement)
+                                  ASTSingleSelectStatement, ASTWildcardExpression)
 
 __all__ = [
     "CurrentUsedQuoteWithAliasIndexColumns",
@@ -36,6 +36,8 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
         if (isinstance(node, ASTColumnNameExpression)
                 and node.source(SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
             return [QuoteNameColumn(table_name=node.table_name, column_name=node.column_name)]
+        if isinstance(node, ASTWildcardExpression):
+            return [QuoteNameColumn(table_name=node.table_name, column_name="*")]
         if isinstance(node, ASTSubQueryExpression):
             return []
         return None

@@ -202,10 +202,19 @@ class TableLineageAnalyzer:
                 standard_column = StandardColumn(column_name=column.alias.name, column_idx=column_idx)
                 column_idx += 1
                 result.append((standard_column, CurrentNodeUsedQuoteColumn.handle(column.column_value)))
-            elif isinstance(column.column_value, core.ASTColumnNameExpression):  # 直接使用字段的情况
-                if column.column_value.column_name == "*":  # 通配符
-                    if column.column_value.table_name is not None:  # 有表名的通配符
-                        standard_table = table_name_analyzer.get_standard_table(column.column_value.table_name)
+            elif isinstance(column.column_value, core.ASTWildcardExpression):  # 通配符的情况
+                if column.column_value.table_name is not None:  # 有表名的通配符
+                    standard_table = table_name_analyzer.get_standard_table(column.column_value.table_name)
+                    table_lineage = table_lineage_storage.get_table_lineage(standard_table)
+                    for from_standard_column in table_lineage.get_all_standard_columns():
+                        standard_column = StandardColumn(column_name=from_standard_column.column_name,
+                                                         column_idx=column_idx)
+                        column_idx += 1
+                        quote_column = QuoteColumn(table_name=standard_table.table_name,
+                                                   column_name=from_standard_column.column_name)
+                        result.append((standard_column, [quote_column]))
+                else:  # 没有表名的通配符
+                    for standard_table in table_name_analyzer.get_all_standard_table():
                         table_lineage = table_lineage_storage.get_table_lineage(standard_table)
                         for from_standard_column in table_lineage.get_all_standard_columns():
                             standard_column = StandardColumn(column_name=from_standard_column.column_name,
@@ -214,22 +223,12 @@ class TableLineageAnalyzer:
                             quote_column = QuoteColumn(table_name=standard_table.table_name,
                                                        column_name=from_standard_column.column_name)
                             result.append((standard_column, [quote_column]))
-                    else:  # 没有表名的通配符
-                        for standard_table in table_name_analyzer.get_all_standard_table():
-                            table_lineage = table_lineage_storage.get_table_lineage(standard_table)
-                            for from_standard_column in table_lineage.get_all_standard_columns():
-                                standard_column = StandardColumn(column_name=from_standard_column.column_name,
-                                                                 column_idx=column_idx)
-                                column_idx += 1
-                                quote_column = QuoteColumn(table_name=standard_table.table_name,
-                                                           column_name=from_standard_column.column_name)
-                                result.append((standard_column, [quote_column]))
-                else:  # 非通配符
-                    standard_column = StandardColumn(column_name=column.column_value.column_name, column_idx=column_idx)
-                    column_idx += 1
-                    quote_column = QuoteColumn(table_name=column.column_value.table_name,
-                                               column_name=column.column_value.column_name)
-                    result.append((standard_column, [quote_column]))
+            elif isinstance(column.column_value, core.ASTColumnNameExpression):  # 直接使用字段的情况
+                standard_column = StandardColumn(column_name=column.column_value.column_name, column_idx=column_idx)
+                column_idx += 1
+                quote_column = QuoteColumn(table_name=column.column_value.table_name,
+                                           column_name=column.column_value.column_name)
+                result.append((standard_column, [quote_column]))
             else:  # 不是字段名的情况（此时一定不是通配符）
                 standard_column = StandardColumn(column_name=column.column_value.source(core.SQLType.DEFAULT),
                                                  column_idx=column_idx)

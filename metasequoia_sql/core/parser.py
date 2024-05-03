@@ -471,7 +471,7 @@ class SQLParser:
             schema_name = scanner.pop_as_source()
             scanner.pop()
             scanner.pop()
-            return node.ASTWildcardExpression(schema=schema_name)
+            return node.ASTWildcardExpression(table_name=schema_name)
         raise SqlParseError("无法解析为通配符表达式")
 
     @classmethod
