@@ -10,7 +10,7 @@ TODO 尽可能移除固定数量的元组
 
 from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTStatementBase
 from metasequoia_sql.core.node.enum_node import *
-from metasequoia_sql.core.node.common_expression import *
+from metasequoia_sql.core.node.basic_node import *
 from metasequoia_sql.core.node.statement_create_table import *
 from metasequoia_sql.core.node.statement_drop_table import ASTDropTableStatement
 from metasequoia_sql.core.node.statement_insert import *

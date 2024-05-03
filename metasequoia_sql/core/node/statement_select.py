@@ -12,7 +12,7 @@ from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTSt
 from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType, ASTCastDataType,
                                                  ASTComputeOperator, ASTCompareOperator,
                                                  ASTLogicalOperator)
-from metasequoia_sql.core.node.common_expression import ASTTableNameExpression
+from metasequoia_sql.core.node.basic_node import ASTTableNameExpression
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import UnSupportDataSourceError, SqlParseError
 

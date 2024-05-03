@@ -1,0 +1,12 @@
+"""
+SQL 语法解析器
+
+将所有解析方法合并到这个类中，以支持插件开发。
+如需替换词法解析器，重写 build_token_scanner 方法即可。
+
+TODO 使用 search 替代直接使用 now 判断
+TODO 将 function_name 提出作为一个专有表达式
+TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
+"""
+
+from metasequoia_sql.core.parser.interface import SQLParser
