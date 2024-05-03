@@ -7,20 +7,16 @@ import dataclasses
 import enum
 from typing import Optional, Tuple, Union, Set
 
-from metasequoia_sql.common.basic import is_int_literal
 from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTStatementBase
+from metasequoia_sql.core.node.basic_node import ASTTableNameExpression
 from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType, ASTCastDataType,
                                                  ASTComputeOperator, ASTCompareOperator,
                                                  ASTLogicalOperator)
-from metasequoia_sql.core.node.basic_node import ASTTableNameExpression
 from metasequoia_sql.core.sql_type import SQLType
-from metasequoia_sql.errors import UnSupportDataSourceError, SqlParseError
+from metasequoia_sql.errors import UnSupportDataSourceError
 
 __all__ = [
     # ------------------------------ 一般表达式 ------------------------------
-    # 字面值表达式
-    "ASTLiteralExpression",
-
     # 一般表达式：函数表达式
     "ASTFunctionExpression", "ASTNormalFunctionExpression", "ASTAggregationFunctionExpression",
     "ASTCastFunctionExpression", "ASTExtractFunctionExpression",
@@ -98,30 +94,6 @@ __all__ = [
     # SELECT 语句
     "ASTSelectStatement", "ASTSingleSelectStatement", "ASTUnionSelectStatement",
 ]
-
-
-# ---------------------------------------- 字面值表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralExpression(ASTExpressionBase):
-    """字面值表达式"""
-
-    value: str = dataclasses.field(kw_only=True)  # 字面值
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self.value
-
-    def as_int(self) -> int:
-        """将字面值作为整形返回"""
-        if is_int_literal(self.value):
-            return int(self.value)
-        raise SqlParseError(f"无法字面值 {self.value} 转化为整型")
-
-    def as_string(self) -> str:
-        """将字面值作为字符串返回"""
-        return self.value
 
 
 # ---------------------------------------- 函数表达式 ----------------------------------------

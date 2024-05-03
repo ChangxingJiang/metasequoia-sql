@@ -3,14 +3,16 @@
 """
 
 from metasequoia_sql.common import TokenScanner
+from metasequoia_sql.common.basic import is_float_literal, is_int_literal
 from metasequoia_sql.core import node
 from metasequoia_sql.core.parser.common import unify_name
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.lexical import AMTMark
+from metasequoia_sql.lexical import AMTMark, AMTSingle
 
 __all__ = [
     "check_column_name_expression", "parse_column_name_expression",  # 判断、解析列名表达式
     "parse_table_name_expression",  # 解析表名表达式
+    "check_literal_expression", "parse_literal_expression",  # 判断、解析字面值表达式
 ]
 
 
@@ -54,3 +56,19 @@ def parse_table_name_expression(scanner: TokenScanner) -> node.ASTTableNameExpre
             schema_name, table_name = None, name_source
         return node.ASTTableNameExpression(schema=unify_name(schema_name), table=unify_name(table_name))
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+
+
+def check_literal_expression(scanner: TokenScanner) -> bool:
+    """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
+    return scanner.search(AMTMark.LITERAL) or scanner.search("-")
+
+
+def parse_literal_expression(scanner: TokenScanner) -> node.ASTLiteralExpression:
+    """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
+    token = scanner.pop()
+    if isinstance(token, AMTSingle):
+        return node.ASTLiteralExpression(value=token.source)
+    if token.equals("-") and (is_int_literal(scanner.get_as_source()) or is_float_literal(scanner.get_as_source())):
+        next_token = scanner.pop()
+        return node.ASTLiteralExpression(value=f"-{next_token.source}")
+    raise SqlParseError(f"未知的字面值: {token}")

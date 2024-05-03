@@ -10,7 +10,6 @@ from typing import Optional, Tuple, List, Union
 
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.common import name_set
-from metasequoia_sql.common.basic import is_float_literal, is_int_literal
 from metasequoia_sql.core import node
 from metasequoia_sql.core.parser import enum_node_parser, basic_node_parser
 from metasequoia_sql.core.parser.common import unify_name
@@ -108,6 +107,11 @@ class SQLParser:
         return enum_node_parser.parse_logical_operator(cls._unify_input_scanner(scanner_or_string))
 
     @classmethod
+    def parse_cast_data_type(cls, scanner_or_string: Union[TokenScanner, str]) -> node.EnumCastDataType:
+        """解析 CAST 函数表达式中的类型"""
+        return enum_node_parser.parse_cast_data_type(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
     def check_column_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """是否可能为列名表达式"""
         return basic_node_parser.check_column_name_expression(cls._unify_input_scanner(scanner_or_string))
@@ -125,20 +129,12 @@ class SQLParser:
     @classmethod
     def check_literal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        return scanner.search(AMTMark.LITERAL) or scanner.search("-")
+        return basic_node_parser.check_literal_expression(cls._unify_input_scanner(scanner_or_string))
 
     @classmethod
     def parse_literal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTLiteralExpression:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        token = scanner.pop()
-        if isinstance(token, AMTSingle):
-            return node.ASTLiteralExpression(value=token.source)
-        if token.equals("-") and (is_int_literal(scanner.get_as_source()) or is_float_literal(scanner.get_as_source())):
-            next_token = scanner.pop()
-            return node.ASTLiteralExpression(value=f"-{next_token.source}")
-        raise SqlParseError(f"未知的字面值: {token}")
+        return basic_node_parser.parse_literal_expression(cls._unify_input_scanner(scanner_or_string))
 
     @classmethod
     def check_function_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -148,13 +144,15 @@ class SQLParser:
                 scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS))
 
     @classmethod
-    def parse_cast_data_type(cls, scanner_or_string: Union[TokenScanner, str]) -> node.EnumCastDataType:
-        """解析 CAST 函数表达式中的类型"""
+    def parse_extract_function_expression(cls, scanner_or_string: Union[TokenScanner, str]
+                                          ) -> node.ASTExtractFunctionExpression:
+        """解析 EXTRACT 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        for cast_type in node.EnumCastDataType:
-            if scanner.search_and_move(cast_type.value):
-                return cast_type
-        raise SqlParseError(f"无法解析的 CAST 函数表达式中的类型: {scanner}")
+        extract_name = cls.parse_general_expression(scanner)
+        scanner.match("FROM")
+        column_expression = cls.parse_general_expression(scanner)
+        scanner.close()
+        return node.ASTExtractFunctionExpression(extract_name=extract_name, column_expression=column_expression)
 
     @classmethod
     def parse_cast_function_expression(cls, scanner_or_string: Union[TokenScanner, str]
@@ -177,17 +175,6 @@ class SQLParser:
         scanner.close()
         cast_data_type = node.ASTCastDataType(signed=signed, type_enum=cast_type, params=cast_params)
         return node.ASTCastFunctionExpression(column_expression=column_expression, cast_type=cast_data_type)
-
-    @classmethod
-    def parse_extract_function_expression(cls, scanner_or_string: Union[TokenScanner, str]
-                                          ) -> node.ASTExtractFunctionExpression:
-        """解析 EXTRACT 函数表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        extract_name = cls.parse_general_expression(scanner)
-        scanner.match("FROM")
-        column_expression = cls.parse_general_expression(scanner)
-        scanner.close()
-        return node.ASTExtractFunctionExpression(extract_name=extract_name, column_expression=column_expression)
 
     @classmethod
     def parse_if_function_expression(cls, scanner_or_string: Union[TokenScanner, str]

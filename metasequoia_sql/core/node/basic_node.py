@@ -1,16 +1,19 @@
 """
-抽象语法树（AST）节点：在多个语句中通用的表达式
+抽象语法树（AST）节点：属性均非 ASTBase 的子类的节点
 """
 
 import dataclasses
 from typing import Optional
 
+from metasequoia_sql.common.basic import is_int_literal
 from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase
 from metasequoia_sql.core.sql_type import SQLType
+from metasequoia_sql.errors import SqlParseError
 
 __all__ = [
     "ASTColumnNameExpression",  # 列名表达式
     "ASTTableNameExpression",  # 表名表达式
+    "ASTLiteralExpression",  # 字面值表达式
 ]
 
 
@@ -52,3 +55,27 @@ class ASTTableNameExpression(ASTBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"`{self.schema}.{self.table}`" if self.schema is not None else f"`{self.table}`"
+
+
+# ---------------------------------------- 字面值表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTLiteralExpression(ASTExpressionBase):
+    """字面值表达式"""
+
+    value: str = dataclasses.field(kw_only=True)  # 字面值
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return self.value
+
+    def as_int(self) -> int:
+        """将字面值作为整形返回"""
+        if is_int_literal(self.value):
+            return int(self.value)
+        raise SqlParseError(f"无法字面值 {self.value} 转化为整型")
+
+    def as_string(self) -> str:
+        """将字面值作为字符串返回"""
+        return self.value

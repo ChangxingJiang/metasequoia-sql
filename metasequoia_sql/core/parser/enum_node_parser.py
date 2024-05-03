@@ -14,6 +14,7 @@ __all__ = [
     "check_compare_operator", "parse_compare_operator",  # 判断、解析比较运算符
     "check_compute_operator", "parse_compute_operator",  # 判断、解析计算运算符
     "check_logical_operator", "parse_logical_operator",  # 判断、解析逻辑运算符
+    "parse_cast_data_type",  # 解析 CAST 函数字段类型
 ]
 
 
@@ -122,3 +123,11 @@ def parse_logical_operator(scanner: TokenScanner) -> node.ASTLogicalOperator:
         if scanner.search_and_move(*logical_operator.value):
             return node.ASTLogicalOperator(enum=logical_operator)
     raise SqlParseError(f"无法解析的逻辑运算符: {scanner}")
+
+
+def parse_cast_data_type(scanner: TokenScanner) -> node.EnumCastDataType:
+    """解析 CAST 函数表达式中的类型"""
+    for cast_type in node.EnumCastDataType:
+        if scanner.search_and_move(cast_type.value):
+            return cast_type
+    raise SqlParseError(f"无法解析的 CAST 函数表达式中的类型: {scanner}")
