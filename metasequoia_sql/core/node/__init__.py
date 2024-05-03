@@ -8,6 +8,5 @@ from metasequoia_sql.core.node.create_table import *
 from metasequoia_sql.core.node.dql_node import *
 from metasequoia_sql.core.node.insert_node import *
 from metasequoia_sql.core.node.set_node import *
-from metasequoia_sql.core.node.sql_type import SQLType
 from metasequoia_sql.core.node.drop_table import ASTDropTableStatement
 from metasequoia_sql.core.node.basic_node import *

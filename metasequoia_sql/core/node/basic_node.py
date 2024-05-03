@@ -7,7 +7,7 @@ import enum
 from typing import Optional
 
 from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.sql_type import SQLType
+from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = [
     "EnumWindowRowType", "ASTWindowRow", "ASTWindowRowExpression",  # 窗口函数的行限制表达式

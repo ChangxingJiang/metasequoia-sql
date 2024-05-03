@@ -18,7 +18,7 @@ from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTU
                                                  ASTComputeOperator, ASTCompareOperator,
                                                  ASTLogicalOperator)
 from metasequoia_sql.core.node.basic_node import ASTWindowRowExpression
-from metasequoia_sql.core.node.sql_type import SQLType
+from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
 
 __all__ = [

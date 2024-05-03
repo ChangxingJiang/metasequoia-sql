@@ -6,7 +6,7 @@ import dataclasses
 
 from metasequoia_sql.core.node.abc_node import ASTBase
 from metasequoia_sql.core.node.dql_node import ASTTableNameExpression
-from metasequoia_sql.core.node.sql_type import SQLType
+from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = ["ASTDropTableStatement"]
 

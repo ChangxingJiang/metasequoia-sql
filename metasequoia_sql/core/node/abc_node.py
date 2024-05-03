@@ -5,7 +5,7 @@
 import abc
 import dataclasses
 
-from metasequoia_sql.core.node.sql_type import SQLType
+from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = ["ASTBase", "ASTExpressionBase"]
 

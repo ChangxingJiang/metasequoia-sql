@@ -10,7 +10,7 @@ from metasequoia_sql.core.node.abc_node import ASTBase
 from metasequoia_sql.core.node.enum_node import ASTInsertType
 from metasequoia_sql.core.node.dql_node import (ASTStatementHasWithClause, ASTTableNameExpression, ASTColumnNameExpression,
                                                 ASTValueExpression, ASTSelectStatement, ASTExpressionBase)
-from metasequoia_sql.core.node.sql_type import SQLType
+from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = [
     "ASTEqualExpression",  # 等式表达式

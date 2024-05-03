@@ -8,7 +8,7 @@ from typing import Optional, Tuple, Dict
 
 from metasequoia_sql.core.node.abc_node import ASTBase
 from metasequoia_sql.core.node.dql_node import ASTExpressionBase, ASTTableNameExpression
-from metasequoia_sql.core.node.sql_type import SQLType
+from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 
 __all__ = [
