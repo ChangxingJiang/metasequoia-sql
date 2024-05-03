@@ -4,14 +4,13 @@
 
 import abc
 import dataclasses
-import enum
 from typing import Optional, Tuple, Union, Set
 
 from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTStatementBase
-from metasequoia_sql.core.node.basic_node import ASTTableNameExpression, ASTFunctionNameExpression
+from metasequoia_sql.core.node.basic_node import (ASTTableNameExpression, ASTFunctionNameExpression, ASTWindowRow,
+                                                  ASTAlisaExpression)
 from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType, ASTCastDataType,
-                                                 ASTComputeOperator, ASTCompareOperator,
-                                                 ASTLogicalOperator)
+                                                 ASTComputeOperator, ASTCompareOperator, ASTLogicalOperator)
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import UnSupportDataSourceError
 
@@ -29,10 +28,7 @@ __all__ = [
     "ASTArrayIndexExpression",
 
     # 一般表达式：窗口表达式
-    "EnumWindowRowType", "ASTWindowRowItem", "ASTWindowRow", "ASTWindowExpression",
-
-    # 一般表达式：通配符表达式
-    "ASTWildcardExpression",
+    "ASTWindowExpression",
 
     # 一般表达式：条件表达式
     "ASTConditionExpression",
@@ -143,7 +139,7 @@ class ASTCastFunctionExpression(ASTFunctionExpression):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self.function_name.source()}"
+        return (f"{self.name.source()}"
                 f"({self.column_expression.source(sql_type)} AS {self.cast_type.source(sql_type)})")
 
 
@@ -158,7 +154,7 @@ class ASTExtractFunctionExpression(ASTFunctionExpression):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self.function_name.source()}({self.extract_name.source(sql_type)} "
+        return (f"{self.name.source()}({self.extract_name.source(sql_type)} "
                 f"FROM {self.column_expression.source(sql_type)})")
 
 
@@ -280,53 +276,6 @@ class ASTArrayIndexExpression(ASTExpressionBase):
 # ---------------------------------------- 窗口表达式 ----------------------------------------
 
 
-class EnumWindowRowType(enum.Enum):
-    """窗口函数中的行限制的类型"""
-    PRECEDING = "PRECEDING"
-    CURRENT_ROW = "CURRENT ROW"
-    FOLLOWING = "FOLLOWING"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWindowRowItem(ASTBase):
-    """窗口函数中的行限制
-
-    unbounded preceding = 当前行的所有行
-    n preceding = 当前行之前的 n 行
-    current row = 当前行
-    n following = 当前行之后的 n行
-    unbounded following = 当前行之后的所有行
-    """
-
-    row_type: EnumWindowRowType = dataclasses.field(kw_only=True)
-    is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
-    row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.row_type == EnumWindowRowType.CURRENT_ROW:
-            return "CURRENT ROW"
-        row_type_str = self.row_type.value
-        if self.is_unbounded is True:
-            return f"UNBOUNDED {row_type_str}"
-        return f"{self.row_num} {row_type_str}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWindowRow(ASTBase):
-    """窗口函数中的行限制表达式
-
-    ROWS BETWEEN {SQLWindowRow} AND {SQLWindowRow}
-    """
-
-    from_row: ASTWindowRowItem = dataclasses.field(kw_only=True)
-    to_row: ASTWindowRowItem = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"ROWS BETWEEN {self.from_row.source(sql_type)} AND {self.to_row.source(sql_type)}"
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTWindowExpression(ASTExpressionBase):
     """窗口表达式"""
@@ -348,20 +297,6 @@ class ASTWindowExpression(ASTExpressionBase):
             parenthesis.append(self.row_expression.source(sql_type))
         result += " ".join(parenthesis) + ")"
         return result
-
-
-# ---------------------------------------- 通配符表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWildcardExpression(ASTExpressionBase):
-    """通配符表达式"""
-
-    table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.table_name}.*" if self.table_name is not None else "*"
 
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
@@ -459,20 +394,6 @@ class ASTSubQueryExpression(ASTExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"({self.select_statement.source(sql_type)})"
-
-
-# ---------------------------------------- 别名表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTAlisaExpression(ASTBase):
-    """别名表达式"""
-
-    name: str = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"AS {self.name}"
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------

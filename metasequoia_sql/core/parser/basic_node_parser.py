@@ -14,6 +14,9 @@ __all__ = [
     "parse_table_name_expression",  # 解析表名表达式
     "parse_function_name_expression",  # 解析函数名表达式
     "check_literal_expression", "parse_literal_expression",  # 判断、解析字面值表达式
+    "parse_window_row_item", "parse_window_row",  # 解析窗口函数的行限制表达式
+    "check_wildcard_expression", "parse_wildcard_expression",  # 判断、解析通配符表达式
+    "check_alias_expression", "parse_alias_expression",  # 判断、解析别名表达式
 ]
 
 
@@ -90,3 +93,71 @@ def parse_literal_expression(scanner: TokenScanner) -> node.ASTLiteralExpression
         next_token = scanner.pop()
         return node.ASTLiteralExpression(value=f"-{next_token.source}")
     raise SqlParseError(f"未知的字面值: {token}")
+
+
+def parse_window_row_item(scanner: TokenScanner) -> node.ASTWindowRowItem:
+    """解析窗口函数行限制中的行"""
+    if scanner.search_and_move("CURRENT", "ROW"):
+        return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.CURRENT_ROW)
+    if scanner.search_and_move("UNBOUNDED"):
+        if scanner.search_and_move("PRECEDING"):
+            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, is_unbounded=True)
+        if scanner.search_and_move("FOLLOWING"):
+            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, is_unbounded=True)
+        raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
+    row_num = int(scanner.pop_as_source())
+    if scanner.search_and_move("PRECEDING"):
+        return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, row_num=row_num)
+    if scanner.search_and_move("FOLLOWING"):
+        return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, row_num=row_num)
+    raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
+
+
+def parse_window_row(scanner: TokenScanner) -> node.ASTWindowRow:
+    """解析窗口语句限制行的表达式"""
+    scanner.match("ROWS", "BETWEEN")
+    from_row = parse_window_row_item(scanner)
+    scanner.match("AND")
+    to_row = parse_window_row_item(scanner)
+    return node.ASTWindowRow(from_row=from_row, to_row=to_row)
+
+
+def check_wildcard_expression(scanner: TokenScanner) -> bool:
+    """判断是否可能为通配符表达式"""
+    return scanner.search("*") or scanner.search(AMTMark.NAME, ".", "*")
+
+
+def parse_wildcard_expression(scanner: TokenScanner) -> node.ASTWildcardExpression:
+    """解析通配符表达式"""
+    if scanner.search_and_move("*"):
+        return node.ASTWildcardExpression()
+    if scanner.search(AMTMark.NAME, ".", "*"):
+        schema_name = scanner.pop_as_source()
+        scanner.pop()
+        scanner.pop()
+        return node.ASTWildcardExpression(table_name=schema_name)
+    raise SqlParseError("无法解析为通配符表达式")
+
+
+def check_alias_expression(scanner: TokenScanner) -> bool:
+    """判断是否可能为别名表达式"""
+    return scanner.search("AS") or scanner.search(AMTMark.NAME)
+
+
+def parse_alias_expression(scanner: TokenScanner, must_has_as_keyword: bool = False) -> node.ASTAlisaExpression:
+    """解析别名表达式
+
+    Parameters
+    ----------
+    scanner : str
+        词法扫描器
+    must_has_as_keyword : bool, default = False
+        是否必须包含 AS 关键字
+    """
+    if must_has_as_keyword is True:
+        scanner.match("AS")
+    else:
+        scanner.search_and_move("AS")
+    if not scanner.search(AMTMark.NAME):
+        raise SqlParseError(f"无法解析为别名表达式: {scanner}")
+    return node.ASTAlisaExpression(name=unify_name(scanner.pop_as_source()))

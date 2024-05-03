@@ -38,6 +38,8 @@ class SQLParser:
             return cls.build_token_scanner(scanner_or_string)
         raise SqlParseError(f"未知的参数类型: {scanner_or_string} (type={type(scanner_or_string)})")
 
+    # ------------------------------ 枚举类节点的解析方法 ------------------------------
+
     @classmethod
     def check_insert_type(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否为插入类型"""
@@ -113,6 +115,8 @@ class SQLParser:
         """是否可能为列名表达式"""
         return basic_node_parser.check_column_name_expression(cls._unify_input_scanner(scanner_or_string))
 
+    # ------------------------------ 基础节点的解析方法 ------------------------------
+
     @classmethod
     def parse_column_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnNameExpression:
         """解析列名表达式"""
@@ -138,6 +142,38 @@ class SQLParser:
     def parse_literal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTLiteralExpression:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         return basic_node_parser.parse_literal_expression(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def parse_window_row_item(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRowItem:
+        """解析窗口函数行限制中的行"""
+        return basic_node_parser.parse_window_row_item(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def parse_window_row(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRow:
+        """解析窗口语句限制行的表达式"""
+        return basic_node_parser.parse_window_row(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def check_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
+        """判断是否可能为通配符表达式"""
+        return basic_node_parser.check_wildcard_expression(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def parse_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWildcardExpression:
+        """解析通配符表达式"""
+        return basic_node_parser.parse_wildcard_expression(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def check_alias_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
+        """判断是否可能为别名表达式"""
+        return basic_node_parser.check_alias_expression(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def parse_alias_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                               must_has_as_keyword: bool = False) -> node.ASTAlisaExpression:
+        """解析别名表达式"""
+        return basic_node_parser.parse_alias_expression(cls._unify_input_scanner(scanner_or_string),
+                                                        must_has_as_keyword=must_has_as_keyword)
 
     @classmethod
     def check_function_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -297,35 +333,6 @@ class SQLParser:
                 and scanner.get_as_source() in name_set.WINDOW_FUNCTION_NAME_SET)
 
     @classmethod
-    def parse_window_row(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRowItem:
-        """解析窗口函数行限制中的行"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search_and_move("CURRENT", "ROW"):
-            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.CURRENT_ROW)
-        if scanner.search_and_move("UNBOUNDED"):
-            if scanner.search_and_move("PRECEDING"):
-                return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, is_unbounded=True)
-            if scanner.search_and_move("FOLLOWING"):
-                return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, is_unbounded=True)
-            raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
-        row_num = int(scanner.pop_as_source())
-        if scanner.search_and_move("PRECEDING"):
-            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, row_num=row_num)
-        if scanner.search_and_move("FOLLOWING"):
-            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, row_num=row_num)
-        raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
-
-    @classmethod
-    def parse_window_row_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRow:
-        """解析窗口语句限制行的表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        scanner.match("ROWS", "BETWEEN")
-        from_row = cls.parse_window_row(scanner)
-        scanner.match("AND")
-        to_row = cls.parse_window_row(scanner)
-        return node.ASTWindowRow(from_row=from_row, to_row=to_row)
-
-    @classmethod
     def parse_window_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowExpression:
         """解析窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
@@ -340,31 +347,12 @@ class SQLParser:
         if parenthesis_scanner.search_and_move("ORDER", "BY"):
             order_by = cls.parse_general_expression(parenthesis_scanner, maybe_window=False)
         if parenthesis_scanner.search("ROWS", "BETWEEN"):
-            row_expression = cls.parse_window_row_expression(parenthesis_scanner)
+            row_expression = cls.parse_window_row(parenthesis_scanner)
         parenthesis_scanner.close()
         return node.ASTWindowExpression(window_function=window_function,
                                         partition_by=partition_by,
                                         order_by=order_by,
                                         row_expression=row_expression)
-
-    @classmethod
-    def check_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
-        """判断是否可能为通配符表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        return scanner.search("*") or scanner.search(AMTMark.NAME, ".", "*")
-
-    @classmethod
-    def parse_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWildcardExpression:
-        """解析通配符表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search_and_move("*"):
-            return node.ASTWildcardExpression()
-        if scanner.search(AMTMark.NAME, ".", "*"):
-            schema_name = scanner.pop_as_source()
-            scanner.pop()
-            scanner.pop()
-            return node.ASTWildcardExpression(table_name=schema_name)
-        raise SqlParseError("无法解析为通配符表达式")
 
     @classmethod
     def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTConditionExpression:
@@ -520,34 +508,6 @@ class SQLParser:
         """解析配置值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         return node.ASTConfigValueExpression(config_value=scanner.pop_as_source())
-
-    @classmethod
-    def check_alias_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
-        """判断是否可能为别名表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        return not scanner.is_finish and (scanner.search("AS") or scanner.search(AMTMark.NAME))
-
-    @classmethod
-    def parse_alias_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                               must_has_as_keyword: bool = False
-                               ) -> node.ASTAlisaExpression:
-        """解析别名表达式
-
-        Parameters
-        ----------
-        scanner_or_string : str
-            词法扫描器或 SQL 字符串语句
-        must_has_as_keyword : bool, default = False
-            是否必须包含 AS 关键字
-        """
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        if must_has_as_keyword is True:
-            scanner.match("AS")
-        else:
-            scanner.search_and_move("AS")
-        if not scanner.search(AMTMark.NAME):
-            raise SqlParseError(f"无法解析为别名表达式: {scanner}")
-        return node.ASTAlisaExpression(name=unify_name(scanner.pop_as_source()))
 
     @classmethod
     def check_join_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
