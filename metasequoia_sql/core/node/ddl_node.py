@@ -231,19 +231,19 @@ class ASTCreateTableStatement(ASTBase):
     table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     if_not_exists: bool = dataclasses.field(kw_only=True)
     columns: Optional[Tuple[ASTDefineColumnExpression, ...]] = dataclasses.field(kw_only=True)
-    primary_key: Optional[ASTPrimaryIndexExpression] = dataclasses.field(kw_only=True)
-    unique_key: Optional[Tuple[ASTUniqueIndexExpression, ...]] = dataclasses.field(kw_only=True)
-    key: Optional[Tuple[ASTNormalIndexExpression, ...]] = dataclasses.field(kw_only=True)
-    fulltext_key: Optional[Tuple[ASTFulltextIndexExpression, ...]] = dataclasses.field(kw_only=True)
-    foreign_key: Tuple[ASTForeignKeyExpression, ...] = dataclasses.field(kw_only=True)
-    partitioned_by: Tuple[ASTDefineColumnExpression, ...] = dataclasses.field(kw_only=True)
-    comment: Optional[str] = dataclasses.field(kw_only=True)
-    engine: Optional[str] = dataclasses.field(kw_only=True)
-    auto_increment: Optional[int] = dataclasses.field(kw_only=True)
-    default_charset: Optional[str] = dataclasses.field(kw_only=True)
-    collate: Optional[str] = dataclasses.field(kw_only=True)
-    row_format: Optional[str] = dataclasses.field(kw_only=True)
-    states_persistent: Optional[str] = dataclasses.field(kw_only=True)
+    primary_key: Optional[ASTPrimaryIndexExpression] = dataclasses.field(kw_only=True)  # MySQL
+    unique_key: Optional[Tuple[ASTUniqueIndexExpression, ...]] = dataclasses.field(kw_only=True)  # MySQL
+    key: Optional[Tuple[ASTNormalIndexExpression, ...]] = dataclasses.field(kw_only=True)  # MySQL
+    fulltext_key: Optional[Tuple[ASTFulltextIndexExpression, ...]] = dataclasses.field(kw_only=True)  # MySQL
+    foreign_key: Tuple[ASTForeignKeyExpression, ...] = dataclasses.field(kw_only=True)  # MySQL
+    partitioned_by: Tuple[ASTDefineColumnExpression, ...] = dataclasses.field(kw_only=True)  # Hive
+    comment: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
+    engine: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
+    auto_increment: Optional[int] = dataclasses.field(kw_only=True)  # MySQL
+    default_charset: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
+    collate: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
+    row_format: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
+    states_persistent: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
     row_format_serde: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     stored_as_inputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     outputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive

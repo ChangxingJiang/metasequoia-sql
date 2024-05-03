@@ -6,7 +6,6 @@
 因为不同解析函数之间需要相互调用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
 
 TODO 使用 search 替代直接使用 now 判断
-TODO 将 CAST_DATA_TYPE 提出作为一个基础类型节点
 TODO 将 function_name 提出作为一个专有表达式
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 """
@@ -222,9 +221,10 @@ class SQLParser:
             table_name = scanner.pop_as_source()
             scanner.pop()
             column_name = scanner.pop_as_source()
-            return node.ASTColumnNameExpression(table=cls._unify_name(table_name), column=cls._unify_name(column_name))
+            return node.ASTColumnNameExpression(table_name=cls._unify_name(table_name),
+                                                column_name=cls._unify_name(column_name))
         if scanner.search(AMTMark.NAME) and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS):
-            return node.ASTColumnNameExpression(column=cls._unify_name(scanner.pop_as_source()))
+            return node.ASTColumnNameExpression(column_name=cls._unify_name(scanner.pop_as_source()))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
@@ -741,7 +741,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         general_expression = cls.parse_general_expression(scanner)
         alias_expression = cls.parse_alias_expression(scanner) if cls.check_alias_expression(scanner) else None
-        return node.ASTColumnExpression(column=general_expression, alias=alias_expression)
+        return node.ASTColumnExpression(column_value=general_expression, alias=alias_expression)
 
     @classmethod
     def parse_equal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTEqualExpression:
@@ -1342,6 +1342,9 @@ class SQLParser:
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: Union[TokenScanner, str]
                                      ) -> node.ASTCreateTableStatement:
+        # pylint: disable=R0912 忽略分支过多的问题
+        # pylint: disable=R0914 忽略本地变量过多的问题
+        # pylint: disable=R0915 忽略代码行数过多的问题
         """解析 CREATE TABLE 语句"""
         # 解析字段、索引括号前的部分
         scanner = cls._unify_input_scanner(scanner_or_string)

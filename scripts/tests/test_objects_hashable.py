@@ -8,9 +8,9 @@ class TestObjectsHashable(unittest.TestCase):
 
     def test_null_field(self):
         """测试存在为 None 值的字段时，哈希值和等于状态是否生效"""
-        node1 = node.ASTColumnNameExpression(table=None, column="column_name")
-        node2 = node.ASTColumnNameExpression(table=None, column="column_name")
-        node3 = node.ASTColumnNameExpression(table=None, column="column_name2")
+        node1 = node.ASTColumnNameExpression(table_name=None, column_name="column_name")
+        node2 = node.ASTColumnNameExpression(table_name=None, column_name="column_name")
+        node3 = node.ASTColumnNameExpression(table_name=None, column_name="column_name2")
         self.assertTrue(hash(node1) == hash(node2))
         self.assertTrue(node1 == node2)
         self.assertFalse(hash(node1) == hash(node3))

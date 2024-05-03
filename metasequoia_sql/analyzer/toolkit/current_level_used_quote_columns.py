@@ -24,7 +24,7 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
             return [QuoteColumn(column_name=None)]
         if (isinstance(node, core.ASTColumnNameExpression)
                 and node.source(core.SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
-            return [QuoteColumn(table_name=node.table, column_name=node.column)]
+            return [QuoteColumn(table_name=node.table_name, column_name=node.column_name)]
         if isinstance(node, core.ASTSubQueryExpression):
             return []
         return cls.default_handle_node(node)

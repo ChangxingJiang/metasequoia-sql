@@ -35,7 +35,7 @@ class CurrentUsedQuoteWithAliasIndexColumns(AnalyzerRecursionListBase):
         """自定义的处理规则"""
         if (isinstance(node, ASTColumnNameExpression)
                 and node.source(SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
-            return [QuoteNameColumn(table_name=node.table, column_name=node.column)]
+            return [QuoteNameColumn(table_name=node.table_name, column_name=node.column_name)]
         if isinstance(node, ASTSubQueryExpression):
             return []
         return None
@@ -52,7 +52,7 @@ class CurrentColumnAliasToQuoteHash(AnalyzerSelectDictBase):
         for column in node.select_clause.columns:
             if column.alias is not None:
                 alias_name = QuoteNameColumn(column_name=column.alias.name)
-                result[alias_name] = CurrentUsedQuoteWithAliasIndexColumns.handle(column.column)
+                result[alias_name] = CurrentUsedQuoteWithAliasIndexColumns.handle(column.column_value)
         return result
 
 
@@ -66,7 +66,7 @@ class CurrentColumnIndexToQuoteHash(AnalyzerSelectDictBase):
         result = {}
         for column_index, column in enumerate(node.select_clause.columns):
             alias_name = QuoteIndexColumn(column_index=column_index)
-            result[alias_name] = CurrentUsedQuoteWithAliasIndexColumns.handle(column.column)
+            result[alias_name] = CurrentUsedQuoteWithAliasIndexColumns.handle(column.column_value)
         return result
 
 
@@ -225,12 +225,12 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectASTToDictBase):
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:
                 select_column = SelectColumn(column_name=column_expression.alias.name, column_idx=column_idx)
-            elif isinstance(column_expression.column, ASTColumnNameExpression):
-                select_column = SelectColumn(column_name=column_expression.column.column, column_idx=column_idx)
+            elif isinstance(column_expression.column_value, ASTColumnNameExpression):
+                select_column = SelectColumn(column_name=column_expression.column_value.column_name, column_idx=column_idx)
             else:
-                select_column = SelectColumn(column_name=column_expression.column.source(SQLType.DEFAULT),
+                select_column = SelectColumn(column_name=column_expression.column_value.source(SQLType.DEFAULT),
                                              column_idx=column_idx)
-            result[select_column] = CurrentUsedQuoteWithAliasIndexColumns.handle(column_expression.column)
+            result[select_column] = CurrentUsedQuoteWithAliasIndexColumns.handle(column_expression.column_value)
         return result
 
     @classmethod
