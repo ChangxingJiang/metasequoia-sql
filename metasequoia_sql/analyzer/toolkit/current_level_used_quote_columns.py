@@ -8,13 +8,11 @@ from metasequoia_sql import core
 from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToListBase
 from metasequoia_sql.analyzer.node import QuoteColumn
 from metasequoia_sql.common import name_set
+from metasequoia_sql.common.basic import is_int_literal
 
 
 class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
-    """获取当前即节点（不递归分析子查询）中，直接使用的引用字段对象
-
-    TODO 兼容 GROUP BY 1, 2, 3, 4 这种情况
-    """
+    """获取当前即节点（不递归分析子查询）中，直接使用的引用字段对象"""
 
     @classmethod
     def handle(cls, node: Union[core.ASTBase, tuple]) -> List[QuoteColumn]:
@@ -31,8 +29,28 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
             return [QuoteColumn(table_name=node.table_name, column_name="*")]
 
         # 处理普通表名引用场景
-        if (isinstance(node, core.ASTColumnNameExpression) and node.source() not in name_set.GLOBAL_VARIABLE_NAME_SET):
+        if isinstance(node, core.ASTColumnNameExpression) and node.source() not in name_set.GLOBAL_VARIABLE_NAME_SET:
             return [QuoteColumn(table_name=node.table_name, column_name=node.column_name)]
+
+        # 如果是 GROUP BY 子句，则需要兼容使用字段序号的情况
+        if isinstance(node, core.ASTNormalGroupByClause):
+            quote_column_list = []
+            for column in node.columns:
+                if is_int_literal(column.source()):
+                    quote_column_list.append(QuoteColumn(column_name=None, column_idx=int(column.source())))
+                else:
+                    quote_column_list.extend(cls.handle(column))
+            return quote_column_list
+
+        # 如果是 ORDER BY 子句，则需要兼容使用字段序号的情况
+        if isinstance(node, core.ASTOrderByClause):
+            quote_column_list = []
+            for column, _ in node.columns:
+                if is_int_literal(column.source()):
+                    quote_column_list.append(QuoteColumn(column_name=None, column_idx=int(column.source())))
+                else:
+                    quote_column_list.extend(cls.handle(column))
+            return quote_column_list
 
         if isinstance(node, core.ASTSubQueryExpression):
             return []

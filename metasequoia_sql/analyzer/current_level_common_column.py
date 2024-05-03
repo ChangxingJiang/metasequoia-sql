@@ -7,7 +7,6 @@ from typing import List, Dict, Any
 from metasequoia_sql import core
 from metasequoia_sql.analyzer.base import AnalyzerSelectASTToListBase, AnalyzerSelectASTToDictBase
 from metasequoia_sql.analyzer.node import StandardColumn, QuoteColumn
-from metasequoia_sql.analyzer.tool import QuoteIndexColumn
 from metasequoia_sql.analyzer.toolkit import CurrentNodeUsedQuoteColumn
 
 __all__ = [
@@ -48,18 +47,18 @@ class CurrentColumnIndexToQuoteHash(AnalyzerSelectASTToDictBase):
     """获取当前层级（不递归分析子查询）中，列序号到引用字段的映射关系"""
 
     @classmethod
-    def handle(cls, node: core.ASTSelectStatement) -> Dict[QuoteIndexColumn, List[QuoteColumn]]:
+    def handle(cls, node: core.ASTSelectStatement) -> Dict[QuoteColumn, List[QuoteColumn]]:
         """重写处理方法主逻辑，以更新返回值的类型标记"""
         return super().handle(node)
 
     @classmethod
     def handle_single_select_statement(cls, node: core.ASTSingleSelectStatement
-                                       ) -> Dict[QuoteIndexColumn, List[QuoteColumn]]:
+                                       ) -> Dict[QuoteColumn, List[QuoteColumn]]:
         """处理逻辑"""
         result = {}
         for column_index, column in enumerate(node.select_clause.columns):
-            alias_name = QuoteIndexColumn(column_index=column_index)
-            result[alias_name] = CurrentNodeUsedQuoteColumn.handle(column.column_value)
+            quote_column = QuoteColumn(column_name=None, column_idx=column_index + 1)
+            result[quote_column] = CurrentNodeUsedQuoteColumn.handle(column.column_value)
         return result
 
 

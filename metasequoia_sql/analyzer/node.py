@@ -43,6 +43,7 @@ class QuoteColumn:
 
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 所属表名
     column_name: Optional[str] = dataclasses.field(kw_only=True)  # 字段名（为空时表示没有直接使用字段的聚集函数）
+    column_idx: Optional[int] = dataclasses.field(kw_only=True, default=None)  # 字段序号（仅在 GROUP BY 和 ORDER BY 语句中使用）
 
     def source(self):
         """引用字段的源代码"""
