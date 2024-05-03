@@ -16,6 +16,8 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
 
     @classmethod
     def handle(cls, node: Union[core.ASTBase, tuple]) -> List[QuoteColumn]:
+        # pylint: disable=R0911
+        # pylint: disable=R0912
         """自定义的处理规则"""
         # 处理类似 COUNT(1) 的场景：如果是聚集函数，但参数中没有引用字段，则返回一个 column_name 为空的引用
         if isinstance(node, core.ASTAggregationFunctionExpression):
@@ -52,6 +54,7 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
                     quote_column_list.extend(cls.handle(column))
             return quote_column_list
 
+        # 不递归处理子查询
         if isinstance(node, core.ASTSubQueryExpression):
             return []
 

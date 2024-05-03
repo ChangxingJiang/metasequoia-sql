@@ -359,7 +359,7 @@ class SQLParser:
 
     @classmethod
     def parse_bool_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTBoolExpression:
-        # pylint: disable=R0911 忽略有超过 6 个返回表达式
+        # pylint: disable=R0911
         """解析布尔值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         is_not = scanner.search_and_move("NOT")
@@ -581,7 +581,7 @@ class SQLParser:
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
                                          maybe_window: bool) -> node.ASTGeneralExpression:
-        # pylint: disable=R0911 忽略有超过 6 个返回表达式
+        # pylint: disable=R0911
         """解析一般表达式中的一个元素"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if cls.check_case_expression(scanner):
@@ -1342,7 +1342,7 @@ class SQLParser:
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: Union[TokenScanner, str]
                                      ) -> node.ASTCreateTableStatement:
-        # pylint: disable=R0912 忽略分支过多的问题
+        # pylint: disable=R0912
         # pylint: disable=R0914 忽略本地变量过多的问题
         # pylint: disable=R0915 忽略代码行数过多的问题
         """解析 CREATE TABLE 语句"""
