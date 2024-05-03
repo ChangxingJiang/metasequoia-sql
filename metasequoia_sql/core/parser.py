@@ -405,33 +405,33 @@ class SQLParser:
                 scanner.next3 is not None and scanner.next3.equals(AMTMark.PARENTHESIS))
 
     @classmethod
-    def parse_window_row(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRow:
+    def parse_window_row(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRowItem:
         """解析窗口函数行限制中的行"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search_and_move("CURRENT", "ROW"):
-            return node.ASTWindowRow(row_type=node.EnumWindowRowType.CURRENT_ROW)
+            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.CURRENT_ROW)
         if scanner.search_and_move("UNBOUNDED"):
             if scanner.search_and_move("PRECEDING"):
-                return node.ASTWindowRow(row_type=node.EnumWindowRowType.PRECEDING, is_unbounded=True)
+                return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, is_unbounded=True)
             if scanner.search_and_move("FOLLOWING"):
-                return node.ASTWindowRow(row_type=node.EnumWindowRowType.FOLLOWING, is_unbounded=True)
+                return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, is_unbounded=True)
             raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
         row_num = int(scanner.pop_as_source())
         if scanner.search_and_move("PRECEDING"):
-            return node.ASTWindowRow(row_type=node.EnumWindowRowType.PRECEDING, row_num=row_num)
+            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, row_num=row_num)
         if scanner.search_and_move("FOLLOWING"):
-            return node.ASTWindowRow(row_type=node.EnumWindowRowType.FOLLOWING, row_num=row_num)
+            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, row_num=row_num)
         raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
 
     @classmethod
-    def parse_window_row_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRowExpression:
+    def parse_window_row_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRow:
         """解析窗口语句限制行的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("ROWS", "BETWEEN")
         from_row = cls.parse_window_row(scanner)
         scanner.match("AND")
         to_row = cls.parse_window_row(scanner)
-        return node.ASTWindowRowExpression(from_row=from_row, to_row=to_row)
+        return node.ASTWindowRow(from_row=from_row, to_row=to_row)
 
     @classmethod
     def parse_window_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowExpression:
@@ -1471,7 +1471,7 @@ class SQLParser:
         return node.ASTDropTableStatement(if_exists=if_exists, table_name=table_name)
 
     @classmethod
-    def parse_statements(cls, scanner_or_string: Union[TokenScanner, str]) -> List[node.ASTStatementHasWithClause]:
+    def parse_statements(cls, scanner_or_string: Union[TokenScanner, str]) -> List[node.ASTStatementBase]:
         """解析一段 SQL 语句，返回表达式的列表"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         statement_list = []

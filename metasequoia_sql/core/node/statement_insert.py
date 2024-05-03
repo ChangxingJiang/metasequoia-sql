@@ -1,24 +1,39 @@
 """
-抽象语法树（AST）的 DML 类节点
+抽象语法树（AST）：INSERT 语句
 """
 
 import abc
 import dataclasses
 from typing import Optional, Tuple
 
-from metasequoia_sql.core.node.abc_node import ASTBase
+from metasequoia_sql.core.node.abc_node import ASTBase, ASTStatementBase, ASTExpressionBase
+from metasequoia_sql.core.node.common_expression import ASTColumnNameExpression, ASTTableNameExpression
 from metasequoia_sql.core.node.enum_node import ASTInsertType
-from metasequoia_sql.core.node.dql_node import (ASTStatementHasWithClause, ASTTableNameExpression, ASTColumnNameExpression,
-                                                ASTValueExpression, ASTSelectStatement, ASTExpressionBase)
+from metasequoia_sql.core.node.statement_select import ASTSelectStatement, ASTWithClause
 from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = [
+    "ASTValueExpression",  # 值表达式
     "ASTEqualExpression",  # 等式表达式
     "ASTPartitionExpression",  # 分区表达式
     "ASTInsertStatement",  # INSERT 语句
     "ASTInsertValuesStatement",  # INSERT ... VALUES ... 语句
     "ASTInsertSelectStatement",  # INSERT ... SELECT ... 语句
 ]
+
+
+# ---------------------------------------- 值表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTValueExpression(ASTExpressionBase):
+    """INSERT INTO 表达式中，VALUES 里的表达式"""
+
+    values: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        values_str = ", ".join(value.source(sql_type) for value in self.values)
+        return f"({values_str})"
 
 
 # ---------------------------------------- 等式表达式 ----------------------------------------
@@ -55,7 +70,7 @@ class ASTPartitionExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertStatement(ASTStatementHasWithClause, abc.ABC):
+class ASTInsertStatement(ASTStatementBase, abc.ABC):
     """INSERT 表达式
 
     两个子类包含 VALUES 和 SELECT 两种方式
@@ -65,6 +80,7 @@ class ASTInsertStatement(ASTStatementHasWithClause, abc.ABC):
     {VALUES <value_expression> [,<value_expression> ...] | <select_statement>}
     """
 
+    with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
     insert_type: ASTInsertType = dataclasses.field(kw_only=True)
     table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True)

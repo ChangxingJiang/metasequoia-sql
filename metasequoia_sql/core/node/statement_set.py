@@ -1,10 +1,10 @@
 """
-抽象语法树（AST）的 SET 语句节点
+抽象语法树（AST）节点：SET 语句
 """
 
 import dataclasses
 
-from metasequoia_sql.core.node.abc_node import ASTBase
+from metasequoia_sql.core.node.abc_node import ASTStatementBase
 from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = [
@@ -16,7 +16,7 @@ __all__ = [
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSetStatement(ASTBase):
+class ASTSetStatement(ASTStatementBase):
     """SQL 语句"""
 
     config_name: str = dataclasses.field(kw_only=True)

@@ -1,5 +1,5 @@
 """
-抽象语法树（AST）节点的抽象基类
+抽象语法树（AST）节点：抽象基类
 """
 
 import abc
@@ -7,7 +7,7 @@ import dataclasses
 
 from metasequoia_sql.core.sql_type import SQLType
 
-__all__ = ["ASTBase", "ASTExpressionBase"]
+__all__ = ["ASTBase", "ASTExpressionBase", "ASTStatementBase"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -31,4 +31,9 @@ class ASTBase(abc.ABC):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTExpressionBase(ASTBase, abc.ABC):
-    """抽象语法树（AST）一般表达式节点的抽象基类"""
+    """抽象语法树（AST）表达式节点的抽象基类"""
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTStatementBase(ASTBase, abc.ABC):
+    """抽象语法树（AST）语句节点的抽象基类"""

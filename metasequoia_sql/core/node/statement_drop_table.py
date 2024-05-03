@@ -4,15 +4,15 @@
 
 import dataclasses
 
-from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.dql_node import ASTTableNameExpression
+from metasequoia_sql.core.node.abc_node import ASTStatementBase
+from metasequoia_sql.core.node.common_expression import ASTTableNameExpression
 from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = ["ASTDropTableStatement"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTDropTableStatement(ASTBase):
+class ASTDropTableStatement(ASTStatementBase):
     """DROP TABLE 语句"""
 
     if_exists: bool = dataclasses.field(kw_only=True, default=False)  # 是否包含 IF EXISTS 关键字

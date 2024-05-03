@@ -6,8 +6,8 @@ import abc
 import dataclasses
 from typing import Optional, Tuple, Dict
 
-from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.dql_node import ASTExpressionBase, ASTTableNameExpression
+from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTStatementBase
+from metasequoia_sql.core.node.common_expression import ASTTableNameExpression
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 
@@ -24,7 +24,6 @@ __all__ = [
     "ASTUniqueIndexExpression",  # 唯一键索引声明表达式
     "ASTNormalIndexExpression",  # 普通索引声明表达式
     "ASTFulltextIndexExpression",  # 全文本索引声明表达式
-
     "ASTForeignKeyExpression",  # 声明外键表达式
 
     "ASTCreateTableStatement",  # 建表语句（CREATE TABLE）
@@ -223,7 +222,7 @@ class ASTForeignKeyExpression(ASTBase):
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCreateTableStatement(ASTBase):
+class ASTCreateTableStatement(ASTStatementBase):
     # pylint: disable=R0902 忽略对象属性过多的问题
 
     """【DDL】CREATE TABLE 语句"""

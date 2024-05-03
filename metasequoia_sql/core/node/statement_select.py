@@ -1,33 +1,25 @@
 """
-抽象语法树（AST）的 DQL 类节点
-
-在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
-- 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
-- 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
-
-TODO 尽可能移除固定数量的元组
+抽象语法树（AST）节点：SELECT 语句
 """
 
 import abc
 import dataclasses
+import enum
 from typing import Optional, Tuple, Union, Set
 
 from metasequoia_sql.common.basic import is_int_literal
-from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase
+from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTStatementBase
 from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType, ASTCastDataType,
                                                  ASTComputeOperator, ASTCompareOperator,
                                                  ASTLogicalOperator)
-from metasequoia_sql.core.node.basic_node import ASTWindowRowExpression
+from metasequoia_sql.core.node.common_expression import ASTTableNameExpression
 from metasequoia_sql.core.sql_type import SQLType
-from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
+from metasequoia_sql.errors import UnSupportDataSourceError, SqlParseError
 
 __all__ = [
     # ------------------------------ 一般表达式 ------------------------------
-    # 一般表达式：字面值表达式
+    # 字面值表达式
     "ASTLiteralExpression",
-
-    # 一般表达式：列名表达式
-    "ASTColumnNameExpression",
 
     # 一般表达式：函数表达式
     "ASTFunctionExpression", "ASTNormalFunctionExpression", "ASTAggregationFunctionExpression",
@@ -41,7 +33,7 @@ __all__ = [
     "ASTArrayIndexExpression",
 
     # 一般表达式：窗口表达式
-    "ASTWindowExpression",
+    "EnumWindowRowType", "ASTWindowRowItem", "ASTWindowRow", "ASTWindowExpression",
 
     # 一般表达式：通配符表达式
     "ASTWildcardExpression",
@@ -58,13 +50,7 @@ __all__ = [
     # 一般表达式：子查询表达式
     "ASTSubQueryExpression",
 
-    # 专有表达式：值表达式
-    "ASTValueExpression",
-
     # ------------------------------ 专有表达式 ------------------------------
-    # 专有表达式：表名表达式
-    "ASTTableNameExpression",
-
     # 专有表达式：别名表达式
     "ASTAlisaExpression",
 
@@ -109,9 +95,6 @@ __all__ = [
     "ASTWithClause",
 
     # ------------------------------ 语句节点 ------------------------------
-    # 语句的抽象基类
-    "ASTStatementHasWithClause",
-
     # SELECT 语句
     "ASTSelectStatement", "ASTSingleSelectStatement", "ASTUnionSelectStatement",
 ]
@@ -139,31 +122,6 @@ class ASTLiteralExpression(ASTExpressionBase):
     def as_string(self) -> str:
         """将字面值作为字符串返回"""
         return self.value
-
-
-# ---------------------------------------- 列名表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTColumnNameExpression(ASTExpressionBase):
-    """列名表达式"""
-
-    table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 表名称
-    column_name: str = dataclasses.field(kw_only=True)  # 字段名称
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.column_name not in {"*", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP"}:
-            result = (f"`{self.table_name}`.`{self.column_name}`" if self.table_name is not None
-                      else f"`{self.column_name}`")
-        else:
-            result = f"`{self.table_name}`.{self.column_name}" if self.table_name is not None else f"{self.column_name}"
-        if sql_type == SQLType.DB2:
-            # 兼容 DB2 的 CURRENT DATE、CURRENT TIME、CURRENT TIMESTAMP 语法
-            result = result.replace("CURRENT_DATE", "CURRENT DATE")
-            result = result.replace("CURRENT_TIME", "CURRENT TIME")
-            result = result.replace("CURRENT_TIMESTAMP", "CURRENT TIMESTAMP")
-        return result
 
 
 # ---------------------------------------- 函数表达式 ----------------------------------------
@@ -352,6 +310,53 @@ class ASTArrayIndexExpression(ASTExpressionBase):
 # ---------------------------------------- 窗口表达式 ----------------------------------------
 
 
+class EnumWindowRowType(enum.Enum):
+    """窗口函数中的行限制的类型"""
+    PRECEDING = "PRECEDING"
+    CURRENT_ROW = "CURRENT ROW"
+    FOLLOWING = "FOLLOWING"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTWindowRowItem(ASTBase):
+    """窗口函数中的行限制
+
+    unbounded preceding = 当前行的所有行
+    n preceding = 当前行之前的 n 行
+    current row = 当前行
+    n following = 当前行之后的 n行
+    unbounded following = 当前行之后的所有行
+    """
+
+    row_type: EnumWindowRowType = dataclasses.field(kw_only=True)
+    is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
+    row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        if self.row_type == EnumWindowRowType.CURRENT_ROW:
+            return "CURRENT ROW"
+        row_type_str = self.row_type.value
+        if self.is_unbounded is True:
+            return f"UNBOUNDED {row_type_str}"
+        return f"{self.row_num} {row_type_str}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTWindowRow(ASTBase):
+    """窗口函数中的行限制表达式
+
+    ROWS BETWEEN {SQLWindowRow} AND {SQLWindowRow}
+    """
+
+    from_row: ASTWindowRowItem = dataclasses.field(kw_only=True)
+    to_row: ASTWindowRowItem = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"ROWS BETWEEN {self.from_row.source(sql_type)} AND {self.to_row.source(sql_type)}"
+
+
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTWindowExpression(ASTExpressionBase):
     """窗口表达式"""
@@ -359,7 +364,7 @@ class ASTWindowExpression(ASTExpressionBase):
     window_function: Union[ASTNormalFunctionExpression, ASTArrayIndexExpression] = dataclasses.field(kw_only=True)
     partition_by: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True)
     order_by: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True)
-    row_expression: Optional[ASTWindowRowExpression] = dataclasses.field(kw_only=True)
+    row_expression: Optional[ASTWindowRow] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -472,21 +477,6 @@ class ASTComputeExpression(ASTExpressionBase):
         return " ".join(element.source(sql_type) for element in self.elements)
 
 
-# ---------------------------------------- 值表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTValueExpression(ASTExpressionBase):
-    """INSERT INTO 表达式中，VALUES 里的表达式"""
-
-    values: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        values_str = ", ".join(value.source(sql_type) for value in self.values)
-        return f"({values_str})"
-
-
 # ---------------------------------------- 子查询表达式 ----------------------------------------
 
 
@@ -499,21 +489,6 @@ class ASTSubQueryExpression(ASTExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"({self.select_statement.source(sql_type)})"
-
-
-# ---------------------------------------- 表名表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTTableNameExpression(ASTBase):
-    """表名表达式"""
-
-    schema: Optional[str] = dataclasses.field(kw_only=True, default=None)
-    table: str = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"`{self.schema}.{self.table}`" if self.schema is not None else f"`{self.table}`"
 
 
 # ---------------------------------------- 别名表达式 ----------------------------------------
@@ -790,21 +765,14 @@ class ASTWithClause(ASTBase):
         return len(self.tables) == 0
 
 
-# ---------------------------------------- 语句的抽象基类 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTStatementHasWithClause(ASTBase, abc.ABC):
-    """语句的抽象基类"""
-
-    with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
-
-
 # ---------------------------------------- SELECT 语句 ----------------------------------------
 
 
-class ASTSelectStatement(ASTStatementHasWithClause, abc.ABC):
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTSelectStatement(ASTStatementBase, abc.ABC):
     """SELECT 语句"""
+
+    with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
 
     @abc.abstractmethod
     def set_with_clauses(self, with_clause: Optional[ASTWithClause]) -> "ASTSelectStatement":
