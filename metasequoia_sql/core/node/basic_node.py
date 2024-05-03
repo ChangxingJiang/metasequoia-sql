@@ -13,6 +13,7 @@ from metasequoia_sql.errors import SqlParseError
 __all__ = [
     "ASTColumnNameExpression",  # 列名表达式
     "ASTTableNameExpression",  # 表名表达式
+    "ASTFunctionNameExpression",  # 函数名表达式
     "ASTLiteralExpression",  # 字面值表达式
 ]
 
@@ -55,6 +56,21 @@ class ASTTableNameExpression(ASTBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"`{self.schema}.{self.table}`" if self.schema is not None else f"`{self.table}`"
+
+
+# ---------------------------------------- 函数名表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFunctionNameExpression(ASTBase):
+    """表名表达式"""
+
+    schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    function_name: str = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"`{self.schema_name}`.{self.function_name}" if self.schema_name is not None else f"{self.function_name}"
 
 
 # ---------------------------------------- 字面值表达式 ----------------------------------------

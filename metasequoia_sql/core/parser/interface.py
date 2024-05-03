@@ -1,10 +1,7 @@
 # pylint: disable=C0302
 
 """
-解析器的接口类
-
-因为不同解析函数之间需要相互调用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
-"""
+解析器的接口类"""
 
 from typing import Optional, Tuple, List, Union
 
@@ -123,8 +120,14 @@ class SQLParser:
 
     @classmethod
     def parse_table_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTTableNameExpression:
-        """解析表名表达式或子查询表达式"""
+        """解析表名表达式"""
         return basic_node_parser.parse_table_name_expression(cls._unify_input_scanner(scanner_or_string))
+
+    @classmethod
+    def parse_function_name_expression(cls, scanner_or_string: Union[TokenScanner, str]
+                                       ) -> node.ASTFunctionNameExpression:
+        """解析函数名表达式"""
+        return basic_node_parser.parse_function_name_expression(cls._unify_input_scanner(scanner_or_string))
 
     @classmethod
     def check_literal_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -190,43 +193,32 @@ class SQLParser:
             else:
                 function_params.append(cls.parse_general_expression(param_scanner))
             param_scanner.close()
-        return node.ASTNormalFunctionExpression(function_name="IF", function_params=tuple(function_params))
-
-    @classmethod
-    def parse_function_name(cls, scanner_or_string: Union[TokenScanner, str]) -> Tuple[Optional[str], str]:
-        """解析函数表达式函数的 schema 名和 function 名"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS):
-            return None, scanner.pop_as_source()
-        if scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS):
-            schema_name = scanner.pop_as_source()
-            scanner.pop()
-            return unify_name(schema_name), unify_name(scanner.pop_as_source())
-        raise SqlParseError(f"无法解析为函数表达式: {scanner}")
+        return node.ASTNormalFunctionExpression(name=node.ASTFunctionNameExpression(function_name="IF"),
+                                                params=tuple(function_params))
 
     @classmethod
     def parse_function_expression(cls, scanner_or_string: Union[TokenScanner, str]
                                   ) -> Union[node.ASTFunctionExpression]:
         """解析函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        schema_name, function_name = cls.parse_function_name(scanner)
+        function_name = cls.parse_function_name_expression(scanner)
 
-        if function_name.upper() == "CAST":
+        if function_name.function_name.upper() == "CAST":
             return cls.parse_cast_function_expression(scanner.pop_as_children_scanner())
-        if function_name.upper() == "EXTRACT":
+        if function_name.function_name.upper() == "EXTRACT":
             return cls.parse_extract_function_expression(scanner.pop_as_children_scanner())
-        if function_name.upper() == "IF":
+        if function_name.function_name.upper() == "IF":
             return cls.parse_if_function_expression(scanner.pop_as_children_scanner())
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        if function_name.upper() == "SUBSTRING":
+        if function_name.function_name.upper() == "SUBSTRING":
             # 将 MySQL 和 PostgreSQL 中的 "SUBSTRING(str1 FROM 3 FOR 2)" 格式化为 "SUBSTRING(str1, 3, 2)"
             parenthesis_scanner = TokenScanner([
                 element if not element.equals("FROM") and not element.equals("FOR") else AMTSingle(",")
                 for element in parenthesis_scanner.elements])
 
         is_distinct = False
-        if (function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET
+        if (function_name.function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET
                 and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
@@ -238,12 +230,15 @@ class SQLParser:
 
         parenthesis_scanner.close()
 
-        if schema_name is None and function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET:
-            return node.ASTAggregationFunctionExpression(function_name=function_name,
-                                                         function_params=tuple(function_params),
-                                                         is_distinct=is_distinct)
-        return node.ASTNormalFunctionExpression(schema_name=schema_name, function_name=function_name,
-                                                function_params=tuple(function_params))
+        if (function_name.schema_name is None
+                and function_name.function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET):
+            return node.ASTAggregationFunctionExpression(
+                name=function_name,
+                params=tuple(function_params),
+                is_distinct=is_distinct)
+        return node.ASTNormalFunctionExpression(
+            name=function_name,
+            params=tuple(function_params))
 
     @classmethod
     def parse_function_expression_maybe_with_array_index(

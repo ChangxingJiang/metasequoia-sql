@@ -27,4 +27,5 @@ class TestObjectsHashable(unittest.TestCase):
         hash(node.ASTInsertType(enum=node.EnumInsertType.INSERT_INTO))
 
     def test_normal_function_expression(self):
-        hash(node.ASTNormalFunctionExpression(function_name="TEST", function_params=tuple()))
+        hash(node.ASTNormalFunctionExpression(name=node.ASTFunctionNameExpression(function_name="TEST"),
+                                              params=tuple()))

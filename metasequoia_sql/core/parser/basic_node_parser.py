@@ -12,6 +12,7 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle
 __all__ = [
     "check_column_name_expression", "parse_column_name_expression",  # 判断、解析列名表达式
     "parse_table_name_expression",  # 解析表名表达式
+    "parse_function_name_expression",  # 解析函数名表达式
     "check_literal_expression", "parse_literal_expression",  # 判断、解析字面值表达式
 ]
 
@@ -42,7 +43,7 @@ def parse_column_name_expression(scanner: TokenScanner) -> node.ASTColumnNameExp
 
 
 def parse_table_name_expression(scanner: TokenScanner) -> node.ASTTableNameExpression:
-    """解析表名表达式或子查询表达式"""
+    """解析表名表达式"""
     if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
         schema_name = scanner.pop_as_source()
         scanner.pop()
@@ -55,6 +56,23 @@ def parse_table_name_expression(scanner: TokenScanner) -> node.ASTTableNameExpre
         else:
             schema_name, table_name = None, name_source
         return node.ASTTableNameExpression(schema=unify_name(schema_name), table=unify_name(table_name))
+    raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+
+
+def parse_function_name_expression(scanner: TokenScanner) -> node.ASTFunctionNameExpression:
+    """解析函数名表达式"""
+    if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
+        schema_name = scanner.pop_as_source()
+        scanner.pop()
+        table_name = scanner.pop_as_source()
+        return node.ASTFunctionNameExpression(schema_name=unify_name(schema_name), function_name=unify_name(table_name))
+    if scanner.search(AMTMark.NAME):
+        name_source = scanner.pop_as_source()
+        if name_source.count(".") == 1:
+            schema_name, table_name = name_source.strip("`").split(".")
+        else:
+            schema_name, table_name = None, name_source
+        return node.ASTFunctionNameExpression(schema_name=unify_name(schema_name), function_name=unify_name(table_name))
     raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
 

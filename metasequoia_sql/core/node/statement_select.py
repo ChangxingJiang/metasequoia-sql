@@ -8,7 +8,7 @@ import enum
 from typing import Optional, Tuple, Union, Set
 
 from metasequoia_sql.core.node.abc_node import ASTBase, ASTExpressionBase, ASTStatementBase
-from metasequoia_sql.core.node.basic_node import ASTTableNameExpression
+from metasequoia_sql.core.node.basic_node import ASTTableNameExpression, ASTFunctionNameExpression
 from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType, ASTCastDataType,
                                                  ASTComputeOperator, ASTCompareOperator,
                                                  ASTLogicalOperator)
@@ -103,25 +103,21 @@ __all__ = [
 class ASTFunctionExpression(ASTExpressionBase, abc.ABC):
     """函数表达式的抽象基类"""
 
-    schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 模式名称
-    function_name: str = dataclasses.field(kw_only=True)  # 函数名称
-
-    def _get_function_str(self) -> str:
-        return f"`{self.schema_name}`.{self.function_name}" if self.schema_name is not None else f"{self.function_name}"
+    name: ASTFunctionNameExpression = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTNormalFunctionExpression(ASTFunctionExpression):
     """包含一般参数的函数表达式"""
 
-    function_params: Tuple[ASTExpressionBase] = dataclasses.field(kw_only=True)  # 函数表达式的参数
+    params: Tuple[ASTExpressionBase] = dataclasses.field(kw_only=True)  # 函数表达式的参数
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self._get_function_str()}({self._get_param_str(sql_type)})"
+        return f"{self.name.source()}({self._get_param_str(sql_type)})"
 
     def _get_param_str(self, sql_type: SQLType) -> str:
-        return ", ".join(param.source(sql_type) for param in self.function_params)
+        return ", ".join(param.source(sql_type) for param in self.params)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -133,20 +129,21 @@ class ASTAggregationFunctionExpression(ASTNormalFunctionExpression):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         is_distinct = "DISTINCT " if self.is_distinct is True else ""
-        return f"{self._get_function_str()}({is_distinct}{self._get_param_str(sql_type)})"
+        return f"{self.name.source()}({is_distinct}{self._get_param_str(sql_type)})"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTCastFunctionExpression(ASTFunctionExpression):
     """Cast 函数表达式"""
 
-    function_name: str = dataclasses.field(init=False, default="CAST")  # 函数名称
+    name: ASTFunctionNameExpression = dataclasses.field(
+        init=False, default=ASTFunctionNameExpression(function_name="CAST"))
     column_expression: ASTExpressionBase = dataclasses.field(kw_only=True)  # CAST 表达式中要转换的列表达式
     cast_type: ASTCastDataType = dataclasses.field(kw_only=True)  # CAST 参数中目标要转换的函数类型
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self._get_function_str()}"
+        return (f"{self.function_name.source()}"
                 f"({self.column_expression.source(sql_type)} AS {self.cast_type.source(sql_type)})")
 
 
@@ -154,13 +151,14 @@ class ASTCastFunctionExpression(ASTFunctionExpression):
 class ASTExtractFunctionExpression(ASTFunctionExpression):
     """Extract 函数表达式"""
 
-    function_name: str = dataclasses.field(init=False, default="EXTRACT")  # 函数名称
+    name: ASTFunctionNameExpression = dataclasses.field(
+        init=False, default=ASTFunctionNameExpression(function_name="EXTRACT"))
     extract_name: ASTExpressionBase = dataclasses.field(kw_only=True)  # FROM 关键字之前的提取名称
     column_expression: ASTExpressionBase = dataclasses.field(kw_only=True)  # FROM 关键字之后的一般表达式
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self._get_function_str()}({self.extract_name.source(sql_type)} "
+        return (f"{self.function_name.source()}({self.extract_name.source(sql_type)} "
                 f"FROM {self.column_expression.source(sql_type)})")
 
 
