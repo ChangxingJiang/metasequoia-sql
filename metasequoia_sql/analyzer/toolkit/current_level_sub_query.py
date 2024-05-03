@@ -1,5 +1,5 @@
 """
-表名规范化器
+当前层级子查询分析器
 """
 
 from typing import Dict, List
@@ -30,6 +30,6 @@ class CurrentLevelSubQuery(AnalyzerRecursionASTToDictBase):
         if (isinstance(node, core.ASTTableExpression)
                 and node.alias is not None and isinstance(node.table, core.ASTSubQueryExpression)):
             return {node.alias.name: node.table.select_statement}
-        if isinstance(node, core.ASTSubQueryExpression) or isinstance(node, core.ASTWithClause):
+        if isinstance(node, (core.ASTSubQueryExpression, core.ASTWithClause)):
             return {}
         return cls.default_handle_node(node)

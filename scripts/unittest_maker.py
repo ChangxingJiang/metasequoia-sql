@@ -13,16 +13,17 @@ from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, Curre
                                       CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
                                       CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
                                       AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
-                                      CurrentColumnSelectToDirectQuoteHash, SelectColumn)
+                                      CurrentColumnSelectToDirectQuoteHash)
 from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
+from metasequoia_sql.analyzer.node import StandardColumn
 
 
 def format_rule_1(columns: List[QuoteColumn]) -> List[str]:
     return ordered_distinct([column.source() for column in columns])
 
 
-def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):
+def format_rule_2(columns: Dict[StandardColumn, List[QuoteColumn]]):
     return {key.source(): format_rule_1(value) for key, value in columns.items()}
 
 
@@ -43,19 +44,20 @@ def make_sql_basic_tutorial(force: bool = False):
     with open(file_path, "w", encoding="UTF-8") as file:
         # 生成引用信息
         file.write("import unittest\n")
-        file.write("from typing import List, Dict\n")
+        file.write("from typing import List, Dict, Union\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
         file.write("from metasequoia_sql.analyzer import *\n")
         file.write("from metasequoia_sql.common import ordered_distinct\n")
+        file.write("from metasequoia_sql.analyzer.node import StandardColumn\n")
         file.write("\n")
         file.write("\n")
         file.write("def format_rule_1(columns: List[QuoteColumn]):\n")
         file.write("    return ordered_distinct([column.source() for column in columns])\n")
         file.write("\n")
         file.write("\n")
-        file.write("def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):\n")
+        file.write("def format_rule_2(columns: Dict[StandardColumn, List[QuoteColumn]]):\n")
         file.write("    return {key.source(): format_rule_1(value) for key, value in columns.items()}\n")
         file.write("\n")
         file.write("\n")
@@ -78,15 +80,15 @@ def make_sql_basic_tutorial(force: bool = False):
             print(sql.strip("\n"))
 
             statement = SQLParser.parse_select_statement(sql)
-            data_source = SQLType.MYSQL
+            sql_type = SQLType.MYSQL
             if name in {"SBT_CH06_03_SQLSERVER"}:
-                data_source = SQLType.SQL_SERVER
+                sql_type = SQLType.SQL_SERVER
             if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
-                data_source = SQLType.ORACLE
+                sql_type = SQLType.ORACLE
             if name in {"SBT_CH06_13_DB2", "SBT_CH06_14_DB2", "SBT_CH06_15_DB2", "SBT_CH06_16_DB2"}:
-                data_source = SQLType.DB2
+                sql_type = SQLType.DB2
             print("【格式化代码】")
-            print(statement.source(data_source))
+            print(statement.source(sql_type))
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")

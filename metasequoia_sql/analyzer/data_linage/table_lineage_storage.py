@@ -4,8 +4,8 @@
 
 from typing import Dict
 
-from metasequoia_sql.analyzer.data_linage.node import StandardTable
-from metasequoia_sql.analyzer.data_linage.table_lineage import TableLineage
+from metasequoia_sql.analyzer.node import StandardTable
+from metasequoia_sql.analyzer.data_linage.table_lineage import SelectTableLineage
 from metasequoia_sql.analyzer.tool import CreateTableStatementGetter
 
 __all__ = ["TableLineageStorage"]
@@ -15,15 +15,15 @@ class TableLineageStorage:
     """表数据血缘存储器"""
 
     def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
-        self._with_table: Dict[str, TableLineage] = {}  # WITH 语句生成的临时表
-        self._sub_query_table: Dict[str, TableLineage] = {}  # 子查询生成的临时表
+        self._with_table: Dict[str, SelectTableLineage] = {}  # WITH 语句生成的临时表
+        self._sub_query_table: Dict[str, SelectTableLineage] = {}  # 子查询生成的临时表
         self._create_table_statement_getter = create_table_statement_getter  # 建表语句查询器
 
-    def add_with_table(self, table_name: str, table_lineage: TableLineage):
+    def add_with_table(self, table_name: str, table_lineage: SelectTableLineage):
         """添加一个临时表"""
         self._with_table[table_name] = table_lineage
 
-    def add_sub_query_table(self, table_name: str, table_lineage: TableLineage):
+    def add_sub_query_table(self, table_name: str, table_lineage: SelectTableLineage):
         """添加一个子查询表"""
         self._sub_query_table[table_name] = table_lineage
 
@@ -38,4 +38,4 @@ class TableLineageStorage:
         if table.table_name in self._with_table:
             return self._with_table[table.table_name]
         create_table_statement = self._create_table_statement_getter.get_statement(table.source())
-        return TableLineage.by_create_table_statement(create_table_statement)
+        return SelectTableLineage.by_create_table_statement(create_table_statement)

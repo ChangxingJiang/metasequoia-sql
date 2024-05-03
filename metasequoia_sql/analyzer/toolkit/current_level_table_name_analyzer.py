@@ -1,12 +1,12 @@
 """
-表名规范化器
+当前层级表明相关分析器
 """
 
 from typing import Dict, Optional, List
 
 from metasequoia_sql import core
 from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToDictBase
-from metasequoia_sql.analyzer.data_linage.node import StandardTable
+from metasequoia_sql.analyzer.node import StandardTable
 
 
 class CurrentLevelTableNameAnalyzer(AnalyzerRecursionASTToDictBase):
@@ -29,16 +29,17 @@ class CurrentLevelTableNameAnalyzer(AnalyzerRecursionASTToDictBase):
 
     @classmethod
     def handle(cls, node: object) -> Dict[str, StandardTable]:
+        """TODO 待支持无别名子查询"""
         if isinstance(node, core.ASTTableExpression):
             if isinstance(node.table, core.ASTTableNameExpression):
                 alias_name = node.alias.name if node.alias is not None else node.table.table
                 standard_table = StandardTable(schema_name=node.table.schema, table_name=node.table.table)
                 return {alias_name: standard_table}
             if isinstance(node.table, core.ASTSubQueryExpression):
-                alias_name = node.alias.name  # TODO 待支持无别名子查询
+                alias_name = node.alias.name  #
                 standard_table = StandardTable(schema_name=None, table_name=alias_name)  # 待增加中间表标记
                 return {alias_name: standard_table}
-        if isinstance(node, core.ASTSubQueryExpression) or isinstance(node, core.ASTWithClause):
+        if isinstance(node, (core.ASTSubQueryExpression, core.ASTWithClause)):
             return {}
         return cls.default_handle_node(node)
 

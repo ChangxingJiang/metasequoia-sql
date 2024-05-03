@@ -11,60 +11,50 @@ MyBatis 语法处理插件
 """
 
 import dataclasses
-import enum
-from typing import Union, List, Optional, Any
+from typing import Union, List
 
 from metasequoia_sql import SQLType, ASTBase
-from metasequoia_sql.analyzer import AnalyzerRecursionListBase, CurrentUsedQuoteColumn
-from metasequoia_sql.lexical import ASTParser, AstParseStatus, AMTBaseSingle, AMTMark
+from metasequoia_sql.analyzer import AnalyzerRecursionASTToListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, ASTGeneralExpression, ASTSingleSelectStatement
+from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTSingle, AMTMark
 
 
-class ASTParseStatusMyBatis(enum.Enum):
-    """新增的 MyBaits 匹配状态"""
-    IN_MYBATIS = enum.auto()
-
-
-class ASTParserMyBatis(ASTParser):
+class FSMMachineMyBatis(FSMMachine):
     """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
-    def handle_change(self):
+    def handle(self, ch: str) -> bool:
         """处理单个变化"""
-        # 进入 MyBatis 匹配状态
-        if self.status == AstParseStatus.WAIT_TOKEN and self.scanner.now == "#" and self.scanner.next1 == "{":
-            self.set_status(ASTParseStatusMyBatis.IN_MYBATIS)
-            self.cache_add()
-            self.cache_add()
-            return
-
-        # 处理 MyBatis 匹配状态
-        if self.status == ASTParseStatusMyBatis.IN_MYBATIS:
-            if self.scanner.now == "}":
-                self.cache_add_and_handle_end_word()
-                self.set_status(AstParseStatus.WAIT_TOKEN)
+        if self.status == FSMStatus.WAIT and ch == "#":
+            self.cache.append(ch)
+            self.status = FSMStatus.CUSTOM_1
+            return True
+        if self.status == FSMStatus.CUSTOM_1:  # 在 # 之后
+            if ch == "{":
+                self.cache.append(ch)
+                self.status = FSMStatus.CUSTOM_2
+                need_move = True
+            elif ch == "<END>":
+                self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
+                need_move = False
             else:
-                self.cache_add()
-            return
-
-        super().handle_change()
-
-    def handle_end_word(self):
-        """处理词语"""
-        origin = self.cache_get()
-        if origin.startswith("#{") and origin.endswith("}"):
-            self.cache_reset()
-            self.stack[-1].append(AMTBaseSingle(origin, {AMTMark.NAME, AMTMark.CUSTOM}))
-            return
-        super().handle_end_word()
-
-    def handle_last(self):
-        """处理最后一个词语是 MyBatis 参数的情况"""
-        if self.status == ASTParseStatusMyBatis.IN_MYBATIS:
-            self.handle_end_word()
-            self.set_status(AstParseStatus.WAIT_TOKEN)
-            return
-        super().handle_last()
+                self.cache.append(ch)
+                self.status = FSMStatus.IN_EXPLAIN_1
+                need_move = True
+            return need_move
+        if self.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
+            if ch == "}":
+                self.cache.append(ch)
+                self.stack[-1].append(AMTSingle(self._cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
+                self.status = FSMStatus.WAIT
+            elif ch == "<END>":
+                raise AMTParseError(f"当前状态={self.status} 出现结束标记符")
+            else:
+                self.cache.append(ch)
+                self.status = FSMStatus.CUSTOM_2
+            return True
+        return super().handle(ch)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -73,7 +63,7 @@ class SQLMyBatisExpression(ASTGeneralExpression):
 
     mybatis_source: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         return self.mybatis_source
 
 
@@ -83,55 +73,53 @@ class SQLParserMyBatis(SQLParser):
     @classmethod
     def build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
-        context_automaton = ASTParserMyBatis(string)
-        context_automaton.parse()
-        return TokenScanner(context_automaton.result(), ignore_space=True, ignore_comment=True)
+        return TokenScanner(FSMMachineMyBatis.parse(string), ignore_space=True, ignore_comment=True)
 
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
                                          maybe_window: bool) -> ASTGeneralExpression:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        if scanner.search(AMTMark.CUSTOM):
+        if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
         return super().parse_general_expression_element(scanner, maybe_window)
 
 
-class GetAllMybatisParams(AnalyzerRecursionListBase):
+class GetAllMybatisParams(AnalyzerRecursionASTToListBase):
     """获取使用的 MyBatis 参数"""
 
     @classmethod
-    def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
+    def handle(cls, node: ASTBase) -> List[str]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(SQLType.DEFAULT)[2:-1]]
-        return None
+            return [node.source()[2:-1]]
+        return cls.default_handle_node(node)
 
 
-class GetMybatisParamInWhereClause(AnalyzerRecursionListBase):
+class GetMybatisParamInWhereClause(AnalyzerRecursionASTToListBase):
     """获取 WHERE 子句中的 Mybatis 参数"""
 
     @classmethod
-    def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
+    def handle(cls, node: ASTBase) -> List[str]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(SQLType.DEFAULT)[2:-1]]
+            return [node.source()[2:-1]]
         if isinstance(node, ASTSingleSelectStatement):
-            return cls.handle_node(node.where_clause)
-        return None
+            return cls.handle(node.where_clause)
+        return cls.default_handle_node(node)
 
 
-class GetMybatisParamInGroupByClause(AnalyzerRecursionListBase):
+class GetMybatisParamInGroupByClause(AnalyzerRecursionASTToListBase):
     """获取 GROUP BY 子句中的 Mybatis 参数"""
 
     @classmethod
-    def custom_handle_node(cls, node: ASTBase) -> Optional[List[Any]]:
+    def handle(cls, node: ASTBase) -> List[str]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(SQLType.DEFAULT)[2:-1]]
+            return [node.source()[2:-1]]
         if isinstance(node, ASTSingleSelectStatement):
-            return cls.handle_node(node.group_by_clause)
-        return None
+            return cls.handle(node.group_by_clause)
+        return cls.default_handle_node(node)
 
 
 if __name__ == "__main__":
@@ -141,12 +129,13 @@ if __name__ == "__main__":
 
         statements = SQLParserMyBatis.parse_statements(test_sql)
         for statement in statements:
-            print(statement)
-            print(statement.source(SQLType.MYSQL))
-            print(CurrentUsedQuoteColumn.handle(statement))
-            print(GetAllMybatisParams().handle(statement))
-            print(GetMybatisParamInWhereClause().handle(statement))
-            print(GetMybatisParamInGroupByClause().handle(statement))
+            if isinstance(statement, ASTSingleSelectStatement):
+                print(statement)
+                print(statement.source(SQLType.MYSQL))
+                print(CurrentUsedQuoteColumn.handle(statement))
+                print(GetAllMybatisParams().handle(statement))
+                print(GetMybatisParamInWhereClause().handle(statement))
+                print(GetMybatisParamInGroupByClause().handle(statement))
 
 
     test_main()
