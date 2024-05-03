@@ -7,9 +7,9 @@ import dataclasses
 from typing import Optional, Tuple
 
 from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.enum_node import ASTInsertType
-from metasequoia_sql.core.node.objects import (ASTStatement, ASTTableNameExpression, ASTColumnNameExpression,
-                                               ASTValueExpression, ASTSelectStatement, ASTGeneralExpression)
+from metasequoia_sql.core.node.basic_node import ASTInsertType
+from metasequoia_sql.core.node.dql_node import (ASTStatement, ASTTableNameExpression, ASTColumnNameExpression,
+                                                ASTValueExpression, ASTSelectStatement, ASTGeneralExpression)
 from metasequoia_sql.core.node.sql_type import SQLType
 
 __all__ = [

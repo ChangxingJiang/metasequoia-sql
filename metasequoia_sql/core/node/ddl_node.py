@@ -7,13 +7,14 @@ import dataclasses
 from typing import Optional, Tuple, Dict
 
 from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.objects import (
-    ASTGeneralExpression, ASTTableNameExpression, ASTConfigNameExpression, ASTConfigValueExpression
-)
+from metasequoia_sql.core.node.dql_node import ASTGeneralExpression, ASTTableNameExpression
 from metasequoia_sql.core.node.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 
 __all__ = [
+    "ASTConfigNameExpression",  # 配置名称表达式
+    "ASTConfigValueExpression",  # 配置值表达式
+
     "ASTColumnTypeExpression",  # 字段类型表达式
     "ASTDefineColumnExpression",  # 字段定义表达式
 
@@ -28,6 +29,30 @@ __all__ = [
 
     "ASTCreateTableStatement",  # 建表语句（CREATE TABLE）
 ]
+
+
+# ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTConfigNameExpression(ASTBase):
+    """配置名称表达式"""
+
+    config_name: str = dataclasses.field(kw_only=True)
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        return self.config_name
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTConfigValueExpression(ASTBase):
+    """配置值表达式"""
+
+    config_value: str = dataclasses.field(kw_only=True)
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        return self.config_value
 
 
 # ---------------------------------------- 字段类型表达式 ----------------------------------------
@@ -228,13 +253,13 @@ class ASTCreateTableStatement(ASTBase):
 
     def set_table_name(self, table_name_expression: ASTTableNameExpression) -> "ASTCreateTableStatement":
         """设置表名并返回新对象"""
-        table_params = self.get_params_dict()
-        table_params["table_name"] = table_name_expression
-        return ASTCreateTableStatement(**table_params)
+        params = self.get_params_dict()
+        params["table_name"] = table_name_expression
+        return ASTCreateTableStatement(**params)
 
     def change_type(self, hashmap: Dict[str, str], remove_param: bool = True):
         """更新每个字段的变量类型"""
-        table_params = self.get_params_dict()
+        params = self.get_params_dict()
         new_columns = []
         for old_column in self.columns:
             column_params = old_column.get_params_dict()
@@ -242,20 +267,20 @@ class ASTCreateTableStatement(ASTBase):
                 name=hashmap[old_column.column_type.name.upper()],
                 params=None if remove_param else old_column.column_type.params)
             new_columns.append(ASTDefineColumnExpression(**column_params))
-        table_params["columns"] = new_columns
-        return ASTCreateTableStatement(**table_params)
+        params["columns"] = new_columns
+        return ASTCreateTableStatement(**params)
 
     def append_column(self, column: ASTDefineColumnExpression):
         """添加字段"""
-        table_params = self.get_params_dict()
-        table_params["columns"] += (column,)
-        return ASTCreateTableStatement(**table_params)
+        params = self.get_params_dict()
+        params["columns"] += (column,)
+        return ASTCreateTableStatement(**params)
 
     def append_partition_by_column(self, column: ASTDefineColumnExpression):
         """添加分区字段"""
-        table_params = self.get_params_dict()
-        table_params["partitioned_by"] += (column,)
-        return ASTCreateTableStatement(**table_params)
+        params = self.get_params_dict()
+        params["partitioned_by"] += (column,)
+        return ASTCreateTableStatement(**params)
 
     def source(self, data_source: SQLType, n_indent: int = 2) -> str:
         """返回语法节点的 SQL 源码"""

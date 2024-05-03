@@ -284,3 +284,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_limit_clause("ORDER BY column1"))
         self.assertEqual(SQLParser.parse_limit_clause("LIMIT 2, 5").source(SQLType.MYSQL), "LIMIT 2, 5")
         self.assertEqual(SQLParser.parse_limit_clause("LIMIT 5 OFFSET 2").source(SQLType.MYSQL), "LIMIT 2, 5")
+
+    def test_set_statement(self):
+        """测试 SET 语句"""
+        self.assertTrue((SQLParser.parse_set_statement("SET a.c = b")).source(SQLType.DEFAULT), "SET a.c = b")

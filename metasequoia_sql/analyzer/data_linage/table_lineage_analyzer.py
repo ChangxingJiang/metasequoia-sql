@@ -68,7 +68,7 @@ class TableLineageAnalyzer:
                 table_lineage_storage=table_lineage_storage,
                 table_name_analyzer=table_name_analyzer):
             # 处理使用 LATERAL VIEW 子句中字段的情况
-            new_quote_column = []
+            new_quote_column: List[QuoteColumn] = []
             for quote_column in quote_columns:
                 if quote_column.table_name is None and quote_column.column_name in lateral_view_columns:
                     new_quote_column.extend(lateral_view_columns[quote_column.column_name])

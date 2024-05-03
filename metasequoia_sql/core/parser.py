@@ -254,15 +254,15 @@ class SQLParser:
         cast_type = cls.parse_cast_data_type(scanner)
         if scanner.search(AMTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()
-            cast_params: Optional[List[node.ASTGeneralExpression] | Tuple[node.ASTGeneralExpression, ...]] = []
+            cast_params: Optional[List[int] | Tuple[int, ...]] = []
             for param_scanner in parenthesis_scanner.split_by(","):
-                cast_params.append(cls.parse_general_expression(param_scanner))
+                cast_params.append(int(param_scanner.pop_as_source()))
                 param_scanner.close()
             cast_params = tuple(cast_params)
         else:
             cast_params = None
         scanner.close()
-        cast_data_type = node.ASTCastDataType(signed=signed, data_type=cast_type, params=cast_params)
+        cast_data_type = node.ASTCastDataType(signed=signed, type_enum=cast_type, params=cast_params)
         return node.ASTCastFunctionExpression(column_expression=column_expression, cast_type=cast_data_type)
 
     @classmethod
@@ -359,6 +359,7 @@ class SQLParser:
 
     @classmethod
     def parse_bool_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTBoolExpression:
+        # pylint: disable=R0911 忽略有超过 6 个返回表达式
         """解析布尔值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         is_not = scanner.search_and_move("NOT")
@@ -580,6 +581,7 @@ class SQLParser:
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
                                          maybe_window: bool) -> node.ASTGeneralExpression:
+        # pylint: disable=R0911 忽略有超过 6 个返回表达式
         """解析一般表达式中的一个元素"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if cls.check_case_expression(scanner):
@@ -1329,9 +1331,12 @@ class SQLParser:
         """解析 SET 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("SET")
-        config_name = cls.parse_config_name_expression(scanner)
+        config_name_list = [scanner.pop_as_source()]
+        while scanner.search_and_move("."):
+            config_name_list.append(scanner.pop_as_source())
+        config_name = ".".join(config_name_list)
         scanner.match("=")
-        config_value = cls.parse_config_value_expression(scanner)
+        config_value = scanner.pop_as_source()
         return node.ASTSetStatement(config_name=config_name, config_value=config_value)
 
     @classmethod

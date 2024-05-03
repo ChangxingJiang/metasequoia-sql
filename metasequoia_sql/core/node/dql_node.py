@@ -1,29 +1,20 @@
-# pylint: disable=C0302
-
 """
-语法节点
-
-因为不同语法节点之间需要相互引用，所以脚本文件不可避免地需要超过 1000 行，故忽略 pylint C0302。
+抽象语法树（AST）的 DQL 类节点
 
 在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
-TODO 继续拆分抽象语法树节点文件
 TODO 尽可能移除固定数量的元组
 TODO 统一兼容通配符
-TODO 移除 ConfigName 和 ConfigValue 类型，合并为一整条 ConfigValue 类型
 """
 
 import abc
 import dataclasses
-import enum
 from typing import Optional, Tuple, Union, Set
 
 from metasequoia_sql.common.basic import is_int_literal
-from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.enum_node import (ASTJoinType, ASTOrderType, ASTUnionType,
-                                                 ASTCompareOperator, ASTComputeOperator, ASTLogicalOperator)
+from metasequoia_sql.core.node import basic_node, abc_node
 from metasequoia_sql.core.node.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError, UnSupportDataSourceError
 
@@ -39,8 +30,8 @@ __all__ = [
     "ASTColumnNameExpression",
 
     # 一般表达式：函数表达式
-    "ASTFunctionExpression", "EnumCastDataType", "ASTNormalFunctionExpression", "ASTAggregationFunctionExpression",
-    "ASTCastDataType", "ASTCastFunctionExpression", "ASTExtractFunctionExpression",
+    "ASTFunctionExpression", "ASTNormalFunctionExpression", "ASTAggregationFunctionExpression",
+    "ASTCastFunctionExpression", "ASTExtractFunctionExpression",
 
     # 一般表达式：布尔值表达式
     "ASTBoolExpression", "ASTBoolCompareExpression", "ASTBoolIsExpression", "ASTBoolInExpression",
@@ -50,7 +41,7 @@ __all__ = [
     "ASTArrayIndexExpression",
 
     # 一般表达式：窗口表达式
-    "EnumWindowRowType", "ASTWindowRow", "ASTWindowRowExpression", "ASTWindowExpression",
+    "ASTWindowExpression",
 
     # 一般表达式：通配符表达式
     "ASTWildcardExpression",
@@ -85,9 +76,6 @@ __all__ = [
 
     # 专有表达式：列表达式
     "ASTColumnExpression",
-
-    # 专有表达式：配置名称表达式和配置值表达式
-    "ASTConfigNameExpression", "ASTConfigValueExpression",
 
     # ------------------------------ 子句节点 ------------------------------
     # 子句节点：SELECT 子句
@@ -132,7 +120,7 @@ __all__ = [
 # ---------------------------------------- 一般表达式的抽象基类 ----------------------------------------
 
 
-class ASTGeneralExpression(ASTBase, abc.ABC):
+class ASTGeneralExpression(abc_node.ASTBase, abc.ABC):
     """一般表达式的抽象基类"""
 
 
@@ -187,44 +175,6 @@ class ASTColumnNameExpression(ASTGeneralExpression):
 # ---------------------------------------- 函数表达式 ----------------------------------------
 
 
-class EnumCastDataType(enum.Enum):
-    """CAST 函数的字段类型"""
-    # MySQL 类型
-    CHAR = "CHAR"
-    ENUM = "ENUM"
-    LONGTEXT = "LONGTEXT"
-    MEDIUMTEXT = "MEDIUMTEXT"
-    SET = "SET"
-    TEXT = "TEXT"
-    TINYTEXT = "TINYTEXT"
-    VARCHAR = "VARCHAR"
-    BIT = "BIT"
-    BIGINT = "BIGINT"
-    BOOLEAN = "BOOLEAN"
-    BOOL = "BOOL"
-    DECIMAL = "DECIMAL"
-    DEC = "DEC"
-    DOUBLE = "DOUBLE"
-    INT = "INT"
-    INTEGER = "INTEGER"
-    MEDIUMINT = "MEDIUMINT"
-    REAL = "REAL"
-    SMALLINT = "SMALLINT"
-    TINYINT = "TINYINT"
-    DATE = "DATE"
-    DATETIME = "DATETIME"
-    TIMESTAMP = "TIMESTAMP"
-    TIME = "TIME"
-    YEAR = "YEAR"
-    BOLB = "BOLB"
-    MEDIUMBLOB = "MEDIUMBLOB"
-    LONGBLOB = "LONGBLOB"
-    TINYBLOB = "TINYBLOB"
-
-    # Hive 类型
-    STRING = "STRING"
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTFunctionExpression(ASTGeneralExpression, abc.ABC):
     """函数表达式的抽象基类"""
@@ -263,32 +213,12 @@ class ASTAggregationFunctionExpression(ASTNormalFunctionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCastDataType(ASTBase):
-    """CAST 语句中的数据类型"""
-
-    signed: bool = dataclasses.field(kw_only=True)  # 是否包含 SIGNED 关键字
-    data_type: EnumCastDataType = dataclasses.field(kw_only=True)  # 目标转换的数据类型
-    params: Optional[Tuple[ASTGeneralExpression]] = dataclasses.field(kw_only=True)  # 目标转换的数据类型的参数列表
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        result = []
-        if self.signed is True:
-            result.append("SIGNED")
-        result.append(self.data_type.value)
-        if self.params is not None:
-            param_str = ", ".join(param.source(data_source) for param in self.params)
-            result.append(f"({param_str})")
-        return " ".join(result)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTCastFunctionExpression(ASTFunctionExpression):
     """Cast 函数表达式"""
 
     function_name: str = dataclasses.field(init=False, default="CAST")  # 函数名称
     column_expression: ASTGeneralExpression = dataclasses.field(kw_only=True)  # CAST 表达式中要转换的列表达式
-    cast_type: ASTCastDataType = dataclasses.field(kw_only=True)  # CAST 参数中目标要转换的函数类型
+    cast_type: basic_node.ASTCastDataType = dataclasses.field(kw_only=True)  # CAST 参数中目标要转换的函数类型
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -314,7 +244,7 @@ class ASTExtractFunctionExpression(ASTFunctionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolExpression(ASTBase, abc.ABC):
+class ASTBoolExpression(abc_node.ASTBase, abc.ABC):
     """布尔值表达式"""
 
     is_not: bool = dataclasses.field(kw_only=True)
@@ -332,7 +262,7 @@ class SQLBoolOperatorExpression(ASTBoolExpression, abc.ABC):
 class ASTBoolCompareExpression(SQLBoolOperatorExpression):
     """比较运算符布尔值表达式"""
 
-    operator: ASTCompareOperator = dataclasses.field(kw_only=True)
+    operator: basic_node.ASTCompareOperator = dataclasses.field(kw_only=True)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -428,53 +358,6 @@ class ASTArrayIndexExpression(ASTGeneralExpression):
 # ---------------------------------------- 窗口表达式 ----------------------------------------
 
 
-class EnumWindowRowType(enum.Enum):
-    """窗口函数中的行限制的类型"""
-    PRECEDING = "PRECEDING"
-    CURRENT_ROW = "CURRENT ROW"
-    FOLLOWING = "FOLLOWING"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWindowRow(ASTBase):
-    """窗口函数中的行限制
-
-    unbounded preceding = 当前行的所有行
-    n preceding = 当前行之前的 n 行
-    current row = 当前行
-    n following = 当前行之后的 n行
-    unbounded following = 当前行之后的所有行
-    """
-
-    row_type: EnumWindowRowType = dataclasses.field(kw_only=True)
-    is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
-    row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.row_type == EnumWindowRowType.CURRENT_ROW:
-            return "CURRENT ROW"
-        row_type_str = self.row_type.value
-        if self.is_unbounded is True:
-            return f"UNBOUNDED {row_type_str}"
-        return f"{self.row_num} {row_type_str}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWindowRowExpression(ASTBase):
-    """窗口函数中的行限制表达式
-
-    ROWS BETWEEN {SQLWindowRow} AND {SQLWindowRow}
-    """
-
-    from_row: ASTWindowRow = dataclasses.field(kw_only=True)
-    to_row: ASTWindowRow = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"ROWS BETWEEN {self.from_row.source(data_source)} AND {self.to_row.source(data_source)}"
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTWindowExpression(ASTGeneralExpression):
     """窗口表达式"""
@@ -482,7 +365,7 @@ class ASTWindowExpression(ASTGeneralExpression):
     window_function: Union[ASTNormalFunctionExpression, ASTArrayIndexExpression] = dataclasses.field(kw_only=True)
     partition_by: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True)
     order_by: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True)
-    row_expression: Optional[ASTWindowRowExpression] = dataclasses.field(kw_only=True)
+    row_expression: Optional[basic_node.ASTWindowRowExpression] = dataclasses.field(kw_only=True)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -514,12 +397,14 @@ class ASTWildcardExpression(ASTGeneralExpression):
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
+ConditionElement = Union["ASTConditionExpression", ASTBoolExpression, basic_node.ASTLogicalOperator]  # 条件表达式元素类型
+
+
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTConditionExpression(ASTGeneralExpression):
     """条件表达式"""
 
-    elements: Tuple[Union["ASTConditionExpression", ASTBoolExpression, ASTLogicalOperator], ...] = dataclasses.field(
-        kw_only=True)
+    elements: Tuple[ConditionElement, ...] = dataclasses.field(kw_only=True)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -586,7 +471,7 @@ class ASTCaseValueExpression(ASTGeneralExpression):
 class ASTComputeExpression(ASTGeneralExpression):
     """计算表达式"""
 
-    elements: Tuple[Union[ASTGeneralExpression, ASTComputeOperator], ...] = dataclasses.field(kw_only=True)
+    elements: Tuple[Union[ASTGeneralExpression, basic_node.ASTComputeOperator], ...] = dataclasses.field(kw_only=True)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -626,7 +511,7 @@ class ASTSubQueryExpression(ASTGeneralExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTTableNameExpression(ASTBase):
+class ASTTableNameExpression(abc_node.ASTBase):
     """表名表达式"""
 
     schema: Optional[str] = dataclasses.field(kw_only=True, default=None)
@@ -641,7 +526,7 @@ class ASTTableNameExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTAlisaExpression(ASTBase):
+class ASTAlisaExpression(abc_node.ASTBase):
     """别名表达式"""
 
     name: str = dataclasses.field(kw_only=True)
@@ -654,7 +539,7 @@ class ASTAlisaExpression(ASTBase):
 # ---------------------------------------- 关联表达式 ----------------------------------------
 
 
-class ASTJoinExpression(ASTBase, abc.ABC):
+class ASTJoinExpression(abc_node.ASTBase, abc.ABC):
     """关联表达式"""
 
 
@@ -684,7 +569,7 @@ class ASTJoinUsingExpression(ASTJoinExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTTableExpression(ASTBase):
+class ASTTableExpression(abc_node.ASTBase):
     """表表达式"""
 
     table: Union[ASTTableNameExpression, ASTSubQueryExpression] = dataclasses.field(kw_only=True)
@@ -701,7 +586,7 @@ class ASTTableExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTColumnExpression(ASTBase):
+class ASTColumnExpression(abc_node.ASTBase):
     """列表达式"""
 
     column: ASTGeneralExpression = dataclasses.field(kw_only=True)
@@ -714,35 +599,11 @@ class ASTColumnExpression(ASTBase):
         return f"{self.column.source(data_source)}"
 
 
-# ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConfigNameExpression(ASTBase):
-    """配置名称表达式"""
-
-    config_name: str = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self.config_name
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConfigValueExpression(ASTBase):
-    """配置值表达式"""
-
-    config_value: str = dataclasses.field(kw_only=True)
-
-    def source(self, data_source: SQLType) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self.config_value
-
-
 # ---------------------------------------- SELECT 子句 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSelectClause(ASTBase):
+class ASTSelectClause(abc_node.ASTBase):
     """SELECT 子句"""
 
     distinct: bool = dataclasses.field(kw_only=True)
@@ -760,7 +621,7 @@ class ASTSelectClause(ASTBase):
 # ---------------------------------------- FROM 子句 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFromClause(ASTBase):
+class ASTFromClause(abc_node.ASTBase):
     """FROM 子句"""
 
     tables: Tuple[ASTTableExpression, ...] = dataclasses.field(kw_only=True)
@@ -774,7 +635,7 @@ class ASTFromClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLateralViewClause(ASTBase):
+class ASTLateralViewClause(abc_node.ASTBase):
     """LATERAL VIEW 子句"""
 
     function: ASTFunctionExpression = dataclasses.field(kw_only=True)
@@ -789,10 +650,10 @@ class ASTLateralViewClause(ASTBase):
 # ---------------------------------------- JOIN 子句 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinClause(ASTBase):
+class ASTJoinClause(abc_node.ASTBase):
     """JOIN 子句"""
 
-    join_type: ASTJoinType = dataclasses.field(kw_only=True)
+    join_type: basic_node.ASTJoinType = dataclasses.field(kw_only=True)
     table: ASTTableExpression = dataclasses.field(kw_only=True)
     join_rule: Optional[ASTJoinExpression] = dataclasses.field(kw_only=True)
 
@@ -808,7 +669,7 @@ class ASTJoinClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWhereClause(ASTBase):
+class ASTWhereClause(abc_node.ASTBase):
     """WHERE 子句"""
 
     condition: ASTConditionExpression = dataclasses.field(kw_only=True)
@@ -820,7 +681,7 @@ class ASTWhereClause(ASTBase):
 
 # ---------------------------------------- GROUP BY 子句 ----------------------------------------
 
-class ASTGroupByClause(ASTBase, abc.ABC):
+class ASTGroupByClause(abc_node.ASTBase, abc.ABC):
     """GROUP BY 子句"""
 
 
@@ -859,7 +720,7 @@ class ASTGroupingSetsGroupByClause(ASTGroupByClause):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTHavingClause(ASTBase):
+class ASTHavingClause(abc_node.ASTBase):
     """HAVING 子句"""
 
     condition: ASTConditionExpression = dataclasses.field(kw_only=True)
@@ -873,10 +734,10 @@ class ASTHavingClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderByClause(ASTBase):
+class ASTOrderByClause(abc_node.ASTBase):
     """ORDER BY 子句"""
 
-    columns: Tuple[Tuple[ASTGeneralExpression, ASTOrderType], ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[Tuple[ASTGeneralExpression, basic_node.ASTOrderType], ...] = dataclasses.field(kw_only=True)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -893,7 +754,7 @@ class ASTOrderByClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLimitClause(ASTBase):
+class ASTLimitClause(abc_node.ASTBase):
     """LIMIT 子句"""
 
     limit: int = dataclasses.field(kw_only=True)
@@ -908,7 +769,7 @@ class ASTLimitClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWithClause(ASTBase):
+class ASTWithClause(abc_node.ASTBase):
     """WITH 子句"""
 
     tables: Tuple[Tuple[str, "ASTSelectStatement"], ...] = dataclasses.field(kw_only=True)
@@ -939,7 +800,7 @@ class ASTWithClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTStatement(ASTBase, abc.ABC):
+class ASTStatement(abc_node.ASTBase, abc.ABC):
     """语句的抽象基类"""
 
     with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
@@ -983,25 +844,16 @@ class ASTSingleSelectStatement(ASTSelectStatement):
         return with_clause_str + "\n".join(result)
 
     def set_with_clauses(self, with_clause: Optional[ASTWithClause]) -> ASTSelectStatement:
-        return ASTSingleSelectStatement(
-            with_clause=with_clause,
-            select_clause=self.select_clause,
-            from_clause=self.from_clause,
-            lateral_view_clauses=self.lateral_view_clauses,
-            join_clauses=self.join_clauses,
-            where_clause=self.where_clause,
-            group_by_clause=self.group_by_clause,
-            having_clause=self.having_clause,
-            order_by_clause=self.order_by_clause,
-            limit_clause=self.limit_clause
-        )
+        params = self.get_params_dict()
+        params["with_clause"] = with_clause
+        return ASTSingleSelectStatement(**params)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTUnionSelectStatement(ASTSelectStatement):
     """复合查询语句，使用 UNION、EXCEPT、INTERSECT 进行组合"""
 
-    elements: Tuple[Union[ASTUnionType, ASTSingleSelectStatement], ...] = dataclasses.field(kw_only=True)
+    elements: Tuple[Union[basic_node.ASTUnionType, ASTSingleSelectStatement], ...] = dataclasses.field(kw_only=True)
 
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1009,7 +861,6 @@ class ASTUnionSelectStatement(ASTSelectStatement):
         return with_clause_str + "\n".join(element.source(data_source) for element in self.elements)
 
     def set_with_clauses(self, with_clause: Optional[ASTWithClause]) -> ASTSelectStatement:
-        return ASTUnionSelectStatement(
-            with_clause=with_clause,
-            elements=self.elements
-        )
+        params = self.get_params_dict()
+        params["with_clause"] = with_clause
+        return ASTUnionSelectStatement(**params)

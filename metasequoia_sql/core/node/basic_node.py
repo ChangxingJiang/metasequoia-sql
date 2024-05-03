@@ -1,35 +1,25 @@
 """
-抽象语法树（AST）枚举类节点
+抽象语法树（AST）的枚举类节点和基础节点类
 """
 
 import dataclasses
 import enum
+from typing import Optional, Tuple
 
 from metasequoia_sql.core.node.abc_node import ASTBase
 from metasequoia_sql.core.node.sql_type import SQLType
 from metasequoia_sql.errors import UnSupportDataSourceError
 
 __all__ = [
-    # 插入类型
-    "EnumInsertType", "ASTInsertType",
-
-    # 关联类型
-    "EnumJoinType", "ASTJoinType",
-
-    # 排序类型
-    "EnumOrderType", "ASTOrderType",
-
-    # 组合类型
-    "EnumUnionType", "ASTUnionType",
-
-    # 比较运算符
-    "EnumCompareOperator", "ASTCompareOperator",
-
-    # 计算运算符
-    "EnumComputeOperator", "ASTComputeOperator",
-
-    # 逻辑运算符
-    "EnumLogicalOperator", "ASTLogicalOperator"
+    "EnumInsertType", "ASTInsertType",  # 插入类型
+    "EnumJoinType", "ASTJoinType",  # 关联类型
+    "EnumOrderType", "ASTOrderType",  # 排序类型
+    "EnumUnionType", "ASTUnionType",  # 组合类型
+    "EnumCompareOperator", "ASTCompareOperator",  # 比较运算符
+    "EnumComputeOperator", "ASTComputeOperator",  # 计算运算符
+    "EnumLogicalOperator", "ASTLogicalOperator",  # 逻辑运算符
+    "EnumCastDataType", "ASTCastDataType",  # CAST 函数中的字段类型枚举类
+    "EnumWindowRowType", "ASTWindowRow", "ASTWindowRowExpression",  # 窗口函数的行限制表达式
 ]
 
 
@@ -199,3 +189,113 @@ class ASTLogicalOperator(ASTBase):
     def source(self, data_source: SQLType) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
+
+
+# ---------------------------------------- CASE 函数中的字段类型表达式 ----------------------------------------
+
+
+class EnumCastDataType(enum.Enum):
+    """CAST 函数的字段类型"""
+    # MySQL 类型
+    CHAR = "CHAR"
+    ENUM = "ENUM"
+    LONGTEXT = "LONGTEXT"
+    MEDIUMTEXT = "MEDIUMTEXT"
+    SET = "SET"
+    TEXT = "TEXT"
+    TINYTEXT = "TINYTEXT"
+    VARCHAR = "VARCHAR"
+    BIT = "BIT"
+    BIGINT = "BIGINT"
+    BOOLEAN = "BOOLEAN"
+    BOOL = "BOOL"
+    DECIMAL = "DECIMAL"
+    DEC = "DEC"
+    DOUBLE = "DOUBLE"
+    INT = "INT"
+    INTEGER = "INTEGER"
+    MEDIUMINT = "MEDIUMINT"
+    REAL = "REAL"
+    SMALLINT = "SMALLINT"
+    TINYINT = "TINYINT"
+    DATE = "DATE"
+    DATETIME = "DATETIME"
+    TIMESTAMP = "TIMESTAMP"
+    TIME = "TIME"
+    YEAR = "YEAR"
+    BOLB = "BOLB"
+    MEDIUMBLOB = "MEDIUMBLOB"
+    LONGBLOB = "LONGBLOB"
+    TINYBLOB = "TINYBLOB"
+
+    # Hive 类型
+    STRING = "STRING"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTCastDataType(ASTBase):
+    """CAST 语句中的数据类型"""
+
+    signed: bool = dataclasses.field(kw_only=True)  # 是否包含 SIGNED 关键字
+    type_enum: EnumCastDataType = dataclasses.field(kw_only=True)  # 目标转换的数据类型
+    params: Optional[Tuple[int, ...]] = dataclasses.field(kw_only=True)  # 目标转换的数据类型的参数列表
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        result = []
+        if self.signed is True:
+            result.append("SIGNED")
+        result.append(self.type_enum.value)
+        if self.params is not None:
+            param_str = ", ".join(str(param) for param in self.params)
+            result.append(f"({param_str})")
+        return " ".join(result)
+
+
+# ---------------------------------------- 窗口函数中的行限制表达式 ----------------------------------------
+
+class EnumWindowRowType(enum.Enum):
+    """窗口函数中的行限制的类型"""
+    PRECEDING = "PRECEDING"
+    CURRENT_ROW = "CURRENT ROW"
+    FOLLOWING = "FOLLOWING"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTWindowRow(ASTBase):
+    """窗口函数中的行限制
+
+    unbounded preceding = 当前行的所有行
+    n preceding = 当前行之前的 n 行
+    current row = 当前行
+    n following = 当前行之后的 n行
+    unbounded following = 当前行之后的所有行
+    """
+
+    row_type: EnumWindowRowType = dataclasses.field(kw_only=True)
+    is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
+    row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        if self.row_type == EnumWindowRowType.CURRENT_ROW:
+            return "CURRENT ROW"
+        row_type_str = self.row_type.value
+        if self.is_unbounded is True:
+            return f"UNBOUNDED {row_type_str}"
+        return f"{self.row_num} {row_type_str}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTWindowRowExpression(ASTBase):
+    """窗口函数中的行限制表达式
+
+    ROWS BETWEEN {SQLWindowRow} AND {SQLWindowRow}
+    """
+
+    from_row: ASTWindowRow = dataclasses.field(kw_only=True)
+    to_row: ASTWindowRow = dataclasses.field(kw_only=True)
+
+    def source(self, data_source: SQLType) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"ROWS BETWEEN {self.from_row.source(data_source)} AND {self.to_row.source(data_source)}"
