@@ -1,17 +1,13 @@
 """
 基础工具
-
-TODO 整理工具函数，将其中的对象移动到 core 中
 """
 
 import abc
 import dataclasses
-from typing import Type
 
-from metasequoia_sql.core import ASTCreateTableStatement, SQLParser, ASTBase
-from metasequoia_sql.errors import AnalyzerError
+from metasequoia_sql.core import ASTCreateTableStatement, SQLParser
 
-__all__ = ["CreateTableStatementGetter", "check_node_type", "QuoteColumn", "QuoteIndexColumn"]
+__all__ = ["CreateTableStatementGetter", "QuoteColumn", "QuoteIndexColumn"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -48,17 +44,3 @@ class CreateTableStatementGetter(abc.ABC):
     @abc.abstractmethod
     def get_sql(self, full_table_name: str) -> str:
         """获取 table_name 表的建表语句"""
-
-
-def check_node_type(node_type: Type[ASTBase]):
-    """检查节点类型"""
-
-    def wrapper(func):
-        def inner_wrapper(self, node):
-            if not isinstance(node, node_type):
-                raise AnalyzerError(f"分析器类型不匹配: 预期={node_type.__name__}, 实际={node.__class__.__name__}")
-            return func(self, node)
-
-        return inner_wrapper
-
-    return wrapper

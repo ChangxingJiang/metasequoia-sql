@@ -5,7 +5,7 @@
 import abc
 import dataclasses
 
-from metasequoia_sql.analyzer.tool import check_node_type
+from metasequoia_sql.common.basic import check_param_type
 from metasequoia_sql.core.node import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
 from metasequoia_sql.errors import AnalyzerError
 
@@ -69,7 +69,7 @@ class AnalyzerSelectASTToDictBase(abc.ABC):
     """SELECT 语句通用分析器的抽象基类"""
 
     @classmethod
-    @check_node_type(ASTSelectStatement)
+    @check_param_type(ASTSelectStatement)
     def handle(cls, node: ASTSelectStatement) -> dict:
         """处理逻辑"""
         if isinstance(node, ASTSingleSelectStatement):
@@ -97,7 +97,7 @@ class AnalyzerSelectASTToListBase(abc.ABC):
     """SELECT 语句通用分析器的抽象基类"""
 
     @classmethod
-    @check_node_type(ASTSelectStatement)
+    @check_param_type(ASTSelectStatement)
     def handle(cls, node: ASTSelectStatement) -> list:
         """处理逻辑"""
         if isinstance(node, ASTSingleSelectStatement):

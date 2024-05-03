@@ -16,10 +16,7 @@ __all__ = ["TableLineageAnalyzer"]
 
 
 class TableLineageAnalyzer:
-    """表数据血缘管理器
-
-    TODO 兼容 COUNT(*) 的场景
-    """
+    """表数据血缘管理器"""
 
     def __init__(self, create_table_statement_getter: CreateTableStatementGetter):
         self._create_table_statement_getter = create_table_statement_getter  # 建表语句查询器

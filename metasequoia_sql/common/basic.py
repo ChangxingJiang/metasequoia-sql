@@ -5,7 +5,8 @@
 import re
 from typing import List, Any, Iterable
 
-__all__ = ["preproc_sql", "ordered_distinct", "chain_list", "is_hex_literal", "is_bit_literal", "is_float_literal",
+__all__ = ["preproc_sql", "ordered_distinct", "chain_list", "check_param_type",
+           "is_hex_literal", "is_bit_literal", "is_float_literal",
            "is_string_literal", "is_int_literal", "is_bool_literal", "is_null_literal"]
 
 
@@ -31,6 +32,20 @@ def chain_list(elements: Iterable[List[Any]]):
     for element in elements:
         result.extend(element)
     return result
+
+
+def check_param_type(node_type: type):
+    """检查节点类型"""
+
+    def wrapper(func):
+        def inner_wrapper(self, node):
+            if not isinstance(node, node_type):
+                raise KeyError(f"输入参数不匹配: 预期={node_type.__name__}, 实际={node.__class__.__name__}")
+            return func(self, node)
+
+        return inner_wrapper
+
+    return wrapper
 
 
 # ------------------------------ 词法元素类型判断工具函数 ------------------------------
