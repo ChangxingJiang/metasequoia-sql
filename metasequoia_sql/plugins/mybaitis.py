@@ -16,7 +16,7 @@ from typing import Union, List
 from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionASTToListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.core import SQLParser, ASTGeneralExpression, ASTSingleSelectStatement
+from metasequoia_sql.core import SQLParser, ASTExpressionBase, ASTSingleSelectStatement
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTSingle, AMTMark
 
@@ -58,7 +58,7 @@ class FSMMachineMyBatis(FSMMachine):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class SQLMyBatisExpression(ASTGeneralExpression):
+class SQLMyBatisExpression(ASTExpressionBase):
     """增加 MyBatis 元素节点作为一般表达式的子类"""
 
     mybatis_source: str = dataclasses.field(kw_only=True)
@@ -77,7 +77,7 @@ class SQLParserMyBatis(SQLParser):
 
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
-                                         maybe_window: bool) -> ASTGeneralExpression:
+                                         maybe_window: bool) -> ASTExpressionBase:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search(AMTMark.CUSTOM_1):

@@ -11,6 +11,9 @@ from metasequoia_sql.common import name_set
 from metasequoia_sql.common.basic import is_int_literal
 
 
+__all__ = ["CurrentNodeUsedQuoteColumn"]
+
+
 class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
     """获取当前即节点（不递归分析子查询）中，直接使用的引用字段对象"""
 

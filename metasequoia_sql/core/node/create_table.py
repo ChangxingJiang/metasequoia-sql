@@ -7,7 +7,7 @@ import dataclasses
 from typing import Optional, Tuple, Dict
 
 from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.dql_node import ASTGeneralExpression, ASTTableNameExpression
+from metasequoia_sql.core.node.dql_node import ASTExpressionBase, ASTTableNameExpression
 from metasequoia_sql.core.node.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 
@@ -62,7 +62,7 @@ class ASTColumnTypeExpression(ASTBase):
     """字段类型表达式"""
 
     name: str = dataclasses.field(kw_only=True)
-    params: Optional[Tuple[ASTGeneralExpression, ...]] = dataclasses.field(kw_only=True, default=None)
+    params: Optional[Tuple[ASTExpressionBase, ...]] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -90,8 +90,8 @@ class ASTDefineColumnExpression(ASTBase):
     is_allow_null: bool = dataclasses.field(kw_only=True, default=False)
     is_not_null: bool = dataclasses.field(kw_only=True, default=False)
     is_auto_increment: bool = dataclasses.field(kw_only=True, default=False)
-    default: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True, default=None)
-    on_update: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True, default=None)
+    default: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True, default=None)
+    on_update: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True, default=None)
     comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
 
     @property

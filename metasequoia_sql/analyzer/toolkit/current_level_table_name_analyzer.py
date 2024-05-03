@@ -9,6 +9,9 @@ from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToDictBase
 from metasequoia_sql.analyzer.node import StandardTable
 
 
+__all__ = ["CurrentLevelTableNameAnalyzer"]
+
+
 class CurrentLevelTableNameAnalyzer(AnalyzerRecursionASTToDictBase):
     """表名规分析器"""
 

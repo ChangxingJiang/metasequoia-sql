@@ -281,7 +281,7 @@ class SQLParser:
                                      ) -> node.ASTNormalFunctionExpression:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        function_params: List[node.ASTGeneralExpression] = []
+        function_params: List[node.ASTExpressionBase] = []
         first_param = True
         for param_scanner in scanner.split_by(","):
             if first_param is True:
@@ -330,7 +330,7 @@ class SQLParser:
                 and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
-        function_params: List[node.ASTGeneralExpression] = []
+        function_params: List[node.ASTExpressionBase] = []
         for param_scanner in parenthesis_scanner.split_by(","):
             function_params.append(cls.parse_general_expression(param_scanner))
             if not param_scanner.is_finish:
@@ -560,7 +560,7 @@ class SQLParser:
         return result
 
     @classmethod
-    def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTGeneralExpression:
+    def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTExpressionBase:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if cls.check_sub_query_parenthesis(scanner):
@@ -568,7 +568,7 @@ class SQLParser:
         return cls.parse_value_expression(scanner)
 
     @classmethod
-    def _parse_general_parenthesis(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTGeneralExpression:
+    def _parse_general_parenthesis(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTExpressionBase:
         """解析一般表达式中的插入语：插入语可能为一般表达式或子查询"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if cls.check_sub_query_parenthesis(scanner):
@@ -580,7 +580,7 @@ class SQLParser:
 
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
-                                         maybe_window: bool) -> node.ASTGeneralExpression:
+                                         maybe_window: bool) -> node.ASTExpressionBase:
         # pylint: disable=R0911
         """解析一般表达式中的一个元素"""
         scanner = cls._unify_input_scanner(scanner_or_string)
@@ -602,7 +602,7 @@ class SQLParser:
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                 maybe_window: bool = True) -> node.ASTGeneralExpression:
+                                 maybe_window: bool = True) -> node.ASTExpressionBase:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         elements = [cls.parse_general_expression_element(scanner, maybe_window)]
@@ -720,7 +720,7 @@ class SQLParser:
 
         # 解析字段类型参数
         if scanner.search(AMTMark.PARENTHESIS):
-            function_params: List[node.ASTGeneralExpression] = []
+            function_params: List[node.ASTExpressionBase] = []
             for param_scanner in scanner.pop_as_children_scanner_list_split_by(","):
                 function_params.append(cls.parse_general_expression(param_scanner))
                 param_scanner.close()
@@ -938,8 +938,8 @@ class SQLParser:
         is_allow_null: bool = False
         is_not_null: bool = False
         is_auto_increment: bool = False
-        default: Optional[node.ASTGeneralExpression] = None
-        on_update: Optional[node.ASTGeneralExpression] = None
+        default: Optional[node.ASTExpressionBase] = None
+        on_update: Optional[node.ASTExpressionBase] = None
         while not scanner.is_finish:
             if scanner.search_and_move("NOT", "NULL"):
                 is_not_null = True
@@ -1471,7 +1471,7 @@ class SQLParser:
         return node.ASTDropTableStatement(if_exists=if_exists, table_name=table_name)
 
     @classmethod
-    def parse_statements(cls, scanner_or_string: Union[TokenScanner, str]) -> List[node.ASTStatement]:
+    def parse_statements(cls, scanner_or_string: Union[TokenScanner, str]) -> List[node.ASTStatementHasWithClause]:
         """解析一段 SQL 语句，返回表达式的列表"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         statement_list = []

@@ -7,9 +7,9 @@ import dataclasses
 from typing import Optional, Tuple
 
 from metasequoia_sql.core.node.abc_node import ASTBase
-from metasequoia_sql.core.node.basic_node import ASTInsertType
-from metasequoia_sql.core.node.dql_node import (ASTStatement, ASTTableNameExpression, ASTColumnNameExpression,
-                                                ASTValueExpression, ASTSelectStatement, ASTGeneralExpression)
+from metasequoia_sql.core.node.enum_node import ASTInsertType
+from metasequoia_sql.core.node.dql_node import (ASTStatementHasWithClause, ASTTableNameExpression, ASTColumnNameExpression,
+                                                ASTValueExpression, ASTSelectStatement, ASTExpressionBase)
 from metasequoia_sql.core.node.sql_type import SQLType
 
 __all__ = [
@@ -28,8 +28,8 @@ __all__ = [
 class ASTEqualExpression(ASTBase):
     """等式表达式"""
 
-    before_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
-    after_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
+    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
+    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -55,7 +55,7 @@ class ASTPartitionExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertStatement(ASTStatement, abc.ABC):
+class ASTInsertStatement(ASTStatementHasWithClause, abc.ABC):
     """INSERT 表达式
 
     两个子类包含 VALUES 和 SELECT 两种方式
