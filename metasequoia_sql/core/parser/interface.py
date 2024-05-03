@@ -311,11 +311,8 @@ class SQLParser:
     def check_window_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否可能为窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        return not scanner.is_finish and (
-                scanner.now.equals(AMTMark.NAME) and scanner.now.source.upper() in name_set.WINDOW_FUNCTION_NAME_SET and
-                scanner.next1 is not None and scanner.next1.equals(AMTMark.PARENTHESIS) and
-                scanner.next2 is not None and scanner.next2.equals("OVER") and
-                scanner.next3 is not None and scanner.next3.equals(AMTMark.PARENTHESIS))
+        return (scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS, "OVER", AMTMark.PARENTHESIS)
+                and scanner.get_as_source() in name_set.WINDOW_FUNCTION_NAME_SET)
 
     @classmethod
     def parse_window_row(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowRowItem:
