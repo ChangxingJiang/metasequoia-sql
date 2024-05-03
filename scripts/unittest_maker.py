@@ -13,16 +13,17 @@ from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, Curre
                                       CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
                                       CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
                                       AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
-                                      CurrentColumnSelectToDirectQuoteHash, SelectColumn)
+                                      CurrentColumnSelectToDirectQuoteHash)
 from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
+from metasequoia_sql.analyzer.node import StandardColumn
 
 
 def format_rule_1(columns: List[QuoteColumn]) -> List[str]:
     return ordered_distinct([column.source() for column in columns])
 
 
-def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):
+def format_rule_2(columns: Dict[StandardColumn, List[QuoteColumn]]):
     return {key.source(): format_rule_1(value) for key, value in columns.items()}
 
 
@@ -43,19 +44,20 @@ def make_sql_basic_tutorial(force: bool = False):
     with open(file_path, "w", encoding="UTF-8") as file:
         # 生成引用信息
         file.write("import unittest\n")
-        file.write("from typing import List, Dict\n")
+        file.write("from typing import List, Dict, Union\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
         file.write("from metasequoia_sql.analyzer import *\n")
         file.write("from metasequoia_sql.common import ordered_distinct\n")
+        file.write("from metasequoia_sql.analyzer.node import StandardColumn\n")
         file.write("\n")
         file.write("\n")
         file.write("def format_rule_1(columns: List[QuoteColumn]):\n")
         file.write("    return ordered_distinct([column.source() for column in columns])\n")
         file.write("\n")
         file.write("\n")
-        file.write("def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):\n")
+        file.write("def format_rule_2(columns: Dict[StandardColumn, List[QuoteColumn]]):\n")
         file.write("    return {key.source(): format_rule_1(value) for key, value in columns.items()}\n")
         file.write("\n")
         file.write("\n")

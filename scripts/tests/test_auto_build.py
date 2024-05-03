@@ -5,13 +5,14 @@ from metasequoia_sql import *
 from scripts.demo_sql.sql_basic_tutorial import *
 from metasequoia_sql.analyzer import *
 from metasequoia_sql.common import ordered_distinct
+from metasequoia_sql.analyzer.node import StandardColumn
 
 
 def format_rule_1(columns: List[QuoteColumn]):
     return ordered_distinct([column.source() for column in columns])
 
 
-def format_rule_2(columns: Dict[SelectColumn, List[QuoteColumn]]):
+def format_rule_2(columns: Dict[StandardColumn, List[QuoteColumn]]):
     return {key.source(): format_rule_1(value) for key, value in columns.items()}
 
 
