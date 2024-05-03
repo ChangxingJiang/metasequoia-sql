@@ -38,7 +38,7 @@ class ASTInsertType(ASTBase):
 
     enum: EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
 
@@ -65,7 +65,7 @@ class ASTJoinType(ASTBase):
 
     enum: EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
 
@@ -85,7 +85,7 @@ class ASTOrderType(ASTBase):
 
     enum: EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
 
@@ -108,7 +108,7 @@ class ASTUnionType(ASTBase):
 
     enum: EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
 
@@ -137,7 +137,7 @@ class ASTCompareOperator(ASTBase):
 
     enum: EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
 
@@ -160,13 +160,13 @@ class ASTComputeOperator(ASTBase):
 
     enum: EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.enum == EnumComputeOperator.MOD and data_source != SQLType.SQL_SERVER:
-            raise UnSupportDataSourceError(f"{data_source} 不支持使用 % 运算符")
+        if self.enum == EnumComputeOperator.MOD and sql_type != SQLType.SQL_SERVER:
+            raise UnSupportDataSourceError(f"{sql_type} 不支持使用 % 运算符")
         if (self.enum == EnumComputeOperator.CONCAT
-                and data_source not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
-            raise UnSupportDataSourceError(f"{data_source} 不支持使用 || 运算符")
+                and sql_type not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
+            raise UnSupportDataSourceError(f"{sql_type} 不支持使用 || 运算符")
         return " ".join(self.enum.value)
 
 
@@ -186,7 +186,7 @@ class ASTLogicalOperator(ASTBase):
 
     enum: EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return " ".join(self.enum.value)
 
@@ -240,7 +240,7 @@ class ASTCastDataType(ASTBase):
     type_enum: EnumCastDataType = dataclasses.field(kw_only=True)  # 目标转换的数据类型
     params: Optional[Tuple[int, ...]] = dataclasses.field(kw_only=True)  # 目标转换的数据类型的参数列表
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = []
         if self.signed is True:
@@ -276,7 +276,7 @@ class ASTWindowRow(ASTBase):
     is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
     row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.row_type == EnumWindowRowType.CURRENT_ROW:
             return "CURRENT ROW"
@@ -296,6 +296,6 @@ class ASTWindowRowExpression(ASTBase):
     from_row: ASTWindowRow = dataclasses.field(kw_only=True)
     to_row: ASTWindowRow = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"ROWS BETWEEN {self.from_row.source(data_source)} AND {self.to_row.source(data_source)}"
+        return f"ROWS BETWEEN {self.from_row.source(sql_type)} AND {self.to_row.source(sql_type)}"

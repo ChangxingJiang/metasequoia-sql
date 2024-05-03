@@ -63,7 +63,7 @@ class SQLMyBatisExpression(ASTGeneralExpression):
 
     mybatis_source: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         return self.mybatis_source
 
 
@@ -92,7 +92,7 @@ class GetAllMybatisParams(AnalyzerRecursionASTToListBase):
     def handle(cls, node: ASTBase) -> List[str]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(SQLType.DEFAULT)[2:-1]]
+            return [node.source()[2:-1]]
         return cls.default_handle_node(node)
 
 
@@ -103,7 +103,7 @@ class GetMybatisParamInWhereClause(AnalyzerRecursionASTToListBase):
     def handle(cls, node: ASTBase) -> List[str]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(SQLType.DEFAULT)[2:-1]]
+            return [node.source()[2:-1]]
         if isinstance(node, ASTSingleSelectStatement):
             return cls.handle(node.where_clause)
         return cls.default_handle_node(node)
@@ -116,7 +116,7 @@ class GetMybatisParamInGroupByClause(AnalyzerRecursionASTToListBase):
     def handle(cls, node: ASTBase) -> List[str]:
         """自定义的处理规则"""
         if isinstance(node, SQLMyBatisExpression):
-            return [node.source(SQLType.DEFAULT)[2:-1]]
+            return [node.source()[2:-1]]
         if isinstance(node, ASTSingleSelectStatement):
             return cls.handle(node.group_by_clause)
         return cls.default_handle_node(node)

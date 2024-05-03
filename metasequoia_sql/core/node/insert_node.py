@@ -31,9 +31,9 @@ class ASTEqualExpression(ASTBase):
     before_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
     after_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(data_source)} = {self.after_value.source(data_source)}"
+        return f"{self.before_value.source(sql_type)} = {self.after_value.source(sql_type)}"
 
 
 # ---------------------------------------- 分区表达式 ----------------------------------------
@@ -45,9 +45,9 @@ class ASTPartitionExpression(ASTBase):
 
     partition_list: Tuple[ASTEqualExpression, ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        partition_list_str = ", ".join(partition.source(data_source) for partition in self.partition_list)
+        partition_list_str = ", ".join(partition.source(sql_type) for partition in self.partition_list)
         return f"PARTITION ({partition_list_str})"
 
 
@@ -70,15 +70,15 @@ class ASTInsertStatement(ASTStatement, abc.ABC):
     partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True)
     columns: Optional[Tuple[ASTColumnNameExpression, ...]] = dataclasses.field(kw_only=True)
 
-    def _insert_str(self, data_source: SQLType) -> str:
-        insert_type_str = self.insert_type.source(data_source)
-        table_keyword_str = "TABLE " if data_source == SQLType.HIVE else ""
-        partition_str = self.partition.source(data_source) + " " if self.partition is not None else ""
+    def _insert_str(self, sql_type: SQLType) -> str:
+        insert_type_str = self.insert_type.source(sql_type)
+        table_keyword_str = "TABLE " if sql_type == SQLType.HIVE else ""
+        partition_str = self.partition.source(sql_type) + " " if self.partition is not None else ""
         if self.columns is not None:
-            columns_str = "(" + ", ".join(column.source(data_source) for column in self.columns) + ") "
+            columns_str = "(" + ", ".join(column.source(sql_type) for column in self.columns) + ") "
         else:
             columns_str = ""
-        return (f"{insert_type_str} {table_keyword_str}{self.table_name.source(data_source)} "
+        return (f"{insert_type_str} {table_keyword_str}{self.table_name.source(sql_type)} "
                 f"{partition_str}{columns_str}")
 
 
@@ -88,10 +88,10 @@ class ASTInsertValuesStatement(ASTInsertStatement):
 
     values: Tuple[ASTValueExpression, ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        values_str = ", ".join(value.source(data_source) for value in self.values)
-        return f"{self._insert_str(data_source)}VALUES {values_str}"
+        values_str = ", ".join(value.source(sql_type) for value in self.values)
+        return f"{self._insert_str(sql_type)}VALUES {values_str}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -100,6 +100,6 @@ class ASTInsertSelectStatement(ASTInsertStatement):
 
     select_statement: ASTSelectStatement = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self._insert_str(data_source)} {self.select_statement.source(data_source)}"
+        return f"{self._insert_str(sql_type)} {self.select_statement.source(sql_type)}"

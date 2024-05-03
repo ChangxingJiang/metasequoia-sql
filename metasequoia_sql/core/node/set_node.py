@@ -22,6 +22,6 @@ class ASTSetStatement(ASTBase):
     config_name: str = dataclasses.field(kw_only=True)
     config_value: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"SET {self.config_name} = {self.config_value}"

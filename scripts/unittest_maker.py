@@ -80,15 +80,15 @@ def make_sql_basic_tutorial(force: bool = False):
             print(sql.strip("\n"))
 
             statement = SQLParser.parse_select_statement(sql)
-            data_source = SQLType.MYSQL
+            sql_type = SQLType.MYSQL
             if name in {"SBT_CH06_03_SQLSERVER"}:
-                data_source = SQLType.SQL_SERVER
+                sql_type = SQLType.SQL_SERVER
             if name in {"SBT_CH06_06_ORACLE", "SBT_CH06_07_ORACLE", "SBT_CH06_41", "SBT_CH06_A", "SBT_CH06_B_ORACLE"}:
-                data_source = SQLType.ORACLE
+                sql_type = SQLType.ORACLE
             if name in {"SBT_CH06_13_DB2", "SBT_CH06_14_DB2", "SBT_CH06_15_DB2", "SBT_CH06_16_DB2"}:
-                data_source = SQLType.DB2
+                sql_type = SQLType.DB2
             print("【格式化代码】")
-            print(statement.source(data_source))
+            print(statement.source(sql_type))
 
             # 构造单元测试代码
             file.write(f"    def test_{name.lower()}(self):\n")

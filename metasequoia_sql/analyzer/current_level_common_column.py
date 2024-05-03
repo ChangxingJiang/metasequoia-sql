@@ -257,7 +257,7 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectASTToDictBase):
                 select_column = StandardColumn(column_name=column_expression.column_value.column_name,
                                                column_idx=column_idx)
             else:
-                select_column = StandardColumn(column_name=column_expression.column_value.source(core.SQLType.DEFAULT),
+                select_column = StandardColumn(column_name=column_expression.column_value.source(),
                                                column_idx=column_idx)
             result[select_column] = CurrentNodeUsedQuoteColumn.handle(column_expression.column_value)
         return result

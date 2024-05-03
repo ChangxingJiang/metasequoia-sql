@@ -135,7 +135,7 @@ class ASTLiteralExpression(ASTGeneralExpression):
 
     value: str = dataclasses.field(kw_only=True)  # 字面值
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return self.value
 
@@ -160,14 +160,14 @@ class ASTColumnNameExpression(ASTGeneralExpression):
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 表名称
     column_name: str = dataclasses.field(kw_only=True)  # 字段名称
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.column_name not in {"*", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP"}:
             result = (f"`{self.table_name}`.`{self.column_name}`" if self.table_name is not None
                       else f"`{self.column_name}`")
         else:
             result = f"`{self.table_name}`.{self.column_name}" if self.table_name is not None else f"{self.column_name}"
-        if data_source == SQLType.DB2:
+        if sql_type == SQLType.DB2:
             # 兼容 DB2 的 CURRENT DATE、CURRENT TIME、CURRENT TIMESTAMP 语法
             result = result.replace("CURRENT_DATE", "CURRENT DATE")
             result = result.replace("CURRENT_TIME", "CURRENT TIME")
@@ -195,12 +195,12 @@ class ASTNormalFunctionExpression(ASTFunctionExpression):
 
     function_params: Tuple[ASTGeneralExpression] = dataclasses.field(kw_only=True)  # 函数表达式的参数
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self._get_function_str()}({self._get_param_str(data_source)})"
+        return f"{self._get_function_str()}({self._get_param_str(sql_type)})"
 
-    def _get_param_str(self, data_source: SQLType) -> str:
-        return ", ".join(param.source(data_source) for param in self.function_params)
+    def _get_param_str(self, sql_type: SQLType) -> str:
+        return ", ".join(param.source(sql_type) for param in self.function_params)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -209,10 +209,10 @@ class ASTAggregationFunctionExpression(ASTNormalFunctionExpression):
 
     is_distinct: bool = dataclasses.field(kw_only=True)  # 是否包含 DISTINCT 关键字
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         is_distinct = "DISTINCT " if self.is_distinct is True else ""
-        return f"{self._get_function_str()}({is_distinct}{self._get_param_str(data_source)})"
+        return f"{self._get_function_str()}({is_distinct}{self._get_param_str(sql_type)})"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -223,10 +223,10 @@ class ASTCastFunctionExpression(ASTFunctionExpression):
     column_expression: ASTGeneralExpression = dataclasses.field(kw_only=True)  # CAST 表达式中要转换的列表达式
     cast_type: ASTCastDataType = dataclasses.field(kw_only=True)  # CAST 参数中目标要转换的函数类型
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return (f"{self._get_function_str()}"
-                f"({self.column_expression.source(data_source)} AS {self.cast_type.source(data_source)})")
+                f"({self.column_expression.source(sql_type)} AS {self.cast_type.source(sql_type)})")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -237,10 +237,10 @@ class ASTExtractFunctionExpression(ASTFunctionExpression):
     extract_name: ASTGeneralExpression = dataclasses.field(kw_only=True)  # FROM 关键字之前的提取名称
     column_expression: ASTGeneralExpression = dataclasses.field(kw_only=True)  # FROM 关键字之后的一般表达式
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self._get_function_str()}({self.extract_name.source(data_source)} "
-                f"FROM {self.column_expression.source(data_source)})")
+        return (f"{self._get_function_str()}({self.extract_name.source(sql_type)} "
+                f"FROM {self.column_expression.source(sql_type)})")
 
 
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
@@ -267,51 +267,51 @@ class ASTBoolCompareExpression(SQLBoolOperatorExpression):
 
     operator: ASTCompareOperator = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         is_not_str = "NOT " if self.is_not else ""
-        return (f"{is_not_str}{self.before_value.source(data_source)} {self.operator.source(data_source)} "
-                f"{self.after_value.source(data_source)}")
+        return (f"{is_not_str}{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTBoolIsExpression(SQLBoolOperatorExpression):
     """IS运算符布尔值表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "IS NOT" if self.is_not else "IS"
-        return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTBoolInExpression(SQLBoolOperatorExpression):
     """In 关键字的布尔值表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT IN " if self.is_not else "IN"
-        return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTBoolLikeExpression(SQLBoolOperatorExpression):
     """LIKE 运算符关联表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT LIKE" if self.is_not else "LIKE"
-        return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTBoolRlikeExpression(SQLBoolOperatorExpression):
     """RLIKE 运算符关联表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT RLIKE" if self.is_not else "RLIKE"
-        return f"{self.before_value.source(data_source)} {keyword} {self.after_value.source(data_source)}"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -320,10 +320,10 @@ class ASTBoolExistsExpression(ASTBoolExpression):
 
     after_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT EXISTS" if self.is_not else "EXISTS"
-        return f"{keyword} {self.after_value.source(data_source)}"
+        return f"{keyword} {self.after_value.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -334,11 +334,11 @@ class ASTBoolBetweenExpression(ASTBoolExpression):
     from_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
     to_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if_not_str = "NOT " if self.is_not else ""
-        return (f"{self.before_value.source(data_source)} {if_not_str}"
-                f"BETWEEN {self.from_value.source(data_source)} AND {self.to_value.source(data_source)}")
+        return (f"{self.before_value.source(sql_type)} {if_not_str}"
+                f"BETWEEN {self.from_value.source(sql_type)} AND {self.to_value.source(sql_type)}")
 
 
 # ---------------------------------------- 数组下标表达式 ----------------------------------------
@@ -351,11 +351,11 @@ class ASTArrayIndexExpression(ASTGeneralExpression):
     array_expression: ASTGeneralExpression = dataclasses.field(kw_only=True)
     idx: int = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if data_source != SQLType.HIVE:
-            raise UnSupportDataSourceError(f"数组下标不支持SQL类型:{data_source}")
-        return f"{self.array_expression.source(data_source)}"
+        if sql_type != SQLType.HIVE:
+            raise UnSupportDataSourceError(f"数组下标不支持SQL类型:{sql_type}")
+        return f"{self.array_expression.source(sql_type)}"
 
 
 # ---------------------------------------- 窗口表达式 ----------------------------------------
@@ -370,16 +370,16 @@ class ASTWindowExpression(ASTGeneralExpression):
     order_by: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True)
     row_expression: Optional[ASTWindowRowExpression] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        result = f"{self.window_function.source(data_source)} OVER ("
+        result = f"{self.window_function.source(sql_type)} OVER ("
         parenthesis = []
         if self.partition_by is not None:
-            parenthesis.append(f"PARTITION BY {self.partition_by.source(data_source)}")
+            parenthesis.append(f"PARTITION BY {self.partition_by.source(sql_type)}")
         if self.order_by is not None:
-            parenthesis.append(f"ORDER BY {self.order_by.source(data_source)}")
+            parenthesis.append(f"ORDER BY {self.order_by.source(sql_type)}")
         if self.row_expression is not None:
-            parenthesis.append(self.row_expression.source(data_source))
+            parenthesis.append(self.row_expression.source(sql_type))
         result += " ".join(parenthesis) + ")"
         return result
 
@@ -393,7 +393,7 @@ class ASTWildcardExpression(ASTGeneralExpression):
 
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"{self.table_name}.*" if self.table_name is not None else "*"
 
@@ -409,10 +409,10 @@ class ASTConditionExpression(ASTGeneralExpression):
 
     elements: Tuple[ConditionElement, ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(f"({element.source(data_source)})"
-                        if isinstance(element, ASTConditionExpression) else element.source(data_source)
+        return " ".join(f"({element.source(sql_type)})"
+                        if isinstance(element, ASTConditionExpression) else element.source(sql_type)
                         for element in self.elements)
 
 
@@ -432,13 +432,13 @@ class ASTCaseExpression(ASTGeneralExpression):
     cases: Tuple[Tuple[ASTConditionExpression, ASTGeneralExpression], ...] = dataclasses.field(kw_only=True)
     else_value: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = ["CASE"]
         for when, then in self.cases:
-            result.append(f"WHEN {when.source(data_source)} THEN {then.source(data_source)}")
+            result.append(f"WHEN {when.source(sql_type)} THEN {then.source(sql_type)}")
         if self.else_value is not None:
-            result.append(f"ELSE {self.else_value.source(data_source)}")
+            result.append(f"ELSE {self.else_value.source(sql_type)}")
         result.append("END")
         return " ".join(result)
 
@@ -457,13 +457,13 @@ class ASTCaseValueExpression(ASTGeneralExpression):
     cases: Tuple[Tuple[ASTGeneralExpression, ASTGeneralExpression], ...] = dataclasses.field(kw_only=True)
     else_value: Optional[ASTGeneralExpression] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        result = ["CASE", self.case_value.source(data_source)]
+        result = ["CASE", self.case_value.source(sql_type)]
         for when, then in self.cases:
-            result.append(f"    WHEN {when.source(data_source)} THEN {then.source(data_source)}")
+            result.append(f"    WHEN {when.source(sql_type)} THEN {then.source(sql_type)}")
         if self.else_value is not None:
-            result.append(f"    ELSE {self.else_value.source(data_source)}")
+            result.append(f"    ELSE {self.else_value.source(sql_type)}")
         result.append("END")
         return "\n".join(result)
 
@@ -476,9 +476,9 @@ class ASTComputeExpression(ASTGeneralExpression):
 
     elements: Tuple[Union[ASTGeneralExpression, ASTComputeOperator], ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(element.source(data_source) for element in self.elements)
+        return " ".join(element.source(sql_type) for element in self.elements)
 
 
 # ---------------------------------------- 值表达式 ----------------------------------------
@@ -490,9 +490,9 @@ class ASTValueExpression(ASTGeneralExpression):
 
     values: Tuple[ASTGeneralExpression, ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        values_str = ", ".join(value.source(data_source) for value in self.values)
+        values_str = ", ".join(value.source(sql_type) for value in self.values)
         return f"({values_str})"
 
 
@@ -505,9 +505,9 @@ class ASTSubQueryExpression(ASTGeneralExpression):
 
     select_statement: "ASTSelectStatement" = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"({self.select_statement.source(data_source)})"
+        return f"({self.select_statement.source(sql_type)})"
 
 
 # ---------------------------------------- 表名表达式 ----------------------------------------
@@ -520,7 +520,7 @@ class ASTTableNameExpression(ASTBase):
     schema: Optional[str] = dataclasses.field(kw_only=True, default=None)
     table: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"`{self.schema}.{self.table}`" if self.schema is not None else f"`{self.table}`"
 
@@ -534,7 +534,7 @@ class ASTAlisaExpression(ASTBase):
 
     name: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"AS {self.name}"
 
@@ -552,9 +552,9 @@ class ASTJoinOnExpression(ASTJoinExpression):
 
     condition: ASTConditionExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"ON {self.condition.source(data_source)}"
+        return f"ON {self.condition.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -563,9 +563,9 @@ class ASTJoinUsingExpression(ASTJoinExpression):
 
     using_function: ASTFunctionExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self.using_function.source(data_source)}"
+        return f"{self.using_function.source(sql_type)}"
 
 
 # ---------------------------------------- 表表达式 ----------------------------------------
@@ -578,11 +578,11 @@ class ASTTableExpression(ASTBase):
     table: Union[ASTTableNameExpression, ASTSubQueryExpression] = dataclasses.field(kw_only=True)
     alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.alias is not None:
-            return f"{self.table.source(data_source)} {self.alias.source(data_source)}"
-        return f"{self.table.source(data_source)}"
+            return f"{self.table.source(sql_type)} {self.alias.source(sql_type)}"
+        return f"{self.table.source(sql_type)}"
 
 
 # ---------------------------------------- 列表达式 ----------------------------------------
@@ -595,11 +595,11 @@ class ASTColumnExpression(ASTBase):
     column_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
     alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.alias is not None:
-            return f"{self.column_value.source(data_source)} {self.alias.source(data_source)}"
-        return f"{self.column_value.source(data_source)}"
+            return f"{self.column_value.source(sql_type)} {self.alias.source(sql_type)}"
+        return f"{self.column_value.source(sql_type)}"
 
 
 # ---------------------------------------- SELECT 子句 ----------------------------------------
@@ -612,12 +612,12 @@ class ASTSelectClause(ASTBase):
     distinct: bool = dataclasses.field(kw_only=True)
     columns: Tuple[ASTColumnExpression, ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = ["SELECT"]
         if self.distinct is True:
             result.append("DISTINCT")
-        result.append(", ".join(column.source(data_source) for column in self.columns))
+        result.append(", ".join(column.source(sql_type) for column in self.columns))
         return " ".join(result)
 
 
@@ -629,9 +629,9 @@ class ASTFromClause(ASTBase):
 
     tables: Tuple[ASTTableExpression, ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return "FROM " + ", ".join(table.source(data_source) for table in self.tables)
+        return "FROM " + ", ".join(table.source(sql_type) for table in self.tables)
 
 
 # ---------------------------------------- LATERAL VIEW 子句 ----------------------------------------
@@ -645,9 +645,9 @@ class ASTLateralViewClause(ASTBase):
     view_name: str = dataclasses.field(kw_only=True)
     alias: ASTAlisaExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"LATERAL VIEW {self.function.source(data_source)} {self.view_name} {self.alias.source(data_source)}"
+        return f"LATERAL VIEW {self.function.source(sql_type)} {self.view_name} {self.alias.source(sql_type)}"
 
 
 # ---------------------------------------- JOIN 子句 ----------------------------------------
@@ -660,12 +660,12 @@ class ASTJoinClause(ASTBase):
     table: ASTTableExpression = dataclasses.field(kw_only=True)
     join_rule: Optional[ASTJoinExpression] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.join_rule is not None:
-            return (f"{self.join_type.source(data_source)} {self.table.source(data_source)} "
-                    f"{self.join_rule.source(data_source)}")
-        return f"{self.join_type.source(data_source)} {self.table.source(data_source)}"
+            return (f"{self.join_type.source(sql_type)} {self.table.source(sql_type)} "
+                    f"{self.join_rule.source(sql_type)}")
+        return f"{self.join_type.source(sql_type)} {self.table.source(sql_type)}"
 
 
 # ---------------------------------------- WHERE 子句 ----------------------------------------
@@ -677,9 +677,9 @@ class ASTWhereClause(ASTBase):
 
     condition: ASTConditionExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"WHERE {self.condition.source(data_source)}"
+        return f"WHERE {self.condition.source(sql_type)}"
 
 
 # ---------------------------------------- GROUP BY 子句 ----------------------------------------
@@ -695,11 +695,11 @@ class ASTNormalGroupByClause(ASTGroupByClause):
     columns: Tuple[ASTGeneralExpression, ...] = dataclasses.field(kw_only=True)
     with_rollup: bool = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.with_rollup:
-            return "GROUP BY " + ", ".join(column.source(data_source) for column in self.columns) + " WITH ROLLUP"
-        return "GROUP BY " + ", ".join(column.source(data_source) for column in self.columns)
+            return "GROUP BY " + ", ".join(column.source(sql_type) for column in self.columns) + " WITH ROLLUP"
+        return "GROUP BY " + ", ".join(column.source(sql_type) for column in self.columns)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -708,14 +708,14 @@ class ASTGroupingSetsGroupByClause(ASTGroupByClause):
 
     grouping_list: Tuple[Tuple[ASTGeneralExpression, ...], ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         grouping_str_list = []
         for grouping in self.grouping_list:
             if len(grouping) > 1:
-                grouping_str_list.append("(" + ", ".join(column.source(data_source) for column in grouping) + ")")
+                grouping_str_list.append("(" + ", ".join(column.source(sql_type) for column in grouping) + ")")
             else:
-                grouping_str_list.append(grouping[0].source(data_source))
+                grouping_str_list.append(grouping[0].source(sql_type))
         return "GROUP BY GROUPING SETS (" + ", ".join(grouping_str_list) + ")"
 
 
@@ -728,9 +728,9 @@ class ASTHavingClause(ASTBase):
 
     condition: ASTConditionExpression = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"HAVING {self.condition.source(data_source)}"
+        return f"HAVING {self.condition.source(sql_type)}"
 
 
 # ---------------------------------------- ORDER BY 子句 ----------------------------------------
@@ -742,14 +742,14 @@ class ASTOrderByClause(ASTBase):
 
     columns: Tuple[Tuple[ASTGeneralExpression, ASTOrderType], ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = []
         for column, order_type in self.columns:
-            if order_type.source(data_source) == "ASC":
-                result.append(f"{column.source(data_source)}")
+            if order_type.source(sql_type) == "ASC":
+                result.append(f"{column.source(sql_type)}")
             else:
-                result.append(f"{column.source(data_source)} DESC")
+                result.append(f"{column.source(sql_type)} DESC")
         return "ORDER BY " + ", ".join(result)
 
 
@@ -763,7 +763,7 @@ class ASTLimitClause(ASTBase):
     limit: int = dataclasses.field(kw_only=True)
     offset: int = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"LIMIT {self.offset}, {self.limit}"
 
@@ -782,11 +782,11 @@ class ASTWithClause(ASTBase):
         """空 WITH 子句"""
         return ASTWithClause(tables=tuple())
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if not self.tables:
             return ""
-        table_str = ", \n".join(f"{table_name}({table_statement.source(data_source)})"
+        table_str = ", \n".join(f"{table_name}({table_statement.source(sql_type)})"
                                 for table_name, table_statement in self.tables)
         return f"WITH {table_str}"
 
@@ -836,14 +836,14 @@ class ASTSingleSelectStatement(ASTSelectStatement):
     order_by_clause: Optional[ASTOrderByClause] = dataclasses.field(kw_only=True)
     limit_clause: Optional[ASTLimitClause] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        with_clause_str = self.with_clause.source(data_source) + "\n" if not self.with_clause.is_empty() else ""
-        result = [self.select_clause.source(data_source)]
+        with_clause_str = self.with_clause.source(sql_type) + "\n" if not self.with_clause.is_empty() else ""
+        result = [self.select_clause.source(sql_type)]
         for clause in [self.from_clause, *self.lateral_view_clauses, *self.join_clauses, self.where_clause,
                        self.group_by_clause, self.having_clause, self.order_by_clause, self.limit_clause]:
             if clause is not None:
-                result.append(clause.source(data_source))
+                result.append(clause.source(sql_type))
         return with_clause_str + "\n".join(result)
 
     def set_with_clauses(self, with_clause: Optional[ASTWithClause]) -> ASTSelectStatement:
@@ -858,10 +858,10 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 
     elements: Tuple[Union[ASTUnionType, ASTSingleSelectStatement], ...] = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        with_clause_str = self.with_clause.source(data_source) + "\n" if not self.with_clause.is_empty() else ""
-        return with_clause_str + "\n".join(element.source(data_source) for element in self.elements)
+        with_clause_str = self.with_clause.source(sql_type) + "\n" if not self.with_clause.is_empty() else ""
+        return with_clause_str + "\n".join(element.source(sql_type) for element in self.elements)
 
     def set_with_clauses(self, with_clause: Optional[ASTWithClause]) -> ASTSelectStatement:
         params = self.get_params_dict()

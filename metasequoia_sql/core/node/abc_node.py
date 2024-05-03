@@ -15,14 +15,14 @@ class ASTBase(abc.ABC):
     """所有 SQL 语法节点的抽象基类"""
 
     @abc.abstractmethod
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
 
     def __str__(self) -> str:
         return self.__repr__()
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} source={self.source(SQLType.DEFAULT)}>"
+        return f"<{self.__class__.__name__} source={self.source()}>"
 
     def get_params_dict(self):
         """获取当前节点的所有参数（用于复制）"""

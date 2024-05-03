@@ -39,7 +39,7 @@ class ASTConfigNameExpression(ASTBase):
 
     config_name: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return self.config_name
 
@@ -50,7 +50,7 @@ class ASTConfigValueExpression(ASTBase):
 
     config_value: str = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return self.config_value
 
@@ -64,12 +64,12 @@ class ASTColumnTypeExpression(ASTBase):
     name: str = dataclasses.field(kw_only=True)
     params: Optional[Tuple[ASTGeneralExpression, ...]] = dataclasses.field(kw_only=True, default=None)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.params is None or data_source == SQLType.HIVE:
+        if self.params is None or sql_type == SQLType.HIVE:
             return self.name
         # MySQL 标准导出逗号间没有空格
-        type_params = "(" + ",".join([param.source(data_source) for param in self.params]) + ")"
+        type_params = "(" + ",".join([param.source(sql_type) for param in self.params]) + ")"
         return f"{self.name}{type_params}"
 
 
@@ -99,26 +99,26 @@ class ASTDefineColumnExpression(ASTBase):
         """返回没有被引号框柱的列名"""
         return self.column_name
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        res = f"`{self.column_name}` {self.column_type.source(data_source)}"
-        res += " UNSIGNED" if self.is_unsigned is True and data_source == SQLType.MYSQL else ""
-        if self.is_zerofill is True and data_source == SQLType.MYSQL:
+        res = f"`{self.column_name}` {self.column_type.source(sql_type)}"
+        res += " UNSIGNED" if self.is_unsigned is True and sql_type == SQLType.MYSQL else ""
+        if self.is_zerofill is True and sql_type == SQLType.MYSQL:
             res += " ZEROFILL"
-        if self.character_set is not None and data_source == SQLType.MYSQL:
+        if self.character_set is not None and sql_type == SQLType.MYSQL:
             res += f" CHARACTER SET {self.character_set}"
-        if self.collate is not None and data_source == SQLType.MYSQL:
+        if self.collate is not None and sql_type == SQLType.MYSQL:
             res += f" COLLATE {self.collate}"
-        if self.is_allow_null is True and data_source == SQLType.MYSQL:
+        if self.is_allow_null is True and sql_type == SQLType.MYSQL:
             res += " NULL"
-        if self.is_not_null is True and data_source == SQLType.MYSQL:
+        if self.is_not_null is True and sql_type == SQLType.MYSQL:
             res += " NOT NULL"
-        if self.is_auto_increment is True and data_source == SQLType.MYSQL:
+        if self.is_auto_increment is True and sql_type == SQLType.MYSQL:
             res += " AUTO_INCREMENT"
-        if self.default is not None and data_source == SQLType.MYSQL:
-            res += f" DEFAULT {self.default.source(data_source)}"
-        if self.on_update is not None and data_source == SQLType.MYSQL:
-            res += f" ON UPDATE {self.on_update.source(data_source)}"
+        if self.default is not None and sql_type == SQLType.MYSQL:
+            res += f" DEFAULT {self.default.source(sql_type)}"
+        if self.on_update is not None and sql_type == SQLType.MYSQL:
+            res += f" ON UPDATE {self.on_update.source(sql_type)}"
         if self.comment is not None:
             res += f" COMMENT {self.comment}"
         return res
@@ -134,7 +134,7 @@ class ASTIndexColumn(ASTBase):
     name: str = dataclasses.field(kw_only=True)  # 字段名
     max_length: Optional[int] = dataclasses.field(kw_only=True, default=None)  # 最大长度
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.max_length is None:
             return f"`{self.name}`"
@@ -151,11 +151,11 @@ class ASTIndexExpressionBase(ASTBase, abc.ABC):
     comment: Optional[str] = dataclasses.field(kw_only=True, default=None)
     key_block_size: Optional[int] = dataclasses.field(kw_only=True, default=None)
 
-    def _source(self, data_source: SQLType, index_type: str):
+    def _source(self, sql_type: SQLType, index_type: str):
         if self.columns is None:
             return ""
         name_str = f" {self.name}" if self.name is not None else ""
-        columns_str = ",".join([f"{column.source(data_source)}" for column in self.columns])
+        columns_str = ",".join([f"{column.source(sql_type)}" for column in self.columns])
         using_str = f" USING {self.using}" if self.using is not None else ""
         comment_str = f" COMMENT {self.comment}" if self.comment is not None else ""
         config_str = f" KEY_BLOCK_SIZE={self.key_block_size}" if self.key_block_size is not None else ""
@@ -166,36 +166,36 @@ class ASTIndexExpressionBase(ASTBase, abc.ABC):
 class ASTPrimaryIndexExpression(ASTIndexExpressionBase):
     """主键索引声明表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "PRIMARY KEY")
+        return self._source(sql_type, "PRIMARY KEY")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTUniqueIndexExpression(ASTIndexExpressionBase):
     """唯一键索引声明表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "UNIQUE KEY")
+        return self._source(sql_type, "UNIQUE KEY")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTNormalIndexExpression(ASTIndexExpressionBase):
     """普通索引声明表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "KEY")
+        return self._source(sql_type, "KEY")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTFulltextIndexExpression(ASTIndexExpressionBase):
     """全文本索引声明表达式"""
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return self._source(data_source, "FULLTEXT KEY")
+        return self._source(sql_type, "FULLTEXT KEY")
 
 
 # ---------------------------------------- 声明外键表达式 ----------------------------------------
@@ -211,7 +211,7 @@ class ASTForeignKeyExpression(ASTBase):
     master_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
     on_delete_cascade: bool = dataclasses.field(kw_only=True)
 
-    def source(self, data_source: SQLType) -> str:
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
@@ -282,13 +282,13 @@ class ASTCreateTableStatement(ASTBase):
         params["partitioned_by"] += (column,)
         return ASTCreateTableStatement(**params)
 
-    def source(self, data_source: SQLType, n_indent: int = 2) -> str:
+    def source(self, sql_type: SQLType, n_indent: int = 2) -> str:
         """返回语法节点的 SQL 源码"""
-        if data_source == SQLType.MYSQL:
+        if sql_type == SQLType.MYSQL:
             return self._source_mysql(n_indent=n_indent)
-        if data_source == SQLType.HIVE:
+        if sql_type == SQLType.HIVE:
             return self._source_hive(n_indent=n_indent)
-        raise SqlParseError(f"暂不支持的数据类型: {data_source}")
+        raise SqlParseError(f"暂不支持的数据类型: {sql_type}")
 
     def _source_mysql(self, n_indent: int):
         indentation = " " * n_indent  # 缩进字符串
@@ -344,6 +344,6 @@ class ASTCreateTableStatement(ASTBase):
             result += f"TBLPROPERTIES ({tblproperties_str})"
         return result
 
-    def _title_str(self, data_source: SQLType) -> str:
+    def _title_str(self, sql_type: SQLType) -> str:
         is_not_exists_str = " IF NOT EXISTS" if self.if_not_exists is True else ""
-        return f"CREATE TABLE{is_not_exists_str} {self.table_name.source(data_source)}"
+        return f"CREATE TABLE{is_not_exists_str} {self.table_name.source(sql_type)}"

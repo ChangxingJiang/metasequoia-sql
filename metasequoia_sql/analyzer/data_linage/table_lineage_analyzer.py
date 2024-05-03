@@ -137,7 +137,7 @@ class TableLineageAnalyzer:
                                            column_name=column.column_name)
                               for column in insert_statement.columns]
         else:
-            full_table_name = insert_statement.table_name.source(core.SQLType.DEFAULT)
+            full_table_name = insert_statement.table_name.source()
             create_table_statement = self._create_table_statement_getter.get_statement(full_table_name)
             insert_columns = [SourceColumn(schema_name=insert_statement.table_name.schema,
                                            table_name=insert_statement.table_name.table,
@@ -243,7 +243,7 @@ class TableLineageAnalyzer:
                                            column_name=column.column_value.column_name)
                 result.append((standard_column, [quote_column]))
             else:  # 不是字段名的情况（此时一定不是通配符）
-                standard_column = StandardColumn(column_name=column.column_value.source(core.SQLType.DEFAULT),
+                standard_column = StandardColumn(column_name=column.column_value.source(),
                                                  column_idx=column_idx)
                 column_idx += 1
                 result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.column_value)))

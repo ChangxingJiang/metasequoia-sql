@@ -31,8 +31,7 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
             return [QuoteColumn(table_name=node.table_name, column_name="*")]
 
         # 处理普通表名引用场景
-        if (isinstance(node, core.ASTColumnNameExpression)
-                and node.source(core.SQLType.DEFAULT) not in name_set.GLOBAL_VARIABLE_NAME_SET):
+        if (isinstance(node, core.ASTColumnNameExpression) and node.source() not in name_set.GLOBAL_VARIABLE_NAME_SET):
             return [QuoteColumn(table_name=node.table_name, column_name=node.column_name)]
 
         if isinstance(node, core.ASTSubQueryExpression):

@@ -287,4 +287,4 @@ class TestCoreParser(unittest.TestCase):
 
     def test_set_statement(self):
         """测试 SET 语句"""
-        self.assertTrue((SQLParser.parse_set_statement("SET a.c = b")).source(SQLType.DEFAULT), "SET a.c = b")
+        self.assertTrue((SQLParser.parse_set_statement("SET a.c = b")).source(), "SET a.c = b")
