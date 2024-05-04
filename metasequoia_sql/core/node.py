@@ -160,6 +160,7 @@ class ASTStatementBase(ASTBase, abc.ABC):
 class EnumInsertType(enum.Enum):
     """插入类型的枚举类"""
     INSERT_INTO = ["INSERT", "INTO"]
+    INSERT_IGNORE_INTO = ["INSERT", "IGNORE", "INTO"]
     INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
 
 

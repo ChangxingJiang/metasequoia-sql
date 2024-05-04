@@ -57,6 +57,8 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search_and_move("INSERT", "INTO"):
             return node.ASTInsertType(enum=node.EnumInsertType.INSERT_INTO)
+        if scanner.search_and_move("INSERT", "IGNORE", "INTO"):
+            return node.ASTInsertType(enum=node.EnumInsertType.INSERT_INTO)
         if scanner.search_and_move("INSERT", "OVERWRITE"):
             return node.ASTInsertType(enum=node.EnumInsertType.INSERT_OVERWRITE)
         raise SqlParseError(f"未知的 INSERT 类型: {scanner}")
