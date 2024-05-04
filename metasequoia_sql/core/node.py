@@ -62,6 +62,7 @@ __all__ = [
     "ASTBoolExistsExpression",  # 布尔值表达式：使用 EXISTS 的布尔值表达式
     "ASTBoolBetweenExpression",  # 布尔值表达式：使用 BETWEEN 的布尔值表达式
     "ASTBoolRlikeExpression",  # 布尔值表达式：使用 RLIKE 的布尔值表达式
+    "ASTBoolRegexpExpression",  # 布尔值表达式：使用 REGEXP 的布尔值表达式
     "ASTWindowExpression",  # 窗口表达式
     "ASTConditionExpression",  # 条件表达式
     "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
@@ -711,6 +712,16 @@ class ASTBoolRlikeExpression(SQLBoolOperatorExpression):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         keyword = "NOT RLIKE" if self.is_not else "RLIKE"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTBoolRegexpExpression(SQLBoolOperatorExpression):
+    """RLIKE 运算符关联表达式"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT REGEXP" if self.is_not else "REGEXP"
         return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
 
 

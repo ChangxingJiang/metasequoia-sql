@@ -546,6 +546,9 @@ class SQLParser:
         if scanner.search_and_move("RLIKE"):
             after_value = cls.parse_general_expression(scanner, sql_type=sql_type)
             return node.ASTBoolRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if scanner.search_and_move("REGEXP"):
+            after_value = cls.parse_general_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
             compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_general_expression(scanner, sql_type=sql_type)
@@ -987,7 +990,7 @@ class SQLParser:
 
     @classmethod
     def parse_distribute_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDistributeByClause:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDistributeByClause:
         """解析 DISTRIBUTE BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("DISTRIBUTE", "BY")
@@ -998,14 +1001,14 @@ class SQLParser:
 
     @classmethod
     def check_cluster_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> bool:
+                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
         """判断是否可能为 CLUSTER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return scanner.search("CLUSTER", "BY")
 
     @classmethod
     def parse_cluster_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTClusterByClause:
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTClusterByClause:
         """解析 CLUSTER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("DISTRIBUTE", "BY")
