@@ -40,7 +40,7 @@ class CreateTableStatementGetter(abc.ABC):
 
         # 如果指定了本地暂存地址，则读取本地磁盘暂存的表名
         if self._disk_path is not None:
-            self._disk_cache = set([file_name.replace(".sql", "") for file_name in os.listdir(self._disk_path)])
+            self._disk_cache = {file_name.replace(".sql", "") for file_name in os.listdir(self._disk_path)}
         else:
             self._disk_cache = set()
 

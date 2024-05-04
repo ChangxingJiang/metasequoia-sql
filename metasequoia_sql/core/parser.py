@@ -21,7 +21,7 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 __all__ = ["SQLParser"]
 
 # 初始化类型元素
-condition_element = Union[node.ASTConditionExpression, node.ASTBoolExpression, node.ASTLogicalOperator]  # 条件表达式中元素
+ConditionElement = Union[node.ASTConditionExpression, node.ASTBoolExpression, node.ASTLogicalOperator]  # 条件表达式中元素
 
 
 class SQLParser:
@@ -29,7 +29,7 @@ class SQLParser:
     """SQL 语法解析器"""
 
     @classmethod
-    def build_token_scanner(cls, string: str, sql_type: SQLType = SQLType.DEFAULT) -> TokenScanner:
+    def build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
         return TokenScanner(FSMMachine.parse(string), ignore_space=True, ignore_comment=True)
 
@@ -50,7 +50,7 @@ class SQLParser:
                 # 兼容 HIVE 的 == 语法
                 scanner_or_string = scanner_or_string.replace("==", "=")
 
-            return cls.build_token_scanner(scanner_or_string, sql_type=sql_type)
+            return cls.build_token_scanner(scanner_or_string)
         raise SqlParseError(f"未知的参数类型: {scanner_or_string} (type={type(scanner_or_string)})")
 
     # ------------------------------ 枚举类节点的解析方法 ------------------------------
@@ -176,7 +176,7 @@ class SQLParser:
                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
         """判断是否为逻辑运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return scanner.get_as_source() in {"AND", "OR", "AND", "!"}
+        return scanner.get_as_source() in {"AND", "OR", "NOT", "!"}
 
     @classmethod
     def parse_logical_operator(cls, scanner_or_string: Union[TokenScanner, str],
@@ -594,7 +594,7 @@ class SQLParser:
                                         row_expression=row_expression)
 
     @classmethod
-    def _parse_condition_element(cls, scanner: TokenScanner, sql_type: SQLType) -> List[condition_element]:
+    def _parse_condition_element(cls, scanner: TokenScanner, sql_type: SQLType) -> List[ConditionElement]:
         """解析条件表达式中的一个元素"""
         if scanner.search(AMTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()
@@ -614,7 +614,7 @@ class SQLParser:
                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpression:
         """解析条件表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        elements: List[condition_element] = cls._parse_condition_element(scanner, sql_type=sql_type)
+        elements: List[ConditionElement] = cls._parse_condition_element(scanner, sql_type=sql_type)
         while scanner.search("AND") or scanner.search("OR"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
             elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
             elements.extend(cls._parse_condition_element(scanner, sql_type=sql_type))
@@ -704,7 +704,7 @@ class SQLParser:
     @classmethod
     def parse_general_expression_element(cls, scanner_or_string: Union[TokenScanner, str],
                                          maybe_window: bool,
-                                         sql_type: SQLType = SQLType.DEFAULT, ) -> node.ASTExpressionBase:
+                                         sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionBase:
         # pylint: disable=R0911
         """解析一般表达式中的一个元素"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -1081,6 +1081,7 @@ class SQLParser:
                                       with_clause: Optional[node.ASTWithClause] = None,
                                       sql_type: SQLType = SQLType.DEFAULT
                                       ) -> node.ASTSingleSelectStatement:
+        # pylint: disable=R0914
         """
 
         Parameters
@@ -1389,6 +1390,8 @@ class SQLParser:
     def parse_define_column_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                        sql_type: SQLType = SQLType.DEFAULT
                                        ) -> node.ASTDefineColumnExpression:
+        # pylint: disable=R0914
+
         """解析 DDL 的字段表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         # 解析顺序固定的信息
@@ -1538,8 +1541,8 @@ class SQLParser:
                                      sql_type: SQLType = SQLType.DEFAULT
                                      ) -> node.ASTCreateTableStatement:
         # pylint: disable=R0912
-        # pylint: disable=R0914 忽略本地变量过多的问题
-        # pylint: disable=R0915 忽略代码行数过多的问题
+        # pylint: disable=R0914
+        # pylint: disable=R0915
         """解析 CREATE TABLE 语句"""
         # 解析字段、索引括号前的部分
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)

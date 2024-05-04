@@ -39,7 +39,6 @@ class FSMMachine:
         """
         if operation_map is None:
             operation_map = FSM_OPERATION_MAP
-        
         self.operation_map = operation_map
         self.stack: List[List[AMTBase]] = [[]]
         self.status: Union[FSMStatus, object] = FSMStatus.WAIT
