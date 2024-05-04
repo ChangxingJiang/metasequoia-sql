@@ -288,3 +288,26 @@ class TestCoreParser(unittest.TestCase):
     def test_set_statement(self):
         """测试 SET 语句"""
         self.assertTrue((SQLParser.parse_set_statement("SET a.c = b")).source(), "SET a.c = b")
+
+    def test_parse_config_string_expression(self):
+        """测试 parse_config_string_expression 方法"""
+        demo_sql = "spark.sql.hive.metastorePartitionPruning=true"
+        ast_node = SQLParser.parse_config_string_expression(demo_sql)
+        self.assertEqual(ast_node.name, "spark.sql.hive.metastorePartitionPruning")
+        self.assertEqual(ast_node.value, "true")
+
+        demo_sql = "hive.lock.sleep.between.retries=1000ms"
+        ast_node = SQLParser.parse_config_string_expression(demo_sql)
+        self.assertEqual(ast_node.name, "hive.lock.sleep.between.retries")
+        self.assertEqual(ast_node.value, "1000ms")
+
+        demo_sql = "spark.serializer=org.apache.spark.serializer.KryoSerializer"
+        ast_node = SQLParser.parse_config_string_expression(demo_sql)
+        self.assertEqual(ast_node.name,  "spark.serializer")
+        self.assertEqual(ast_node.value, "org.apache.spark.serializer.KryoSerializer")
+
+        demo_sql = "spark.hadoop.parquet.enable.summary-metadata=false"
+        ast_node = SQLParser.parse_config_string_expression(demo_sql)
+        self.assertEqual(ast_node.name,  "spark.hadoop.parquet.enable.summary-metadata")
+        self.assertEqual(ast_node.value,  "false")
+
