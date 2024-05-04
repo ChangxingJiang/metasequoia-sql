@@ -326,7 +326,7 @@ class EnumCompareOperator(enum.Enum):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCompareOperator(ASTMonomialExpressionBase):
+class ASTCompareOperator(ASTBase):
     """比较运算符"""
 
     enum: EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
@@ -349,7 +349,7 @@ class EnumComputeOperator(enum.Enum):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTComputeOperator(ASTMonomialExpressionBase):
+class ASTComputeOperator(ASTBase):
     """计算运算符"""
 
     enum: EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
@@ -375,7 +375,7 @@ class EnumLogicalOperator(enum.Enum):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalOperator(ASTMonomialExpressionBase):
+class ASTLogicalOperator(ASTBase):
     """逻辑运算符"""
 
     enum: EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
