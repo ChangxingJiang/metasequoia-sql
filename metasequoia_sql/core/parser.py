@@ -597,9 +597,13 @@ class SQLParser:
     @classmethod
     def check_sub_query_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
                                     sql_type: SQLType = SQLType.DEFAULT) -> bool:
-        """判断是否为子查询的插入语"""
+        """判断是否为子查询的插入语
+
+        1. 在子查询中，也可以使用包含 WITH 子句的 SELECT 语句
+        """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return cls.check_select_statement(scanner.get_as_children_scanner(), sql_type=sql_type)
+        parenthesis_scanner = scanner.get_as_children_scanner()
+        return parenthesis_scanner.search("SELECT") or parenthesis_scanner.search("WITH")
 
     @classmethod
     def parse_sub_query_expression(cls, scanner_or_string: Union[TokenScanner, str],
