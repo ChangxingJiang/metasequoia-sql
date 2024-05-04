@@ -254,11 +254,13 @@ class SQLParser:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         token = scanner.pop()
+        if token.equals("-"):
+            if scanner.search(AMTMark.LITERAL_INT) or scanner.search(AMTMark.LITERAL_FLOAT):
+                next_token = scanner.pop()
+                return node.ASTLiteralExpression(value=f"-{next_token.source}")
+            raise SqlParseError(f"在 - 之后不是整型或浮点型: {scanner}")
         if isinstance(token, AMTSingle):
             return node.ASTLiteralExpression(value=token.source)
-        if token.equals("-") and (scanner.search(AMTMark.LITERAL_INT) or scanner.search(AMTMark.LITERAL_FLOAT)):
-            next_token = scanner.pop()
-            return node.ASTLiteralExpression(value=f"-{next_token.source}")
         raise SqlParseError(f"未知的字面值: {token}")
 
     @classmethod
