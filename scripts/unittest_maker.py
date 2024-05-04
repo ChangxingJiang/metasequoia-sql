@@ -44,13 +44,13 @@ def make_sql_basic_tutorial(force: bool = False):
     with open(file_path, "w", encoding="UTF-8") as file:
         # 生成引用信息
         file.write("import unittest\n")
-        file.write("from typing import List, Dict, Union\n")
+        file.write("from typing import List, Dict\n")
         file.write("\n")
         file.write("from metasequoia_sql import *\n")
-        file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
         file.write("from metasequoia_sql.analyzer import *\n")
-        file.write("from metasequoia_sql.common import ordered_distinct\n")
         file.write("from metasequoia_sql.analyzer.node import StandardColumn\n")
+        file.write("from metasequoia_sql.common import ordered_distinct\n")
+        file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
         file.write("\n")
         file.write("\n")
         file.write("def format_rule_1(columns: List[QuoteColumn]):\n")

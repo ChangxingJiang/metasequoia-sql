@@ -4,3 +4,4 @@
 
 from metasequoia_sql.core.node import *
 from metasequoia_sql.core.parser import *
+from metasequoia_sql.core.sql_type import *

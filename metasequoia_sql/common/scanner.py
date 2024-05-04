@@ -57,26 +57,6 @@ class TokenScanner:
         """返回当前扫描指针"""
         return self._pos
 
-    @property
-    def now(self) -> Optional[AMTBase]:
-        """当前指针位置的字符"""
-        return self.get()
-
-    @property
-    def next1(self) -> Optional[AMTBase]:
-        """当前指针位置的下一个字符"""
-        return self._get_by_offset(1)
-
-    @property
-    def next2(self) -> Optional[AMTBase]:
-        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
-        return self._get_by_offset(2)
-
-    @property
-    def next3(self) -> Optional[AMTBase]:
-        """设当前指针位置为 idx，则返回 idx+2 位置的元素"""
-        return self._get_by_offset(3)
-
     def get(self) -> Optional[AMTBase]:
         """获取当前指针位置元素，但不移动指针
 
@@ -154,7 +134,7 @@ class TokenScanner:
 
     def get_as_source(self) -> str:
         """将指针向后移动 1 个元素并返回当前元素的 source"""
-        return self.now.source
+        return self.get().source
 
     def pop_as_source(self) -> str:
         """将指针向后移动 1 个元素并返回当前元素的 source"""
@@ -162,7 +142,7 @@ class TokenScanner:
 
     def get_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
         """【不移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.now.children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.get().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def pop_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
         """【移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
