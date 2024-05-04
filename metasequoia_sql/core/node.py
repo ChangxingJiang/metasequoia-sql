@@ -44,6 +44,7 @@ __all__ = [
     "ASTWindowRow",  # 窗口函数的行数限制表达式
     "ASTWildcardExpression",  # 通配符表达式
     "ASTAlisaExpression",  # 别名表达式
+    "ASTMultiAlisaExpression",  # 多个别名表达式
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
     "ASTFunctionExpression",  # 函数表达式：函数表达式的抽象类
@@ -537,13 +538,25 @@ class ASTWildcardExpression(ASTExpressionBase):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTAlisaExpression(ASTBase):
-    """别名表达式"""
+    """别名表达式，例如：AS name"""
 
     name: str = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"AS {self.name}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTMultiAlisaExpression(ASTBase):
+    """多个别名表达式，例如：AS name1, name2, name3（在 Hive 的 LATERAL VIEW 语句中配合 json_tuple 等返回多个值的函数使用）"""
+
+    names: Tuple[str, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        names_str = ", ".join(self.names)
+        return f"AS {names_str}"
 
 
 # ---------------------------------------- 函数表达式 ----------------------------------------
@@ -976,7 +989,7 @@ class ASTLateralViewClause(ASTBase):
 
     function: ASTFunctionExpression = dataclasses.field(kw_only=True)
     view_name: str = dataclasses.field(kw_only=True)
-    alias: ASTAlisaExpression = dataclasses.field(kw_only=True)
+    alias: ASTMultiAlisaExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

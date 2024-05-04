@@ -284,6 +284,6 @@ class TableLineageAnalyzer:
         """获取 ASTSingleSelectStatement 节点的 LATERAL VIEW 子句中所有字段到引用字段对象列表的映射关系"""
         result = []
         for lateral_view_clause in select_statement.lateral_view_clauses:  # 遍历 LATERAL VIEW 子句中的所有字段
-            result.append((lateral_view_clause.alias.name,
-                           toolkit.CurrentNodeUsedQuoteColumn.handle(lateral_view_clause.function)))
+            for name in lateral_view_clause.alias.names:
+                result.append((name, toolkit.CurrentNodeUsedQuoteColumn.handle(lateral_view_clause.function)))
         return result

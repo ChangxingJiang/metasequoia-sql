@@ -318,25 +318,28 @@ class SQLParser:
         return scanner.search("AS") or scanner.search(AMTMark.NAME)
 
     @classmethod
-    def parse_alias_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                               must_has_as_keyword: bool = False) -> node.ASTAlisaExpression:
-        """解析别名表达式
-
-        Parameters
-        ----------
-        scanner_or_string : Union[TokenScanner, str]
-            词法扫描器或字符串
-        must_has_as_keyword : bool, default = False
-            是否必须包含 AS 关键字
-        """
-        scanner = cls._unify_input_scanner(scanner_or_string)
-        if must_has_as_keyword is True:
-            scanner.match("AS")
-        else:
-            scanner.search_and_move("AS")
+    def _get_name(cls, scanner: TokenScanner) -> str:
+        """获取名称或别名：如果抽象词法树（AMT）没有 NAME 标记，则抛出异常"""
         if not scanner.search(AMTMark.NAME):
-            raise SqlParseError(f"无法解析为别名表达式: {scanner}")
-        return node.ASTAlisaExpression(name=unify_name(scanner.pop_as_source()))
+            raise SqlParseError(f"无法解析为名称: {scanner}")
+        return unify_name(scanner.pop_as_source())
+
+    @classmethod
+    def parse_alias_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTAlisaExpression:
+        """解析别名表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string)
+        scanner.search_and_move("AS")
+        return node.ASTAlisaExpression(name=cls._get_name(scanner))
+
+    @classmethod
+    def parse_multi_alias_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTMultiAlisaExpression:
+        """解析多个别名表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string)
+        scanner.match("AS")
+        names = [cls._get_name(scanner)]
+        while scanner.search_and_move(","):
+            names.append(cls._get_name(scanner))
+        return node.ASTMultiAlisaExpression(names=tuple(names))
 
     # ------------------------------ SELECT 语句节点的解析方法 ------------------------------
 
@@ -755,7 +758,7 @@ class SQLParser:
         scanner.match("LATERAL", "VIEW")
         function = cls.parse_function_expression(scanner)
         view_name = scanner.pop_as_source()
-        alias = cls.parse_alias_expression(scanner, must_has_as_keyword=True)
+        alias = cls.parse_multi_alias_expression(scanner)
         return node.ASTLateralViewClause(function=function, view_name=view_name, alias=alias)
 
     @classmethod
