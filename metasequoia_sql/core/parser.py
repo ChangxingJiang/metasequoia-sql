@@ -1081,6 +1081,15 @@ class SQLParser:
         return node.ASTIndexColumn(name=name, max_length=max_length)
 
     @classmethod
+    def _get_index_columns(cls, scanner: TokenScanner) -> Tuple[node.ASTIndexColumn, ...]:
+        """解析索引表达式中的索引字段"""
+        columns = []
+        for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+            columns.append(cls.parse_index_column(column_scanner))
+            column_scanner.close()
+        return tuple(columns)
+
+    @classmethod
     def check_primary_index_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
         """判断是否为主键表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
@@ -1092,18 +1101,11 @@ class SQLParser:
         """解析主键表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("PRIMARY", "KEY")
-        columns = []
-        for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(cls.parse_index_column(column_scanner))
-            column_scanner.close()
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        if scanner.search_and_move("KEY_BLOCK_SIZE"):
-            scanner.match("=")
-            key_block_size = int(scanner.pop_as_source())
-        else:
-            key_block_size = None
-        return node.ASTPrimaryIndexExpression(columns=tuple(columns), using=using, comment=comment,
+        key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
+        return node.ASTPrimaryIndexExpression(columns=columns, using=using, comment=comment,
                                               key_block_size=key_block_size)
 
     @classmethod
@@ -1119,18 +1121,11 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("UNIQUE", "KEY")
         name = scanner.pop_as_source()
-        columns = []
-        for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(cls.parse_index_column(column_scanner))
-            column_scanner.close()
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        if scanner.search_and_move("KEY_BLOCK_SIZE"):
-            scanner.match("=")
-            key_block_size = int(scanner.pop_as_source())
-        else:
-            key_block_size = None
-        return node.ASTUniqueIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment,
+        key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
+        return node.ASTUniqueIndexExpression(name=name, columns=columns, using=using, comment=comment,
                                              key_block_size=key_block_size)
 
     @classmethod
@@ -1146,18 +1141,11 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("KEY")
         name = scanner.pop_as_source()
-        columns = []
-        for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(cls.parse_index_column(column_scanner))
-            column_scanner.close()
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        if scanner.search_and_move("KEY_BLOCK_SIZE"):
-            scanner.match("=")
-            key_block_size = int(scanner.pop_as_source())
-        else:
-            key_block_size = None
-        return node.ASTNormalIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment,
+        key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
+        return node.ASTNormalIndexExpression(name=name, columns=columns, using=using, comment=comment,
                                              key_block_size=key_block_size)
 
     @classmethod
@@ -1173,18 +1161,11 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("FULLTEXT", "KEY")
         name = scanner.pop_as_source()
-        columns = []
-        for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(cls.parse_index_column(column_scanner))
-            column_scanner.close()
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
-        if scanner.search_and_move("KEY_BLOCK_SIZE"):
-            scanner.match("=")
-            key_block_size = int(scanner.pop_as_source())
-        else:
-            key_block_size = None
-        return node.ASTFulltextIndexExpression(name=name, columns=tuple(columns), using=using, comment=comment,
+        key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
+        return node.ASTFulltextIndexExpression(name=name, columns=columns, using=using, comment=comment,
                                                key_block_size=key_block_size)
 
     @classmethod
