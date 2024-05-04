@@ -980,8 +980,8 @@ class SQLParser:
         return node.ASTUnionSelectStatement(with_clause=with_clause, elements=tuple(result))
 
     @classmethod
-    def _get_config_name_expression(cls, scanner: TokenScanner) -> str:
-        """解析配置名称表达式"""
+    def _get_contain_point_string(cls, scanner: TokenScanner) -> str:
+        """解析包含 . 的字符串"""
         config_name_list = [scanner.pop_as_source()]
         while scanner.search_and_move("."):
             config_name_list.append(scanner.pop_as_source())
@@ -992,9 +992,9 @@ class SQLParser:
                                        ) -> node.ASTConfigStringExpression:
         """解析配置值为字符串的配置表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        config_name = cls._get_config_name_expression(scanner)
+        config_name = cls._get_contain_point_string(scanner)
         scanner.match("=")
-        config_value = scanner.pop_as_source()
+        config_value = cls._get_contain_point_string(scanner)
         return node.ASTConfigStringExpression(name=config_name, value=config_value)
 
     @classmethod
@@ -1311,13 +1311,8 @@ class SQLParser:
         """解析 SET 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("SET")
-        config_name_list = [scanner.pop_as_source()]
-        while scanner.search_and_move("."):
-            config_name_list.append(scanner.pop_as_source())
-        config_name = ".".join(config_name_list)
-        scanner.match("=")
-        config_value = scanner.pop_as_source()
-        return node.ASTSetStatement(config_name=config_name, config_value=config_value)
+        config = cls.parse_config_string_expression(scanner)
+        return node.ASTSetStatement(config=config)
 
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: Union[TokenScanner, str]
