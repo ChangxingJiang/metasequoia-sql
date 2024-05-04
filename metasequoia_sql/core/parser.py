@@ -225,6 +225,7 @@ class SQLParser:
 
     @classmethod
     def parse_column_name_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                     unary_operator: Optional[Tuple[node.ASTComputeOperator]],
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTColumnName:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -233,12 +234,18 @@ class SQLParser:
             table_name = scanner.pop_as_source()
             scanner.pop()
             column_name = scanner.pop_as_source()
-            return node.ASTColumnName(table_name=unify_name(table_name),
-                                      column_name=unify_name(column_name))
+            return node.ASTColumnName(
+                unary_operator=unary_operator,
+                table_name=unify_name(table_name),
+                column_name=unify_name(column_name)
+            )
         if (scanner.search(AMTMark.NAME)
                 and not scanner.search(AMTMark.NAME, ".")
                 and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS)):
-            return node.ASTColumnName(column_name=unify_name(scanner.pop_as_source()))
+            return node.ASTColumnName(
+                unary_operator=unary_operator,
+                column_name=unify_name(scanner.pop_as_source())
+            )
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
@@ -291,18 +298,11 @@ class SQLParser:
 
     @classmethod
     def parse_literal_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                 unary_operator: Optional[Tuple[node.ASTComputeOperator]],
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLiteralExpression:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        token = scanner.pop()
-        if token.equals("-"):
-            if scanner.search(AMTMark.LITERAL_INT) or scanner.search(AMTMark.LITERAL_FLOAT):
-                next_token = scanner.pop()
-                return node.ASTLiteralExpression(value=f"-{next_token.source}")
-            raise SqlParseError(f"在 - 之后不是整型或浮点型: {scanner}")
-        if isinstance(token, AMTSingle):
-            return node.ASTLiteralExpression(value=token.source)
-        raise SqlParseError(f"未知的字面值: {token}")
+        return node.ASTLiteralExpression(unary_operator=unary_operator, value=scanner.pop_as_source())
 
     @classmethod
     def parse_window_row_item(cls, scanner_or_string: Union[TokenScanner, str],
@@ -344,6 +344,7 @@ class SQLParser:
 
     @classmethod
     def parse_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                  unary_operator: Optional[Tuple[node.ASTComputeOperator]],
                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWildcardExpression:
         """解析通配符表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -353,7 +354,7 @@ class SQLParser:
             schema_name = scanner.pop_as_source()
             scanner.pop()
             scanner.pop()
-            return node.ASTWildcardExpression(table_name=schema_name)
+            return node.ASTWildcardExpression(unary_operator=unary_operator, table_name=schema_name)
         raise SqlParseError("无法解析为通配符表达式")
 
     @classmethod
@@ -498,7 +499,10 @@ class SQLParser:
 
     @classmethod
     def parse_function_expression_maybe_with_array_index(
-            cls, scanner_or_string: Union[TokenScanner, str], sql_type: SQLType = SQLType.DEFAULT
+            cls,
+            scanner_or_string: Union[TokenScanner, str],
+            unary_operator: Optional[Tuple[node.ASTComputeOperator]],
+            sql_type: SQLType = SQLType.DEFAULT
     ) -> Union[node.ASTFunctionExpression, node.ASTArrayIndexExpression]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -506,7 +510,11 @@ class SQLParser:
         if scanner.is_finish or not scanner.search(AMTMark.ARRAY_INDEX):
             return array_expression
         idx = int(scanner.pop_as_source().lstrip("[").rstrip("]"))
-        return node.ASTArrayIndexExpression(array=array_expression, idx=idx)
+        return node.ASTArrayIndexExpression(
+            unary_operator=unary_operator,
+            array=array_expression,
+            idx=idx
+        )
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
@@ -514,7 +522,7 @@ class SQLParser:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
-            return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+            return cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
         return cls.parse_value_expression(scanner, sql_type=sql_type)
 
     @classmethod
@@ -527,10 +535,13 @@ class SQLParser:
 
     @classmethod
     def parse_window_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                unary_operator: Optional[Tuple[node.ASTComputeOperator]],
                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWindowExpression:
         """解析窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        window_function = cls.parse_function_expression_maybe_with_array_index(scanner, sql_type=sql_type)
+        window_function = cls.parse_function_expression_maybe_with_array_index(scanner,
+                                                                               unary_operator=None,
+                                                                               sql_type=sql_type)
         partition_by_columns = []
         order_by_columns = []
         row_expression = None
@@ -549,7 +560,8 @@ class SQLParser:
         if parenthesis_scanner.search("ROWS", "BETWEEN"):
             row_expression = cls.parse_window_row(parenthesis_scanner, sql_type=sql_type)
         parenthesis_scanner.close()
-        return node.ASTWindowExpression(window_function=window_function,
+        return node.ASTWindowExpression(unary_operator=unary_operator,
+                                        window_function=window_function,
                                         partition_by_columns=tuple(partition_by_columns),
                                         order_by_columns=tuple(order_by_columns),
                                         row_expression=row_expression)
@@ -562,7 +574,9 @@ class SQLParser:
         return scanner.search("CASE")
 
     @classmethod
-    def parse_case_expression(cls, scanner_or_string: Union[TokenScanner, str], sql_type: SQLType = SQLType.DEFAULT
+    def parse_case_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                              unary_operator: Optional[Tuple[node.ASTComputeOperator]],
+                              sql_type: SQLType = SQLType.DEFAULT
                               ) -> Union[node.ASTCaseConditionExpression, node.ASTCaseValueExpression]:
         """解析 CASE 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -579,7 +593,12 @@ class SQLParser:
             if scanner.search_and_move("ELSE"):
                 else_value = cls.parse_polynomial_expression(scanner)
             scanner.match("END")
-            return node.ASTCaseConditionExpression(cases=tuple(cases), else_value=else_value)
+            return node.ASTCaseConditionExpression(
+                unary_operator=unary_operator,
+                cases=tuple(cases),
+                else_value=else_value
+            )
+
         # 第 2 种格式的 CASE 表达式
         case_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         cases = []
@@ -592,7 +611,12 @@ class SQLParser:
         if scanner.search_and_move("ELSE"):
             else_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         scanner.match("END")
-        return node.ASTCaseValueExpression(case_value=case_value, cases=tuple(cases), else_value=else_value)
+        return node.ASTCaseValueExpression(
+            unary_operator=unary_operator,
+            case_value=case_value,
+            cases=tuple(cases),
+            else_value=else_value
+        )
 
     @classmethod
     def check_sub_query_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
@@ -607,12 +631,15 @@ class SQLParser:
 
     @classmethod
     def parse_sub_query_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                   unary_operator: Optional[Tuple[node.ASTComputeOperator]],
                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSubQueryExpression:
         """解析子查询表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         parenthesis_scanner = scanner.pop_as_children_scanner()
         result = node.ASTSubQueryExpression(
-            statement=cls.parse_select_statement(parenthesis_scanner, sql_type=sql_type))
+            unary_operator=unary_operator,
+            statement=cls.parse_select_statement(parenthesis_scanner, sql_type=sql_type)
+        )
         parenthesis_scanner.close()
         return result
 
@@ -629,13 +656,15 @@ class SQLParser:
 
     @classmethod
     def parse_parenthesis_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                     unary_operator: Optional[Tuple[node.ASTComputeOperator]],
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTParenthesisExpression:
         """解析插入语表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):  # 子查询的情况
-            return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+            return cls.parse_sub_query_expression(scanner, unary_operator=unary_operator, sql_type=sql_type)
         parenthesis_scanner = scanner.pop_as_children_scanner()
         result = node.ASTSubGeneralExpression(
+            unary_operator=unary_operator,
             expression=cls.parse_general_expression(parenthesis_scanner, sql_type=sql_type)
         )
         parenthesis_scanner.close()
@@ -648,20 +677,28 @@ class SQLParser:
         # pylint: disable=R0911
         """解析单项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+
+        # 解析一元运算符（允许连续使用多个一元运算符）
+        unary_operator = []
+        while scanner.search("-") or scanner.search("+"):
+            unary_operator.append(cls.parse_compute_operator(scanner))
+
         if cls.check_case_expression(scanner, sql_type=sql_type):
-            return cls.parse_case_expression(scanner, sql_type=sql_type)
+            return cls.parse_case_expression(scanner, unary_operator=tuple(unary_operator), sql_type=sql_type)
         if maybe_window is True and cls.check_window_expression(scanner, sql_type=sql_type):
-            return cls.parse_window_expression(scanner, sql_type=sql_type)
+            return cls.parse_window_expression(scanner, unary_operator=tuple(unary_operator), sql_type=sql_type)
         if cls.check_function_expression(scanner, sql_type=sql_type):
-            return cls.parse_function_expression_maybe_with_array_index(scanner, sql_type=sql_type)
+            return cls.parse_function_expression_maybe_with_array_index(scanner,
+                                                                        unary_operator=tuple(unary_operator),
+                                                                        sql_type=sql_type)
         if cls.check_literal_expression(scanner, sql_type=sql_type):
-            return cls.parse_literal_expression(scanner, sql_type=sql_type)
+            return cls.parse_literal_expression(scanner, unary_operator=tuple(unary_operator), sql_type=sql_type)
         if cls.check_column_name_expression(scanner, sql_type=sql_type):
-            return cls.parse_column_name_expression(scanner, sql_type=sql_type)
+            return cls.parse_column_name_expression(scanner, unary_operator=tuple(unary_operator), sql_type=sql_type)
         if cls.check_wildcard_expression(scanner, sql_type=sql_type):
-            return cls.parse_wildcard_expression(scanner, sql_type=sql_type)
+            return cls.parse_wildcard_expression(scanner, unary_operator=tuple(unary_operator), sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):
-            return cls.parse_parenthesis_expression(scanner, sql_type=sql_type)
+            return cls.parse_parenthesis_expression(scanner, unary_operator=tuple(unary_operator), sql_type=sql_type)
         raise SqlParseError(f"未知的一般表达式元素: {scanner}")
 
     @classmethod
@@ -688,7 +725,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
         if scanner.search_and_move("EXISTS"):
-            after_value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+            after_value = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
             return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
         before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
@@ -778,7 +815,7 @@ class SQLParser:
         """解析表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
-            table_name_expression = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+            table_name_expression = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
         else:
             table_name_expression = cls.parse_table_name_expression(scanner, sql_type=sql_type)
         alias_expression = (cls.parse_alias_expression(scanner, sql_type=sql_type)
@@ -1032,12 +1069,12 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if not scanner.search_and_move("LIMIT"):
             raise SqlParseError("无法解析为 LIMIT 子句")
-        cnt_1 = cls.parse_literal_expression(scanner, sql_type=sql_type).as_int()
+        cnt_1 = cls.parse_literal_expression(scanner, unary_operator=None, sql_type=sql_type).as_int()
         if scanner.search_and_move(","):
             offset_int = cnt_1
-            limit_int = cls.parse_literal_expression(scanner, sql_type=sql_type).as_int()
+            limit_int = cls.parse_literal_expression(scanner, unary_operator=None, sql_type=sql_type).as_int()
         elif scanner.search_and_move("OFFSET"):
-            offset_int = cls.parse_literal_expression(scanner, sql_type=sql_type).as_int()
+            offset_int = cls.parse_literal_expression(scanner, unary_operator=None, sql_type=sql_type).as_int()
             limit_int = cnt_1
         else:
             raise SqlParseError("无法解析为 LIMIT 子句")
@@ -1482,7 +1519,7 @@ class SQLParser:
         if scanner.search(AMTMark.PARENTHESIS):
             columns = []
             for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-                columns.append(cls.parse_column_name_expression(column_scanner, sql_type=sql_type))
+                columns.append(cls.parse_column_name_expression(column_scanner, unary_operator=None, sql_type=sql_type))
                 column_scanner.close()
         else:
             columns = None

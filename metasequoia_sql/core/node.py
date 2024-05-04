@@ -215,6 +215,14 @@ class ASTMonomialExpressionBase(ASTPolynomialExpressionBase, abc.ABC):
     3. 插入语虽然下一层为一般表达式，但是在上一层视作单项表达式
     """
 
+    unary_operator: Optional[Tuple["ASTComputeOperator", ...]] = dataclasses.field(kw_only=True, default=None)  # 一元运算符
+
+    def _get_unary_operator_str(self, sql_type: SQLType = SQLType.DEFAULT):
+        if self.unary_operator is not None:
+            return "".join(operator.source(sql_type) for operator in self.unary_operator)
+        else:
+            return ""
+
 
 # ---------------------------------------- 插入类型 ----------------------------------------
 
