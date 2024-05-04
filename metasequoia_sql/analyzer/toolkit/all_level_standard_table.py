@@ -19,8 +19,8 @@ class AllUsedQuoteTables(AnalyzerRecursionASTToListBase):
     @classmethod
     def handle(cls, node: Union[core.ASTBase, tuple]) -> List[StandardTable]:
         """自定义的处理规则"""
-        if isinstance(node, core.ASTTableNameExpression):
-            return [StandardTable(schema_name=node.schema, table_name=node.table)]
+        if isinstance(node, core.ASTTableName):
+            return [StandardTable(schema_name=node.schema_name, table_name=node.table_name)]
         return cls.default_handle_node(node)
 
 

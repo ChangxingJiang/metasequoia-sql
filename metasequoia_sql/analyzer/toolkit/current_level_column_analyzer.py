@@ -40,7 +40,7 @@ class CurrentLevelColumnAliasToQuoteHash(AnalyzerSelectASTToDictBase):
         for column in node.select_clause.columns:
             if column.alias is not None:
                 alias_name = QuoteColumn(column_name=column.alias.name)
-                result[alias_name] = CurrentNodeUsedQuoteColumn.handle(column.column_value)
+                result[alias_name] = CurrentNodeUsedQuoteColumn.handle(column.value)
         return result
 
 
@@ -59,7 +59,7 @@ class CurrentLevelColumnIndexToQuoteHash(AnalyzerSelectASTToDictBase):
         result = {}
         for column_index, column in enumerate(node.select_clause.columns):
             quote_column = QuoteColumn(column_name=None, column_idx=column_index + 1)
-            result[quote_column] = CurrentNodeUsedQuoteColumn.handle(column.column_value)
+            result[quote_column] = CurrentNodeUsedQuoteColumn.handle(column.value)
         return result
 
 
@@ -167,13 +167,13 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectASTToDictBase):
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:
                 select_column = StandardColumn(column_name=column_expression.alias.name, column_idx=column_idx)
-            elif isinstance(column_expression.column_value, core.ASTColumnNameExpression):
-                select_column = StandardColumn(column_name=column_expression.column_value.column_name,
+            elif isinstance(column_expression.value, core.ASTColumnName):
+                select_column = StandardColumn(column_name=column_expression.value.column_name,
                                                column_idx=column_idx)
             else:
-                select_column = StandardColumn(column_name=column_expression.column_value.source(),
+                select_column = StandardColumn(column_name=column_expression.value.source(),
                                                column_idx=column_idx)
-            result[select_column] = CurrentNodeUsedQuoteColumn.handle(column_expression.column_value)
+            result[select_column] = CurrentNodeUsedQuoteColumn.handle(column_expression.value)
         return result
 
     @classmethod

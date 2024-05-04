@@ -186,7 +186,7 @@ class SQLParser:
                     and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS)))
 
     @classmethod
-    def parse_column_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnNameExpression:
+    def parse_column_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnName:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if (scanner.search(AMTMark.NAME, ".", AMTMark.NAME) and
@@ -194,51 +194,51 @@ class SQLParser:
             table_name = scanner.pop_as_source()
             scanner.pop()
             column_name = scanner.pop_as_source()
-            return node.ASTColumnNameExpression(table_name=unify_name(table_name),
-                                                column_name=unify_name(column_name))
+            return node.ASTColumnName(table_name=unify_name(table_name),
+                                      column_name=unify_name(column_name))
         if (scanner.search(AMTMark.NAME)
                 and not scanner.search(AMTMark.NAME, ".")
                 and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS)):
-            return node.ASTColumnNameExpression(column_name=unify_name(scanner.pop_as_source()))
+            return node.ASTColumnName(column_name=unify_name(scanner.pop_as_source()))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
-    def parse_table_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTTableNameExpression:
+    def parse_table_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTTableName:
         """解析表名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
-            return node.ASTTableNameExpression(schema=unify_name(schema_name), table=unify_name(table_name))
+            return node.ASTTableName(schema_name=unify_name(schema_name), table_name=unify_name(table_name))
         if scanner.search(AMTMark.NAME):
             name_source = scanner.pop_as_source()
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
             else:
                 schema_name, table_name = None, name_source
-            return node.ASTTableNameExpression(schema=unify_name(schema_name), table=unify_name(table_name))
+            return node.ASTTableName(schema_name=unify_name(schema_name), table_name=unify_name(table_name))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
     def parse_function_name_expression(cls, scanner_or_string: Union[TokenScanner, str]
-                                       ) -> node.ASTFunctionNameExpression:
+                                       ) -> node.ASTFunctionName:
         """解析函数名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
-            return node.ASTFunctionNameExpression(schema_name=unify_name(schema_name),
-                                                  function_name=unify_name(table_name))
+            return node.ASTFunctionName(schema_name=unify_name(schema_name),
+                                        function_name=unify_name(table_name))
         if scanner.search(AMTMark.NAME):
             name_source = scanner.pop_as_source()
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
             else:
                 schema_name, table_name = None, name_source
-            return node.ASTFunctionNameExpression(schema_name=unify_name(schema_name),
-                                                  function_name=unify_name(table_name))
+            return node.ASTFunctionName(schema_name=unify_name(schema_name),
+                                        function_name=unify_name(table_name))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
@@ -373,7 +373,7 @@ class SQLParser:
         else:
             cast_params = None
         scanner.close()
-        cast_data_type = node.ASTCastDataType(signed=signed, type_enum=cast_type, params=cast_params)
+        cast_data_type = node.ASTCastDataType(signed=signed, type=cast_type, params=cast_params)
         return node.ASTCastFunctionExpression(column_expression=column_expression, cast_type=cast_data_type)
 
     @classmethod
@@ -390,7 +390,7 @@ class SQLParser:
             else:
                 function_params.append(cls.parse_general_expression(param_scanner))
             param_scanner.close()
-        return node.ASTNormalFunctionExpression(name=node.ASTFunctionNameExpression(function_name="IF"),
+        return node.ASTNormalFunctionExpression(name=node.ASTFunctionName(function_name="IF"),
                                                 params=tuple(function_params))
 
     @classmethod
@@ -447,7 +447,7 @@ class SQLParser:
         if scanner.is_finish or not scanner.search(AMTMark.ARRAY_INDEX):
             return array_expression
         idx = int(scanner.pop_as_source().lstrip("[").rstrip("]"))
-        return node.ASTArrayIndexExpression(array_expression=array_expression, idx=idx)
+        return node.ASTArrayIndexExpression(array=array_expression, idx=idx)
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTExpressionBase:
@@ -594,7 +594,7 @@ class SQLParser:
         """解析子查询表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        result = node.ASTSubQueryExpression(select_statement=cls.parse_select_statement(parenthesis_scanner))
+        result = node.ASTSubQueryExpression(statement=cls.parse_select_statement(parenthesis_scanner))
         parenthesis_scanner.close()
         return result
 
@@ -695,7 +695,7 @@ class SQLParser:
         else:
             table_name_expression = cls.parse_table_name_expression(scanner)
         alias_expression = cls.parse_alias_expression(scanner) if cls.check_alias_expression(scanner) else None
-        return node.ASTTableExpression(table=table_name_expression, alias=alias_expression)
+        return node.ASTTableExpression(name=table_name_expression, alias=alias_expression)
 
     @classmethod
     def parse_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnExpression:
@@ -703,7 +703,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string)
         general_expression = cls.parse_general_expression(scanner)
         alias_expression = cls.parse_alias_expression(scanner) if cls.check_alias_expression(scanner) else None
-        return node.ASTColumnExpression(column_value=general_expression, alias=alias_expression)
+        return node.ASTColumnExpression(value=general_expression, alias=alias_expression)
 
     @classmethod
     def check_select_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -770,7 +770,7 @@ class SQLParser:
             join_rule = cls.parse_join_expression(scanner)
         else:
             join_rule = None
-        return node.ASTJoinClause(join_type=join_type, table=table_expression, join_rule=join_rule)
+        return node.ASTJoinClause(type=join_type, table=table_expression, rule=join_rule)
 
     @classmethod
     def check_where_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:
@@ -889,7 +889,7 @@ class SQLParser:
         parenthesis_scanner = scanner.pop_as_children_scanner()
         table_statement = cls.parse_select_statement(parenthesis_scanner, with_clause=node.ASTWithClause.empty())
         parenthesis_scanner.close()
-        return node.ASTWithTable(table_name=table_name, statement=table_statement)
+        return node.ASTWithTable(name=table_name, statement=table_statement)
 
     @classmethod
     def parse_with_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> Optional[node.ASTWithClause]:
@@ -991,7 +991,7 @@ class SQLParser:
         config_name = cls._get_config_name_expression(scanner)
         scanner.match("=")
         config_value = scanner.pop_as_source()
-        return node.ASTConfigStringExpression(config_name=config_name, config_value=config_value)
+        return node.ASTConfigStringExpression(name=config_name, value=config_value)
 
     @classmethod
     def parse_column_type_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnTypeExpression:
@@ -1034,7 +1034,7 @@ class SQLParser:
         for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             partition_list.append(cls.parse_equal_expression(partition_scanner))
             partition_scanner.close()
-        return node.ASTPartitionExpression(partition_list=tuple(partition_list))
+        return node.ASTPartitionExpression(partitions=tuple(partition_list))
 
     @classmethod
     def check_foreign_key_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> bool:

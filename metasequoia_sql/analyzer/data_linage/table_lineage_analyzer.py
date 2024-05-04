@@ -105,7 +105,7 @@ class TableLineageAnalyzer:
                 from_table_lineage = table_lineage_storage.get_table_lineage(from_standard_table)
                 for source_table in from_table_lineage.get_standard_table_list():
                     source_column_list.append(SourceColumn(schema_name=source_table.schema_name,
-                                                           table_name=source_table.table_name,
+                                                           table_name=source_table.name,
                                                            column_name=None))
             return source_column_list
 
@@ -132,15 +132,15 @@ class TableLineageAnalyzer:
     def get_insert_table_lineage(self, insert_statement: core.ASTInsertSelectStatement) -> InsertTableLineage:
         """获取 INSERT 语句中的表数据血缘对象"""
         if insert_statement.columns is not None:
-            insert_columns = [SourceColumn(schema_name=insert_statement.table_name.schema,
-                                           table_name=insert_statement.table_name.table,
+            insert_columns = [SourceColumn(schema_name=insert_statement.table_name.schema_name,
+                                           table_name=insert_statement.table_name.table_name,
                                            column_name=column.column_name)
                               for column in insert_statement.columns]
         else:
             full_table_name = insert_statement.table_name.source()
             create_table_statement = self._create_table_statement_getter.get_statement(full_table_name)
-            insert_columns = [SourceColumn(schema_name=insert_statement.table_name.schema,
-                                           table_name=insert_statement.table_name.table,
+            insert_columns = [SourceColumn(schema_name=insert_statement.table_name.schema_name,
+                                           table_name=insert_statement.table_name.table_name,
                                            column_name=column.column_name)
                               for column in create_table_statement.columns]
 
@@ -214,10 +214,10 @@ class TableLineageAnalyzer:
             if column.alias is not None:  # 有别名的情况（此时一定不是通配符）
                 standard_column = StandardColumn(column_name=column.alias.name, column_idx=column_idx)
                 column_idx += 1
-                result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.column_value)))
-            elif isinstance(column.column_value, core.ASTWildcardExpression):  # 通配符的情况
-                if column.column_value.table_name is not None:  # 有表名的通配符
-                    standard_table = table_name_analyzer.get_standard_table(column.column_value.table_name)
+                result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.value)))
+            elif isinstance(column.value, core.ASTWildcardExpression):  # 通配符的情况
+                if column.value.table_name is not None:  # 有表名的通配符
+                    standard_table = table_name_analyzer.get_standard_table(column.value.table_name)
                     table_lineage = table_lineage_storage.get_table_lineage(standard_table)
                     for from_standard_column in table_lineage.get_all_standard_columns():
                         standard_column = StandardColumn(column_name=from_standard_column.column_name,
@@ -236,17 +236,17 @@ class TableLineageAnalyzer:
                             quote_column = QuoteColumn(table_name=standard_table.table_name,
                                                        column_name=from_standard_column.column_name)
                             result.append((standard_column, [quote_column]))
-            elif isinstance(column.column_value, core.ASTColumnNameExpression):  # 直接使用字段的情况
-                standard_column = StandardColumn(column_name=column.column_value.column_name, column_idx=column_idx)
+            elif isinstance(column.value, core.ASTColumnName):  # 直接使用字段的情况
+                standard_column = StandardColumn(column_name=column.value.column_name, column_idx=column_idx)
                 column_idx += 1
-                quote_column = QuoteColumn(table_name=column.column_value.table_name,
-                                           column_name=column.column_value.column_name)
+                quote_column = QuoteColumn(table_name=column.value.table_name,
+                                           column_name=column.value.column_name)
                 result.append((standard_column, [quote_column]))
             else:  # 不是字段名的情况（此时一定不是通配符）
-                standard_column = StandardColumn(column_name=column.column_value.source(),
+                standard_column = StandardColumn(column_name=column.value.source(),
                                                  column_idx=column_idx)
                 column_idx += 1
-                result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.column_value)))
+                result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.value)))
         return result
 
     def get_lateral_view_clause_column_name_to_quote_columns(

@@ -49,8 +49,8 @@ class SelectTableLineage:
     def by_create_table_statement(ast: ASTCreateTableStatement):
         """使用 CREATE TABLE 表达式对象实例化"""
         data_lineage = []
-        schema_name = ast.table_name.schema if ast.table_name.schema is not None else ""
-        table_name = ast.table_name.table
+        schema_name = ast.table_name.schema_name if ast.table_name.schema_name is not None else ""
+        table_name = ast.table_name.table_name
         for column_idx, column_expression in enumerate(ast.columns):
             column_name = column_expression.column_name
             select_column = node.StandardColumn(column_idx=column_idx, column_name=column_name)
