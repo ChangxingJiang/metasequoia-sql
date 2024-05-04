@@ -47,6 +47,7 @@ __all__ = [
     "ASTMultiAlisaExpression",  # 多个别名表达式
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
+    "ASTOrderByItem",  # ORDER BY 子句元素：排序字段及排序顺序的组合
     "ASTFunctionExpression",  # 函数表达式：函数表达式的抽象类
     "ASTNormalFunctionExpression",  # 函数表达式：普通函数表达式
     "ASTAggregationFunctionExpression",  # 函数表达式：聚集函数表达式
@@ -86,7 +87,6 @@ __all__ = [
     "ASTGroupingSetsGroupByClause",  # GROUP BY 子句：使用 GROUPING SETS 的 GROUP BY 子句
     "ASTHavingClause",  # HAVING 子句
     "ASTOrderByClause",  # ORDER BY 子句
-    "ASTOrderByItem",  # ORDER BY 子句元素：排序字段及排序顺序的组合
     "ASTLimitClause",  # LIMIT 子句
     "ASTWithClause",  # WITH 子句
     "ASTWithTable",  # WITH 子句元素：WITH 语句中的每个表
@@ -559,6 +559,23 @@ class ASTMultiAlisaExpression(ASTBase):
         return f"AS {names_str}"
 
 
+# ---------------------------------------- ORDER BY 子句元素：排序字段及排序顺序的组合 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTOrderByItem(ASTBase):
+    """ORDER BY 子句中每一个字段及排序顺序的节点"""
+
+    column: ASTExpressionBase = dataclasses.field(kw_only=True)  # 排序字段
+    order: ASTOrderType = dataclasses.field(kw_only=True)  # 排序类型
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        if self.order.source(sql_type) == "ASC":
+            return self.column.source(sql_type)
+        return f"{self.column.source(sql_type)} DESC"
+
+
 # ---------------------------------------- 函数表达式 ----------------------------------------
 
 
@@ -747,7 +764,7 @@ class ASTWindowExpression(ASTExpressionBase):
 
     window_function: Union[ASTNormalFunctionExpression, ASTArrayIndexExpression] = dataclasses.field(kw_only=True)
     partition_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
-    order_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+    order_by_columns: Tuple[ASTOrderByItem, ...] = dataclasses.field(kw_only=True)
     row_expression: Optional[ASTWindowRow] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1082,20 +1099,6 @@ class ASTHavingClause(ASTBase):
 
 
 # ---------------------------------------- ORDER BY 子句 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderByItem(ASTBase):
-    """ORDER BY 子句中每一个字段及排序顺序的节点"""
-
-    column: ASTExpressionBase = dataclasses.field(kw_only=True)  # 排序字段
-    order: ASTOrderType = dataclasses.field(kw_only=True)  # 排序类型
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.order.source(sql_type) == "ASC":
-            return self.column.source(sql_type)
-        return f"{self.column.source(sql_type)} DESC"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

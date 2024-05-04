@@ -512,7 +512,6 @@ class SQLParser:
     def parse_window_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowExpression:
         """解析窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        print("WINDOW:", scanner)
         window_function = cls.parse_function_expression_maybe_with_array_index(scanner)
         partition_by_columns = []
         order_by_columns = []
@@ -524,9 +523,9 @@ class SQLParser:
             while parenthesis_scanner.search_and_move(","):
                 partition_by_columns.append(cls.parse_general_expression(parenthesis_scanner, maybe_window=False))
         if parenthesis_scanner.search_and_move("ORDER", "BY"):
-            order_by_columns = [cls.parse_general_expression(parenthesis_scanner, maybe_window=False)]
+            order_by_columns = [cls._parse_order_by_item(parenthesis_scanner)]
             while parenthesis_scanner.search_and_move(","):
-                order_by_columns.append(cls.parse_general_expression(parenthesis_scanner, maybe_window=False))
+                order_by_columns.append(cls._parse_order_by_item(parenthesis_scanner))
         if parenthesis_scanner.search("ROWS", "BETWEEN"):
             row_expression = cls.parse_window_row(parenthesis_scanner)
         parenthesis_scanner.close()
@@ -637,7 +636,6 @@ class SQLParser:
         # pylint: disable=R0911
         """解析一般表达式中的一个元素"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        print("GENERAL: ", scanner)
         if cls.check_case_expression(scanner):
             return cls.parse_case_expression(scanner)
         if maybe_window is True and cls.check_window_expression(scanner):
@@ -714,7 +712,6 @@ class SQLParser:
     def parse_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnExpression:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        print("COLUMN:", scanner)
         general_expression = cls.parse_general_expression(scanner)
         alias_expression = cls.parse_alias_expression(scanner) if cls.check_alias_expression(scanner) else None
         return node.ASTColumnExpression(value=general_expression, alias=alias_expression)
@@ -855,19 +852,20 @@ class SQLParser:
         return scanner.search("ORDER", "BY")
 
     @classmethod
+    def _parse_order_by_item(cls, scanner: TokenScanner) -> node.ASTOrderByItem:
+        column = cls.parse_general_expression(scanner)
+        order = cls.parse_order_type(scanner)
+        return node.ASTOrderByItem(column=column, order=order)
+
+    @classmethod
     def parse_order_by_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTOrderByClause:
         """解析 ORDER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
 
-        def parse_single():
-            column = cls.parse_general_expression(scanner)
-            order = cls.parse_order_type(scanner)
-            return node.ASTOrderByItem(column=column, order=order)
-
         scanner.match("ORDER", "BY")
-        columns = [parse_single()]
+        columns = [cls._parse_order_by_item(scanner)]
         while scanner.search_and_move(","):
-            columns.append(parse_single())
+            columns.append(cls._parse_order_by_item(scanner))
 
         return node.ASTOrderByClause(columns=tuple(columns))
 
@@ -941,7 +939,6 @@ class SQLParser:
 
         """
         scanner = cls._unify_input_scanner(scanner_or_string)
-        print("SELECT SINGLE: ", scanner)
         if with_clause is None:
             with_clause = cls.parse_with_clause(scanner)
         select_clause = cls.parse_select_clause(scanner)
@@ -976,7 +973,6 @@ class SQLParser:
                                ) -> node.ASTSelectStatement:
         """解析 SELECT 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        print("SELECT: ", scanner)
         if with_clause is None:
             with_clause = cls.parse_with_clause(scanner)
         result = [cls.parse_single_select_statement(scanner, with_clause=with_clause)]
