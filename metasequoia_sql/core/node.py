@@ -13,7 +13,7 @@ TODO 尽可能移除固定数量的元组
 import abc
 import dataclasses
 import enum
-from typing import Optional, Tuple, Union, Set, Dict
+from typing import Optional, Tuple, Union, Dict
 
 from metasequoia_sql.common.basic import is_int_literal
 from metasequoia_sql.core.sql_type import SQLType
@@ -65,7 +65,9 @@ __all__ = [
     "ASTWindowExpression",  # 窗口表达式
     "ASTConditionExpression",  # 条件表达式
     "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
+    "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
+    "ASTCaseValueItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTSubQueryExpression",  # 子查询表达式
     "ASTComputeExpression",  # 计算表达式
 
@@ -85,8 +87,10 @@ __all__ = [
     "ASTGroupingSetsGroupByClause",  # GROUP BY 子句：使用 GROUPING SETS 的 GROUP BY 子句
     "ASTHavingClause",  # HAVING 子句
     "ASTOrderByClause",  # ORDER BY 子句
+    "ASTOrderByItem",  # ORDER BY 子句元素：排序字段及排序顺序的组合
     "ASTLimitClause",  # LIMIT 子句
     "ASTWithClause",  # WITH 子句
+    "ASTWithTable",  # WITH 子句元素：WITH 语句中的每个表
     "ASTSelectStatement",  # SELECT 语句的抽象类
     "ASTSingleSelectStatement",  # SELECT 语句：没有 UNION 多个 SELECT 语句的 SELECT 语句
     "ASTUnionSelectStatement",  # SELECT 语句：UNION 了多个 SELECT 语句的组合后的 SELECT 语句
@@ -1110,10 +1114,22 @@ class ASTLimitClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTWithTable(ASTBase):
+    """WITH 子句中的表元素"""
+
+    table_name: str = dataclasses.field(kw_only=True)
+    statement: "ASTSelectStatement" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.table_name}({self.statement.source(sql_type)})"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTWithClause(ASTBase):
     """WITH 子句"""
 
-    tables: Tuple[Tuple[str, "ASTSelectStatement"], ...] = dataclasses.field(kw_only=True)
+    tables: Tuple[ASTWithTable, ...] = dataclasses.field(kw_only=True)
 
     @staticmethod
     def empty():
@@ -1124,13 +1140,8 @@ class ASTWithClause(ASTBase):
         """返回语法节点的 SQL 源码"""
         if not self.tables:
             return ""
-        table_str = ", \n".join(f"{table_name}({table_statement.source(sql_type)})"
-                                for table_name, table_statement in self.tables)
+        table_str = ", \n".join(table.source(sql_type) for table in self.tables)
         return f"WITH {table_str}"
-
-    def get_with_table_name_set(self) -> Set[str]:
-        """获取 WITH 中临时表的名称"""
-        return set(table[0] for table in self.tables)
 
     def is_empty(self):
         """返回 WITH 语句是否为空"""

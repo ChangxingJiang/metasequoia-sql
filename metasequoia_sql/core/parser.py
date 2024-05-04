@@ -881,8 +881,7 @@ class SQLParser:
         return node.ASTLimitClause(limit=limit_int, offset=offset_int)
 
     @classmethod
-    def _parse_single_with_table(cls, scanner_or_string: Union[TokenScanner, str]
-                                 ) -> Tuple[str, node.ASTSelectStatement]:
+    def _parse_single_with_table(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWithTable:
         """解析一个 WITH 临时表"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         table_name = unify_name(scanner.pop_as_source())
@@ -890,7 +889,7 @@ class SQLParser:
         parenthesis_scanner = scanner.pop_as_children_scanner()
         table_statement = cls.parse_select_statement(parenthesis_scanner, with_clause=node.ASTWithClause.empty())
         parenthesis_scanner.close()
-        return table_name, table_statement
+        return node.ASTWithTable(table_name=table_name, statement=table_statement)
 
     @classmethod
     def parse_with_clause(cls, scanner_or_string: Union[TokenScanner, str]) -> Optional[node.ASTWithClause]:
