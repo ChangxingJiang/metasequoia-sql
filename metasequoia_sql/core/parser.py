@@ -1667,6 +1667,32 @@ class SQLParser:
         return node.ASTDropTableStatement(if_exists=if_exists, table_name=table_name)
 
     @classmethod
+    def parse_analyze_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAnalyzeTableStatement:
+        """解析 ANALYZE TABLE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("ANALYZE", "TABLE")
+        table_name = cls.parse_table_name_expression(scanner, sql_type=sql_type)
+
+        if cls.check_partition_expression(scanner, sql_type=sql_type):
+            partition = cls.parse_partition_expression(scanner, sql_type=sql_type)
+        else:
+            partition = None
+
+        scanner.search_and_move("COMPUTE", "STATISTICS")  # [Hive]
+        for_columns = scanner.search_and_move("FOR", "COLUMNS")  # [Hive]
+        cache_metadata = scanner.search_and_move("CACHE", "METADATA")  # [Hive]
+        noscan = scanner.search_and_move("NOSCAN")  # [Hive]
+
+        return node.ASTAnalyzeTableStatement(
+            table_name=table_name,
+            partition=partition,
+            for_columns=for_columns,
+            cache_metadata=cache_metadata,
+            noscan=noscan
+        )
+
+    @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
                          sql_type: SQLType = SQLType.DEFAULT) -> List[node.ASTStatementBase]:
         """解析一段 SQL 语句，返回表达式的列表"""
@@ -1688,6 +1714,12 @@ class SQLParser:
             # 解析 CREATE TABLE 语句
             if statement_scanner.search("CREATE", "TABLE"):
                 statement_list.append(cls.parse_create_table_statement(statement_scanner, sql_type=sql_type))
+                statement_scanner.close()
+                continue
+
+            # 解析 ANALYZE TABLE 语句
+            if statement_scanner.search("ANALYZE", "TABLE"):
+                statement_list.append(cls.parse_analyze_table_statement(statement_scanner, sql_type=sql_type))
                 statement_scanner.close()
                 continue
 

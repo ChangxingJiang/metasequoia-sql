@@ -124,6 +124,9 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 SET 语句节点 ------------------------------
     "ASTSetStatement",  # SET 语句
+
+    # ------------------------------ 抽象语法树（AST）节点的 ANALYZE TABLE 语句节点 ------------------------------
+    "ASTAnalyzeTableStatement",  # ANALYZE TABLE 语句
 ]
 
 
@@ -1718,10 +1721,34 @@ class ASTDropTableStatement(ASTStatementBase):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSetStatement(ASTStatementBase):
-    """SQL 语句"""
+    """SET 语句"""
 
     config: ASTConfigStringExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"SET {self.config.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAnalyzeTableStatement(ASTStatementBase):
+    """ANALYZE TABLE 语句"""
+
+    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True, default=None)
+    for_columns: bool = dataclasses.field(kw_only=True, default=False)  # [Hive]
+    cache_metadata: bool = dataclasses.field(kw_only=True, default=False)  # [Hive]
+    noscan: bool = dataclasses.field(kw_only=True, default=False)  # [Hive]
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        if sql_type == SQLType.HIVE:
+            partition_str = self.partition.source(sql_type) + " " if self.partition is not None else ""
+            for_columns_str = " FOR COLUMNS" if self.for_columns else ""
+            cache_metadata_str = " CACHE METADATA" if self.cache_metadata else ""
+            noscan_str = " NOSCAN" if self.noscan else ""
+            return (f"ANALYZE TABLE {self.table_name.source(sql_type)} {partition_str} "
+                    f"COMPUTE STATISTICS{for_columns_str}{cache_metadata_str}{noscan_str}")
+        if sql_type == SQLType.MYSQL:
+            return f"ANALYZE TABLE {self.table_name.source(sql_type)}"
+        raise UnSupportSqlTypeError(f"ANALYZE TABLE 语句不支持数据类型: {sql_type}")
