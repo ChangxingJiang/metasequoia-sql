@@ -1161,10 +1161,6 @@ class SQLParser:
         while not scanner.is_finish and cls.check_union_type(scanner, sql_type=sql_type):
             result.append(cls.parse_union_type(scanner, sql_type=sql_type))
             result.append(cls.parse_single_select_statement(scanner, with_clause=with_clause, sql_type=sql_type))
-        scanner.search_and_move(";")
-        if not scanner.is_finish:
-            raise SqlParseError(f"没有解析完成: {scanner}")
-
         if len(result) == 1:
             return result[0]
         return node.ASTUnionSelectStatement(with_clause=with_clause, elements=tuple(result))
@@ -1698,44 +1694,39 @@ class SQLParser:
         """解析一段 SQL 语句，返回表达式的列表"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         statement_list = []
-        for statement_scanner in scanner.split_by(";"):
+        while not scanner.is_finish:
             # 解析 SET 语句
-            if statement_scanner.search("SET"):
-                statement_list.append(cls.parse_set_statement(statement_scanner, sql_type=sql_type))
-                statement_scanner.close()
-                continue
+            if scanner.search("SET"):
+                statement_list.append(cls.parse_set_statement(scanner, sql_type=sql_type))
 
             # 解析 DROP TABLE 语句
-            if statement_scanner.search("DROP", "TABLE"):
-                statement_list.append(cls.parse_drop_table_statement(statement_scanner, sql_type=sql_type))
-                statement_scanner.close()
-                continue
+            elif scanner.search("DROP", "TABLE"):
+                statement_list.append(cls.parse_drop_table_statement(scanner, sql_type=sql_type))
 
             # 解析 CREATE TABLE 语句
-            if statement_scanner.search("CREATE", "TABLE"):
-                statement_list.append(cls.parse_create_table_statement(statement_scanner, sql_type=sql_type))
-                statement_scanner.close()
-                continue
+            elif scanner.search("CREATE", "TABLE"):
+                statement_list.append(cls.parse_create_table_statement(scanner, sql_type=sql_type))
 
             # 解析 ANALYZE TABLE 语句
-            if statement_scanner.search("ANALYZE", "TABLE"):
-                statement_list.append(cls.parse_analyze_table_statement(statement_scanner, sql_type=sql_type))
-                statement_scanner.close()
-                continue
+            elif scanner.search("ANALYZE", "TABLE"):
+                statement_list.append(cls.parse_analyze_table_statement(scanner, sql_type=sql_type))
 
-            # 先尝试解析 WITH 语句
-            with_clause = cls.parse_with_clause(statement_scanner, sql_type=sql_type)
-
-            if cls.check_select_statement(statement_scanner, sql_type=sql_type):
-                statement_list.append(cls.parse_select_statement(statement_scanner,
-                                                                 with_clause=with_clause, sql_type=sql_type))
-            elif cls.check_insert_statement(statement_scanner, sql_type=sql_type):
-                statement_list.append(cls.parse_insert_statement(statement_scanner,
-                                                                 with_clause=with_clause, sql_type=sql_type))
             else:
-                raise SqlParseError(f"未知语句类型: {statement_scanner}")
+                # 解析可能包含 WITH 子句的语句类型
+                with_clause = cls.parse_with_clause(scanner, sql_type=sql_type)
 
-            statement_scanner.close()
+                if cls.check_select_statement(scanner, sql_type=sql_type):
+                    statement_list.append(cls.parse_select_statement(scanner,
+                                                                     with_clause=with_clause, sql_type=sql_type))
+                elif cls.check_insert_statement(scanner, sql_type=sql_type):
+                    statement_list.append(cls.parse_insert_statement(scanner,
+                                                                     with_clause=with_clause, sql_type=sql_type))
+                else:
+                    raise SqlParseError(f"未知语句类型: {scanner}")
+
+            scanner.search_and_move(";")
+
+        scanner.close()
 
         return statement_list
 
