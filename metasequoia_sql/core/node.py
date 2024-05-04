@@ -69,8 +69,9 @@ __all__ = [
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
     "ASTCaseValueItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTParenthesisExpression",  # 插入语表达式
-    "ASTSubQueryExpression",  # 子查询表达式
-    "ASTSubGeneralExpression",  # 插入语一般表达式（下层为一般表达式）
+    "ASTSubQueryExpression",  # 插入语表达式：子查询表达式
+    "ASTSubGeneralExpression",  # 插入语表达式：插入语一般表达式（下层为一般表达式）
+    "ASTSubValueExpression",  # 插入语表达式：值表达式
 
     # 多项表达式层级
     "ASTPolynomialExpression",  # 计算表达式
@@ -117,7 +118,6 @@ __all__ = [
     "ASTUnionSelectStatement",  # SELECT 语句：UNION 了多个 SELECT 语句的组合后的 SELECT 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 INSERT 语句节点 ------------------------------
-    "ASTValueExpression",  # 值表达式
     "ASTEqualExpression",  # 等式表达式
     "ASTPartitionExpression",  # 分区表达式
     "ASTInsertStatement",  # INSERT 语句
@@ -994,6 +994,18 @@ class ASTSubGeneralExpression(ASTParenthesisExpression):
         return f"({self.expression.source(sql_type)})"
 
 
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTSubValueExpression(ASTParenthesisExpression):
+    """【单项表达式】值表达式：INSERT INTO 表达式中，VALUES 里的表达式"""
+
+    values: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        values_str = ", ".join(value.source(sql_type) for value in self.values)
+        return f"({values_str})"
+
+
 # ---------------------------------------- 关联表达式 ----------------------------------------
 
 
@@ -1378,20 +1390,6 @@ class ASTUnionSelectStatement(ASTSelectStatement):
         return ASTUnionSelectStatement(**params)
 
 
-# ---------------------------------------- 值表达式 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTValueExpression(ASTExpressionBase):
-    """INSERT INTO 表达式中，VALUES 里的表达式"""
-
-    values: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        values_str = ", ".join(value.source(sql_type) for value in self.values)
-        return f"({values_str})"
-
-
 # ---------------------------------------- 等式表达式 ----------------------------------------
 
 
@@ -1458,7 +1456,7 @@ class ASTInsertStatement(ASTStatementBase, abc.ABC):
 class ASTInsertValuesStatement(ASTInsertStatement):
     """INSERT ... VALUES ... 语句"""
 
-    values: Tuple[ASTValueExpression, ...] = dataclasses.field(kw_only=True)
+    values: Tuple[ASTSubValueExpression, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

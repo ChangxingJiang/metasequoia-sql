@@ -510,7 +510,7 @@ class SQLParser:
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionBase:
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpressionBase:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
@@ -618,14 +618,14 @@ class SQLParser:
 
     @classmethod
     def parse_value_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTValueExpression:
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSubValueExpression:
         """解析值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         values = []
         for value_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             values.append(cls.parse_polynomial_expression(value_scanner, sql_type=sql_type))
             value_scanner.close()
-        return node.ASTValueExpression(values=tuple(values))
+        return node.ASTSubValueExpression(values=tuple(values))
 
     @classmethod
     def parse_parenthesis_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -730,7 +730,7 @@ class SQLParser:
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGeneralExpression:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        elements: List[node.ASTConditionExpressionBase] = [cls.parse_condition_expression(scanner, sql_type=sql_type)]
+        elements: List[node.TypeGeneralExpressionElement] = [cls.parse_condition_expression(scanner, sql_type=sql_type)]
         while scanner.search("AND") or scanner.search("OR"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
             elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
             elements.append(cls.parse_condition_expression(scanner, sql_type=sql_type))
