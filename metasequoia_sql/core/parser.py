@@ -845,10 +845,11 @@ class SQLParser:
         """解析 LATERAL VIEW 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("LATERAL", "VIEW")
+        outer = scanner.search_and_move("OUTER")
         function = cls.parse_function_expression(scanner, sql_type=sql_type)
         view_name = scanner.pop_as_source()
         alias = cls.parse_multi_alias_expression(scanner, sql_type=sql_type)
-        return node.ASTLateralViewClause(function=function, view_name=view_name, alias=alias)
+        return node.ASTLateralViewClause(outer=outer, function=function, view_name=view_name, alias=alias)
 
     @classmethod
     def check_join_clause(cls, scanner_or_string: Union[TokenScanner, str],

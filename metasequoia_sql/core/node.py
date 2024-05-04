@@ -1087,13 +1087,16 @@ class ASTFromClause(ASTBase):
 class ASTLateralViewClause(ASTBase):
     """LATERAL VIEW 子句"""
 
+    outer: bool = dataclasses.field(kw_only=True)
     function: ASTFunctionExpression = dataclasses.field(kw_only=True)
     view_name: str = dataclasses.field(kw_only=True)
     alias: ASTMultiAlisaExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"LATERAL VIEW {self.function.source(sql_type)} {self.view_name} {self.alias.source(sql_type)}"
+        outer_str = "OUT " if self.outer is True else ""
+        return (f"LATERAL VIEW {outer_str}{self.function.source(sql_type)} "
+                f"{self.view_name} {self.alias.source(sql_type)}")
 
 
 # ---------------------------------------- JOIN 子句 ----------------------------------------
