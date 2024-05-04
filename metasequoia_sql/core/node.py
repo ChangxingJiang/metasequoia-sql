@@ -1080,8 +1080,7 @@ class ASTOrderByItem(ASTBase):
         """返回语法节点的 SQL 源码"""
         if self.order.source(sql_type) == "ASC":
             return self.column.source(sql_type)
-        else:
-            return f"{self.column.source(sql_type)} DESC"
+        return f"{self.column.source(sql_type)} DESC"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
