@@ -108,13 +108,13 @@ class TestCoreParser(unittest.TestCase):
 
     def test_bool_expression(self):
         """测试解析布尔值表达式"""
-        self.assertEqual(SQLParser.parse_bool_expression("column1 > 3").source(SQLType.MYSQL), "`column1` > 3")
-        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 > 3").source(SQLType.MYSQL), "`t2`.`column1` > 3")
-        self.assertEqual(SQLParser.parse_bool_expression("t2.column1 + 3 > 3").source(SQLType.MYSQL),
+        self.assertEqual(SQLParser.parse_condition_expression("column1 > 3").source(SQLType.MYSQL), "`column1` > 3")
+        self.assertEqual(SQLParser.parse_condition_expression("t2.column1 > 3").source(SQLType.MYSQL), "`t2`.`column1` > 3")
+        self.assertEqual(SQLParser.parse_condition_expression("t2.column1 + 3 > 3").source(SQLType.MYSQL),
                          "`t2`.`column1` + 3 > 3")
-        self.assertEqual(SQLParser.parse_bool_expression("column1 BETWEEN 3 AND 4").source(SQLType.MYSQL),
+        self.assertEqual(SQLParser.parse_condition_expression("column1 BETWEEN 3 AND 4").source(SQLType.MYSQL),
                          "`column1` BETWEEN 3 AND 4")
-        self.assertEqual(SQLParser.parse_bool_expression("column1 + 3 BETWEEN 3 AND 4").source(SQLType.MYSQL),
+        self.assertEqual(SQLParser.parse_condition_expression("column1 + 3 BETWEEN 3 AND 4").source(SQLType.MYSQL),
                          "`column1` + 3 BETWEEN 3 AND 4")
 
     def test_window_expression(self):
@@ -139,12 +139,12 @@ class TestCoreParser(unittest.TestCase):
     def test_condition_expression(self):
         """测试解析条件表达式"""
         self.assertEqual(
-            SQLParser.parse_condition_expression("column1 > 3 AND column2 > 2 WHERE").source(SQLType.MYSQL),
+            SQLParser.parse_general_expression("column1 > 3 AND column2 > 2 WHERE").source(SQLType.MYSQL),
             "`column1` > 3 AND `column2` > 2")
-        self.assertEqual(SQLParser.parse_condition_expression("column1 > 3 OR column2 > 2 WHERE").source(SQLType.MYSQL),
+        self.assertEqual(SQLParser.parse_general_expression("column1 > 3 OR column2 > 2 WHERE").source(SQLType.MYSQL),
                          "`column1` > 3 OR `column2` > 2")
         self.assertEqual(
-            SQLParser.parse_condition_expression("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE").source(SQLType.MYSQL),
+            SQLParser.parse_general_expression("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE").source(SQLType.MYSQL),
             "`column1` > 3 OR `column2` BETWEEN 2 AND 4")
 
     def test_case_expression(self):

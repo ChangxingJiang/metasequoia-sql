@@ -21,7 +21,8 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 __all__ = ["SQLParser"]
 
 # 初始化类型元素
-ConditionElement = Union[node.ASTConditionExpression, node.ASTBoolExpressionBase, node.ASTLogicalOperator]  # 条件表达式中元素
+ConditionElement = Union[
+    node.ASTConditionExpression, node.ASTConditionExpressionBase, node.ASTLogicalOperator]  # 条件表达式中元素
 
 
 class SQLParser:
@@ -130,7 +131,8 @@ class SQLParser:
                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
         """判断是否为比较运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return scanner.get_as_source() in {"=", "!=", "<>", "<", "<=", ">", ">="}
+        return (scanner.search("=") or scanner.search("!=") or scanner.search("<>") or scanner.search("<") or
+                scanner.search("<=") or scanner.search(">") or scanner.search(">=") or scanner.search("<>"))
 
     @classmethod
     def parse_compare_operator(cls, scanner_or_string: Union[TokenScanner, str],
@@ -438,14 +440,14 @@ class SQLParser:
                                      ) -> node.ASTNormalFunctionExpression:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        function_params: List[node.ASTExpressionBase] = []
+        function_params: List[node.ASTGeneralExpressionBase] = []
         first_param = True
         for param_scanner in scanner.split_by(","):
             if first_param is True:
-                function_params.append(cls.parse_condition_expression(param_scanner, sql_type=sql_type))
+                function_params.append(cls.parse_general_expression(param_scanner, sql_type=sql_type))
                 first_param = False
             else:
-                function_params.append(cls.parse_polynomial_expression(param_scanner, sql_type=sql_type))
+                function_params.append(cls.parse_general_expression(param_scanner, sql_type=sql_type))
             param_scanner.close()
         return node.ASTNormalFunctionExpression(name=node.ASTFunctionName(function_name="IF"),
                                                 params=tuple(function_params))
@@ -476,9 +478,9 @@ class SQLParser:
                 and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
-        function_params: List[node.ASTExpressionBase] = []
+        function_params: List[node.ASTGeneralExpressionBase] = []
         for param_scanner in parenthesis_scanner.split_by(","):
-            function_params.append(cls.parse_polynomial_expression(param_scanner, sql_type=sql_type))
+            function_params.append(cls.parse_general_expression(param_scanner, sql_type=sql_type))
             if not param_scanner.is_finish:
                 raise SqlParseError(f"无法解析函数参数: {param_scanner}")
 
@@ -514,47 +516,6 @@ class SQLParser:
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         return cls.parse_value_expression(scanner, sql_type=sql_type)
-
-    @classmethod
-    def parse_bool_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBoolExpressionBase:
-        # pylint: disable=R0911
-        """解析布尔值表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
-        if scanner.search_and_move("EXISTS"):
-            after_value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
-        before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-        is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
-        if scanner.search_and_move("BETWEEN"):  # "... BETWEEN ... AND ..."
-            from_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            scanner.match("AND")
-            to_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
-                                                 to_value=to_value)
-        if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
-            is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
-            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("IN"):  # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
-            after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
-            return node.ASTBoolInExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("LIKE"):
-            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("RLIKE"):
-            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("REGEXP"):
-            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
-            compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolCompareExpression(is_not=is_not, operator=compare_operator, before_value=before_value,
-                                                 after_value=after_value)
-        raise SqlParseError(f"无法解析为布尔值表达式: {scanner}")
 
     @classmethod
     def check_window_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -611,7 +572,7 @@ class SQLParser:
             cases = []
             else_value = None
             while scanner.search_and_move("WHEN"):
-                when_expression = cls.parse_condition_expression(scanner, sql_type=sql_type)
+                when_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
                 scanner.match("THEN")
                 case_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
                 cases.append(node.ASTCaseConditionItem(when=when_expression, then=case_expression))
@@ -663,23 +624,25 @@ class SQLParser:
         return node.ASTValueExpression(values=tuple(values))
 
     @classmethod
-    def _parse_general_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionBase:
-        """解析一般表达式中的插入语：插入语可能为一般表达式或子查询"""
+    def parse_parenthesis_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTParenthesisExpression:
+        """解析插入语表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
+        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):  # 子查询的情况
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        result = cls.parse_polynomial_expression(parenthesis_scanner, sql_type=sql_type)
+        result = node.ASTSubGeneralExpression(
+            expression=cls.parse_general_expression(parenthesis_scanner, sql_type=sql_type)
+        )
         parenthesis_scanner.close()
         return result
 
     @classmethod
-    def parse_polynomial_element(cls, scanner_or_string: Union[TokenScanner, str],
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionBase:
+    def parse_monomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                  maybe_window: bool,
+                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpressionBase:
         # pylint: disable=R0911
-        """解析多项式表达式中的一个元素"""
+        """解析单项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_case_expression(scanner, sql_type=sql_type):
             return cls.parse_case_expression(scanner, sql_type=sql_type)
@@ -691,59 +654,83 @@ class SQLParser:
             return cls.parse_literal_expression(scanner, sql_type=sql_type)
         if cls.check_column_name_expression(scanner, sql_type=sql_type):
             return cls.parse_column_name_expression(scanner, sql_type=sql_type)
-        if scanner.search(AMTMark.PARENTHESIS):
-            return cls._parse_general_parenthesis(scanner, sql_type=sql_type)
         if cls.check_wildcard_expression(scanner, sql_type=sql_type):
             return cls.parse_wildcard_expression(scanner, sql_type=sql_type)
-        raise SqlParseError(f"未知的一般表达式元素: {scanner}")
-
-    @classmethod
-    def parse_condition_element(cls, scanner: TokenScanner, sql_type: SQLType) -> List[ConditionElement]:
-        """解析条件表达式中的一个元素"""
         if scanner.search(AMTMark.PARENTHESIS):
-            parenthesis_scanner = scanner.pop_as_children_scanner()
-            result = cls.parse_condition_expression(parenthesis_scanner, sql_type=sql_type)  # 插入语，子句也应该是一个条件表达式
-            parenthesis_scanner.close()
-            return [result]
-        if scanner.search("NOT", AMTMark.PARENTHESIS) or scanner.search("!", AMTMark.PARENTHESIS):
-            result = [cls.parse_logical_operator(scanner, sql_type=sql_type)]
-            parenthesis_scanner = scanner.pop_as_children_scanner()
-            result.append(cls.parse_condition_expression(parenthesis_scanner, sql_type=sql_type))  # 插入语，子句也应该是一个条件表达式
-            parenthesis_scanner.close()
-            return result
-        return [cls.parse_bool_expression(scanner, sql_type=sql_type)]
-
-    @classmethod
-    def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpression:
-        """解析条件表达式（返回布尔值）"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        elements: List[ConditionElement] = cls.parse_condition_element(scanner, sql_type=sql_type)
-        while scanner.search("AND") or scanner.search("OR"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
-            elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
-            elements.extend(cls.parse_condition_element(scanner, sql_type=sql_type))
-        return node.ASTConditionExpression(elements=tuple(elements))
+            return cls.parse_parenthesis_expression(scanner, sql_type=sql_type)
+        raise SqlParseError(f"未知的一般表达式元素: {scanner}")
 
     @classmethod
     def parse_polynomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                     sql_type: SQLType = SQLType.DEFAULT,
-                                    maybe_window: bool = True) -> node.ASTExpressionBase:
-        """解析多项式表达式（返回非布尔值）"""
+                                    maybe_window: bool = True) -> node.ASTPolynomialExpressionBase:
+        """解析多项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        elements = [cls.parse_polynomial_element(scanner, maybe_window, sql_type=sql_type)]
+        elements = [cls.parse_monomial_expression(scanner, maybe_window, sql_type=sql_type)]
         while cls.check_compute_operator(scanner, sql_type=sql_type):
             elements.append(cls.parse_compute_operator(scanner, sql_type=sql_type))
-            elements.append(cls.parse_polynomial_element(scanner, maybe_window))
+            elements.append(cls.parse_monomial_expression(scanner, maybe_window))
         if len(elements) == 1:
-            return elements[0]  # 如果只有 1 个元素，则返回该元素的表达式
-        return node.ASTComputeExpression(elements=tuple(elements))  # 如果超过 1 个元素，则返回计算表达式（多项式）
+            # 如果只有 1 个元素，则返回单项式表达式
+            return elements[0]
+        # 如果超过 1 个原则，则返回多项式表达式
+        return node.ASTPolynomialExpression(elements=tuple(elements))
+
+    @classmethod
+    def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
+        # pylint: disable=R0911
+        """解析条件表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        if scanner.search_and_move("EXISTS"):
+            after_value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
+        before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+        is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        if scanner.search_and_move("BETWEEN"):  # "... BETWEEN ... AND ..."
+            from_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            scanner.match("AND")
+            to_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
+                                                 to_value=to_value)
+        if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
+            is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
+            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if scanner.search_and_move("IN"):  # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
+            after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
+            return node.ASTBoolInExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if scanner.search_and_move("LIKE"):
+            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if scanner.search_and_move("RLIKE"):
+            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if scanner.search_and_move("REGEXP"):
+            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+        if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
+            # 需要兼容类似 a = b = c 的情况
+            while cls.check_compare_operator(scanner, sql_type=sql_type):
+                compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
+                after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+                before_value = node.ASTBoolCompareExpression(is_not=is_not, operator=compare_operator,
+                                                             before_value=before_value,
+                                                             after_value=after_value)
+            return before_value
+        return before_value  # 如果无法构成条件表达式，则返回多项式表达式或单项式表达式
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                 sql_type: SQLType = SQLType.DEFAULT,
-                                 maybe_window: bool = True):
-        """解析一般表达式：可以返回布尔值或返回非布尔值"""
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpression:
+        """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        elements: List[node.ASTConditionExpressionBase] = [cls.parse_condition_expression(scanner, sql_type=sql_type)]
+        while scanner.search("AND") or scanner.search("OR"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
+            elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
+            elements.append(cls.parse_condition_expression(scanner, sql_type=sql_type))
+        return node.ASTConditionExpression(elements=tuple(elements))
 
     @classmethod
     def check_join_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -759,7 +746,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if not scanner.search_and_move("ON"):
             raise SqlParseError(f"无法解析为 ON 关联表达式: {scanner}")
-        return node.ASTJoinOnExpression(condition=cls.parse_condition_expression(scanner, sql_type=sql_type))
+        return node.ASTJoinOnExpression(condition=cls.parse_general_expression(scanner, sql_type=sql_type))
 
     @classmethod
     def parse_join_using_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -892,7 +879,7 @@ class SQLParser:
         """解析 WHERE 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("WHERE")
-        return node.ASTWhereClause(condition=cls.parse_condition_expression(scanner, sql_type=sql_type))
+        return node.ASTWhereClause(condition=cls.parse_general_expression(scanner, sql_type=sql_type))
 
     @classmethod
     def check_group_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
@@ -946,7 +933,7 @@ class SQLParser:
         """解析 HAVING 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("HAVING")
-        return node.ASTHavingClause(condition=cls.parse_condition_expression(scanner, sql_type=sql_type))
+        return node.ASTHavingClause(condition=cls.parse_general_expression(scanner, sql_type=sql_type))
 
     @classmethod
     def check_order_by_clause(cls, scanner_or_string: Union[TokenScanner, str],

@@ -25,17 +25,14 @@ __all__ = [
     "ASTExpressionBase",  # 表达式的抽象基类
     "ASTMonomialExpressionBase",  # 表达式的子类（第 1 层）：单项式节点的抽象基类
     "ASTPolynomialExpressionBase",  # 表达式的子类（第 2 层）：多项式节点的抽象基类
-    "ASTBoolExpressionBase",  # 表达式的子类（第 3 层）：布尔值表达式的抽象基类
-    "ASTConditionExpressionBase",  # 表达式的子类（第 4 层）：条件表达式的抽象基类
+    "ASTConditionExpressionBase",  # 表达式的子类（第 3 层）：布尔值表达式的抽象基类
+    "ASTGeneralExpressionBase",  # 表达式的子类（第 4 层）：条件表达式的抽象基类
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "EnumInsertType", "ASTInsertType",  # 插入类型
     "EnumJoinType", "ASTJoinType",  # 关联类型
     "EnumOrderType", "ASTOrderType",  # 排序类型
     "EnumUnionType", "ASTUnionType",  # 组合类型
-    "EnumCompareOperator", "ASTCompareOperator",  # 比较运算符
-    "EnumComputeOperator", "ASTComputeOperator",  # 计算运算符
-    "EnumLogicalOperator", "ASTLogicalOperator",  # 逻辑运算符
     "EnumCastDataType", "ASTCastDataType",  # CAST 函数中的字段类型枚举类
 
     # ------------------------------ 抽象语法树（AST）节点的基础类节点 ------------------------------
@@ -49,6 +46,9 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
     # 单项表达式层级
+    "EnumCompareOperator", "ASTCompareOperator",  # 比较运算符
+    "EnumComputeOperator", "ASTComputeOperator",  # 计算运算符
+    "EnumLogicalOperator", "ASTLogicalOperator",  # 逻辑运算符
     "ASTColumnName",  # 列名表达式
     "ASTLiteralExpression",  # 字面值表达式
     "ASTWildcardExpression",  # 通配符表达式
@@ -59,10 +59,16 @@ __all__ = [
     "ASTExtractFunctionExpression",  # 函数表达式：EXTRACT 函数表达式
     "ASTArrayIndexExpression",  # 数组下标表达式
     "ASTWindowExpression",  # 窗口表达式
+    "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
+    "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
+    "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
+    "ASTCaseValueItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
+    "ASTParenthesisExpression",  # 插入语表达式
     "ASTSubQueryExpression",  # 子查询表达式
+    "ASTSubGeneralExpression",  # 插入语一般表达式（下层为一般表达式）
 
     # 多项表达式层级
-    "ASTComputeExpression",  # 计算表达式
+    "ASTPolynomialExpression",  # 计算表达式
 
     # 布尔值表达式层级
     "ASTBoolExpression",  # 布尔值表达式
@@ -74,10 +80,6 @@ __all__ = [
     "ASTBoolBetweenExpression",  # 布尔值表达式：使用 BETWEEN 的布尔值表达式
     "ASTBoolRlikeExpression",  # 布尔值表达式：使用 RLIKE 的布尔值表达式
     "ASTBoolRegexpExpression",  # 布尔值表达式：使用 REGEXP 的布尔值表达式
-    "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
-    "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
-    "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
-    "ASTCaseValueItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
 
     # 条件表达式层级
     "ASTConditionExpression",  # 条件表达式
@@ -174,23 +176,39 @@ class ASTExpressionBase(ASTBase, abc.ABC):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTMonomialExpressionBase(ASTExpressionBase, abc.ABC):
-    """抽象语法树（AST）单项式表达式节点的抽象基类"""
+class ASTGeneralExpressionBase(ASTExpressionBase, abc.ABC):
+    """抽象语法树（AST）一般表达式节点的抽象基类
+
+    1. 包含使用 AND、OR 关键字连接的一个或多个布尔值表达式
+    """
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPolynomialExpressionBase(ASTExpressionBase, abc.ABC):
-    """抽象语法树（AST）多项式表达式节点的抽象基类"""
+class ASTConditionExpressionBase(ASTGeneralExpressionBase, abc.ABC):
+    """抽象语法树（AST）条件表达式节点的抽象基类
+
+    1. 可以视作一种特殊的一般表达式
+    2. 包含使用比较运算符、IS、LIKE、RLIKE、BETWEEN 等连接的一个或多个多项式表达式
+    """
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolExpressionBase(ASTExpressionBase, abc.ABC):
-    """抽象语法树（AST）布尔值表达式节点的抽象基类"""
+class ASTPolynomialExpressionBase(ASTConditionExpressionBase, abc.ABC):
+    """抽象语法树（AST）多项表达式节点的抽象基类
+
+    1. 可以视作一种特殊的条件表达式
+    2. 包含使用计算运算符连接的一个或多个单项式表达式
+    """
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConditionExpressionBase(ASTExpressionBase, abc.ABC):
-    """抽象语法树（AST）条件表达式节点的抽象基类"""
+class ASTMonomialExpressionBase(ASTPolynomialExpressionBase, abc.ABC):
+    """抽象语法树（AST）单项表达式节点的抽象基类
+
+    1. 可以视作一种特殊多项表达式
+    2. 仅包含一个元素的表达式
+    3. 插入语虽然下一层为一般表达式，但是在上一层视作单项表达式
+    """
 
 
 # ---------------------------------------- 插入类型 ----------------------------------------
@@ -303,7 +321,7 @@ class EnumCompareOperator(enum.Enum):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCompareOperator(ASTBase):
+class ASTCompareOperator(ASTMonomialExpressionBase):
     """比较运算符"""
 
     enum: EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
@@ -326,7 +344,7 @@ class EnumComputeOperator(enum.Enum):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTComputeOperator(ASTBase):
+class ASTComputeOperator(ASTMonomialExpressionBase):
     """计算运算符"""
 
     enum: EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
@@ -352,7 +370,7 @@ class EnumLogicalOperator(enum.Enum):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalOperator(ASTBase):
+class ASTLogicalOperator(ASTMonomialExpressionBase):
     """逻辑运算符"""
 
     enum: EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
@@ -628,7 +646,7 @@ class ASTFunctionExpression(ASTMonomialExpressionBase, abc.ABC):
 class ASTNormalFunctionExpression(ASTFunctionExpression):
     """包含一般参数的函数表达式"""
 
-    params: Tuple[ASTExpressionBase] = dataclasses.field(kw_only=True)  # 函数表达式的参数
+    params: Tuple[ASTGeneralExpressionBase] = dataclasses.field(kw_only=True)  # 函数表达式的参数
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -682,7 +700,7 @@ class ASTExtractFunctionExpression(ASTFunctionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolExpression(ASTBoolExpressionBase, abc.ABC):
+class ASTBoolExpression(ASTConditionExpressionBase, abc.ABC):
     """布尔值表达式"""
 
     is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
@@ -833,11 +851,11 @@ class ASTWindowExpression(ASTMonomialExpressionBase):
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
-ConditionElement = Union["ASTConditionExpression", ASTBoolExpressionBase, ASTLogicalOperator]  # 条件表达式元素类型
+ConditionElement = Union["ASTConditionExpression", ASTConditionExpressionBase, ASTLogicalOperator]  # 条件表达式元素类型
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConditionExpression(ASTExpressionBase):
+class ASTConditionExpression(ASTGeneralExpressionBase):
     """条件表达式"""
 
     elements: Tuple[ConditionElement, ...] = dataclasses.field(kw_only=True)
@@ -865,7 +883,7 @@ class ASTCaseConditionItem(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCaseConditionExpression(ASTExpressionBase):
+class ASTCaseConditionExpression(ASTMonomialExpressionBase):
     """第 1 种格式的 CASE 表达式
 
     CASE
@@ -901,7 +919,7 @@ class ASTCaseValueItem(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCaseValueExpression(ASTExpressionBase):
+class ASTCaseValueExpression(ASTMonomialExpressionBase):
     """第 2 种格式的 CASE 表达式
 
     CASE {一般表达式}
@@ -928,7 +946,7 @@ class ASTCaseValueExpression(ASTExpressionBase):
 # ---------------------------------------- 计算表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTComputeExpression(ASTPolynomialExpressionBase):
+class ASTPolynomialExpression(ASTPolynomialExpressionBase):
     """【多项表达式】计算表达式"""
 
     elements: Tuple[Union[ASTExpressionBase, ASTComputeOperator], ...] = dataclasses.field(kw_only=True)
@@ -942,7 +960,12 @@ class ASTComputeExpression(ASTPolynomialExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSubQueryExpression(ASTMonomialExpressionBase):
+class ASTParenthesisExpression(ASTMonomialExpressionBase, abc.ABC):
+    """【单项表达式】插入语表达式"""
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTSubQueryExpression(ASTParenthesisExpression):
     """【单项表达式】子查询表达式"""
 
     statement: "ASTSelectStatement" = dataclasses.field(kw_only=True)
@@ -950,6 +973,16 @@ class ASTSubQueryExpression(ASTMonomialExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"({self.statement.source(sql_type)})"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTSubGeneralExpression(ASTParenthesisExpression):
+    """【单项表达式】插入语一般表达式"""
+
+    expression: ASTGeneralExpressionBase = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        return f"({self.expression.source(sql_type)})"
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------

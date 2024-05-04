@@ -76,15 +76,15 @@ class SQLParserMyBatis(SQLParser):
         return TokenScanner(FSMMachineMyBatis.parse(string), ignore_space=True, ignore_comment=True)
 
     @classmethod
-    def parse_polynomial_element(cls, scanner_or_string: Union[TokenScanner, str],
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT
-                                 ) -> ASTExpressionBase:
+    def parse_monomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                  maybe_window: bool,
+                                  sql_type: SQLType = SQLType.DEFAULT
+                                  ) -> ASTExpressionBase:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
-        return super().parse_polynomial_element(scanner, maybe_window, sql_type=sql_type)
+        return super().parse_monomial_expression(scanner, maybe_window, sql_type=sql_type)
 
 
 class GetAllMybatisParams(AnalyzerRecursionASTToListBase):
