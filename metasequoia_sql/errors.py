@@ -2,7 +2,7 @@
 在 metasequoia_sql 中年可能抛出的异常
 """
 
-__all__ = ["SqlParseError", "AMTParseError", "UnSupportDataSourceError", "ScannerError", "AnalyzerError"]
+__all__ = ["SqlParseError", "AMTParseError", "UnSupportSqlTypeError", "ScannerError", "AnalyzerError"]
 
 
 class SqlParseError(Exception):
@@ -16,7 +16,7 @@ class AMTParseError(SqlParseError):
     """抽象词法树 AMT 解析失败"""
 
 
-class UnSupportDataSourceError(Exception):
+class UnSupportSqlTypeError(Exception):
     """数据源不支持的语法异常"""
 
     def __init__(self, reason: str):

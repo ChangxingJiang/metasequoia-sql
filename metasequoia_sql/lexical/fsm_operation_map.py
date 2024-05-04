@@ -2,6 +2,8 @@
 词法分析有限状态机，针对不同状态、不同输入值的行为映射表
 """
 
+from typing import Dict
+
 from metasequoia_sql.common import char_set
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTMark
@@ -45,7 +47,7 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.AFTER_21: {
         "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：!=
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.raise_error()
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：!
     },
 
     # 在 - 符号之后
@@ -272,8 +274,8 @@ FSM_OPERATION_MAP_SOURCE = {
     }
 }
 
-# 行为映射表使用表（用于用时行为映射信息，输入参数必须是一个字符）
-FSM_OPERATION_MAP = {}
+# 状态行为映射表（用于用时行为映射信息，输入参数必须是一个字符）
+FSM_OPERATION_MAP: Dict[FSMStatus, Dict[str, FSMOperate]] = {}
 for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
     FSM_OPERATION_MAP[status] = {}
     for ch_or_set, fsm_operation in operation_map.items():

@@ -4,7 +4,7 @@
 TODO 增加各种元素在末尾的单元测试
 """
 
-from typing import List, Union
+from typing import List, Union, Dict
 
 from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql.errors import AMTParseError
@@ -29,7 +29,18 @@ class FSMMachine:
         当前正在缓存的词语
     """
 
-    def __init__(self):
+    def __init__(self, operation_map: Dict[FSMStatus, Dict[str, FSMOperate]] = None):
+        """
+
+        Parameters
+        ----------
+        operation_map : Dict[FSMStatus, Dict[str, FSMOperate]]
+            状态行为映射表
+        """
+        if operation_map is None:
+            operation_map = FSM_OPERATION_MAP
+        
+        self.operation_map = operation_map
         self.stack: List[List[AMTBase]] = [[]]
         self.status: Union[FSMStatus, object] = FSMStatus.WAIT
         self.cache: List[str] = []

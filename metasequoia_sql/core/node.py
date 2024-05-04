@@ -16,7 +16,7 @@ from typing import Optional, Tuple, Union, Dict
 from metasequoia_sql.common.basic import is_int_literal
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
-from metasequoia_sql.errors import UnSupportDataSourceError
+from metasequoia_sql.errors import UnSupportSqlTypeError
 
 __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的抽象类 ------------------------------
@@ -296,10 +296,10 @@ class ASTComputeOperator(ASTBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.enum == EnumComputeOperator.MOD and sql_type != SQLType.SQL_SERVER:
-            raise UnSupportDataSourceError(f"{sql_type} 不支持使用 % 运算符")
+            raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
         if (self.enum == EnumComputeOperator.CONCAT
                 and sql_type not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
-            raise UnSupportDataSourceError(f"{sql_type} 不支持使用 || 运算符")
+            raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 || 运算符")
         return " ".join(self.enum.value)
 
 
@@ -751,7 +751,7 @@ class ASTArrayIndexExpression(ASTExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if sql_type != SQLType.HIVE:
-            raise UnSupportDataSourceError(f"数组下标不支持SQL类型:{sql_type}")
+            raise UnSupportSqlTypeError(f"数组下标不支持SQL类型:{sql_type}")
         return f"{self.array.source(sql_type)}"
 
 
