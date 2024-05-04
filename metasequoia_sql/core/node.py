@@ -746,18 +746,20 @@ class ASTWindowExpression(ASTExpressionBase):
     """窗口表达式"""
 
     window_function: Union[ASTNormalFunctionExpression, ASTArrayIndexExpression] = dataclasses.field(kw_only=True)
-    partition_by: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True)
-    order_by: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True)
+    partition_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+    order_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
     row_expression: Optional[ASTWindowRow] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = f"{self.window_function.source(sql_type)} OVER ("
         parenthesis = []
-        if self.partition_by is not None:
-            parenthesis.append(f"PARTITION BY {self.partition_by.source(sql_type)}")
-        if self.order_by is not None:
-            parenthesis.append(f"ORDER BY {self.order_by.source(sql_type)}")
+        if len(self.partition_by_columns) > 0:
+            partition_by_str = ", ".join([column.source(sql_type) for column in self.partition_by_columns])
+            parenthesis.append(f"PARTITION BY {partition_by_str}")
+        if len(self.order_by_columns) > 0:
+            order_by_str = ", ".join([column.source(sql_type) for column in self.order_by_columns])
+            parenthesis.append(f"ORDER BY {order_by_str}")
         if self.row_expression is not None:
             parenthesis.append(self.row_expression.source(sql_type))
         result += " ".join(parenthesis) + ")"

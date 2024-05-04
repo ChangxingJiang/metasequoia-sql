@@ -506,28 +506,33 @@ class SQLParser:
         """判断是否可能为窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         return (scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS, "OVER", AMTMark.PARENTHESIS)
-                and scanner.get_as_source() in name_set.WINDOW_FUNCTION_NAME_SET)
+                and scanner.get_as_source().upper() in name_set.WINDOW_FUNCTION_NAME_SET)
 
     @classmethod
     def parse_window_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTWindowExpression:
         """解析窗口函数"""
         scanner = cls._unify_input_scanner(scanner_or_string)
+        print("WINDOW:", scanner)
         window_function = cls.parse_function_expression_maybe_with_array_index(scanner)
-        partition_by = None
-        order_by = None
+        partition_by_columns = []
+        order_by_columns = []
         row_expression = None
         scanner.match("OVER")
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if parenthesis_scanner.search_and_move("PARTITION", "BY"):
-            partition_by = cls.parse_general_expression(parenthesis_scanner, maybe_window=False)
+            partition_by_columns = [cls.parse_general_expression(parenthesis_scanner, maybe_window=False)]
+            while parenthesis_scanner.search_and_move(","):
+                partition_by_columns.append(cls.parse_general_expression(parenthesis_scanner, maybe_window=False))
         if parenthesis_scanner.search_and_move("ORDER", "BY"):
-            order_by = cls.parse_general_expression(parenthesis_scanner, maybe_window=False)
+            order_by_columns = [cls.parse_general_expression(parenthesis_scanner, maybe_window=False)]
+            while parenthesis_scanner.search_and_move(","):
+                order_by_columns.append(cls.parse_general_expression(parenthesis_scanner, maybe_window=False))
         if parenthesis_scanner.search("ROWS", "BETWEEN"):
             row_expression = cls.parse_window_row(parenthesis_scanner)
         parenthesis_scanner.close()
         return node.ASTWindowExpression(window_function=window_function,
-                                        partition_by=partition_by,
-                                        order_by=order_by,
+                                        partition_by_columns=tuple(partition_by_columns),
+                                        order_by_columns=tuple(order_by_columns),
                                         row_expression=row_expression)
 
     @classmethod
@@ -632,6 +637,7 @@ class SQLParser:
         # pylint: disable=R0911
         """解析一般表达式中的一个元素"""
         scanner = cls._unify_input_scanner(scanner_or_string)
+        print("GENERAL: ", scanner)
         if cls.check_case_expression(scanner):
             return cls.parse_case_expression(scanner)
         if maybe_window is True and cls.check_window_expression(scanner):
@@ -708,6 +714,7 @@ class SQLParser:
     def parse_column_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnExpression:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
+        print("COLUMN:", scanner)
         general_expression = cls.parse_general_expression(scanner)
         alias_expression = cls.parse_alias_expression(scanner) if cls.check_alias_expression(scanner) else None
         return node.ASTColumnExpression(value=general_expression, alias=alias_expression)
@@ -934,6 +941,7 @@ class SQLParser:
 
         """
         scanner = cls._unify_input_scanner(scanner_or_string)
+        print("SELECT SINGLE: ", scanner)
         if with_clause is None:
             with_clause = cls.parse_with_clause(scanner)
         select_clause = cls.parse_select_clause(scanner)
@@ -968,6 +976,7 @@ class SQLParser:
                                ) -> node.ASTSelectStatement:
         """解析 SELECT 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string)
+        print("SELECT: ", scanner)
         if with_clause is None:
             with_clause = cls.parse_with_clause(scanner)
         result = [cls.parse_single_select_statement(scanner, with_clause=with_clause)]
