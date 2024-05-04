@@ -22,7 +22,7 @@ __all__ = ["SQLParser"]
 
 # 初始化类型元素
 ConditionElement = Union[
-    node.ASTConditionExpression, node.ASTConditionExpressionBase, node.ASTLogicalOperator]  # 条件表达式中元素
+    node.ASTGeneralExpression, node.ASTConditionExpressionBase, node.ASTLogicalOperator]  # 条件表达式中元素
 
 
 class SQLParser:
@@ -727,14 +727,14 @@ class SQLParser:
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpression:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGeneralExpression:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         elements: List[node.ASTConditionExpressionBase] = [cls.parse_condition_expression(scanner, sql_type=sql_type)]
         while scanner.search("AND") or scanner.search("OR"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
             elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
             elements.append(cls.parse_condition_expression(scanner, sql_type=sql_type))
-        return node.ASTConditionExpression(elements=tuple(elements))
+        return node.ASTGeneralExpression(elements=tuple(elements))
 
     @classmethod
     def check_join_expression(cls, scanner_or_string: Union[TokenScanner, str],
