@@ -87,6 +87,9 @@ __all__ = [
     "ASTGroupingSetsGroupByClause",  # GROUP BY 子句：使用 GROUPING SETS 的 GROUP BY 子句
     "ASTHavingClause",  # HAVING 子句
     "ASTOrderByClause",  # ORDER BY 子句
+    "ASTSortByClause",  # SORT BY 子句【Hive】
+    "ASTDistributeByClause",  # DISTRIBUTE BY 子句【Hive】
+    "ASTClusterByClause",  # CLUSTER BY 子句【Hive】
     "ASTLimitClause",  # LIMIT 子句
     "ASTWithClause",  # WITH 子句
     "ASTWithTable",  # WITH 子句元素：WITH 语句中的每个表
@@ -1113,6 +1116,49 @@ class ASTOrderByClause(ASTBase):
         return "ORDER BY " + ", ".join(result)
 
 
+# ---------------------------------------- SORT BY 子句 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTSortByClause(ASTBase):
+    """SORT BY 子句（Hive）"""
+
+    columns: Tuple[ASTOrderByItem, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        result = [column.source(sql_type) for column in self.columns]
+        return "SORT BY " + ", ".join(result)
+
+
+# ---------------------------------------- DISTRIBUTE BY 子句 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTDistributeByClause(ASTBase):
+    """DISTRIBUTE BY 子句（Hive）"""
+
+    columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return "DISTRIBUTE BY " + ", ".join(column.source(sql_type) for column in self.columns)
+
+
+# ---------------------------------------- CLUSTER BY 子句 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTClusterByClause(ASTBase):
+    """CLUSTER BY 子句（Hive）"""
+
+    columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return "CLUSTER BY " + ", ".join(column.source(sql_type) for column in self.columns)
+
+
 # ---------------------------------------- LIMIT 子句 ----------------------------------------
 
 
@@ -1194,14 +1240,27 @@ class ASTSingleSelectStatement(ASTSelectStatement):
     group_by_clause: Optional[ASTGroupByClause] = dataclasses.field(kw_only=True)
     having_clause: Optional[ASTHavingClause] = dataclasses.field(kw_only=True)
     order_by_clause: Optional[ASTOrderByClause] = dataclasses.field(kw_only=True)
+    sort_by_clause: Optional[ASTSortByClause] = dataclasses.field(kw_only=True, default=None)
+    distribute_by_clause: Optional[ASTDistributeByClause] = dataclasses.field(kw_only=True, default=None)
+    cluster_by_clause: Optional[ASTClusterByClause] = dataclasses.field(kw_only=True, default=None)
     limit_clause: Optional[ASTLimitClause] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         with_clause_str = self.with_clause.source(sql_type) + "\n" if not self.with_clause.is_empty() else ""
         result = [self.select_clause.source(sql_type)]
-        for clause in [self.from_clause, *self.lateral_view_clauses, *self.join_clauses, self.where_clause,
-                       self.group_by_clause, self.having_clause, self.order_by_clause, self.limit_clause]:
+
+        # 构造子句的顺序列表
+        if sql_type == SQLType.HIVE:
+            clauses = [self.from_clause, *self.lateral_view_clauses, *self.join_clauses, self.where_clause,
+                       self.group_by_clause, self.having_clause, self.order_by_clause, self.sort_by_clause,
+                       self.distribute_by_clause, self.cluster_by_clause, self.limit_clause]
+        else:
+            clauses = [self.from_clause, *self.lateral_view_clauses, *self.join_clauses, self.where_clause,
+                       self.group_by_clause, self.having_clause, self.order_by_clause, self.limit_clause]
+
+        # 按顺序构造子句
+        for clause in clauses:
             if clause is not None:
                 result.append(clause.source(sql_type))
         return with_clause_str + "\n".join(result)

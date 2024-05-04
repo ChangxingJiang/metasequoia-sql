@@ -954,13 +954,65 @@ class SQLParser:
                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByClause:
         """解析 ORDER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-
         scanner.match("ORDER", "BY")
         columns = [cls._parse_order_by_item(scanner, sql_type=sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_order_by_item(scanner, sql_type=sql_type))
-
         return node.ASTOrderByClause(columns=tuple(columns))
+
+    @classmethod
+    def check_sort_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                             sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """是否可能为 SORT BY 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("SORT", "BY")
+
+    @classmethod
+    def parse_sort_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByClause:
+        """解析 SORT BY 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("SORT", "BY")
+        columns = [cls._parse_order_by_item(scanner, sql_type=sql_type)]
+        while scanner.search_and_move(","):
+            columns.append(cls._parse_order_by_item(scanner, sql_type=sql_type))
+        return node.ASTOrderByClause(columns=tuple(columns))
+
+    @classmethod
+    def check_distribute_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否可能为 DISTRIBUTE BY 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("DISTRIBUTE", "BY")
+
+    @classmethod
+    def parse_distribute_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDistributeByClause:
+        """解析 DISTRIBUTE BY 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("DISTRIBUTE", "BY")
+        columns = [cls.parse_general_expression(scanner, sql_type=sql_type)]
+        while scanner.search_and_move(","):
+            columns.append(cls.parse_general_expression(scanner, sql_type=sql_type))
+        return node.ASTDistributeByClause(columns=tuple(columns))
+
+    @classmethod
+    def check_cluster_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否可能为 CLUSTER BY 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("CLUSTER", "BY")
+
+    @classmethod
+    def parse_cluster_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTClusterByClause:
+        """解析 CLUSTER BY 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("DISTRIBUTE", "BY")
+        columns = [cls.parse_general_expression(scanner, sql_type=sql_type)]
+        while scanner.search_and_move(","):
+            columns.append(cls.parse_general_expression(scanner, sql_type=sql_type))
+        return node.ASTClusterByClause(columns=tuple(columns))
 
     @classmethod
     def check_limit_clause(cls, scanner_or_string: Union[TokenScanner, str],
@@ -1057,8 +1109,25 @@ class SQLParser:
                          if cls.check_having_clause(scanner, sql_type=sql_type) else None)
         order_by_clause = (cls.parse_order_by_clause(scanner, sql_type=sql_type)
                            if cls.check_order_by_clause(scanner, sql_type=sql_type) else None)
+
+        if sql_type == SQLType.HIVE and cls.check_sort_by_clause(scanner, sql_type=sql_type):
+            sort_by_clause = cls.parse_sort_by_clause(scanner, sql_type=sql_type)
+        else:
+            sort_by_clause = None
+
+        if sql_type == SQLType.HIVE and cls.check_distribute_by_clause(scanner, sql_type=sql_type):
+            distribute_by_clause = cls.parse_distribute_by_clause(scanner, sql_type=sql_type)
+        else:
+            distribute_by_clause = None
+
+        if sql_type == SQLType.HIVE and cls.check_cluster_by_clause(scanner, sql_type=sql_type):
+            cluster_by_clause = cls.parse_cluster_by_clause(scanner, sql_type=sql_type)
+        else:
+            cluster_by_clause = None
+
         limit_clause = (cls.parse_limit_clause(scanner, sql_type=sql_type)
                         if cls.check_limit_clause(scanner, sql_type=sql_type) else None)
+
         return node.ASTSingleSelectStatement(
             with_clause=with_clause,
             select_clause=select_clause,
@@ -1069,6 +1138,9 @@ class SQLParser:
             group_by_clause=group_by_clause,
             having_clause=having_clause,
             order_by_clause=order_by_clause,
+            sort_by_clause=sort_by_clause,
+            distribute_by_clause=distribute_by_clause,
+            cluster_by_clause=cluster_by_clause,
             limit_clause=limit_clause
         )
 
