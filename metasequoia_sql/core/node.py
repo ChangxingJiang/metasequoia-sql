@@ -64,7 +64,7 @@ __all__ = [
     "ASTBoolRlikeExpression",  # 布尔值表达式：使用 RLIKE 的布尔值表达式
     "ASTWindowExpression",  # 窗口表达式
     "ASTConditionExpression",  # 条件表达式
-    "ASTCaseExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
+    "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
     "ASTSubQueryExpression",  # 子查询表达式
     "ASTComputeExpression",  # 计算表达式
@@ -768,7 +768,19 @@ class ASTConditionExpression(ASTExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCaseExpression(ASTExpressionBase):
+class ASTCaseConditionItem(ASTBase):
+    """第 1 种格式的 CASE 表达式的 WHEN ... THEN ... 语句节点"""
+
+    when: ASTConditionExpression = dataclasses.field(kw_only=True)
+    then: ASTExpressionBase = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"WHEN {self.when.source(sql_type)} THEN {self.then.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTCaseConditionExpression(ASTExpressionBase):
     """第 1 种格式的 CASE 表达式
 
     CASE
@@ -777,18 +789,30 @@ class ASTCaseExpression(ASTExpressionBase):
     END
     """
 
-    cases: Tuple[Tuple[ASTConditionExpression, ASTExpressionBase], ...] = dataclasses.field(kw_only=True)
+    cases: Tuple[ASTCaseConditionItem, ...] = dataclasses.field(kw_only=True)
     else_value: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = ["CASE"]
-        for when, then in self.cases:
-            result.append(f"WHEN {when.source(sql_type)} THEN {then.source(sql_type)}")
+        for item in self.cases:
+            result.append(item.source(sql_type))
         if self.else_value is not None:
             result.append(f"ELSE {self.else_value.source(sql_type)}")
         result.append("END")
         return " ".join(result)
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTCaseValueItem(ASTBase):
+    """第 2 种格式的 CASE 表达式的 WHEN ... THEN ... 语句节点"""
+
+    when: ASTExpressionBase = dataclasses.field(kw_only=True)
+    then: ASTExpressionBase = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"WHEN {self.when.source(sql_type)} THEN {self.then.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -802,14 +826,14 @@ class ASTCaseValueExpression(ASTExpressionBase):
     """
 
     case_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    cases: Tuple[Tuple[ASTExpressionBase, ASTExpressionBase], ...] = dataclasses.field(kw_only=True)
+    cases: Tuple[ASTCaseValueItem, ...] = dataclasses.field(kw_only=True)
     else_value: Optional[ASTExpressionBase] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         result = ["CASE", self.case_value.source(sql_type)]
-        for when, then in self.cases:
-            result.append(f"    WHEN {when.source(sql_type)} THEN {then.source(sql_type)}")
+        for item in self.cases:
+            result.append(f"    {item.source(sql_type)}")
         if self.else_value is not None:
             result.append(f"    ELSE {self.else_value.source(sql_type)}")
         result.append("END")
@@ -1041,19 +1065,29 @@ class ASTHavingClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderByClause(ASTBase):
-    """ORDER BY 子句"""
+class ASTOrderByItem(ASTBase):
+    """ORDER BY 子句中每一个字段及排序顺序的节点"""
 
-    columns: Tuple[Tuple[ASTExpressionBase, ASTOrderType], ...] = dataclasses.field(kw_only=True)
+    column: ASTExpressionBase = dataclasses.field(kw_only=True)  # 排序字段
+    order: ASTOrderType = dataclasses.field(kw_only=True)  # 排序类型
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        result = []
-        for column, order_type in self.columns:
-            if order_type.source(sql_type) == "ASC":
-                result.append(f"{column.source(sql_type)}")
-            else:
-                result.append(f"{column.source(sql_type)} DESC")
+        if self.order.source(sql_type) == "ASC":
+            return self.column.source(sql_type)
+        else:
+            return f"{self.column.source(sql_type)} DESC"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTOrderByClause(ASTBase):
+    """ORDER BY 子句"""
+
+    columns: Tuple[ASTOrderByItem, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        result = [column.source(sql_type) for column in self.columns]
         return "ORDER BY " + ", ".join(result)
 
 

@@ -552,7 +552,7 @@ class SQLParser:
 
     @classmethod
     def parse_case_expression(cls, scanner_or_string: Union[TokenScanner, str]
-                              ) -> Union[node.ASTCaseExpression, node.ASTCaseValueExpression]:
+                              ) -> Union[node.ASTCaseConditionExpression, node.ASTCaseValueExpression]:
         """解析 CASE 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
         scanner.match("CASE")
@@ -564,11 +564,11 @@ class SQLParser:
                 when_expression = cls.parse_condition_expression(scanner)
                 scanner.match("THEN")
                 case_expression = cls.parse_general_expression(scanner)
-                cases.append((when_expression, case_expression))
+                cases.append(node.ASTCaseConditionItem(when=when_expression, then=case_expression))
             if scanner.search_and_move("ELSE"):
                 else_value = cls.parse_general_expression(scanner)
             scanner.match("END")
-            return node.ASTCaseExpression(cases=tuple(cases), else_value=else_value)
+            return node.ASTCaseConditionExpression(cases=tuple(cases), else_value=else_value)
         # 第 2 种格式的 CASE 表达式
         case_value = cls.parse_general_expression(scanner)
         cases = []
@@ -577,7 +577,7 @@ class SQLParser:
             when_expression = cls.parse_general_expression(scanner)
             scanner.match("THEN")
             case_expression = cls.parse_general_expression(scanner)
-            cases.append((when_expression, case_expression))
+            cases.append(node.ASTCaseValueItem(when=when_expression, then=case_expression))
         if scanner.search_and_move("ELSE"):
             else_value = cls.parse_general_expression(scanner)
         scanner.match("END")
@@ -848,13 +848,12 @@ class SQLParser:
         def parse_single():
             column = cls.parse_general_expression(scanner)
             order = cls.parse_order_type(scanner)
-            columns.append((column, order))
+            return node.ASTOrderByItem(column=column, order=order)
 
         scanner.match("ORDER", "BY")
-        columns = []
-        parse_single()
+        columns = [parse_single()]
         while scanner.search_and_move(","):
-            parse_single()
+            columns.append(parse_single())
 
         return node.ASTOrderByClause(columns=tuple(columns))
 

@@ -50,9 +50,9 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
         # 如果是 ORDER BY 子句，则需要兼容使用字段序号的情况
         if isinstance(node, core.ASTOrderByClause):
             quote_column_list = []
-            for column, _ in node.columns:
-                if is_int_literal(column.source()):
-                    quote_column_list.append(QuoteColumn(column_name=None, column_idx=int(column.source())))
+            for column in node.columns:
+                if is_int_literal(column.column.source()):
+                    quote_column_list.append(QuoteColumn(column_name=None, column_idx=int(column.column.source())))
                 else:
                     quote_column_list.extend(cls.handle(column))
             return quote_column_list
