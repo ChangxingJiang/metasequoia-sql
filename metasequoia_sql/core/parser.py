@@ -976,20 +976,22 @@ class SQLParser:
         return node.ASTUnionSelectStatement(with_clause=with_clause, elements=tuple(result))
 
     @classmethod
-    def parse_config_name_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTConfigNameExpression:
+    def _get_config_name_expression(cls, scanner: TokenScanner) -> str:
         """解析配置名称表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string)
         config_name_list = [scanner.pop_as_source()]
         while scanner.search_and_move("."):
             config_name_list.append(scanner.pop_as_source())
-        return node.ASTConfigNameExpression(config_name=".".join(config_name_list))
+        return ".".join(config_name_list)
 
     @classmethod
-    def parse_config_value_expression(cls, scanner_or_string: Union[TokenScanner, str]
-                                      ) -> node.ASTConfigValueExpression:
-        """解析配置值表达式"""
+    def parse_config_string_expression(cls, scanner_or_string: Union[TokenScanner, str]
+                                       ) -> node.ASTConfigStringExpression:
+        """解析配置值为字符串的配置表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string)
-        return node.ASTConfigValueExpression(config_value=scanner.pop_as_source())
+        config_name = cls._get_config_name_expression(scanner)
+        scanner.match("=")
+        config_value = scanner.pop_as_source()
+        return node.ASTConfigStringExpression(config_name=config_name, config_value=config_value)
 
     @classmethod
     def parse_column_type_expression(cls, scanner_or_string: Union[TokenScanner, str]) -> node.ASTColumnTypeExpression:
@@ -1361,7 +1363,7 @@ class SQLParser:
         stored_as_inputformat: Optional[str] = None
         outputformat: Optional[str] = None
         location: Optional[str] = None
-        tblproperties: Optional[List[Tuple[node.ASTConfigNameExpression, node.ASTConfigValueExpression]]] = []
+        tblproperties: Optional[List[node.ASTConfigStringExpression]] = []
         while not scanner.is_finish:
             if scanner.search_and_move("ENGINE"):
                 scanner.search_and_move("=")
@@ -1402,10 +1404,7 @@ class SQLParser:
                 location = scanner.pop_as_source()
             elif scanner.search_and_move("TBLPROPERTIES"):
                 for group_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-                    config_name = cls.parse_config_name_expression(group_scanner)
-                    group_scanner.match("=")
-                    config_value = cls.parse_config_value_expression(group_scanner)
-                    tblproperties.append((config_name, config_value))
+                    tblproperties.append(cls.parse_config_string_expression(group_scanner))
                     group_scanner.close()
             else:
                 raise SqlParseError(f"未知的 DDL 表属性: {scanner}")

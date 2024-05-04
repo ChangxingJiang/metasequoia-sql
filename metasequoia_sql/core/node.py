@@ -6,8 +6,6 @@
 在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
-
-TODO 尽可能移除固定数量的元组
 """
 
 import abc
@@ -104,8 +102,7 @@ __all__ = [
     "ASTInsertSelectStatement",  # INSERT ... SELECT ... 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 CREATE TABLE 语句节点 ------------------------------
-    "ASTConfigNameExpression",  # 配置名称表达式
-    "ASTConfigValueExpression",  # 配置值表达式
+    "ASTConfigStringExpression",  # 配置值为字符串的配置表达式
     "ASTColumnTypeExpression",  # 字段类型表达式
     "ASTDefineColumnExpression",  # 字段定义表达式
     "ASTIndexColumn",  # 索引声明表达式中的字段
@@ -1310,28 +1307,17 @@ class ASTInsertSelectStatement(ASTInsertStatement):
         return f"{self._insert_str(sql_type)} {self.select_statement.source(sql_type)}"
 
 
-# ---------------------------------------- 配置名称和配置值表达式 ----------------------------------------
+# ---------------------------------------- 配置表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConfigNameExpression(ASTBase):
-    """配置名称表达式"""
+class ASTConfigStringExpression(ASTBase):
+    """配置值为字符窜的配置表达式"""
 
     config_name: str = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self.config_name
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConfigValueExpression(ASTBase):
-    """配置值表达式"""
-
     config_value: str = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return self.config_value
+        return f"{self.config_name}={self.config_value}"
 
 
 # ---------------------------------------- 字段类型表达式 ----------------------------------------
@@ -1527,7 +1513,7 @@ class ASTCreateTableStatement(ASTStatementBase):
     stored_as_inputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     outputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     location: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
-    tblproperties: Optional[Tuple[Tuple[ASTConfigNameExpression, ASTConfigValueExpression], ...]] = dataclasses.field(
+    tblproperties: Optional[Tuple[ASTConfigStringExpression, ...]] = dataclasses.field(
         kw_only=True, default=None)  # Hive
 
     def set_table_name(self, table_name_expression: ASTTableNameExpression) -> "ASTCreateTableStatement":
@@ -1618,8 +1604,7 @@ class ASTCreateTableStatement(ASTStatementBase):
         result += f" OUTPUTFORMAT {self.outputformat}" if self.outputformat is not None else ""
         result += f" LOCATION {self.location}" if self.location is not None else ""
         if len(self.tblproperties) > 0:
-            tblproperties_str = ", ".join([f"{config_name.source(SQLType.HIVE)}={config_value.source(SQLType.HIVE)}"
-                                           for config_name, config_value in self.tblproperties])
+            tblproperties_str = ", ".join([config.source(SQLType.HIVE) for config in self.tblproperties])
             result += f"TBLPROPERTIES ({tblproperties_str})"
         return result
 
