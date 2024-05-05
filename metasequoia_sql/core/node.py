@@ -118,7 +118,6 @@ __all__ = [
     "ASTUnionSelectStatement",  # SELECT 语句：UNION 了多个 SELECT 语句的组合后的 SELECT 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 INSERT 语句节点 ------------------------------
-    "ASTEqualExpression",  # 等式表达式
     "ASTPartitionExpression",  # 分区表达式
     "ASTInsertStatement",  # INSERT 语句
     "ASTInsertValuesStatement",  # INSERT ... VALUES ... 语句
@@ -1409,21 +1408,6 @@ class ASTUnionSelectStatement(ASTSelectStatement):
         return ASTUnionSelectStatement(**params)
 
 
-# ---------------------------------------- 等式表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTEqualExpression(ASTBase):
-    """等式表达式"""
-
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} = {self.after_value.source(sql_type)}"
-
-
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
@@ -1431,7 +1415,7 @@ class ASTEqualExpression(ASTBase):
 class ASTPartitionExpression(ASTBase):
     """分区表达式：PARTITION (<partition_expression>)"""
 
-    partitions: Tuple[ASTEqualExpression, ...] = dataclasses.field(kw_only=True)
+    partitions: Tuple[ASTBoolCompareExpression, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

@@ -20,10 +20,6 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 
 __all__ = ["SQLParser"]
 
-# 初始化类型元素
-ConditionElement = Union[
-    node.ASTGeneralExpression, node.ASTConditionExpressionBase, node.ASTLogicalOperator]  # 条件表达式中元素
-
 
 class SQLParser:
     # pylint: disable=R0904
@@ -1248,16 +1244,6 @@ class SQLParser:
         return node.ASTColumnTypeExpression(name=function_name)
 
     @classmethod
-    def parse_equal_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTEqualExpression:
-        """解析等式表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-        scanner.match("=")
-        after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-        return node.ASTEqualExpression(before_value=before_value, after_value=after_value)
-
-    @classmethod
     def check_partition_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                    sql_type: SQLType = SQLType.DEFAULT) -> bool:
         """判断是否可能为分区表达式"""
@@ -1272,7 +1258,15 @@ class SQLParser:
         scanner.match("PARTITION")
         partition_list = []
         for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            partition_list.append(cls.parse_equal_expression(partition_scanner, sql_type=sql_type))
+            before_value = cls.parse_polynomial_expression(partition_scanner, sql_type=sql_type)
+            operator = cls.parse_compare_operator(partition_scanner, sql_type=sql_type)
+            after_value = cls.parse_polynomial_expression(partition_scanner, sql_type=sql_type)
+            partition_list.append(node.ASTBoolCompareExpression(
+                is_not=False,
+                before_value=before_value,
+                operator=operator,
+                after_value=after_value
+            ))
             partition_scanner.close()
         return node.ASTPartitionExpression(partitions=tuple(partition_list))
 
