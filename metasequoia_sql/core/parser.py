@@ -129,7 +129,8 @@ class SQLParser:
         """判断是否为比较运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return (scanner.search("=") or scanner.search("!=") or scanner.search("<>") or scanner.search("<") or
-                scanner.search("<=") or scanner.search(">") or scanner.search(">=") or scanner.search("<>"))
+                scanner.search("<=") or scanner.search(">") or scanner.search(">=") or scanner.search("<>") or
+                scanner.search("<=>"))
 
     @classmethod
     def parse_compare_operator(cls, scanner_or_string: Union[TokenScanner, str],
@@ -143,7 +144,8 @@ class SQLParser:
             ">": node.EnumCompareOperator.GREATER_THAN,
             ">=": node.EnumCompareOperator.GREATER_THAN_OR_EQUAL,
             "!=": node.EnumCompareOperator.NOT_EQUAL_TO,
-            "<>": node.EnumCompareOperator.NOT_EQUAL_TO
+            "<>": node.EnumCompareOperator.NOT_EQUAL_TO,
+            "<=>": node.EnumCompareOperator.NOT_EQUAL_TO
         }
         compare_operator = compare_operator_hash.get(scanner.pop_as_source())
         if compare_operator is not None:

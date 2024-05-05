@@ -66,10 +66,17 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在 < 符号之后
     FSMStatus.AFTER_3C: {
-        "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<=
+        "=": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3C_3D),  # 符号：<=
         ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<>
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：<
+    },
+
+    # 在 < 符号之后
+    FSMStatus.AFTER_3C_3D: {
+        ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<=>
+        END: FSMOperate.raise_error(),
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：<=
     },
 
     # 在 > 符号之后

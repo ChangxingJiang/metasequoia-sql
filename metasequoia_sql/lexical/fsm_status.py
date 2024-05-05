@@ -19,6 +19,7 @@ class FSMStatus(enum.Enum):
     AFTER_2D = "在 - 符号之后"
     AFTER_2F = "在 / 符号之后"
     AFTER_3C = "在 < 符号之后"
+    AFTER_3C_3D = "在 <= 符号之后"
     AFTER_3E = "在 > 符号之后"
     AFTER_5B = "在 [ 符号之后"
     AFTER_7C = "在 | 符号之后"
