@@ -27,7 +27,7 @@ class CurrentLevelSubQuery(AnalyzerRecursionASTToDictBase):
     @classmethod
     def handle(cls, node: object) -> Dict[str, core.ASTSelectStatement]:
         """TODO 待支持不包含别名的子查询"""
-        if (isinstance(node, core.ASTTableExpression)
+        if (isinstance(node, core.ASTFromTableExpression)
                 and node.alias is not None and isinstance(node.name, core.ASTSubQueryExpression)):
             return {node.alias.name: node.name.statement}
         if isinstance(node, (core.ASTSubQueryExpression, core.ASTWithClause)):

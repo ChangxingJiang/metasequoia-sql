@@ -6,6 +6,8 @@
 在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
+
+TODO 将 Union 类型的转化为专门的 Type
 """
 
 import abc
@@ -28,6 +30,12 @@ __all__ = [
     "ASTConditionExpressionBase",  # 表达式的子类（第 3 层）：条件表达式的抽象基类
     "ASTGeneralExpressionBase",  # 表达式的子类（第 4 层）：一般表达式的抽象基类
 
+    # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
+    "TypePolynomialExpressionElement",  # 多项式节点的元素类型
+    "TypeConditionExpressionElement",  # 条件表达式的元素类型
+    "TypeGeneralExpressionElement",  # 一般表达式的元素类型
+    "TypeTableExpression",  # 表表达式（表名表达式或子查询表达式）
+
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "EnumInsertType", "ASTInsertType",  # 插入类型
     "EnumJoinType", "ASTJoinType",  # 关联类型
@@ -48,11 +56,6 @@ __all__ = [
     "ASTMultiAlisaExpression",  # 多个别名表达式
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
-    # 类型标注
-    "TypePolynomialExpressionElement",  # 多项式节点的元素类型
-    "TypeConditionExpressionElement",  # 条件表达式的元素类型
-    "TypeGeneralExpressionElement",  # 一般表达式的元素类型
-
     # 单项表达式层级
     "ASTColumnName",  # 列名表达式
     "ASTLiteralExpression",  # 字面值表达式
@@ -91,12 +94,12 @@ __all__ = [
     "ASTGeneralExpression",  # 条件表达式
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
-    "ASTOrderByItem",  # ORDER BY 子句元素：排序字段及排序顺序的组合
-    "ASTJoinExpression",  # 关联表达式：关联表达式的抽象类
-    "ASTJoinOnExpression",  # 关联表达式：使用 ON 关键字的关联表达式
-    "ASTJoinUsingExpression",  # 关联表达式：使用 USING 函数的关联表达式
-    "ASTTableExpression",  # 表表达式
-    "ASTColumnExpression",  # 列表达式
+    "ASTSelectColumnExpression",  # SELECT 子句元素：包含别名的列表达式
+    "ASTFromTableExpression",  # FROM 和 JOIN 子句元素：包含别名的表表达式
+    "ASTOrderByColumnExpression",  # ORDER BY 子句元素：包含排序字段及排序顺序的表达式
+    "ASTJoinExpression",  # JOIN 子句元素：关联表达式的抽象类
+    "ASTJoinOnExpression",  # JOIN 子句元素：使用 ON 关键字的关联表达式
+    "ASTJoinUsingExpression",  # JOIN 子句元素：使用 USING 函数的关联表达式
     "ASTSelectClause",  # SELECT 子句
     "ASTFromClause",  # FROM 子句
     "ASTLateralViewClause",  # LATERAL VIEW 子句
@@ -124,6 +127,7 @@ __all__ = [
     "ASTInsertSelectStatement",  # INSERT ... SELECT ... 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 CREATE TABLE 语句节点 ------------------------------
+    "TypeColumnOrIndex",  # DDL 的字段或索引类型
     "ASTConfigStringExpression",  # 配置值为字符串的配置表达式
     "ASTColumnTypeExpression",  # 字段类型表达式
     "ASTDefineColumnExpression",  # 字段定义表达式
@@ -134,7 +138,6 @@ __all__ = [
     "ASTNormalIndexExpression",  # 普通索引声明表达式
     "ASTFulltextIndexExpression",  # 全文本索引声明表达式
     "ASTForeignKeyExpression",  # 声明外键表达式
-    "TypeColumnOrIndex",  # DDL 的字段或索引类型
     "ASTCreateTableStatement",  # CREATE TABLE 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 DROP TABLE 语句节点 ------------------------------
@@ -650,7 +653,7 @@ class ASTMultiAlisaExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderByItem(ASTBase):
+class ASTOrderByColumnExpression(ASTBase):
     """ORDER BY 子句中每一个字段及排序顺序的节点"""
 
     column: ASTExpressionBase = dataclasses.field(kw_only=True)  # 排序字段
@@ -861,7 +864,7 @@ class ASTWindowExpression(ASTMonomialExpressionBase):
 
     window_function: Union[ASTNormalFunctionExpression, ASTArrayIndexExpression] = dataclasses.field(kw_only=True)
     partition_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
-    order_by_columns: Tuple[ASTOrderByItem, ...] = dataclasses.field(kw_only=True)
+    order_by_columns: Tuple[ASTOrderByColumnExpression, ...] = dataclasses.field(kw_only=True)
     row_expression: Optional[ASTWindowRow] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1056,11 +1059,14 @@ class ASTJoinUsingExpression(ASTJoinExpression):
 # ---------------------------------------- 表表达式 ----------------------------------------
 
 
+TypeTableExpression = Union[ASTTableName, ASTSubQueryExpression]  # 表表达式（表名表达式或子查询表达式）
+
+
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTTableExpression(ASTBase):
+class ASTFromTableExpression(ASTBase):
     """表表达式"""
 
-    name: Union[ASTTableName, ASTSubQueryExpression] = dataclasses.field(kw_only=True)
+    name: TypeTableExpression = dataclasses.field(kw_only=True)
     alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1074,8 +1080,8 @@ class ASTTableExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTColumnExpression(ASTBase):
-    """列表达式"""
+class ASTSelectColumnExpression(ASTBase):
+    """在 SELECT 语句中的每一列的表达式"""
 
     value: ASTExpressionBase = dataclasses.field(kw_only=True)
     alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
@@ -1095,7 +1101,7 @@ class ASTSelectClause(ASTBase):
     """SELECT 子句"""
 
     distinct: bool = dataclasses.field(kw_only=True)
-    columns: Tuple[ASTColumnExpression, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[ASTSelectColumnExpression, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1112,7 +1118,7 @@ class ASTSelectClause(ASTBase):
 class ASTFromClause(ASTBase):
     """FROM 子句"""
 
-    tables: Tuple[ASTTableExpression, ...] = dataclasses.field(kw_only=True)
+    tables: Tuple[ASTFromTableExpression, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1145,7 +1151,7 @@ class ASTJoinClause(ASTBase):
     """JOIN 子句"""
 
     type: ASTJoinType = dataclasses.field(kw_only=True)
-    table: ASTTableExpression = dataclasses.field(kw_only=True)
+    table: ASTFromTableExpression = dataclasses.field(kw_only=True)
     rule: Optional[ASTJoinExpression] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1228,7 +1234,7 @@ class ASTHavingClause(ASTBase):
 class ASTOrderByClause(ASTBase):
     """ORDER BY 子句"""
 
-    columns: Tuple[ASTOrderByItem, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[ASTOrderByColumnExpression, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1243,7 +1249,7 @@ class ASTOrderByClause(ASTBase):
 class ASTSortByClause(ASTBase):
     """SORT BY 子句（Hive）"""
 
-    columns: Tuple[ASTOrderByItem, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[ASTOrderByColumnExpression, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

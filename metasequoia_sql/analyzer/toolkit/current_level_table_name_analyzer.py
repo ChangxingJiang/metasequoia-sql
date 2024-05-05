@@ -33,7 +33,7 @@ class CurrentLevelTableNameAnalyzer(AnalyzerRecursionASTToDictBase):
     @classmethod
     def handle(cls, node: object) -> Dict[str, StandardTable]:
         """TODO 待支持无别名子查询"""
-        if isinstance(node, core.ASTTableExpression):
+        if isinstance(node, core.ASTFromTableExpression):
             if isinstance(node.name, core.ASTTableName):
                 alias_name = node.alias.name if node.alias is not None else node.name.table_name
                 standard_table = StandardTable(schema_name=node.name.schema_name, table_name=node.name.table_name)

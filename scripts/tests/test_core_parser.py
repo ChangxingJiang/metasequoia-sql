@@ -66,16 +66,25 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_literal_expression("NULL WHERE"))
         self.assertFalse(SQLParser.check_literal_expression("cnt WHERE"))
         self.assertFalse(SQLParser.check_literal_expression("table_name.column_name WHERE"))
-        self.assertEqual(SQLParser.parse_literal_expression("1 WHERE").source(SQLType.MYSQL), "1")
-        self.assertEqual(SQLParser.parse_literal_expression("2.5 WHERE").source(SQLType.MYSQL), "2.5")
-        self.assertEqual(SQLParser.parse_literal_expression("'a' WHERE").source(SQLType.MYSQL), "'a'")
-        self.assertEqual(SQLParser.parse_literal_expression("x'3f' WHERE").source(SQLType.MYSQL), "x'3f'")
-        self.assertEqual(SQLParser.parse_literal_expression("TRUE WHERE").source(SQLType.MYSQL), "TRUE")
-        self.assertEqual(SQLParser.parse_literal_expression("true WHERE").source(SQLType.MYSQL), "true")
-        self.assertEqual(SQLParser.parse_literal_expression("False WHERE").source(SQLType.MYSQL), "False")
-        self.assertEqual(SQLParser.parse_literal_expression("b'1' WHERE").source(SQLType.MYSQL), "b'1'")
-        self.assertEqual(SQLParser.parse_literal_expression("null WHERE").source(SQLType.MYSQL), "null")
-        self.assertEqual(SQLParser.parse_literal_expression("NULL WHERE").source(SQLType.MYSQL), "NULL")
+        self.assertEqual(SQLParser.parse_literal_expression("1 WHERE", unary_operator=None).source(SQLType.MYSQL), "1")
+        self.assertEqual(SQLParser.parse_literal_expression("2.5 WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "2.5")
+        self.assertEqual(SQLParser.parse_literal_expression("'a' WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "'a'")
+        self.assertEqual(SQLParser.parse_literal_expression("x'3f' WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "x'3f'")
+        self.assertEqual(SQLParser.parse_literal_expression("TRUE WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "TRUE")
+        self.assertEqual(SQLParser.parse_literal_expression("true WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "true")
+        self.assertEqual(SQLParser.parse_literal_expression("False WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "False")
+        self.assertEqual(SQLParser.parse_literal_expression("b'1' WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "b'1'")
+        self.assertEqual(SQLParser.parse_literal_expression("null WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "null")
+        self.assertEqual(SQLParser.parse_literal_expression("NULL WHERE", unary_operator=None).source(SQLType.MYSQL),
+                         "NULL")
 
     def test_column_name_expression(self):
         """测试判断、解析列名表达式"""
@@ -86,11 +95,14 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_column_name_expression("trim(column_name) AND"))
         self.assertFalse(SQLParser.check_column_name_expression("2.5 WHERE"))
         self.assertTrue(SQLParser.check_column_name_expression("column_name WHERE"))
-        self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(SQLType.MYSQL),
-                         "`schema`.`column`")
-        self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(SQLType.MYSQL), "`s`.`c`")
-        self.assertEqual(SQLParser.parse_column_name_expression("column_name WHERE").source(SQLType.MYSQL),
-                         "`column_name`")
+        self.assertEqual(
+            SQLParser.parse_column_name_expression("schema.column AND", unary_operator=None).source(SQLType.MYSQL),
+            "`schema`.`column`")
+        self.assertEqual(
+            SQLParser.parse_column_name_expression("`s`.`c` AND", unary_operator=None).source(SQLType.MYSQL), "`s`.`c`")
+        self.assertEqual(
+            SQLParser.parse_column_name_expression("column_name WHERE", unary_operator=None).source(SQLType.MYSQL),
+            "`column_name`")
 
     def test_function_expression(self):
         """测试判断、解析函数表达式"""
@@ -109,7 +121,8 @@ class TestCoreParser(unittest.TestCase):
     def test_bool_expression(self):
         """测试解析布尔值表达式"""
         self.assertEqual(SQLParser.parse_condition_expression("column1 > 3").source(SQLType.MYSQL), "`column1` > 3")
-        self.assertEqual(SQLParser.parse_condition_expression("t2.column1 > 3").source(SQLType.MYSQL), "`t2`.`column1` > 3")
+        self.assertEqual(SQLParser.parse_condition_expression("t2.column1 > 3").source(SQLType.MYSQL),
+                         "`t2`.`column1` > 3")
         self.assertEqual(SQLParser.parse_condition_expression("t2.column1 + 3 > 3").source(SQLType.MYSQL),
                          "`t2`.`column1` + 3 > 3")
         self.assertEqual(SQLParser.parse_condition_expression("column1 BETWEEN 3 AND 4").source(SQLType.MYSQL),
@@ -124,7 +137,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertFalse(SQLParser.check_window_expression("3 + 5"))
         self.assertEqual(
             SQLParser.parse_window_expression(
-                "ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3").source(
+                "ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3", unary_operator=None).source(
                 SQLType.MYSQL),
             "ROW_NUMBER() OVER (PARTITION BY `column1` ORDER BY `column2`)")
 
@@ -133,8 +146,8 @@ class TestCoreParser(unittest.TestCase):
         self.assertTrue(SQLParser.check_wildcard_expression("*"))
         self.assertTrue(SQLParser.check_wildcard_expression("t1.*"))
         self.assertFalse(SQLParser.check_wildcard_expression("t1"))
-        self.assertEqual(SQLParser.parse_wildcard_expression("*").source(SQLType.MYSQL), "*")
-        self.assertEqual(SQLParser.parse_wildcard_expression("t1.*").source(SQLType.MYSQL), "t1.*")
+        self.assertEqual(SQLParser.parse_wildcard_expression("*", unary_operator=None).source(SQLType.MYSQL), "*")
+        self.assertEqual(SQLParser.parse_wildcard_expression("t1.*", unary_operator=None).source(SQLType.MYSQL), "t1.*")
 
     def test_condition_expression(self):
         """测试解析条件表达式"""
@@ -151,8 +164,10 @@ class TestCoreParser(unittest.TestCase):
         """测试判断、解析 CASE 表达式"""
         self.assertTrue(SQLParser.check_case_expression("CASE WHEN 2 THEN 3 ELSE 4 END"))
         self.assertFalse(SQLParser.check_case_expression("3 + 5"))
-        self.assertEqual(SQLParser.parse_case_expression("CASE WHEN a > 2 THEN 3 ELSE 4 END").source(SQLType.MYSQL),
-                         "CASE WHEN `a` > 2 THEN 3 ELSE 4 END")
+        self.assertEqual(
+            SQLParser.parse_case_expression("CASE WHEN a > 2 THEN 3 ELSE 4 END", unary_operator=None).source(
+                SQLType.MYSQL),
+            "CASE WHEN `a` > 2 THEN 3 ELSE 4 END")
 
     def test_table_name_expression(self):
         """测试解析报名表达式"""
@@ -303,11 +318,10 @@ class TestCoreParser(unittest.TestCase):
 
         demo_sql = "spark.serializer=org.apache.spark.serializer.KryoSerializer"
         ast_node = SQLParser.parse_config_string_expression(demo_sql)
-        self.assertEqual(ast_node.name,  "spark.serializer")
+        self.assertEqual(ast_node.name, "spark.serializer")
         self.assertEqual(ast_node.value, "org.apache.spark.serializer.KryoSerializer")
 
         demo_sql = "spark.hadoop.parquet.enable.summary-metadata=false"
         ast_node = SQLParser.parse_config_string_expression(demo_sql)
-        self.assertEqual(ast_node.name,  "spark.hadoop.parquet.enable.summary-metadata")
-        self.assertEqual(ast_node.value,  "false")
-
+        self.assertEqual(ast_node.name, "spark.hadoop.parquet.enable.summary-metadata")
+        self.assertEqual(ast_node.value, "false")

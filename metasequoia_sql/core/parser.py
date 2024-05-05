@@ -7,6 +7,7 @@ SQL 语法解析器
 如需替换词法解析器，重写 build_token_scanner 方法即可。
 
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
+TODO 兼容各个场景下额外添加的括号
 """
 
 from typing import Optional, Tuple, List, Union
@@ -806,27 +807,36 @@ class SQLParser:
         raise SqlParseError(f"无法解析为关联表达式: {scanner}")
 
     @classmethod
-    def parse_table_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTTableExpression:
+    def parse_type_table_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                    sql_type: SQLType = SQLType.DEFAULT) -> node.TypeTableExpression:
         """解析表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
-            table_name_expression = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
+        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):  # 子查询
+            return cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
+        elif scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
+            return cls.parse_type_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
         else:
-            table_name_expression = cls.parse_table_name_expression(scanner, sql_type=sql_type)
+            return cls.parse_table_name_expression(scanner, sql_type=sql_type)  # 表名
+
+    @classmethod
+    def parse_table_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTFromTableExpression:
+        """解析 FROM 和 JOIN 子句元素：包含别名的表表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        name_expression = cls.parse_type_table_expression(scanner, sql_type=sql_type)
         alias_expression = (cls.parse_alias_expression(scanner, sql_type=sql_type)
                             if cls.check_alias_expression(scanner, sql_type=sql_type) else None)
-        return node.ASTTableExpression(name=table_name_expression, alias=alias_expression)
+        return node.ASTFromTableExpression(name=name_expression, alias=alias_expression)
 
     @classmethod
     def parse_column_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTColumnExpression:
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSelectColumnExpression:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         general_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         alias_expression = (cls.parse_alias_expression(scanner, sql_type=sql_type)
                             if cls.check_alias_expression(scanner, sql_type=sql_type) else None)
-        return node.ASTColumnExpression(value=general_expression, alias=alias_expression)
+        return node.ASTSelectColumnExpression(value=general_expression, alias=alias_expression)
 
     @classmethod
     def check_select_clause(cls, scanner_or_string: Union[TokenScanner, str],
@@ -981,10 +991,11 @@ class SQLParser:
         return scanner.search("ORDER", "BY")
 
     @classmethod
-    def _parse_order_by_item(cls, scanner: TokenScanner, sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByItem:
+    def _parse_order_by_item(cls, scanner: TokenScanner,
+                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumnExpression:
         column = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         order = cls.parse_order_type(scanner, sql_type=sql_type)
-        return node.ASTOrderByItem(column=column, order=order)
+        return node.ASTOrderByColumnExpression(column=column, order=order)
 
     @classmethod
     def parse_order_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
