@@ -1727,6 +1727,84 @@ class SQLParser:
         )
 
     @classmethod
+    def parse_type_column_or_index(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.TypeColumnOrIndex:
+        """解析字段声明表达式或索引声明表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        if cls.check_primary_index_expression(scanner, sql_type=sql_type):
+            return cls.parse_primary_index_expression(scanner, sql_type=sql_type)
+        elif cls.check_unique_index_expression(scanner, sql_type=sql_type):
+            return cls.parse_unique_index_expression(scanner, sql_type=sql_type)
+        elif cls.check_normal_index_expression(scanner, sql_type=sql_type):
+            return cls.parse_normal_index_expression(scanner, sql_type=sql_type)
+        elif cls.check_fulltext_expression(scanner, sql_type=sql_type):
+            return cls.parse_fulltext_expression(scanner, sql_type=sql_type)
+        elif cls.check_foreign_key_expression(scanner, sql_type=sql_type):
+            return cls.parse_foreign_key_expression(scanner, sql_type=sql_type)
+        return cls.parse_define_column_expression(scanner, sql_type=sql_type)
+
+    @classmethod
+    def parse_alter_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAlterExpressionBase:
+        """解析 ALTER TABLE 的子句表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        if scanner.search_and_move("ADD"):
+            return node.ASTAlterAddExpression(
+                expression=cls.parse_type_column_or_index(scanner, sql_type=sql_type)
+            )
+        if scanner.search_and_move("MODIFY"):
+            return node.ASTAlterModifyExpression(
+                expression=cls.parse_type_column_or_index(scanner, sql_type=sql_type)
+            )
+        if scanner.search_and_move("CHANGE"):
+            from_column_name = unify_name(scanner.pop_as_source())
+            to_expression = cls.parse_type_column_or_index(scanner, sql_type=sql_type)
+            return node.ASTAlterChangeExpression(
+                from_column_name=from_column_name,
+                to_expression=to_expression
+            )
+        if scanner.search_and_move("RENAME", "COLUMN"):
+            from_column_name = unify_name(scanner.pop_as_source())
+            scanner.match("TO")
+            to_column_name = unify_name(scanner.pop_as_source())
+            return node.ASTAlterRenameColumnExpression(
+                from_column_name=from_column_name,
+                to_column_name=to_column_name
+            )
+        if scanner.search_and_move("DROP", "COLUMN"):
+            return node.ASTAlterDropColumnExpression(
+                column_name=unify_name(scanner.pop_as_source())
+            )
+        if scanner.search("DROP", "PARTITION"):
+            scanner.match("DROP")
+            return node.ASTAlterDropPartitionExpression(
+                partition=cls.parse_partition_expression(scanner, sql_type=sql_type)
+            )
+        raise SqlParseError(f"未知的 ALTER TABLE 类型: {scanner}")
+
+    @classmethod
+    def check_alter_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                    sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否为 ALTER TABLE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("ALTER", "TABLE")
+
+    @classmethod
+    def parse_alter_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAlterTableStatement:
+        """解析 ALTER TABLE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("ALTER", "TABLE")
+        table_name = cls.parse_table_name_expression(scanner, sql_type=sql_type)
+        expressions = [cls.parse_alter_expression(scanner, sql_type=sql_type)]
+        while scanner.search_and_move(","):
+            expressions.append(cls.parse_alter_expression(scanner, sql_type=sql_type))
+        return node.ASTAlterTableStatement(
+            table_name=table_name,
+            expressions=tuple(expressions)
+        )
+
+    @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
                          sql_type: SQLType = SQLType.DEFAULT) -> List[node.ASTStatementBase]:
         """解析一段 SQL 语句，返回表达式的列表"""
@@ -1734,7 +1812,7 @@ class SQLParser:
         statement_list = []
         while not scanner.is_finish:
             # 解析 SET 语句
-            if scanner.search("SET"):
+            if cls.check_set_statement(scanner, sql_type=sql_type):
                 statement_list.append(cls.parse_set_statement(scanner, sql_type=sql_type))
 
             # 解析 DROP TABLE 语句
@@ -1748,6 +1826,10 @@ class SQLParser:
             # 解析 ANALYZE TABLE 语句
             elif scanner.search("ANALYZE", "TABLE"):
                 statement_list.append(cls.parse_analyze_table_statement(scanner, sql_type=sql_type))
+
+            # 解析 ALTER TABLE 语句
+            elif cls.check_alter_table_statement(scanner, sql_type=sql_type):
+                statement_list.append(cls.parse_alter_table_statement(scanner, sql_type=sql_type))
 
             else:
                 # 解析可能包含 WITH 子句的语句类型

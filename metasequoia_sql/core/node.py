@@ -135,6 +135,7 @@ __all__ = [
     "ASTNormalIndexExpression",  # 普通索引声明表达式
     "ASTFulltextIndexExpression",  # 全文本索引声明表达式
     "ASTForeignKeyExpression",  # 声明外键表达式
+    "TypeColumnOrIndex",  # DDL 的字段或索引类型
     "ASTCreateTableStatement",  # CREATE TABLE 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 DROP TABLE 语句节点 ------------------------------
@@ -145,6 +146,16 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 ANALYZE TABLE 语句节点 ------------------------------
     "ASTAnalyzeTableStatement",  # ANALYZE TABLE 语句
+
+    # ------------------------------ 抽象语法树（AST）节点的 ALTER TABLE 语句节点 ------------------------------
+    "ASTAlterExpressionBase",  # ALTER TABLE 语句的子句表达式的抽象基类
+    "ASTAlterAddExpression",  # ALTER TABLE 语句的 ADD 子句
+    "ASTAlterModifyExpression",  # ALTER TABLE 语句的 MODIFY 子句
+    "ASTAlterChangeExpression",  # ALTER TABLE 语句的 CHANGE 子句
+    "ASTAlterDropColumnExpression",  # ALTER TABLE 语句的 DROP COLUMN 子句
+    "ASTAlterDropPartitionExpression",  # ALTER TABLE 语句的 DROP PARTITION 子句
+    "ASTAlterRenameColumnExpression",  # ALTER TABLE 语句的 RENAME ... TO ... 子句
+    "ASTAlterTableStatement",  # ALTER TABLE 语句
 ]
 
 
@@ -1451,7 +1462,7 @@ class ASTInsertStatement(ASTStatementBase, abc.ABC):
     def _insert_str(self, sql_type: SQLType) -> str:
         insert_type_str = self.insert_type.source(sql_type)
         table_keyword_str = "TABLE " if sql_type == SQLType.HIVE else ""
-        partition_str = self.partition.source(sql_type) + " " if self.partition is not None else ""
+        partition_str = f"{self.partition.source(sql_type)} " if self.partition is not None else ""
         if self.columns is not None:
             columns_str = "(" + ", ".join(column.source(sql_type) for column in self.columns) + ") "
         else:
@@ -1661,6 +1672,9 @@ class ASTForeignKeyExpression(ASTBase):
                 f"REFERENCES {self.master_table_name} ({master_columns_str}){on_delete_cascade_str}")
 
 
+TypeColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, ASTForeignKeyExpression]  # DDL 的字段或索引类型
+
+
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1825,7 +1839,7 @@ class ASTAnalyzeTableStatement(ASTStatementBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if sql_type == SQLType.HIVE:
-            partition_str = self.partition.source(sql_type) + " " if self.partition is not None else ""
+            partition_str = f"{self.partition.source(sql_type)} " if self.partition is not None else ""
             for_columns_str = " FOR COLUMNS" if self.for_columns else ""
             cache_metadata_str = " CACHE METADATA" if self.cache_metadata else ""
             noscan_str = " NOSCAN" if self.noscan else ""
@@ -1834,3 +1848,89 @@ class ASTAnalyzeTableStatement(ASTStatementBase):
         if sql_type == SQLType.MYSQL:
             return f"ANALYZE TABLE {self.table_name.source(sql_type)}"
         raise UnSupportSqlTypeError(f"ANALYZE TABLE 语句不支持数据类型: {sql_type}")
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterExpressionBase(ASTBase, abc.ABC):
+    """ALTER TABLE 更新语句的抽象基类"""
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterAddExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 ADD 子句"""
+
+    expression: TypeColumnOrIndex = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"ADD {self.expression.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterModifyExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 MODIFY 子句"""
+
+    expression: TypeColumnOrIndex = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"MODIFY {self.expression.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterChangeExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 CHANGE 子句"""
+
+    from_column_name: str = dataclasses.field(kw_only=True)
+    to_expression: TypeColumnOrIndex = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"CHANGE {self.from_column_name} {self.to_expression.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterRenameColumnExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 RENAME COLUMN 子句"""
+
+    from_column_name: str = dataclasses.field(kw_only=True)
+    to_column_name: str = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"RENAME COLUMN {self.from_column_name} TO {self.to_column_name}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterDropColumnExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 DROP COLUMN 子句"""
+
+    column_name: str = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"DROP COLUMN {self.column_name}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterDropPartitionExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 DROP PARTITION 子句"""
+
+    partition: ASTPartitionExpression = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"DROP {self.partition.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterTableStatement(ASTStatementBase):
+    """ALTER TABLE 语句"""
+
+    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    expressions: Tuple[ASTAlterExpressionBase, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        expressions_str = ",\n".join(expression.source(sql_type) for expression in self.expressions)
+        return f"ALTER TABLE {self.table_name.source(sql_type)} \n{expressions_str}"
