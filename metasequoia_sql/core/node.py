@@ -34,7 +34,8 @@ __all__ = [
     "TypePolynomialExpressionElement",  # 多项式节点的元素类型
     "TypeConditionExpressionElement",  # 条件表达式的元素类型
     "TypeGeneralExpressionElement",  # 一般表达式的元素类型
-    "TypeTableExpression",  # 表表达式（表名表达式或子查询表达式）
+    "TypeTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
+    "TypeCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "EnumInsertType", "ASTInsertType",  # 插入类型
@@ -139,6 +140,7 @@ __all__ = [
     "ASTFulltextIndexExpression",  # 全文本索引声明表达式
     "ASTForeignKeyExpression",  # 声明外键表达式
     "ASTCreateTableStatement",  # CREATE TABLE 语句
+    "ASTCreateTableAsStatement",  # CREATE TABLE ... AS ... 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 DROP TABLE 语句节点 ------------------------------
     "ASTDropTableStatement",  # DROP TABLE 语句
@@ -1667,6 +1669,7 @@ TypeColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, AST
 
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
 
+
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTCreateTableStatement(ASTStatementBase):
     # pylint: disable=R0902 忽略对象属性过多的问题
@@ -1794,6 +1797,21 @@ class ASTCreateTableStatement(ASTStatementBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTCreateTableAsStatement(ASTStatementBase):
+    """CREATE TABLE ... AS ... 语句"""
+
+    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    select_statement: ASTSelectStatement = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"CREATE TABLE {self.table_name.source(sql_type)} AS {self.select_statement.source(sql_type)}"
+
+
+TypeCreateTableStatement = Union[ASTCreateTableStatement, ASTCreateTableAsStatement]
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTDropTableStatement(ASTStatementBase):
     """DROP TABLE 语句"""
 
@@ -1801,6 +1819,7 @@ class ASTDropTableStatement(ASTStatementBase):
     table_name: ASTTableName = dataclasses.field(kw_only=True)  # 表名
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
         if_exists_str = "IF EXISTS " if self.if_exists is True else ""
         return f"DROP TABLE {if_exists_str}{self.table_name.source(sql_type)}"
 

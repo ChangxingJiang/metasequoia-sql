@@ -1578,7 +1578,7 @@ class SQLParser:
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
                                      sql_type: SQLType = SQLType.DEFAULT
-                                     ) -> node.ASTCreateTableStatement:
+                                     ) -> node.TypeCreateTableStatement:
         # pylint: disable=R0912
         # pylint: disable=R0914
         # pylint: disable=R0915
@@ -1587,7 +1587,15 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("CREATE", "TABLE")
         if_not_exists = scanner.search_and_move("IF", "NOT", "EXISTS")
-        table_name_expression = cls.parse_table_name_expression(scanner, sql_type=sql_type)
+        table_name = cls.parse_table_name_expression(scanner, sql_type=sql_type)
+
+        # CREATE TABLE ... AS ... 语句
+        if scanner.search_and_move("AS"):
+            select_statement = cls.parse_select_statement(scanner, sql_type=sql_type)
+            return node.ASTCreateTableAsStatement(
+                table_name=table_name,
+                select_statement=select_statement
+            )
 
         # 解析字段和索引
         columns: List[node.ASTDefineColumnExpression] = []
@@ -1672,7 +1680,7 @@ class SQLParser:
         scanner.search_and_move(";")
 
         return node.ASTCreateTableStatement(
-            table_name=table_name_expression,
+            table_name=table_name,
             comment=comment,
             if_not_exists=if_not_exists,
             columns=tuple(columns),
