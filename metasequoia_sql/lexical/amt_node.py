@@ -65,7 +65,7 @@ class AMTBase(abc.ABC):
         """判断当前 AMT 节点是否与一段源代码相同"""
         if isinstance(other, AMTMark):
             return other in self.marks  # 枚举类的类型标记
-        if len(other) >= 3 and other.startswith("<") and other.endswith(">"):
+        if other not in {"<>", "<=>"} and other.startswith("<") and other.endswith(">"):
             return MARK_HASH.get(other) in self.marks  # 字符串格式的类型标记
         return self.source.upper() == other.upper()  # 字符串格式文本
 
