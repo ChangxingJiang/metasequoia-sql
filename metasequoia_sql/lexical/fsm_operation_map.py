@@ -108,6 +108,7 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.AFTER_B: {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_DOUBLE_QUOTE),  # 位值字面值
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_SINGLE_QUOTE),  # 位值字面值
+        ".": FSMOperate.handle_cache_word_to_wait(),
         char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks={AMTMark.NAME}),  # b 或 B
         END: FSMOperate.handle_cache_to_end(marks={AMTMark.NAME}),  # b 或 B
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)
@@ -117,6 +118,7 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.AFTER_X: {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_DOUBLE_QUOTE),  # 十六进制字面值
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_SINGLE_QUOTE),  # 十六进制字面值
+        ".": FSMOperate.handle_cache_word_to_wait(),
         char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks={AMTMark.NAME}),  # x 或 X
         END: FSMOperate.handle_cache_to_end(marks={AMTMark.NAME}),  # x 或 X
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)

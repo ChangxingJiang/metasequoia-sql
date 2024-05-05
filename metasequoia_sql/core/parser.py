@@ -229,7 +229,7 @@ class SQLParser:
         if (scanner.search(AMTMark.NAME, ".", AMTMark.NAME) and
                 not scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS)):
             table_name = scanner.pop_as_source()
-            scanner.pop()
+            scanner.match(".")
             column_name = scanner.pop_as_source()
             return node.ASTColumnName(
                 unary_operator=unary_operator,
