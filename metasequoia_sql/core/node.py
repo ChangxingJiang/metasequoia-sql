@@ -85,6 +85,7 @@ __all__ = [
     # 条件表达式层级
     "ASTConditionExpression",  # 布尔值表达式
     "ASTBoolCompareExpression",  # 布尔值表达式：使用比较运算符的布尔值表达式
+    "ASTBoolOperatorExpression",  # 布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类
     "ASTBoolIsExpression",  # 布尔值表达式：使用 IS 的布尔值表达式
     "ASTBoolInExpression",  # 布尔值表达式：使用 IN 的布尔值表达式
     "ASTBoolLikeExpression",  # 布尔值表达式：使用 LIKE 的布尔值表达式
@@ -165,6 +166,8 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 MCSK REPAIR TABLE 语句节点 ------------------------------
     "ASTMsckRepairTableStatement",  # MSCK REPAIR TABLE 语句
+
+    "ASTUseStatement",
 ]
 
 
@@ -748,15 +751,15 @@ class ASTConditionExpression(ASTConditionExpressionBase, abc.ABC):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class SQLBoolOperatorExpression(ASTConditionExpression, abc.ABC):
-    """通过运算符或关键字比较运算符前后两个表达式的布尔值表达式"""
+class ASTBoolOperatorExpression(ASTConditionExpression, abc.ABC):
+    """布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类"""
 
     before_value: ASTPolynomialExpressionBase = dataclasses.field(kw_only=True)
     after_value: ASTPolynomialExpressionBase = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolCompareExpression(SQLBoolOperatorExpression):
+class ASTBoolCompareExpression(ASTBoolOperatorExpression):
     """比较运算符布尔值表达式"""
 
     operator: ASTCompareOperator = dataclasses.field(kw_only=True)
@@ -769,7 +772,7 @@ class ASTBoolCompareExpression(SQLBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolIsExpression(SQLBoolOperatorExpression):
+class ASTBoolIsExpression(ASTBoolOperatorExpression):
     """IS运算符布尔值表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -779,7 +782,7 @@ class ASTBoolIsExpression(SQLBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolInExpression(SQLBoolOperatorExpression):
+class ASTBoolInExpression(ASTBoolOperatorExpression):
     """In 关键字的布尔值表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -789,7 +792,7 @@ class ASTBoolInExpression(SQLBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolLikeExpression(SQLBoolOperatorExpression):
+class ASTBoolLikeExpression(ASTBoolOperatorExpression):
     """LIKE 运算符关联表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -799,7 +802,7 @@ class ASTBoolLikeExpression(SQLBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolRlikeExpression(SQLBoolOperatorExpression):
+class ASTBoolRlikeExpression(ASTBoolOperatorExpression):
     """RLIKE 运算符关联表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -809,7 +812,7 @@ class ASTBoolRlikeExpression(SQLBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolRegexpExpression(SQLBoolOperatorExpression):
+class ASTBoolRegexpExpression(ASTBoolOperatorExpression):
     """RLIKE 运算符关联表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1962,3 +1965,14 @@ class ASTMsckRepairTableStatement(ASTStatementBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"MSCK REPAIR TABLE {self.table_name.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTUseStatement(ASTStatementBase):
+    """USE 语句"""
+
+    schema_name: str = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"USE {self.schema_name}"
