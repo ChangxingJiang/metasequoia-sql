@@ -1853,6 +1853,23 @@ class SQLParser:
         )
 
     @classmethod
+    def check_use_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                            sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否为 USE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("USE")
+
+    @classmethod
+    def parse_use_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUseStatement:
+        """解析 USE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("USE")
+        return node.ASTUseStatement(
+            schema_name=scanner.pop_as_source()
+        )
+
+    @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
                          sql_type: SQLType = SQLType.DEFAULT) -> List[node.ASTStatementBase]:
         """解析一段 SQL 语句，返回表达式的列表"""
@@ -1882,6 +1899,10 @@ class SQLParser:
             # 解析 MSCK REPAIR TABLE 语句
             elif cls.check_msck_repair_table_statement(scanner, sql_type=sql_type):
                 statement_list.append(cls.parse_msck_repair_table_statement(scanner, sql_type=sql_type))
+
+            # 解析 USE 语句
+            elif cls.check_use_statement(scanner, sql_type=sql_type):
+                statement_list.append(cls.parse_use_statement(scanner, sql_type=sql_type))
 
             else:
                 # 解析可能包含 WITH 子句的语句类型

@@ -167,7 +167,8 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的 MCSK REPAIR TABLE 语句节点 ------------------------------
     "ASTMsckRepairTableStatement",  # MSCK REPAIR TABLE 语句
 
-    "ASTUseStatement",
+    # ------------------------------ 抽象语法树（AST）节点的 USE 语句节点 ------------------------------
+    "ASTUseStatement",  # USE 语句
 ]
 
 
