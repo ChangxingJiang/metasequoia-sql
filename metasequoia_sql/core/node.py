@@ -8,6 +8,7 @@
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
 TODO 将 Union 类型的转化为专门的 Type
+TODO 给通用表达式增加不同返回值类型的子类
 """
 
 import abc
@@ -36,6 +37,7 @@ __all__ = [
     "TypeGeneralExpressionElement",  # 一般表达式的元素类型
     "TypeTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
     "TypeCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
+    "TypePartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "EnumInsertType", "ASTInsertType",  # 插入类型
@@ -160,6 +162,9 @@ __all__ = [
     "ASTAlterDropPartitionExpression",  # ALTER TABLE 语句的 DROP PARTITION 子句
     "ASTAlterRenameColumnExpression",  # ALTER TABLE 语句的 RENAME ... TO ... 子句
     "ASTAlterTableStatement",  # ALTER TABLE 语句
+
+    # ------------------------------ 抽象语法树（AST）节点的 MCSK REPAIR TABLE 语句节点 ------------------------------
+    "ASTMsckRepairTableStatement",  # MSCK REPAIR TABLE 语句
 ]
 
 
@@ -1419,11 +1424,14 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
+TypePartitionParam = Union[ASTPolynomialExpression, ASTBoolCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
+
+
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTPartitionExpression(ASTBase):
     """分区表达式：PARTITION (<partition_expression>)"""
 
-    partitions: Tuple[ASTBoolCompareExpression, ...] = dataclasses.field(kw_only=True)
+    partitions: Tuple[TypePartitionParam, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1943,3 +1951,14 @@ class ASTAlterTableStatement(ASTStatementBase):
         """返回语法节点的 SQL 源码"""
         expressions_str = ",\n".join(expression.source(sql_type) for expression in self.expressions)
         return f"ALTER TABLE {self.table_name.source(sql_type)} \n{expressions_str}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTMsckRepairTableStatement(ASTStatementBase):
+    """MSCK REPAIR TABLE 语句：扫描 HDFS 上的文件并更新元数据的分区信息"""
+
+    table_name: ASTTableName = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"MSCK REPAIR TABLE {self.table_name.source(sql_type)}"

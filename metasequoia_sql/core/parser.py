@@ -1270,17 +1270,26 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("PARTITION")
         partition_list = []
+        is_dynamic_partition = False  # 是否有动态分区
+        is_non_dynamic_partition = False  # 是否有非动态分区
         for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             before_value = cls.parse_polynomial_expression(partition_scanner, sql_type=sql_type)
-            operator = cls.parse_compare_operator(partition_scanner, sql_type=sql_type)
-            after_value = cls.parse_polynomial_expression(partition_scanner, sql_type=sql_type)
-            partition_list.append(node.ASTBoolCompareExpression(
-                is_not=False,
-                before_value=before_value,
-                operator=operator,
-                after_value=after_value
-            ))
+            if cls.check_compare_operator(partition_scanner, sql_type=sql_type):  # 非动态分区
+                is_non_dynamic_partition = True
+                operator = cls.parse_compare_operator(partition_scanner, sql_type=sql_type)
+                after_value = cls.parse_polynomial_expression(partition_scanner, sql_type=sql_type)
+                partition_list.append(node.ASTBoolCompareExpression(
+                    is_not=False,
+                    before_value=before_value,
+                    operator=operator,
+                    after_value=after_value
+                ))
+            else:
+                is_dynamic_partition = True
+                partition_list.append(before_value)  # 动态分区
             partition_scanner.close()
+        if is_dynamic_partition is True and is_non_dynamic_partition is True:
+            raise SqlParseError("分区表达式同时包含动态分区和非动态分区")
         return node.ASTPartitionExpression(partitions=tuple(partition_list))
 
     @classmethod
@@ -1635,7 +1644,7 @@ class SQLParser:
         outputformat: Optional[str] = None
         location: Optional[str] = None
         tblproperties: Optional[List[node.ASTConfigStringExpression]] = []
-        while not scanner.is_finish:
+        while not scanner.is_finish and not scanner.search(";"):
             if scanner.search_and_move("ENGINE"):
                 scanner.search_and_move("=")
                 engine = scanner.pop_as_source()
@@ -1820,6 +1829,24 @@ class SQLParser:
         )
 
     @classmethod
+    def check_msck_repair_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                          sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否为 MSCK REPAIR 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("MSCK", "REPAIR", "TABLE")
+
+    @classmethod
+    def parse_msck_repair_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                          sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMsckRepairTableStatement:
+        """解析 MSCK REPAIR 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("MSCK", "REPAIR", "TABLE")
+        table_name = cls.parse_table_name_expression(scanner, sql_type=sql_type)
+        return node.ASTMsckRepairTableStatement(
+            table_name=table_name
+        )
+
+    @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
                          sql_type: SQLType = SQLType.DEFAULT) -> List[node.ASTStatementBase]:
         """解析一段 SQL 语句，返回表达式的列表"""
@@ -1845,6 +1872,10 @@ class SQLParser:
             # 解析 ALTER TABLE 语句
             elif cls.check_alter_table_statement(scanner, sql_type=sql_type):
                 statement_list.append(cls.parse_alter_table_statement(scanner, sql_type=sql_type))
+
+            # 解析 MSCK REPAIR TABLE 语句
+            elif cls.check_msck_repair_table_statement(scanner, sql_type=sql_type):
+                statement_list.append(cls.parse_msck_repair_table_statement(scanner, sql_type=sql_type))
 
             else:
                 # 解析可能包含 WITH 子句的语句类型
