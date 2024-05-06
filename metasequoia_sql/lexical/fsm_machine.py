@@ -8,7 +8,7 @@ from typing import List, Union, Dict
 
 from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql.errors import AMTParseError
-from metasequoia_sql.lexical.amt_node import AMTBase, AMTMark, AMTSingle, AMTParenthesis
+from metasequoia_sql.lexical.amt_node import AMTBase, AMTMark, AMTSingle, AMTParenthesis, AMTSlice
 from metasequoia_sql.lexical.fsm_operate import FSMOperate, FSMOperateType
 from metasequoia_sql.lexical.fsm_operation_map import END, DEFAULT, FSM_OPERATION_MAP
 from metasequoia_sql.lexical.fsm_status import FSMStatus
@@ -102,7 +102,10 @@ class FSMMachine:
             self.stack[-1].append(AMTSingle(origin, {AMTMark.NAME}))
 
     def handle(self, ch: str) -> bool:
-        """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
+        """处理一个字符；如果指针需要移动则返回 True，否则返回 False
+
+        TODO 待增加两种插入语在栈中的标记
+        """
         if self.status not in FSM_OPERATION_MAP:
             raise AMTParseError(f"未定义处理规则的状态: {self.status}")
 
@@ -133,9 +136,18 @@ class FSMMachine:
             need_move = True
         elif operate.type == FSMOperateType.END_PARENTHESIS:
             if len(self.stack) <= 1:
-                raise AMTParseError("当前 ')' 数量大于 '('")
+                raise AMTParseError("插入语结束标记数量大于开始标记数量")
             tokens = self.stack.pop()
             self.stack[-1].append(AMTParenthesis(tokens, {AMTMark.PARENTHESIS}))
+            need_move = True
+        elif operate.type == FSMOperateType.START_SLICE:
+            self.stack.append([])
+            need_move = True
+        elif operate.type == FSMOperateType.END_SLICE:
+            if len(self.stack) <= 1:
+                raise AMTParseError("结束语结束标记数量大于开始标记数量")
+            tokens = self.stack.pop()
+            self.stack[-1].append(AMTSlice(tokens, {AMTMark.ARRAY_INDEX}))
             need_move = True
         elif operate.type == FSMOperateType.SET_STATUS:
             self.status = operate.new_status

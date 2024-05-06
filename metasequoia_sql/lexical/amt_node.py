@@ -11,7 +11,7 @@ import abc
 import enum
 from typing import List, Optional, Set, Union
 
-__all__ = ["AMTBase", "AMTMark", "AMTSingle", "AMTParenthesis"]
+__all__ = ["AMTBase", "AMTMark", "AMTSingle", "AMTParenthesis", "AMTSlice"]
 
 
 class AMTMark(enum.Enum):
@@ -25,7 +25,7 @@ class AMTMark(enum.Enum):
     LITERAL_INT = "<literal_int>"
     LITERAL_FLOAT = "<literal_float>"
     COMMENT = "<comment>"
-    ARRAY_INDEX = "<array_index>"
+    ARRAY_INDEX = "<array_index>"  # 数组下标类型
     CUSTOM_1 = "<custom_1>"  # 自定义标记（用于插件开发）
     CUSTOM_2 = "<custom_2>"  # 自定义标记（用于插件开发）
     CUSTOM_3 = "<custom_3>"  # 自定义标记（用于插件开发）
@@ -91,8 +91,8 @@ class AMTSingle(AMTBase):
         return f"<{self.__class__.__name__} source={format_source}>"
 
 
-class AMTParenthesis(AMTBase):
-    """插入语节点"""
+class AMTParenthesisBase(AMTBase):
+    """插入语节点的基类"""
 
     def __init__(self, tokens: List[AMTBase], marks: Optional[Set[AMTMark]] = None):
         super().__init__(marks)
@@ -107,3 +107,11 @@ class AMTParenthesis(AMTBase):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} children={self.children()}>"
+
+
+class AMTParenthesis(AMTParenthesisBase):
+    """一般插入语节点"""
+
+
+class AMTSlice(AMTParenthesisBase):
+    """抽取插入语节点"""

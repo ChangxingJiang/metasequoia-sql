@@ -24,7 +24,6 @@ FSM_OPERATION_MAP_SOURCE = {
         "/": FSMOperate.add_cache(new_status=FSMStatus.AFTER_2F),
         "<": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3C),
         ">": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3E),
-        "[": FSMOperate.add_cache(new_status=FSMStatus.AFTER_5B),
         "|": FSMOperate.add_cache(new_status=FSMStatus.AFTER_7C),
         "0": FSMOperate.add_cache(new_status=FSMStatus.AFTER_0),
         frozenset({" ", "\n"}): FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.SPACE}),
@@ -39,6 +38,8 @@ FSM_OPERATION_MAP_SOURCE = {
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INT),
         "(": FSMOperate.start_parenthesis(),
         ")": FSMOperate.end_parenthesis(),
+        "[": FSMOperate.start_slice(),
+        "]": FSMOperate.end_slice(),
         END: FSMOperate.set_status(FSMStatus.END),
         DEFAULT: FSMOperate.add_cache(FSMStatus.IN_WORD)
     },
@@ -84,13 +85,6 @@ FSM_OPERATION_MAP_SOURCE = {
         "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：>=
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：>
-    },
-
-    # 在 [ 符号之后
-    FSMStatus.AFTER_5B: {
-        char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INDEX),
-        END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.raise_error()
     },
 
     # 在 | 符号之后
@@ -193,14 +187,6 @@ FSM_OPERATION_MAP_SOURCE = {
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_FLOAT),
         char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_FLOAT}),
         END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_FLOAT}),
-        DEFAULT: FSMOperate.raise_error()
-    },
-
-    # 在数组下标中
-    FSMStatus.IN_INDEX: {
-        char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INDEX),
-        "]": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.ARRAY_INDEX}),
-        END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
     },
 

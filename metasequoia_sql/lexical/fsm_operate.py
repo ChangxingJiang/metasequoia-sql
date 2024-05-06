@@ -22,6 +22,8 @@ class FSMOperateType(enum.Enum):
     ADD_AND_HANDLE_CACHE = enum.auto()  # 将当前字符添加到的缓冲区，然后根据缓冲区中的字符构造词法树节点
     START_PARENTHESIS = enum.auto()  # 处理当前字符位置的开括号
     END_PARENTHESIS = enum.auto()  # 处理当前字符位置的闭括号
+    START_SLICE = enum.auto()  # 处理当前位置的 [ 符号
+    END_SLICE = enum.auto()  # 处理当前位置的 ] 符号
     RAISE = enum.auto()  # 抛出异常
 
 
@@ -82,3 +84,13 @@ class FSMOperate:
     def end_parenthesis():
         """实例化 END_PARENTHESIS 类型的行为"""
         return FSMOperate(type=FSMOperateType.END_PARENTHESIS)
+
+    @staticmethod
+    def start_slice():
+        """实例化 START_SLICE 类型的行为"""
+        return FSMOperate(type=FSMOperateType.START_SLICE)
+
+    @staticmethod
+    def end_slice():
+        """实例化 END_SLICE 类型的行为"""
+        return FSMOperate(type=FSMOperateType.END_SLICE)

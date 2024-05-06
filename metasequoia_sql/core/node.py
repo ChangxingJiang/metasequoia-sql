@@ -853,7 +853,7 @@ class ASTArrayIndexExpression(ASTMonomialExpressionBase):
     """数组下标表达式"""
 
     array: ASTExpressionBase = dataclasses.field(kw_only=True)
-    idx: int = dataclasses.field(kw_only=True)
+    idx: ASTPolynomialExpressionBase = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

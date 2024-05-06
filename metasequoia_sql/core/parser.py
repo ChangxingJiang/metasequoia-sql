@@ -506,9 +506,12 @@ class SQLParser:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         array_expression = cls.parse_function_expression(scanner, sql_type=sql_type)
-        if scanner.is_finish or not scanner.search(AMTMark.ARRAY_INDEX):
-            return array_expression
-        idx = int(scanner.pop_as_source().lstrip("[").rstrip("]"))
+        if not scanner.search(AMTMark.ARRAY_INDEX):
+            return array_expression  # 如果没有数组下标则直接返回
+        # 解析数组下标
+        children_scanner = scanner.pop_as_children_scanner()
+        idx = cls.parse_polynomial_expression(children_scanner, sql_type=sql_type)
+        children_scanner.close()
         return node.ASTArrayIndexExpression(
             unary_operator=unary_operator,
             array=array_expression,
