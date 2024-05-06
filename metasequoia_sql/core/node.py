@@ -1300,7 +1300,7 @@ class ASTLimitClause(ASTBase):
     """LIMIT 子句"""
 
     limit: int = dataclasses.field(kw_only=True)
-    offset: int = dataclasses.field(kw_only=True)
+    offset: Optional[int] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

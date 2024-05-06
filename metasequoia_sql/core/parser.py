@@ -1089,7 +1089,8 @@ class SQLParser:
             offset_int = cls.parse_literal_expression(scanner, unary_operator=None, sql_type=sql_type).as_int()
             limit_int = cnt_1
         else:
-            raise SqlParseError("无法解析为 LIMIT 子句")
+            offset_int = None
+            limit_int = cnt_1
         return node.ASTLimitClause(limit=limit_int, offset=offset_int)
 
     @classmethod
@@ -1179,8 +1180,10 @@ class SQLParser:
         else:
             cluster_by_clause = None
 
-        limit_clause = (cls.parse_limit_clause(scanner, sql_type=sql_type)
-                        if cls.check_limit_clause(scanner, sql_type=sql_type) else None)
+        if cls.check_limit_clause(scanner, sql_type=sql_type):
+            limit_clause = cls.parse_limit_clause(scanner, sql_type=sql_type)
+        else:
+            limit_clause = None
 
         return node.ASTSingleSelectStatement(
             with_clause=with_clause,
