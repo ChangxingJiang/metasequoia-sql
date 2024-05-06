@@ -130,7 +130,7 @@ class TokenScanner:
         """
         for word in tokens:
             if not self.pop().equals(word):
-                raise ScannerError(f"没有解析到目标词语:{self._elements}, 目标词={tokens}")
+                raise ScannerError(f"没有解析到目标词语:目标词={tokens} - {self}")
 
     def get_as_source(self) -> str:
         """将指针向后移动 1 个元素并返回当前元素的 source"""

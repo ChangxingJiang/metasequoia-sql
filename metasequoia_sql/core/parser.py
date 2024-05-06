@@ -590,10 +590,10 @@ class SQLParser:
             while scanner.search_and_move("WHEN"):
                 when_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
                 scanner.match("THEN")
-                case_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+                case_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
                 cases.append(node.ASTCaseConditionItem(when=when_expression, then=case_expression))
             if scanner.search_and_move("ELSE"):
-                else_value = cls.parse_polynomial_expression(scanner)
+                else_value = cls.parse_general_expression(scanner)
             scanner.match("END")
             return node.ASTCaseConditionExpression(
                 unary_operator=unary_operator,
@@ -602,16 +602,16 @@ class SQLParser:
             )
 
         # 第 2 种格式的 CASE 表达式
-        case_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+        case_value = cls.parse_general_expression(scanner, sql_type=sql_type)
         cases = []
         else_value = None
         while scanner.search_and_move("WHEN"):
-            when_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            when_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
             scanner.match("THEN")
-            case_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            case_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
             cases.append(node.ASTCaseValueItem(when=when_expression, then=case_expression))
         if scanner.search_and_move("ELSE"):
-            else_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            else_value = cls.parse_general_expression(scanner, sql_type=sql_type)
         scanner.match("END")
         return node.ASTCaseValueExpression(
             unary_operator=unary_operator,
