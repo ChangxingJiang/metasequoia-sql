@@ -988,7 +988,7 @@ class SQLParser:
                 parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
                 columns_list = []
                 for parenthesis_scanner in parenthesis_scanner_list:
-                    cls.parse_polynomial_expression(parenthesis_scanner, sql_type=sql_type)
+                    columns_list.append(cls.parse_polynomial_expression(parenthesis_scanner, sql_type=sql_type))
                     parenthesis_scanner.close()
                 grouping_list.append(tuple(columns_list))
             else:
