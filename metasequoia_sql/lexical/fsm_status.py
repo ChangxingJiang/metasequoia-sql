@@ -16,6 +16,7 @@ class FSMStatus(enum.Enum):
 
     # 能够组成多字符组合的单字符之后
     AFTER_21 = "在 ! 符号之后"
+    AFTER_26 = "在 & 符号之后"
     AFTER_2D = "在 - 符号之后"
     AFTER_2F = "在 / 符号之后"
     AFTER_3C = "在 < 符号之后"

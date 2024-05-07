@@ -169,6 +169,9 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 USE 语句节点 ------------------------------
     "ASTUseStatement",  # USE 语句
+
+    # ------------------------------ 抽象语法树（AST）节点的 TRUNCATE TABLE 语句节点 ------------------------------
+    "ASTTruncateTable",  # TRUNCATE TABLE 语句
 ]
 
 
@@ -380,6 +383,7 @@ class EnumComputeOperator(enum.Enum):
     DIVIDE = ["/"]  # 除法运算符
     MOD = ["%"]  # 取模运算符
     CONCAT = ["||"]  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
+    AMPERSAND = ["&"]  # 按位与（仅 Hive 中适用）
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1690,7 +1694,10 @@ TypeColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, AST
 class ASTCreateTableStatement(ASTStatementBase):
     # pylint: disable=R0902 忽略对象属性过多的问题
 
-    """【DDL】CREATE TABLE 语句"""
+    """【DDL】CREATE TABLE 语句
+
+    TODO Hive 的 ROW FORMAT 和 STORED AS 属性整合
+    """
 
     table_name: ASTTableName = dataclasses.field(kw_only=True)
     if_not_exists: bool = dataclasses.field(kw_only=True)
@@ -1709,7 +1716,9 @@ class ASTCreateTableStatement(ASTStatementBase):
     row_format: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
     states_persistent: Optional[str] = dataclasses.field(kw_only=True)  # MySQL
     row_format_serde: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
+    row_format_delimited_fields_terminated_by: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     stored_as_inputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
+    stored_as_textfile: bool = dataclasses.field(kw_only=True, default=False)  # Hive
     outputformat: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     location: Optional[str] = dataclasses.field(kw_only=True, default=None)  # Hive
     tblproperties: Optional[Tuple[ASTConfigStringExpression, ...]] = dataclasses.field(
@@ -1798,8 +1807,11 @@ class ASTCreateTableStatement(ASTStatementBase):
             partition_str = ", ".join(partition_columns)
             result += f" PARTITIONED BY ({partition_str})"
         result += f" ROW FORMAT SERDE {self.row_format_serde}" if self.row_format_serde is not None else ""
+        result += (f" ROW FORMAT DELIMITED FIELDS TERMINATED BY {self.row_format_delimited_fields_terminated_by}"
+                   if self.row_format_delimited_fields_terminated_by is not None else "")
         result += (f" STORED AS INPUTFORMAT {self.stored_as_inputformat}"
                    if self.stored_as_inputformat is not None else "")
+        result += f" STORED AS TEXTFILE" if self.stored_as_textfile is True else ""
         result += f" OUTPUTFORMAT {self.outputformat}" if self.outputformat is not None else ""
         result += f" LOCATION {self.location}" if self.location is not None else ""
         if len(self.tblproperties) > 0:
@@ -1941,11 +1953,13 @@ class ASTAlterDropColumnExpression(ASTAlterExpressionBase):
 class ASTAlterDropPartitionExpression(ASTAlterExpressionBase):
     """ALTER TABLE 语句的 DROP PARTITION 子句"""
 
+    if_exists: bool = dataclasses.field(kw_only=True)
     partition: ASTPartitionExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"DROP {self.partition.source(sql_type)}"
+        if_exists_str = " IF EXISTS" if self.if_exists else ""
+        return f"DROP{if_exists_str} {self.partition.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1981,3 +1995,14 @@ class ASTUseStatement(ASTStatementBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"USE {self.schema_name}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTTruncateTable(ASTStatementBase):
+    """TRUNCATE TABLE 语句"""
+
+    table_name: ASTTableName = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"TRUNCATE TABLE {self.table_name.source(sql_type)}"

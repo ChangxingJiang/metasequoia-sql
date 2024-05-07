@@ -20,6 +20,7 @@ FSM_OPERATION_MAP_SOURCE = {
     # 等待下一个词语
     FSMStatus.WAIT: {
         "!": FSMOperate.add_cache(new_status=FSMStatus.AFTER_21),
+        "&": FSMOperate.add_cache(new_status=FSMStatus.AFTER_26),
         "-": FSMOperate.add_cache(new_status=FSMStatus.AFTER_2D),
         "/": FSMOperate.add_cache(new_status=FSMStatus.AFTER_2F),
         "<": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3C),
@@ -49,6 +50,12 @@ FSM_OPERATION_MAP_SOURCE = {
         "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：!=
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：!
+    },
+
+    # 在 & 符号之后
+    FSMStatus.AFTER_26: {
+        END: FSMOperate.raise_error(),
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：&
     },
 
     # 在 - 符号之后
