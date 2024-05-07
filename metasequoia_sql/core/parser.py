@@ -970,36 +970,55 @@ class SQLParser:
         return scanner.search("GROUP", "BY")
 
     @classmethod
+    def check_grouping_sets(cls, scanner_or_string: Union[TokenScanner, str],
+                            sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否为 GROUPING SETS 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("GROUPING", "SETS")
+
+    @classmethod
+    def parse_grouping_sets(cls, scanner_or_string: Union[TokenScanner, str],
+                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGroupingSets:
+        """解析 GROUP BY 子句的元素"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("GROUPING", "SETS")
+        grouping_list = []
+        for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
+            if grouping_scanner.search(AMTMark.PARENTHESIS):
+                parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
+                columns_list = []
+                for parenthesis_scanner in parenthesis_scanner_list:
+                    cls.parse_polynomial_expression(parenthesis_scanner, sql_type=sql_type)
+                    parenthesis_scanner.close()
+                grouping_list.append(tuple(columns_list))
+            else:
+                grouping_list.append(
+                    tuple([cls.parse_polynomial_expression(grouping_scanner, sql_type=sql_type)]))
+            grouping_scanner.close()
+        return node.ASTGroupingSets(grouping_list=tuple(grouping_list))
+
+    @classmethod
     def parse_group_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGroupByClause:
         """解析 GROUP BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("GROUP", "BY")
-        if scanner.search_and_move("GROUPING", "SETS"):
-            # 处理 GROUPING SETS 的语法
-            grouping_list = []
-            for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-                if grouping_scanner.search(AMTMark.PARENTHESIS):
-                    parenthesis_scanner_list = grouping_scanner.pop_as_children_scanner_list_split_by(",")
-                    columns_list = []
-                    for parenthesis_scanner in parenthesis_scanner_list:
-                        cls.parse_polynomial_expression(parenthesis_scanner, sql_type=sql_type)
-                        parenthesis_scanner.close()
-                    grouping_list.append(tuple(columns_list))
-                else:
-                    grouping_list.append(
-                        tuple([cls.parse_polynomial_expression(grouping_scanner, sql_type=sql_type)]))
-                grouping_scanner.close()
-            return node.ASTGroupingSetsGroupByClause(grouping_list=tuple(grouping_list))
-
-        # 处理一般的 GROUP BY 的语法
-        columns = [cls.parse_polynomial_expression(scanner, sql_type=sql_type)]
-        while scanner.search_and_move(","):
+        columns = []
+        if not cls.check_grouping_sets(scanner, sql_type=sql_type):
+            # 如果当 GROUP BY 子句中直接就是 GROUPING SETS 时，则不尝试解析字段
             columns.append(cls.parse_polynomial_expression(scanner, sql_type=sql_type))
-        with_rollup = False
-        if scanner.search_and_move("WITH", "ROLLUP"):
-            with_rollup = True
-        return node.ASTNormalGroupByClause(columns=tuple(columns), with_rollup=with_rollup)
+            while scanner.search_and_move(","):
+                columns.append(cls.parse_polynomial_expression(scanner, sql_type=sql_type))
+        if cls.check_grouping_sets(scanner, sql_type=sql_type):
+            grouping_sets = cls.parse_grouping_sets(scanner, sql_type=sql_type)
+        else:
+            grouping_sets = None
+        with_rollup = scanner.search_and_move("WITH", "ROLLUP")
+        return node.ASTGroupByClause(
+            columns=tuple(columns),
+            grouping_sets=grouping_sets,
+            with_rollup=with_rollup
+        )
 
     @classmethod
     def check_having_clause(cls, scanner_or_string: Union[TokenScanner, str],

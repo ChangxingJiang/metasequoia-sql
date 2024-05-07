@@ -9,6 +9,7 @@
 
 TODO 将 Union 类型的转化为专门的 Type
 TODO 给通用表达式增加不同返回值类型的子类
+TODO 将 ASTExpressionBase 替换为更精确的子类
 """
 
 import abc
@@ -104,14 +105,13 @@ __all__ = [
     "ASTJoinExpression",  # JOIN 子句元素：关联表达式的抽象类
     "ASTJoinOnExpression",  # JOIN 子句元素：使用 ON 关键字的关联表达式
     "ASTJoinUsingExpression",  # JOIN 子句元素：使用 USING 函数的关联表达式
+    "ASTGroupingSets",  # GROUP BY 子句元素：GROUPING SETS 表达式
     "ASTSelectClause",  # SELECT 子句
     "ASTFromClause",  # FROM 子句
     "ASTLateralViewClause",  # LATERAL VIEW 子句
     "ASTJoinClause",  # JOIN 子句
     "ASTWhereClause",  # WHERE 子句
-    "ASTGroupByClause",  # GROUP BY 子句：GROUP BY 子句的抽象类
-    "ASTNormalGroupByClause",  # GROUP BY 子句：普通的 GROUP BY 子句
-    "ASTGroupingSetsGroupByClause",  # GROUP BY 子句：使用 GROUPING SETS 的 GROUP BY 子句
+    "ASTGroupByClause",  # GROUP BY 子句
     "ASTHavingClause",  # HAVING 子句
     "ASTOrderByClause",  # ORDER BY 子句
     "ASTSortByClause",  # SORT BY 子句【Hive】
@@ -1195,26 +1195,8 @@ class ASTWhereClause(ASTBase):
 
 # ---------------------------------------- GROUP BY 子句 ----------------------------------------
 
-class ASTGroupByClause(ASTBase, abc.ABC):
-    """GROUP BY 子句"""
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTNormalGroupByClause(ASTGroupByClause):
-    """普通 GROUP BY 子句"""
-
-    columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
-    with_rollup: bool = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.with_rollup:
-            return "GROUP BY " + ", ".join(column.source(sql_type) for column in self.columns) + " WITH ROLLUP"
-        return "GROUP BY " + ", ".join(column.source(sql_type) for column in self.columns)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTGroupingSetsGroupByClause(ASTGroupByClause):
+class ASTGroupingSets(ASTBase):
     """使用 GROUPING SETS 语法的 GROUP BY 子句"""
 
     grouping_list: Tuple[Tuple[ASTExpressionBase, ...], ...] = dataclasses.field(kw_only=True)
@@ -1227,7 +1209,23 @@ class ASTGroupingSetsGroupByClause(ASTGroupByClause):
                 grouping_str_list.append("(" + ", ".join(column.source(sql_type) for column in grouping) + ")")
             else:
                 grouping_str_list.append(grouping[0].source(sql_type))
-        return "GROUP BY GROUPING SETS (" + ", ".join(grouping_str_list) + ")"
+        return "GROUPING SETS (" + ", ".join(grouping_str_list) + ")"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTGroupByClause(ASTBase):
+    """GROUP BY 子句"""
+
+    columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
+    grouping_sets: ASTGroupingSets = dataclasses.field(kw_only=True)
+    with_rollup: bool = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        columns_str = ", ".join(column.source(sql_type) for column in self.columns)
+        grouping_sets_str = f" {self.grouping_sets.source(sql_type)}" if self.grouping_sets is not None else ""
+        with_rollup_str = " WITH ROLLUP" if self.with_rollup is True else ""
+        return f"GROUP BY {columns_str}{grouping_sets_str}{with_rollup_str}"
 
 
 # ---------------------------------------- HAVING 子句 ----------------------------------------
