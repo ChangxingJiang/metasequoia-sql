@@ -8,6 +8,7 @@ SQL 语法解析器
 
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 TODO 兼容各个场景下额外添加的括号
+TODO 将多项表达式、条件表达式、一般表达式中，根据计算优先级，按计算顺序生成嵌套的二元表达式
 """
 
 from typing import Optional, Tuple, List, Union
@@ -720,17 +721,15 @@ class SQLParser:
         return node.ASTPolynomialExpression(elements=tuple(elements))
 
     @classmethod
-    def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
-        # pylint: disable=R0911
-        """解析条件表达式"""
+    def parse_condition_expression_item(cls, scanner_or_string: Union[TokenScanner, str],
+                                        before_value: node.ASTPolynomialExpressionBase,
+                                        is_not: bool,
+                                        sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
+        """解析条件表达式中的一个元素
+        
+        TODO 待根据运算优先级，生成嵌套的二元运算逻辑后，这个逻辑需要被移除
+        """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
-        if scanner.search_and_move("EXISTS"):
-            after_value = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
-            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
-        before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-        is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
         if scanner.search_and_move("BETWEEN"):  # "... BETWEEN ... AND ..."
             from_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
             scanner.match("AND")
@@ -754,15 +753,41 @@ class SQLParser:
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
             return node.ASTBoolRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
-            # 需要兼容类似 a = b = c 的情况
-            while cls.check_compare_operator(scanner, sql_type=sql_type):
-                compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
-                after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-                before_value = node.ASTBoolCompareExpression(is_not=is_not, operator=compare_operator,
-                                                             before_value=before_value,
-                                                             after_value=after_value)
-            return before_value
+            compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
+            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            return node.ASTBoolCompareExpression(
+                is_not=is_not,
+                operator=compare_operator,
+                before_value=before_value,
+                after_value=after_value
+            )
         return before_value  # 如果无法构成条件表达式，则返回多项式表达式或单项式表达式
+
+    @classmethod
+    def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
+        # pylint: disable=R0911
+        """解析条件表达式
+
+        TODO 待根据运算优先级，生成嵌套的二元运算逻辑
+        """
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        if scanner.search_and_move("EXISTS"):
+            after_value = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
+            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
+        before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+        is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        # 解析第一个条件表达式
+        before_value = cls.parse_condition_expression_item(scanner, before_value, is_not, sql_type=sql_type)
+        # 如果后续还有更多的等号，则继续合并为二元表达式
+        while cls.check_compare_operator(scanner, sql_type=sql_type):
+            compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
+            after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+            before_value = node.ASTBoolCompareExpression(is_not=is_not, operator=compare_operator,
+                                                         before_value=before_value,
+                                                         after_value=after_value)
+        return before_value
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -838,7 +863,7 @@ class SQLParser:
                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSelectColumnExpression:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        general_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
+        general_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
         alias_expression = (cls.parse_alias_expression(scanner, sql_type=sql_type)
                             if cls.check_alias_expression(scanner, sql_type=sql_type) else None)
         return node.ASTSelectColumnExpression(value=general_expression, alias=alias_expression)
@@ -1000,7 +1025,16 @@ class SQLParser:
                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumnExpression:
         column = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         order = cls.parse_order_type(scanner, sql_type=sql_type)
-        return node.ASTOrderByColumnExpression(column=column, order=order)
+        nulls_first = scanner.search_and_move("NULLS", "FIRST")
+        nulls_last = scanner.search_and_move("NULLS", "LAST")
+        if nulls_first is True and nulls_last is True:
+            raise SqlParseError("同时定义了 NULLS FIRST 和 NULLS LAST")
+        return node.ASTOrderByColumnExpression(
+            column=column,
+            order=order,
+            nulls_first=nulls_first,
+            nulls_last=nulls_last
+        )
 
     @classmethod
     def parse_order_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
@@ -1022,14 +1056,14 @@ class SQLParser:
 
     @classmethod
     def parse_sort_by_clause(cls, scanner_or_string: Union[TokenScanner, str],
-                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByClause:
+                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSortByClause:
         """解析 SORT BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("SORT", "BY")
         columns = [cls._parse_order_by_item(scanner, sql_type=sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_order_by_item(scanner, sql_type=sql_type))
-        return node.ASTOrderByClause(columns=tuple(columns))
+        return node.ASTSortByClause(columns=tuple(columns))
 
     @classmethod
     def check_distribute_by_clause(cls, scanner_or_string: Union[TokenScanner, str],

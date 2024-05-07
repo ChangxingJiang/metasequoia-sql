@@ -278,8 +278,10 @@ class EnumJoinType(enum.Enum):
     INNER_JOIN = ["INNER", "JOIN"]  # 内连接
     LEFT_JOIN = ["LEFT", "JOIN"]  # 左外连接
     LEFT_OUTER_JOIN = ["LEFT", "OUTER", "JOIN"]  # 左外连接
+    LEFT_SEMI_JOIN = ["LEFT", "SEMI", "JOIN"]  # 左半连接
     RIGHT_JOIN = ["RIGHT", "JOIN"]  # 右外连接
     RIGHT_OUTER_JOIN = ["RIGHT", "OUTER", "JOIN"]  # 右外连接
+    RIGHT_SEMI_JOIN = ["RIGHT", "SEMI", "JOIN"]  # 右半连接
     FULL_JOIN = ["FULL", "JOIN"]  # 全外连接
     FULL_OUTER_JOIN = ["FULL", "OUTER", "JOIN"]  # 全外连接
     CROSS_JOIN = ["CROSS", "JOIN"]  # 交叉连接
@@ -388,7 +390,7 @@ class ASTComputeOperator(ASTBase):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.enum == EnumComputeOperator.MOD and sql_type != SQLType.SQL_SERVER:
+        if self.enum == EnumComputeOperator.MOD and sql_type not in {SQLType.SQL_SERVER, SQLType.HIVE}:
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
         if (self.enum == EnumComputeOperator.CONCAT
                 and sql_type not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
@@ -669,12 +671,16 @@ class ASTOrderByColumnExpression(ASTBase):
 
     column: ASTExpressionBase = dataclasses.field(kw_only=True)  # 排序字段
     order: ASTOrderType = dataclasses.field(kw_only=True)  # 排序类型
+    nulls_first: bool = dataclasses.field(kw_only=True)  # 是否包含 NULLS FIRST 关键字（将 NULL 值放到开头）
+    nulls_last: bool = dataclasses.field(kw_only=True)  # 是否包含 NULLS LAST 关键字（将 NULL 值放到末尾）
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
+        nulls_first_str = f" NULLS FIRST" if self.nulls_first else ""
+        nulls_last_str = f" NULLS LAST" if self.nulls_last else ""
         if self.order.source(sql_type) == "ASC":
-            return self.column.source(sql_type)
-        return f"{self.column.source(sql_type)} DESC"
+            return f"{self.column.source(sql_type)}{nulls_first_str}{nulls_last_str}"
+        return f"{self.column.source(sql_type)} DESC{nulls_first_str}{nulls_last_str}"
 
 
 # ---------------------------------------- 函数表达式 ----------------------------------------
@@ -755,8 +761,8 @@ class ASTConditionExpression(ASTConditionExpressionBase, abc.ABC):
 class ASTBoolOperatorExpression(ASTConditionExpression, abc.ABC):
     """布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类"""
 
-    before_value: ASTPolynomialExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTPolynomialExpressionBase = dataclasses.field(kw_only=True)
+    before_value: ASTConditionExpressionBase = dataclasses.field(kw_only=True)
+    after_value: ASTConditionExpressionBase = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
