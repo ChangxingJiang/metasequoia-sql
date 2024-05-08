@@ -9,6 +9,7 @@ SQL 语法解析器
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 TODO 兼容各个场景下额外添加的括号
 TODO 将多项表达式、条件表达式、一般表达式中，根据计算优先级，按计算顺序生成嵌套的二元表达式
+TODO 待统一额外的插入语的实现方案
 """
 
 from typing import Optional, Tuple, List, Union
@@ -749,6 +750,7 @@ class SQLParser:
                                         before_value: node.ASTPolynomialExpressionBase,
                                         is_not: bool,
                                         sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
+        # pylint: disable=R0911
         """解析条件表达式中的一个元素
         
         TODO 待根据运算优先级，生成嵌套的二元运算逻辑后，这个逻辑需要被移除
@@ -820,7 +822,7 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         first_element = cls.parse_condition_expression(scanner, sql_type=sql_type)
         if scanner.search("AND") or scanner.search("OR"):
-            elements: List[node.TypeGeneralExpressionElement] = [first_element]
+            elements: List[node.AliasGeneralExpressionElement] = [first_element]
             while scanner.search("AND") or scanner.search("OR"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
                 elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
                 elements.append(cls.parse_condition_expression(scanner, sql_type=sql_type))
@@ -865,15 +867,14 @@ class SQLParser:
 
     @classmethod
     def parse_type_table_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                    sql_type: SQLType = SQLType.DEFAULT) -> node.TypeTableExpression:
+                                    sql_type: SQLType = SQLType.DEFAULT) -> node.AliasTableExpression:
         """解析表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):  # 子查询
             return cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
-        elif scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
+        if scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
             return cls.parse_type_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
-        else:
-            return cls.parse_table_name_expression(scanner, sql_type=sql_type)  # 表名
+        return cls.parse_table_name_expression(scanner, sql_type=sql_type)  # 表名
 
     @classmethod
     def parse_table_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -1212,6 +1213,7 @@ class SQLParser:
                                       with_clause: Optional[node.ASTWithClause] = None,
                                       sql_type: SQLType = SQLType.DEFAULT
                                       ) -> node.ASTSingleSelectStatement:
+        # pylint: disable=R0912
         # pylint: disable=R0914
         """
 
@@ -1686,7 +1688,7 @@ class SQLParser:
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: Union[TokenScanner, str],
                                      sql_type: SQLType = SQLType.DEFAULT
-                                     ) -> node.TypeCreateTableStatement:
+                                     ) -> node.AliasCreateTableStatement:
         # pylint: disable=R0912
         # pylint: disable=R0914
         # pylint: disable=R0915
@@ -1858,24 +1860,25 @@ class SQLParser:
 
     @classmethod
     def parse_type_column_or_index(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.TypeColumnOrIndex:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.AliasColumnOrIndex:
         """解析字段声明表达式或索引声明表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_primary_index_expression(scanner, sql_type=sql_type):
             return cls.parse_primary_index_expression(scanner, sql_type=sql_type)
-        elif cls.check_unique_index_expression(scanner, sql_type=sql_type):
+        if cls.check_unique_index_expression(scanner, sql_type=sql_type):
             return cls.parse_unique_index_expression(scanner, sql_type=sql_type)
-        elif cls.check_normal_index_expression(scanner, sql_type=sql_type):
+        if cls.check_normal_index_expression(scanner, sql_type=sql_type):
             return cls.parse_normal_index_expression(scanner, sql_type=sql_type)
-        elif cls.check_fulltext_expression(scanner, sql_type=sql_type):
+        if cls.check_fulltext_expression(scanner, sql_type=sql_type):
             return cls.parse_fulltext_expression(scanner, sql_type=sql_type)
-        elif cls.check_foreign_key_expression(scanner, sql_type=sql_type):
+        if cls.check_foreign_key_expression(scanner, sql_type=sql_type):
             return cls.parse_foreign_key_expression(scanner, sql_type=sql_type)
         return cls.parse_define_column_expression(scanner, sql_type=sql_type)
 
     @classmethod
     def parse_alter_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAlterExpressionBase:
+        # pylint: disable=R0911
         """解析 ALTER TABLE 的子句表达式
 
         TODO 优化 PARTITION 的解析逻辑，将 search 和 match 合并为 1 个
@@ -2000,6 +2003,7 @@ class SQLParser:
     @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
                          sql_type: SQLType = SQLType.DEFAULT) -> List[node.ASTStatementBase]:
+        # pylint: disable=R0912
         """解析一段 SQL 语句，返回表达式的列表"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         statement_list = []

@@ -10,6 +10,7 @@
 TODO 将 Union 类型的转化为专门的 Type
 TODO 给通用表达式增加不同返回值类型的子类
 TODO 将 ASTExpressionBase 替换为更精确的子类
+TODO 优化各节点之间的继承关系
 """
 
 import abc
@@ -33,12 +34,12 @@ __all__ = [
     "ASTGeneralExpressionBase",  # 表达式的子类（第 4 层）：一般表达式的抽象基类
 
     # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
-    "TypePolynomialExpressionElement",  # 多项式节点的元素类型
-    "TypeConditionExpressionElement",  # 条件表达式的元素类型
-    "TypeGeneralExpressionElement",  # 一般表达式的元素类型
-    "TypeTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
-    "TypeCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
-    "TypePartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
+    "AliasPolynomialExpressionElement",  # 多项式节点的元素类型
+    "AliasConditionExpressionElement",  # 条件表达式的元素类型
+    "AliasGeneralExpressionElement",  # 一般表达式的元素类型
+    "AliasTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
+    "AliasCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
+    "AliasMarkPartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "EnumInsertType", "ASTInsertType",  # 插入类型
@@ -131,7 +132,7 @@ __all__ = [
     "ASTInsertSelectStatement",  # INSERT ... SELECT ... 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 CREATE TABLE 语句节点 ------------------------------
-    "TypeColumnOrIndex",  # DDL 的字段或索引类型
+    "AliasColumnOrIndex",  # DDL 的字段或索引类型
     "ASTConfigStringExpression",  # 配置值为字符串的配置表达式
     "ASTColumnTypeExpression",  # 字段类型表达式
     "ASTDefineColumnExpression",  # 字段定义表达式
@@ -245,10 +246,9 @@ class ASTMonomialExpressionBase(ASTPolynomialExpressionBase, abc.ABC):
     unary_operator: Optional[Tuple["ASTComputeOperator", ...]] = dataclasses.field(kw_only=True, default=None)  # 一元运算符
 
     def _get_unary_operator_str(self, sql_type: SQLType = SQLType.DEFAULT):
-        if self.unary_operator is not None:
-            return "".join(operator.source(sql_type) for operator in self.unary_operator)
-        else:
+        if self.unary_operator is None:
             return ""
+        return "".join(operator.source(sql_type) for operator in self.unary_operator)
 
 
 # ---------------------------------------- 插入类型 ----------------------------------------
@@ -487,9 +487,9 @@ class ASTCastDataType(ASTBase):
 # ---------------------------------------- 各层级表达式元素类型 ----------------------------------------
 
 
-TypePolynomialExpressionElement = Union[ASTMonomialExpressionBase, ASTComputeOperator]
-TypeConditionExpressionElement = Union[ASTPolynomialExpressionBase, ASTCompareOperator]
-TypeGeneralExpressionElement = Union[ASTConditionExpressionBase, ASTLogicalOperator]
+AliasPolynomialExpressionElement = Union[ASTMonomialExpressionBase, ASTComputeOperator]
+AliasConditionExpressionElement = Union[ASTPolynomialExpressionBase, ASTCompareOperator]
+AliasGeneralExpressionElement = Union[ASTConditionExpressionBase, ASTLogicalOperator]
 
 
 # ---------------------------------------- 列名表达式 ----------------------------------------
@@ -680,8 +680,8 @@ class ASTOrderByColumnExpression(ASTBase):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        nulls_first_str = f" NULLS FIRST" if self.nulls_first else ""
-        nulls_last_str = f" NULLS LAST" if self.nulls_last else ""
+        nulls_first_str = " NULLS FIRST" if self.nulls_first else ""
+        nulls_last_str = " NULLS LAST" if self.nulls_last else ""
         if self.order.source(sql_type) == "ASC":
             return f"{self.column.source(sql_type)}{nulls_first_str}{nulls_last_str}"
         return f"{self.column.source(sql_type)} DESC{nulls_first_str}{nulls_last_str}"
@@ -911,7 +911,7 @@ class ASTWindowExpression(ASTMonomialExpressionBase):
 class ASTGeneralExpression(ASTGeneralExpressionBase):
     """一般表达式"""
 
-    elements: Tuple[TypeGeneralExpressionElement, ...] = dataclasses.field(kw_only=True)
+    elements: Tuple[AliasGeneralExpressionElement, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1000,7 +1000,7 @@ class ASTCaseValueExpression(ASTMonomialExpressionBase):
 class ASTPolynomialExpression(ASTPolynomialExpressionBase):
     """【多项表达式】计算表达式"""
 
-    elements: Tuple[TypePolynomialExpressionElement, ...] = dataclasses.field(kw_only=True)
+    elements: Tuple[AliasPolynomialExpressionElement, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1080,14 +1080,14 @@ class ASTJoinUsingExpression(ASTJoinExpression):
 # ---------------------------------------- 表表达式 ----------------------------------------
 
 
-TypeTableExpression = Union[ASTTableName, ASTSubQueryExpression]  # 表表达式（表名表达式或子查询表达式）
+AliasTableExpression = Union[ASTTableName, ASTSubQueryExpression]  # 表表达式（表名表达式或子查询表达式）
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTFromTableExpression(ASTBase):
     """表表达式"""
 
-    name: TypeTableExpression = dataclasses.field(kw_only=True)
+    name: AliasTableExpression = dataclasses.field(kw_only=True)
     alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1436,14 +1436,14 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
-TypePartitionParam = Union[ASTPolynomialExpression, ASTBoolCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
+AliasMarkPartitionParam = Union[ASTPolynomialExpression, ASTBoolCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTPartitionExpression(ASTBase):
     """分区表达式：PARTITION (<partition_expression>)"""
 
-    partitions: Tuple[TypePartitionParam, ...] = dataclasses.field(kw_only=True)
+    partitions: Tuple[AliasMarkPartitionParam, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1684,7 +1684,7 @@ class ASTForeignKeyExpression(ASTBase):
                 f"REFERENCES {self.master_table_name} ({master_columns_str}){on_delete_cascade_str}")
 
 
-TypeColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, ASTForeignKeyExpression]  # DDL 的字段或索引类型
+AliasColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, ASTForeignKeyExpression]  # DDL 的字段或索引类型
 
 
 # ---------------------------------------- CREATE TABLE 语句 ----------------------------------------
@@ -1811,7 +1811,7 @@ class ASTCreateTableStatement(ASTStatementBase):
                    if self.row_format_delimited_fields_terminated_by is not None else "")
         result += (f" STORED AS INPUTFORMAT {self.stored_as_inputformat}"
                    if self.stored_as_inputformat is not None else "")
-        result += f" STORED AS TEXTFILE" if self.stored_as_textfile is True else ""
+        result += " STORED AS TEXTFILE" if self.stored_as_textfile is True else ""
         result += f" OUTPUTFORMAT {self.outputformat}" if self.outputformat is not None else ""
         result += f" LOCATION {self.location}" if self.location is not None else ""
         if len(self.tblproperties) > 0:
@@ -1836,7 +1836,7 @@ class ASTCreateTableAsStatement(ASTStatementBase):
         return f"CREATE TABLE {self.table_name.source(sql_type)} AS {self.select_statement.source(sql_type)}"
 
 
-TypeCreateTableStatement = Union[ASTCreateTableStatement, ASTCreateTableAsStatement]
+AliasCreateTableStatement = Union[ASTCreateTableStatement, ASTCreateTableAsStatement]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1896,7 +1896,7 @@ class ASTAlterExpressionBase(ASTBase, abc.ABC):
 class ASTAlterAddExpression(ASTAlterExpressionBase):
     """ALTER TABLE 语句的 ADD 子句"""
 
-    expression: TypeColumnOrIndex = dataclasses.field(kw_only=True)
+    expression: AliasColumnOrIndex = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1907,7 +1907,7 @@ class ASTAlterAddExpression(ASTAlterExpressionBase):
 class ASTAlterModifyExpression(ASTAlterExpressionBase):
     """ALTER TABLE 语句的 MODIFY 子句"""
 
-    expression: TypeColumnOrIndex = dataclasses.field(kw_only=True)
+    expression: AliasColumnOrIndex = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1919,7 +1919,7 @@ class ASTAlterChangeExpression(ASTAlterExpressionBase):
     """ALTER TABLE 语句的 CHANGE 子句"""
 
     from_column_name: str = dataclasses.field(kw_only=True)
-    to_expression: TypeColumnOrIndex = dataclasses.field(kw_only=True)
+    to_expression: AliasColumnOrIndex = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
