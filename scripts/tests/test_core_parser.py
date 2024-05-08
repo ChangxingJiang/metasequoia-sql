@@ -193,7 +193,7 @@ class TestCoreParser(unittest.TestCase):
 
     def test_table_expression(self):
         """测试解析表表达式"""
-        self.assertEquals(SQLParser.parse_table_expression("schema1.table1 AS t1").source(SQLType.MYSQL),
+        self.assertEqual(SQLParser.parse_table_expression("schema1.table1 AS t1").source(SQLType.MYSQL),
                           "`schema1.table1` AS t1")
 
     def test_column_expression(self):

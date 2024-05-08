@@ -464,7 +464,7 @@ class SQLParser:
                                      ) -> node.ASTNormalFunctionExpression:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        function_params: List[node.ASTGeneralExpressionBase] = []
+        function_params: List[node.AliasGeneralExpression] = []
         first_param = True
         for param_scanner in scanner.split_by(","):
             if first_param is True:
@@ -502,7 +502,7 @@ class SQLParser:
                 and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
-        function_params: List[node.ASTGeneralExpressionBase] = []
+        function_params: List[node.AliasGeneralExpression] = []
         for param_scanner in parenthesis_scanner.split_by(","):
             function_params.append(cls.parse_general_expression(param_scanner, sql_type=sql_type))
             if not param_scanner.is_finish:
@@ -544,7 +544,7 @@ class SQLParser:
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpressionBase:
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpression:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
@@ -699,7 +699,7 @@ class SQLParser:
     @classmethod
     def parse_monomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                   maybe_window: bool,
-                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpressionBase:
+                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpression:
         # pylint: disable=R0911
         """解析单项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -732,7 +732,7 @@ class SQLParser:
     @classmethod
     def parse_polynomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                     sql_type: SQLType = SQLType.DEFAULT,
-                                    maybe_window: bool = True) -> node.ASTPolynomialExpressionBase:
+                                    maybe_window: bool = True) -> node.AliasPolynomialExpression:
         """解析多项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         elements = [cls.parse_monomial_expression(scanner, maybe_window, sql_type=sql_type)]
@@ -747,9 +747,9 @@ class SQLParser:
 
     @classmethod
     def parse_condition_expression_item(cls, scanner_or_string: Union[TokenScanner, str],
-                                        before_value: node.ASTPolynomialExpressionBase,
+                                        before_value: node.AliasPolynomialExpression,
                                         is_not: bool,
-                                        sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
+                                        sql_type: SQLType = SQLType.DEFAULT) -> node.AliasConditionExpression:
         # pylint: disable=R0911
         """解析条件表达式中的一个元素
         
@@ -791,7 +791,7 @@ class SQLParser:
 
     @classmethod
     def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTConditionExpressionBase:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.AliasConditionExpression:
         # pylint: disable=R0911
         """解析条件表达式
 
@@ -817,7 +817,7 @@ class SQLParser:
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGeneralExpressionBase:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.AliasGeneralExpression:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         first_element = cls.parse_condition_expression(scanner, sql_type=sql_type)
