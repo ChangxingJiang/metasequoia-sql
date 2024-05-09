@@ -32,10 +32,21 @@ from metasequoia_sql import *
 statement = SQLParser.parse_create_table_statement("your sql")
 ```
 
-### pylint 自检
+### 提交前自检
+
+pylint 检查：在 Pull Request 时会自动执行检查。
 
 ```bash
 pylint --max-line-length=120 metasequoia_sql
+```
+
+单元测试覆盖率检查：
+
+```bash
+# 将 metasequoia-sql 文件夹添加到 PYTHONPATH，并在 metasequoia-sql 文件夹下执行
+coverage run .\scripts\tests\test_main.py
+coverage report  # 生成文字报告
+coverage html  # 生成 HTML 报告
 ```
 
 ## 实现原理
