@@ -113,7 +113,7 @@ FullStatement 转化为另一个 DataSource 的 SQl。通过这样的处理，�
 
 ## 已知的不兼容
 
-- DB2 的 `CURRENT DATE` 的语法
+- MySQL 中，使用连续的 `!` 符号的场景
 
 参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
 

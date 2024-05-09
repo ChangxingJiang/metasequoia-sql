@@ -1508,7 +1508,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch06_13_db2(self):
-        statement = SQLParser.parse_select_statement(SBT_CH06_13_DB2)
+        statement = SQLParser.parse_select_statement(SBT_CH06_13_DB2, sql_type=SQLType.DB2)
         self.assertEqual(["SYSIBM.SYSDUMMY1"],
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["SYSIBM.SYSDUMMY1"],
@@ -1536,7 +1536,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch06_14_db2(self):
-        statement = SQLParser.parse_select_statement(SBT_CH06_14_DB2)
+        statement = SQLParser.parse_select_statement(SBT_CH06_14_DB2, sql_type=SQLType.DB2)
         self.assertEqual(["SYSIBM.SYSDUMMY1"],
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["SYSIBM.SYSDUMMY1"],
@@ -1564,7 +1564,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch06_15_db2(self):
-        statement = SQLParser.parse_select_statement(SBT_CH06_15_DB2)
+        statement = SQLParser.parse_select_statement(SBT_CH06_15_DB2, sql_type=SQLType.DB2)
         self.assertEqual(["SYSIBM.SYSDUMMY1"],
                          format_rule_1(AllUsedQuoteTables.handle(statement)))
         self.assertEqual(["SYSIBM.SYSDUMMY1"],
@@ -1587,7 +1587,7 @@ class TestSqlBasicTutorial(unittest.TestCase):
                          format_rule_2(CurrentColumnSelectToDirectQuoteHash.handle(statement)))
 
     def test_sbt_ch06_16_db2(self):
-        statement = SQLParser.parse_select_statement(SBT_CH06_16_DB2)
+        statement = SQLParser.parse_select_statement(SBT_CH06_16_DB2, sql_type=SQLType.DB2)
         self.assertEqual(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND"],
                          format_rule_1(CurrentUsedQuoteColumn.handle(statement)))
         self.assertEqual(["YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND"],

@@ -2,6 +2,8 @@
 词法分析有限状态机，针对不同状态、不同输入值的行为映射表
 """
 
+from typing import Dict
+
 from metasequoia_sql.common import char_set
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTMark
@@ -18,11 +20,11 @@ FSM_OPERATION_MAP_SOURCE = {
     # 等待下一个词语
     FSMStatus.WAIT: {
         "!": FSMOperate.add_cache(new_status=FSMStatus.AFTER_21),
+        "&": FSMOperate.add_cache(new_status=FSMStatus.AFTER_26),
         "-": FSMOperate.add_cache(new_status=FSMStatus.AFTER_2D),
         "/": FSMOperate.add_cache(new_status=FSMStatus.AFTER_2F),
         "<": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3C),
         ">": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3E),
-        "[": FSMOperate.add_cache(new_status=FSMStatus.AFTER_5B),
         "|": FSMOperate.add_cache(new_status=FSMStatus.AFTER_7C),
         "0": FSMOperate.add_cache(new_status=FSMStatus.AFTER_0),
         frozenset({" ", "\n"}): FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.SPACE}),
@@ -37,6 +39,8 @@ FSM_OPERATION_MAP_SOURCE = {
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INT),
         "(": FSMOperate.start_parenthesis(),
         ")": FSMOperate.end_parenthesis(),
+        "[": FSMOperate.start_slice(),
+        "]": FSMOperate.end_slice(),
         END: FSMOperate.set_status(FSMStatus.END),
         DEFAULT: FSMOperate.add_cache(FSMStatus.IN_WORD)
     },
@@ -45,7 +49,13 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.AFTER_21: {
         "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：!=
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.raise_error()
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：!
+    },
+
+    # 在 & 符号之后
+    FSMStatus.AFTER_26: {
+        END: FSMOperate.raise_error(),
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：&
     },
 
     # 在 - 符号之后
@@ -64,10 +74,17 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在 < 符号之后
     FSMStatus.AFTER_3C: {
-        "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<=
+        "=": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3C_3D),  # 符号：<=
         ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<>
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：<
+    },
+
+    # 在 < 符号之后
+    FSMStatus.AFTER_3C_3D: {
+        ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<=>
+        END: FSMOperate.raise_error(),
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：<=
     },
 
     # 在 > 符号之后
@@ -75,13 +92,6 @@ FSM_OPERATION_MAP_SOURCE = {
         "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：>=
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：>
-    },
-
-    # 在 [ 符号之后
-    FSMStatus.AFTER_5B: {
-        char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INDEX),
-        END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.raise_error()
     },
 
     # 在 | 符号之后
@@ -106,6 +116,7 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.AFTER_B: {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_DOUBLE_QUOTE),  # 位值字面值
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_SINGLE_QUOTE),  # 位值字面值
+        ".": FSMOperate.handle_cache_word_to_wait(),
         char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks={AMTMark.NAME}),  # b 或 B
         END: FSMOperate.handle_cache_to_end(marks={AMTMark.NAME}),  # b 或 B
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)
@@ -115,6 +126,7 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.AFTER_X: {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_DOUBLE_QUOTE),  # 十六进制字面值
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_SINGLE_QUOTE),  # 十六进制字面值
+        ".": FSMOperate.handle_cache_word_to_wait(),
         char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks={AMTMark.NAME}),  # x 或 X
         END: FSMOperate.handle_cache_to_end(marks={AMTMark.NAME}),  # x 或 X
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)
@@ -182,14 +194,6 @@ FSM_OPERATION_MAP_SOURCE = {
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_FLOAT),
         char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_FLOAT}),
         END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_FLOAT}),
-        DEFAULT: FSMOperate.raise_error()
-    },
-
-    # 在数组下标中
-    FSMStatus.IN_INDEX: {
-        char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INDEX),
-        "]": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.ARRAY_INDEX}),
-        END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
     },
 
@@ -272,8 +276,8 @@ FSM_OPERATION_MAP_SOURCE = {
     }
 }
 
-# 行为映射表使用表（用于用时行为映射信息，输入参数必须是一个字符）
-FSM_OPERATION_MAP = {}
+# 状态行为映射表（用于用时行为映射信息，输入参数必须是一个字符）
+FSM_OPERATION_MAP: Dict[FSMStatus, Dict[str, FSMOperate]] = {}
 for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
     FSM_OPERATION_MAP[status] = {}
     for ch_or_set, fsm_operation in operation_map.items():

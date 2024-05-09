@@ -16,11 +16,12 @@ class FSMStatus(enum.Enum):
 
     # 能够组成多字符组合的单字符之后
     AFTER_21 = "在 ! 符号之后"
+    AFTER_26 = "在 & 符号之后"
     AFTER_2D = "在 - 符号之后"
     AFTER_2F = "在 / 符号之后"
     AFTER_3C = "在 < 符号之后"
+    AFTER_3C_3D = "在 <= 符号之后"
     AFTER_3E = "在 > 符号之后"
-    AFTER_5B = "在 [ 符号之后"
     AFTER_7C = "在 | 符号之后"
     AFTER_0 = "在 0 之后"
     AFTER_B = "在 b 或 B 之后"
@@ -35,7 +36,6 @@ class FSMStatus(enum.Enum):
     IN_BIT_LITERAL_AFTER_0B = "在0b开头的位值字面值中"
     IN_INT = "在整型中"
     IN_FLOAT = "在浮点数中"
-    IN_INDEX = "在数组下标中"
     IN_DOUBLE_QUOTE = "在双引号中"
     IN_DOUBLE_QUOTE_AFTER_22 = "在双引号中的、的 \" 符号之后"
     IN_DOUBLE_QUOTE_AFTER_5C = "在双引号中的 \\ 符号之后"
