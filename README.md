@@ -60,7 +60,7 @@ for statement in SQLParser.parse_statements("your sql file"):
 
 - MySQL 中，使用连续的 `!` 符号的场景
 
-参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3
+<!--参考文档：https://www.alibabacloud.com/help/zh/maxcompute/user-guide/insert-or-update-data-into-a-table-or-a-static-partition?spm=a2c63.p38356.0.0.637d7109wr3nC3 -->
 
 ### 提交前自检
 
