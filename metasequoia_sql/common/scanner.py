@@ -11,7 +11,7 @@ __all__ = ["TokenScanner"]
 
 
 class TokenScanner:
-    """Token 扫描器"""
+    """抽象词法树节点扫描器"""
 
     def __init__(self, elements: List[AMTBase],
                  pos: int = 0,
@@ -133,26 +133,26 @@ class TokenScanner:
                 raise ScannerError(f"没有解析到目标词语:目标词={tokens} - {self}")
 
     def get_as_source(self) -> str:
-        """将指针向后移动 1 个元素并返回当前元素的 source"""
+        """不移动指针，并返回当前元素的 source"""
         return self.get().source
 
     def pop_as_source(self) -> str:
-        """将指针向后移动 1 个元素并返回当前元素的 source"""
+        """将指针向后移动 1 个元素，并返回当前元素的 source"""
         return self.pop().source
 
     def get_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
-        """【不移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
+        """不移动指针，并返回当前指针位置的插入语节点的子节点的扫描器"""
         return TokenScanner(self.get().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def pop_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
-        """【移动指针】返回当前指针位置的插入语节点的子节点的扫描器"""
+        """将指针向后移动 1 个元素，并返回当前指针位置的插入语节点的子节点的扫描器"""
         return TokenScanner(self.pop().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
 
     def split_by(self,
                  source: str,
                  ignore_space: bool = True,
                  ignore_comment: bool = True) -> List["TokenScanner"]:
-        """【移动指针（到末尾）】将后续元素拆分为使用 source 分隔的扫描器列表"""
+        """将指针移动到末尾，并将后续元素拆分为使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
         while not self.is_finish:
@@ -171,7 +171,7 @@ class TokenScanner:
                                               source: str,
                                               ignore_space: bool = True,
                                               ignore_comment: bool = True) -> List["TokenScanner"]:
-        """【移动指针】返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
+        """将指针向后移动一个元素，并返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
         for token in self.pop().children():
