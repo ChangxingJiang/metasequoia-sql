@@ -788,6 +788,23 @@ class SQLParser:
                 after_value=after_value
             )
         return before_value  # 如果无法构成条件表达式，则返回多项式表达式或单项式表达式
+    
+    @classmethod
+    def check_exists_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否为 EXISTS 表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("EXISTS") or scanner.search("NOT", "EXISTS")
+
+    @classmethod
+    def parse_exists_expression(cls, scanner_or_string: Union[TokenScanner, str],
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBoolExistsExpression:
+        """解析 EXISTS 表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        if scanner.search_and_move("EXISTS"):
+            after_value = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
+            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
 
     @classmethod
     def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -798,10 +815,9 @@ class SQLParser:
         TODO 待根据运算优先级，生成嵌套的二元运算逻辑
         """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        if cls.check_exists_expression(scanner, sql_type=sql_type):
+            return cls.parse_exists_expression(scanner, sql_type=sql_type)
         is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
-        if scanner.search_and_move("EXISTS"):
-            after_value = cls.parse_sub_query_expression(scanner, unary_operator=None, sql_type=sql_type)
-            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
         before_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
         # 解析第一个条件表达式
