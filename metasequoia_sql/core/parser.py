@@ -255,7 +255,7 @@ class SQLParser:
             scanner_or_string: Union[TokenScanner, str],
             unary_operator: Optional[Tuple[node.ASTComputeOperator]],
             sql_type: SQLType = SQLType.DEFAULT
-    ) -> Union[node.ASTColumnName, node.ASTArrayIndexExpression]:
+    ) -> Union[node.ASTColumnName, node.ASTArrayIndex]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         column_name_expression = cls.parse_column_name_expression(scanner, unary_operator, sql_type=sql_type)
@@ -265,7 +265,7 @@ class SQLParser:
         children_scanner = scanner.pop_as_children_scanner()
         idx = cls.parse_polynomial_expression(children_scanner, sql_type=sql_type)
         children_scanner.close()
-        return node.ASTArrayIndexExpression(
+        return node.ASTArrayIndex(
             unary_operator=unary_operator,
             array=column_name_expression,
             idx=idx
@@ -322,10 +322,10 @@ class SQLParser:
     @classmethod
     def parse_literal_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                  unary_operator: Optional[Tuple[node.ASTComputeOperator]],
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLiteralExpression:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLiteral:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return node.ASTLiteralExpression(unary_operator=unary_operator, value=scanner.pop_as_source())
+        return node.ASTLiteral(unary_operator=unary_operator, value=scanner.pop_as_source())
 
     @classmethod
     def parse_window_row_item(cls, scanner_or_string: Union[TokenScanner, str],
@@ -368,16 +368,16 @@ class SQLParser:
     @classmethod
     def parse_wildcard_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                   unary_operator: Optional[Tuple[node.ASTComputeOperator]],
-                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWildcardExpression:
+                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWildcard:
         """解析通配符表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("*"):
-            return node.ASTWildcardExpression()
+            return node.ASTWildcard()
         if scanner.search(AMTMark.NAME, ".", "*"):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             scanner.pop()
-            return node.ASTWildcardExpression(unary_operator=unary_operator, table_name=schema_name)
+            return node.ASTWildcard(unary_operator=unary_operator, table_name=schema_name)
         raise SqlParseError("无法解析为通配符表达式")
 
     @classmethod
@@ -426,19 +426,19 @@ class SQLParser:
     @classmethod
     def parse_extract_function_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                           sql_type: SQLType = SQLType.DEFAULT
-                                          ) -> node.ASTExtractFunctionExpression:
+                                          ) -> node.ASTExtractFunction:
         """解析 EXTRACT 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         extract_name = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         scanner.match("FROM")
         column_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         scanner.close()
-        return node.ASTExtractFunctionExpression(extract_name=extract_name, column_expression=column_expression)
+        return node.ASTExtractFunction(extract_name=extract_name, column_expression=column_expression)
 
     @classmethod
     def parse_cast_function_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                        sql_type: SQLType = SQLType.DEFAULT
-                                       ) -> node.ASTCastFunctionExpression:
+                                       ) -> node.ASTCastFunction:
         """解析 CAST 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         column_expression = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
@@ -456,12 +456,12 @@ class SQLParser:
             cast_params = None
         scanner.close()
         cast_data_type = node.ASTCastDataType(signed=signed, type=cast_type, params=cast_params)
-        return node.ASTCastFunctionExpression(column_expression=column_expression, cast_type=cast_data_type)
+        return node.ASTCastFunction(column_expression=column_expression, cast_type=cast_data_type)
 
     @classmethod
     def parse_if_function_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                      sql_type: SQLType = SQLType.DEFAULT
-                                     ) -> node.ASTNormalFunctionExpression:
+                                     ) -> node.ASTNormalFunction:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         function_params: List[node.AliasGeneralExpression] = []
@@ -473,12 +473,12 @@ class SQLParser:
             else:
                 function_params.append(cls.parse_general_expression(param_scanner, sql_type=sql_type))
             param_scanner.close()
-        return node.ASTNormalFunctionExpression(name=node.ASTFunctionName(function_name="IF"),
-                                                params=tuple(function_params))
+        return node.ASTNormalFunction(name=node.ASTFunctionName(function_name="IF"),
+                                      params=tuple(function_params))
 
     @classmethod
     def parse_function_expression(cls, scanner_or_string: Union[TokenScanner, str], sql_type: SQLType = SQLType.DEFAULT
-                                  ) -> Union[node.ASTFunctionExpression]:
+                                  ) -> Union[node.ASTFunction]:
         """解析函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         function_name = cls.parse_function_name_expression(scanner, sql_type=sql_type)
@@ -512,11 +512,11 @@ class SQLParser:
 
         if (function_name.schema_name is None
                 and function_name.function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET):
-            return node.ASTAggregationFunctionExpression(
+            return node.ASTAggregationFunction(
                 name=function_name,
                 params=tuple(function_params),
                 is_distinct=is_distinct)
-        return node.ASTNormalFunctionExpression(
+        return node.ASTNormalFunction(
             name=function_name,
             params=tuple(function_params))
 
@@ -526,7 +526,7 @@ class SQLParser:
             scanner_or_string: Union[TokenScanner, str],
             unary_operator: Optional[Tuple[node.ASTComputeOperator]],
             sql_type: SQLType = SQLType.DEFAULT
-    ) -> Union[node.ASTFunctionExpression, node.ASTArrayIndexExpression]:
+    ) -> Union[node.ASTFunction, node.ASTArrayIndex]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         array_expression = cls.parse_function_expression(scanner, sql_type=sql_type)
@@ -536,7 +536,7 @@ class SQLParser:
         children_scanner = scanner.pop_as_children_scanner()
         idx = cls.parse_polynomial_expression(children_scanner, sql_type=sql_type)
         children_scanner.close()
-        return node.ASTArrayIndexExpression(
+        return node.ASTArrayIndex(
             unary_operator=unary_operator,
             array=array_expression,
             idx=idx
@@ -765,23 +765,23 @@ class SQLParser:
         if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
             is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+            return node.ASTIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if scanner.search_and_move("IN"):  # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
             after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
-            return node.ASTBoolInExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+            return node.ASTInExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if scanner.search_and_move("LIKE"):
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+            return node.ASTLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if scanner.search_and_move("RLIKE"):
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+            return node.ASTRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if scanner.search_and_move("REGEXP"):
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
+            return node.ASTRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
             compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolCompareExpression(
+            return node.ASTCompareExpression(
                 is_not=is_not,
                 operator=compare_operator,
                 before_value=before_value,
@@ -810,9 +810,9 @@ class SQLParser:
         while cls.check_compare_operator(scanner, sql_type=sql_type):
             compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
-            before_value = node.ASTBoolCompareExpression(is_not=is_not, operator=compare_operator,
-                                                         before_value=before_value,
-                                                         after_value=after_value)
+            before_value = node.ASTCompareExpression(is_not=is_not, operator=compare_operator,
+                                                     before_value=before_value,
+                                                     after_value=after_value)
         return before_value
 
     @classmethod
@@ -878,23 +878,23 @@ class SQLParser:
 
     @classmethod
     def parse_table_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTFromTableExpression:
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTFromTable:
         """解析 FROM 和 JOIN 子句元素：包含别名的表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         name_expression = cls.parse_type_table_expression(scanner, sql_type=sql_type)
         alias_expression = (cls.parse_alias_expression(scanner, sql_type=sql_type)
                             if cls.check_alias_expression(scanner, sql_type=sql_type) else None)
-        return node.ASTFromTableExpression(name=name_expression, alias=alias_expression)
+        return node.ASTFromTable(name=name_expression, alias=alias_expression)
 
     @classmethod
     def parse_column_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSelectColumnExpression:
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSelectColumn:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         general_expression = cls.parse_general_expression(scanner, sql_type=sql_type)
         alias_expression = (cls.parse_alias_expression(scanner, sql_type=sql_type)
                             if cls.check_alias_expression(scanner, sql_type=sql_type) else None)
-        return node.ASTSelectColumnExpression(value=general_expression, alias=alias_expression)
+        return node.ASTSelectColumn(value=general_expression, alias=alias_expression)
 
     @classmethod
     def check_select_clause(cls, scanner_or_string: Union[TokenScanner, str],
@@ -1069,14 +1069,14 @@ class SQLParser:
 
     @classmethod
     def _parse_order_by_item(cls, scanner: TokenScanner,
-                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumnExpression:
+                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumn:
         column = cls.parse_polynomial_expression(scanner, sql_type=sql_type)
         order = cls.parse_order_type(scanner, sql_type=sql_type)
         nulls_first = scanner.search_and_move("NULLS", "FIRST")
         nulls_last = scanner.search_and_move("NULLS", "LAST")
         if nulls_first is True and nulls_last is True:
             raise SqlParseError("同时定义了 NULLS FIRST 和 NULLS LAST")
-        return node.ASTOrderByColumnExpression(
+        return node.ASTOrderByColumn(
             column=column,
             order=order,
             nulls_first=nulls_first,
@@ -1377,7 +1377,7 @@ class SQLParser:
                 is_non_dynamic_partition = True
                 operator = cls.parse_compare_operator(partition_scanner, sql_type=sql_type)
                 after_value = cls.parse_polynomial_expression(partition_scanner, sql_type=sql_type)
-                partition_list.append(node.ASTBoolCompareExpression(
+                partition_list.append(node.ASTCompareExpression(
                     is_not=False,
                     before_value=before_value,
                     operator=operator,

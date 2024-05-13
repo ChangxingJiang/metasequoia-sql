@@ -23,14 +23,14 @@ class CurrentNodeUsedQuoteColumn(AnalyzerRecursionASTToListBase):
         # pylint: disable=R0912
         """自定义的处理规则"""
         # 处理类似 COUNT(1) 的场景：如果是聚集函数，但参数中没有引用字段，则返回一个 column_name 为空的引用
-        if isinstance(node, core.ASTAggregationFunctionExpression):
+        if isinstance(node, core.ASTAggregationFunction):
             quote_column_list = cls.default_handle_node(node)
             if len(quote_column_list) > 0:
                 return quote_column_list
             return [QuoteColumn(column_name=None)]
 
         # 处理通配符场景
-        if isinstance(node, core.ASTWildcardExpression):
+        if isinstance(node, core.ASTWildcard):
             return [QuoteColumn(table_name=node.table_name, column_name="*")]
 
         # 处理普通表名引用场景

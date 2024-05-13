@@ -194,7 +194,7 @@ class TestCoreParser(unittest.TestCase):
     def test_table_expression(self):
         """测试解析表表达式"""
         self.assertEqual(SQLParser.parse_table_expression("schema1.table1 AS t1").source(SQLType.MYSQL),
-                          "`schema1.table1` AS t1")
+                         "`schema1.table1` AS t1")
 
     def test_column_expression(self):
         """测试解析列表达式"""
@@ -325,3 +325,13 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_config_string_expression(demo_sql)
         self.assertEqual(ast_node.name, "spark.hadoop.parquet.enable.summary-metadata")
         self.assertEqual(ast_node.value, "false")
+
+    # def test_parse_column_name_expression(self):
+    #     """测试 parse_column_name_expression 方法"""
+    #     demo_sql = "(column2)"
+    #     ast_node = SQLParser.parse_column_name_expression(demo_sql, unary_operator=None)
+    #     self.assertEqual("column2", ast_node.column_name)
+    #
+    #     demo_sql = "((column2))"
+    #     ast_node = SQLParser.parse_column_name_expression(demo_sql, unary_operator=None)
+    #     self.assertEqual("column2", ast_node.column_name)

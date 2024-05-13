@@ -76,15 +76,15 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
     # 单项表达式层级
-    "ASTColumnName",  # 列名表达式
-    "ASTLiteralExpression",  # 字面值表达式
-    "ASTWildcardExpression",  # 通配符表达式
-    "ASTFunctionExpression",  # 函数表达式：函数表达式的抽象类
-    "ASTNormalFunctionExpression",  # 函数表达式：普通函数表达式
-    "ASTAggregationFunctionExpression",  # 函数表达式：聚集函数表达式
-    "ASTCastFunctionExpression",  # 函数表达式：CAST 函数表达式
-    "ASTExtractFunctionExpression",  # 函数表达式：EXTRACT 函数表达式
-    "ASTArrayIndexExpression",  # 数组下标表达式
+    "ASTColumnName",  # 列名节点
+    "ASTLiteral",  # 字面值节点
+    "ASTWildcard",  # 通配符节点
+    "ASTFunction",  # 函数表达式：函数表达式的抽象类
+    "ASTNormalFunction",  # 函数表达式：普通函数表达式
+    "ASTAggregationFunction",  # 函数表达式：聚集函数表达式
+    "ASTCastFunction",  # 函数表达式：CAST 函数表达式
+    "ASTExtractFunction",  # 函数表达式：EXTRACT 函数表达式
+    "ASTArrayIndex",  # 数组下标表达式
     "ASTWindowExpression",  # 窗口表达式
     "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
     "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
@@ -100,23 +100,23 @@ __all__ = [
 
     # 条件表达式层级
     "ASTConditionExpression",  # 布尔值表达式
-    "ASTBoolCompareExpression",  # 布尔值表达式：使用比较运算符的布尔值表达式
-    "ASTBoolOperatorExpression",  # 布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类
-    "ASTBoolIsExpression",  # 布尔值表达式：使用 IS 的布尔值表达式
-    "ASTBoolInExpression",  # 布尔值表达式：使用 IN 的布尔值表达式
-    "ASTBoolLikeExpression",  # 布尔值表达式：使用 LIKE 的布尔值表达式
+    "ASTCompareExpression",  # 布尔值表达式：使用比较运算符的布尔值表达式
+    "ASTOperatorExpression",  # 布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类
+    "ASTIsExpression",  # 布尔值表达式：使用 IS 的布尔值表达式
+    "ASTInExpression",  # 布尔值表达式：使用 IN 的布尔值表达式
+    "ASTLikeExpression",  # 布尔值表达式：使用 LIKE 的布尔值表达式
     "ASTBoolExistsExpression",  # 布尔值表达式：使用 EXISTS 的布尔值表达式
     "ASTBoolBetweenExpression",  # 布尔值表达式：使用 BETWEEN 的布尔值表达式
-    "ASTBoolRlikeExpression",  # 布尔值表达式：使用 RLIKE 的布尔值表达式
-    "ASTBoolRegexpExpression",  # 布尔值表达式：使用 REGEXP 的布尔值表达式
+    "ASTRlikeExpression",  # 布尔值表达式：使用 RLIKE 的布尔值表达式
+    "ASTRegexpExpression",  # 布尔值表达式：使用 REGEXP 的布尔值表达式
 
     # 条件表达式层级
     "ASTGeneralExpression",  # 条件表达式
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
-    "ASTSelectColumnExpression",  # SELECT 子句元素：包含别名的列表达式
-    "ASTFromTableExpression",  # FROM 和 JOIN 子句元素：包含别名的表表达式
-    "ASTOrderByColumnExpression",  # ORDER BY 子句元素：包含排序字段及排序顺序的表达式
+    "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
+    "ASTFromTable",  # FROM 和 JOIN 子句元素：包含别名的表表达式
+    "ASTOrderByColumn",  # ORDER BY 子句元素：包含排序字段及排序顺序的表达式
     "ASTJoinExpression",  # JOIN 子句元素：关联表达式的抽象类
     "ASTJoinOnExpression",  # JOIN 子句元素：使用 ON 关键字的关联表达式
     "ASTJoinUsingExpression",  # JOIN 子句元素：使用 USING 函数的关联表达式
@@ -544,7 +544,7 @@ class ASTFunctionName(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteralExpression(ASTMonomialExpression):
+class ASTLiteral(ASTMonomialExpression):
     """字面值表达式"""
 
     value: str = dataclasses.field(kw_only=True)  # 字面值
@@ -618,7 +618,7 @@ class ASTWindowRow(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWildcardExpression(ASTMonomialExpression):
+class ASTWildcard(ASTMonomialExpression):
     """通配符表达式"""
 
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
@@ -658,7 +658,7 @@ class ASTMultiAlisaExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderByColumnExpression(ASTBase):
+class ASTOrderByColumn(ASTBase):
     """ORDER BY 子句中每一个字段及排序顺序的节点"""
 
     column: ASTExpressionBase = dataclasses.field(kw_only=True)  # 排序字段
@@ -679,14 +679,14 @@ class ASTOrderByColumnExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFunctionExpression(ASTMonomialExpression, abc.ABC):
+class ASTFunction(ASTMonomialExpression, abc.ABC):
     """函数表达式的抽象基类"""
 
     name: ASTFunctionName = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTNormalFunctionExpression(ASTFunctionExpression):
+class ASTNormalFunction(ASTFunction):
     """包含一般参数的函数表达式"""
 
     params: Tuple[AliasGeneralExpression] = dataclasses.field(kw_only=True)  # 函数表达式的参数
@@ -700,7 +700,7 @@ class ASTNormalFunctionExpression(ASTFunctionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTAggregationFunctionExpression(ASTNormalFunctionExpression):
+class ASTAggregationFunction(ASTNormalFunction):
     """聚合函数表达式"""
 
     is_distinct: bool = dataclasses.field(kw_only=True)  # 是否包含 DISTINCT 关键字
@@ -712,7 +712,7 @@ class ASTAggregationFunctionExpression(ASTNormalFunctionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCastFunctionExpression(ASTFunctionExpression):
+class ASTCastFunction(ASTFunction):
     """Cast 函数表达式"""
 
     name: ASTFunctionName = dataclasses.field(init=False, default=ASTFunctionName.by_name("CAST"))
@@ -726,7 +726,7 @@ class ASTCastFunctionExpression(ASTFunctionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTExtractFunctionExpression(ASTFunctionExpression):
+class ASTExtractFunction(ASTFunction):
     """Extract 函数表达式"""
 
     name: ASTFunctionName = dataclasses.field(init=False, default=ASTFunctionName.by_name("EXTRACT"))
@@ -750,7 +750,7 @@ class ASTConditionExpression(ASTExpressionBase, abc.ABC):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolOperatorExpression(ASTConditionExpression, abc.ABC):
+class ASTOperatorExpression(ASTConditionExpression, abc.ABC):
     """布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类"""
 
     before_value: AliasConditionExpression = dataclasses.field(kw_only=True)
@@ -758,7 +758,7 @@ class ASTBoolOperatorExpression(ASTConditionExpression, abc.ABC):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolCompareExpression(ASTBoolOperatorExpression):
+class ASTCompareExpression(ASTOperatorExpression):
     """比较运算符布尔值表达式"""
 
     operator: ASTCompareOperator = dataclasses.field(kw_only=True)
@@ -771,7 +771,7 @@ class ASTBoolCompareExpression(ASTBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolIsExpression(ASTBoolOperatorExpression):
+class ASTIsExpression(ASTOperatorExpression):
     """IS运算符布尔值表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -781,7 +781,7 @@ class ASTBoolIsExpression(ASTBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolInExpression(ASTBoolOperatorExpression):
+class ASTInExpression(ASTOperatorExpression):
     """In 关键字的布尔值表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -791,7 +791,7 @@ class ASTBoolInExpression(ASTBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolLikeExpression(ASTBoolOperatorExpression):
+class ASTLikeExpression(ASTOperatorExpression):
     """LIKE 运算符关联表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -801,7 +801,7 @@ class ASTBoolLikeExpression(ASTBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolRlikeExpression(ASTBoolOperatorExpression):
+class ASTRlikeExpression(ASTOperatorExpression):
     """RLIKE 运算符关联表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -811,7 +811,7 @@ class ASTBoolRlikeExpression(ASTBoolOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolRegexpExpression(ASTBoolOperatorExpression):
+class ASTRegexpExpression(ASTOperatorExpression):
     """RLIKE 运算符关联表达式"""
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -851,7 +851,7 @@ class ASTBoolBetweenExpression(ASTConditionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTArrayIndexExpression(ASTMonomialExpression):
+class ASTArrayIndex(ASTMonomialExpression):
     """数组下标表达式"""
 
     array: ASTExpressionBase = dataclasses.field(kw_only=True)
@@ -871,9 +871,9 @@ class ASTArrayIndexExpression(ASTMonomialExpression):
 class ASTWindowExpression(ASTMonomialExpression):
     """【单项表达式】窗口表达式"""
 
-    window_function: Union[ASTNormalFunctionExpression, ASTArrayIndexExpression] = dataclasses.field(kw_only=True)
+    window_function: Union[ASTNormalFunction, ASTArrayIndex] = dataclasses.field(kw_only=True)
     partition_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
-    order_by_columns: Tuple[ASTOrderByColumnExpression, ...] = dataclasses.field(kw_only=True)
+    order_by_columns: Tuple[ASTOrderByColumn, ...] = dataclasses.field(kw_only=True)
     row_expression: Optional[ASTWindowRow] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1058,7 +1058,7 @@ class ASTJoinOnExpression(ASTJoinExpression):
 class ASTJoinUsingExpression(ASTJoinExpression):
     """USING 关联表达式"""
 
-    using_function: ASTFunctionExpression = dataclasses.field(kw_only=True)
+    using_function: ASTFunction = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1072,7 +1072,7 @@ AliasTableExpression = Union[ASTTableName, ASTSubQueryExpression]  # 表表达�
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFromTableExpression(ASTBase):
+class ASTFromTable(ASTBase):
     """表表达式"""
 
     name: AliasTableExpression = dataclasses.field(kw_only=True)
@@ -1089,7 +1089,7 @@ class ASTFromTableExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSelectColumnExpression(ASTBase):
+class ASTSelectColumn(ASTBase):
     """在 SELECT 语句中的每一列的表达式"""
 
     value: ASTExpressionBase = dataclasses.field(kw_only=True)
@@ -1110,7 +1110,7 @@ class ASTSelectClause(ASTBase):
     """SELECT 子句"""
 
     distinct: bool = dataclasses.field(kw_only=True)
-    columns: Tuple[ASTSelectColumnExpression, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[ASTSelectColumn, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1127,7 +1127,7 @@ class ASTSelectClause(ASTBase):
 class ASTFromClause(ASTBase):
     """FROM 子句"""
 
-    tables: Tuple[ASTFromTableExpression, ...] = dataclasses.field(kw_only=True)
+    tables: Tuple[ASTFromTable, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1142,7 +1142,7 @@ class ASTLateralViewClause(ASTBase):
     """LATERAL VIEW 子句"""
 
     outer: bool = dataclasses.field(kw_only=True)
-    function: ASTFunctionExpression = dataclasses.field(kw_only=True)
+    function: ASTFunction = dataclasses.field(kw_only=True)
     view_name: str = dataclasses.field(kw_only=True)
     alias: ASTMultiAlisaExpression = dataclasses.field(kw_only=True)
 
@@ -1160,7 +1160,7 @@ class ASTJoinClause(ASTBase):
     """JOIN 子句"""
 
     type: ASTJoinType = dataclasses.field(kw_only=True)
-    table: ASTFromTableExpression = dataclasses.field(kw_only=True)
+    table: ASTFromTable = dataclasses.field(kw_only=True)
     rule: Optional[ASTJoinExpression] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1241,7 +1241,7 @@ class ASTHavingClause(ASTBase):
 class ASTOrderByClause(ASTBase):
     """ORDER BY 子句"""
 
-    columns: Tuple[ASTOrderByColumnExpression, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[ASTOrderByColumn, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1256,7 +1256,7 @@ class ASTOrderByClause(ASTBase):
 class ASTSortByClause(ASTBase):
     """SORT BY 子句（Hive）"""
 
-    columns: Tuple[ASTOrderByColumnExpression, ...] = dataclasses.field(kw_only=True)
+    columns: Tuple[ASTOrderByColumn, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1424,7 +1424,7 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
-AliasPartitionParam = Union[ASTPolynomialExpression, ASTBoolCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
+AliasPartitionParam = Union[ASTPolynomialExpression, ASTCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
