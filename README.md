@@ -81,3 +81,4 @@ coverage html  # 生成 HTML 报告
 
 ## 版本更新记录
 
+[文档地址](https://github.com/ChangxingJiang/metasequoia-sql/blob/main/docs/%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
