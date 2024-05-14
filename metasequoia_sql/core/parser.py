@@ -788,17 +788,17 @@ class SQLParser:
                 after_value=after_value
             )
         return before_value  # 如果无法构成条件表达式，则返回多项式表达式或单项式表达式
-    
+
     @classmethod
     def check_exists_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> bool:
+                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
         """判断是否为 EXISTS 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return scanner.search("EXISTS") or scanner.search("NOT", "EXISTS")
 
     @classmethod
     def parse_exists_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBoolExistsExpression:
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBoolExistsExpression:
         """解析 EXISTS 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
@@ -2017,6 +2017,72 @@ class SQLParser:
         )
 
     @classmethod
+    def parse_update_set_column(cls, scanner_or_string: Union[TokenScanner, str],
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateSetColumn:
+        """解析 UPDATE 语句中 SET 中的字段元素"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        column_name = scanner.pop_as_source()
+        scanner.match("=")
+        column_value = cls.parse_general_expression(scanner)
+        return node.ASTUpdateSetColumn(
+            column_name=column_name,
+            column_value=column_value
+        )
+
+    @classmethod
+    def parse_update_set_clause(cls, scanner_or_string: Union[TokenScanner, str],
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateSetClause:
+        """解析 UPDATE 语句的 SET 子句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("SET")
+        columns = [cls.parse_update_set_column(scanner)]
+        while scanner.search_and_move(","):
+            columns.append(cls.parse_update_set_column(scanner))
+        return node.ASTUpdateSetClause(
+            columns=tuple(columns)
+        )
+
+    @classmethod
+    def check_update_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
+        """判断是否为 UPDATE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return scanner.search("UPDATE")
+
+    @classmethod
+    def parse_update_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateStatement:
+        """解析 UPDATE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("UPDATE")
+        table_name = cls.parse_table_name_expression(scanner)
+        set_clause = cls.parse_update_set_clause(scanner)
+
+        if cls.check_where_clause(scanner):
+            where_clause = cls.parse_where_clause(scanner)
+        else:
+            where_clause = None
+
+        if cls.check_order_by_clause(scanner):
+            order_by_clause = cls.parse_order_by_clause(scanner)
+        else:
+            order_by_clause = None
+
+        if cls.check_limit_clause(scanner):
+            limit_clause = cls.parse_limit_clause(scanner)
+        else:
+            limit_clause = None
+
+        return node.ASTUpdateStatement(
+            table_name=table_name,
+            set_clause=set_clause,
+            where_clause=where_clause,
+            order_by_clause=order_by_clause,
+            limit_clause=limit_clause
+        )
+
+
+    @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
                          sql_type: SQLType = SQLType.DEFAULT) -> List[node.ASTStatementBase]:
         # pylint: disable=R0912
@@ -2055,6 +2121,10 @@ class SQLParser:
             # 解析 TRUNCATE TABLE 语句
             elif cls.check_truncate_table_statement(scanner, sql_type=sql_type):
                 statement_list.append(cls.parse_truncate_table_statement(scanner, sql_type=sql_type))
+
+            # 解析 UPDATE 语句 TODO 增加支持 WITH 语句
+            elif cls.check_update_statement(scanner, sql_type=sql_type):
+                statement_list.append(cls.parse_update_statement(scanner, sql_type=sql_type))
 
             else:
                 # 解析可能包含 WITH 子句的语句类型

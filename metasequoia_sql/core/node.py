@@ -30,9 +30,9 @@ TODO 优化需要一元表达式的类型
 import abc
 import dataclasses
 import enum
-from typing import Optional, Tuple, Union, Dict
+from typing import Optional, Tuple, Union, Dict, Any
 
-from metasequoia_sql.common.basic import is_int_literal
+from metasequoia_sql.common.basic import is_int_literal, is_bool_literal, is_float_literal, is_null_literal
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.errors import UnSupportSqlTypeError
@@ -562,6 +562,17 @@ class ASTLiteral(ASTMonomialExpression):
     def as_string(self) -> str:
         """将字面值作为字符串返回"""
         return self.value
+
+    def get_value(self) -> Any:
+        """返回当前字面值类型的返回值"""
+        if is_int_literal(self.value):
+            return int(self.value)
+        if is_bool_literal(self.value):
+            return True if self.value.upper() == "TRUE" else False
+        if is_float_literal(self.value):
+            return float(self.value)
+        if is_null_literal(self.value):
+            return None
 
 
 # ---------------------------------------- 窗口函数的行数限制 ----------------------------------------
@@ -1994,3 +2005,49 @@ class ASTTruncateTable(ASTStatementBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"TRUNCATE TABLE {self.table_name.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTUpdateSetColumn(ASTBase):
+    """UPDATE 语句的 SET 子句中的元素"""
+
+    column_name: str = dataclasses.field(kw_only=True)
+    column_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.column_name} = {self.column_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTUpdateSetClause(ASTBase):
+    """UPDATE 语句的 SET 子句"""
+
+    columns: Tuple[ASTUpdateSetColumn, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        columns_str = ", ".join(column.source(sql_type) for column in self.columns)
+        return f"SET {columns_str}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTUpdateStatement(ASTStatementBase):
+    """UPDATE 语句"""
+
+    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    set_clause: ASTUpdateSetClause = dataclasses.field(kw_only=True)
+    where_clause: Optional[ASTWhereClause] = dataclasses.field(kw_only=True)
+    order_by_clause: Optional[ASTOrderByClause] = dataclasses.field(kw_only=True)
+    limit_clause: Optional[ASTLimitClause] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        result = f"UPDATE {self.table_name.source(sql_type)} {self.set_clause.source(sql_type)}"
+        if self.where_clause is not None:
+            result += f" {self.where_clause.source(sql_type)}"
+        if self.order_by_clause is not None:
+            result += f" {self.order_by_clause.source(sql_type)}"
+        if self.limit_clause is not None:
+            result += f" {self.limit_clause.source(sql_type)}"
+        return result
