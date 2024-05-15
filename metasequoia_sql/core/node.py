@@ -187,6 +187,15 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 TRUNCATE TABLE 语句节点 ------------------------------
     "ASTTruncateTable",  # TRUNCATE TABLE 语句
+
+    # ------------------------------ 抽象语法树（AST）节点的 UPDATE 语句节点 ------------------------------
+    "ASTUpdateSetColumn",
+    "ASTUpdateSetClause",
+    "ASTUpdateStatement",
+
+    # ------------------------------ 抽象语法树（AST）节点的 SHOW 语句节点 ------------------------------
+    "ASTShowDatabasesStatement",
+    "ASTShowTablesStatement",
 ]
 
 
@@ -2051,3 +2060,34 @@ class ASTUpdateStatement(ASTStatementBase):
         if self.limit_clause is not None:
             result += f" {self.limit_clause.source(sql_type)}"
         return result
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTShowDatabasesStatement(ASTStatementBase):
+    """SHOW DATABASES 语句"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return "SHOW DATABASES"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTShowTablesStatement(ASTStatementBase):
+    """SHOW TABLES 语句"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return "SHOW TABLES"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTShowColumnsStatement(ASTStatementBase):
+    """SHOW COLUMNS 语句"""
+
+    from_clause: ASTFromClause = dataclasses.field(kw_only=True)
+    where_clause: Optional[ASTWhereClause] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        where_clause_str = f" {self.where_clause.source(sql_type)}" if self.where_clause is not None else ""
+        return f"SHOW COLUMNS {self.from_clause.source(sql_type)}{where_clause_str}"

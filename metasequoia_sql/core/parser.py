@@ -2044,14 +2044,14 @@ class SQLParser:
 
     @classmethod
     def check_update_statement(cls, scanner_or_string: Union[TokenScanner, str],
-                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
+                               sql_type: SQLType = SQLType.DEFAULT) -> bool:
         """判断是否为 UPDATE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return scanner.search("UPDATE")
 
     @classmethod
     def parse_update_statement(cls, scanner_or_string: Union[TokenScanner, str],
-                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateStatement:
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateStatement:
         """解析 UPDATE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("UPDATE")
@@ -2081,6 +2081,23 @@ class SQLParser:
             limit_clause=limit_clause
         )
 
+    @classmethod
+    def parse_show_columns_statement(cls, scanner_or_string: Union[TokenScanner, str],
+                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTShowColumnsStatement:
+        """解析 SHOW COLUMNS 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        scanner.match("SHOW", "COLUMNS")
+        from_clause = cls.parse_from_clause(scanner, sql_type=sql_type)
+
+        if cls.check_where_clause(scanner):
+            where_clause = cls.parse_where_clause(scanner)
+        else:
+            where_clause = None
+
+        return node.ASTShowColumnsStatement(
+            from_clause=from_clause,
+            where_clause=where_clause
+        )
 
     @classmethod
     def parse_statements(cls, scanner_or_string: Union[TokenScanner, str],
@@ -2121,6 +2138,18 @@ class SQLParser:
             # 解析 TRUNCATE TABLE 语句
             elif cls.check_truncate_table_statement(scanner, sql_type=sql_type):
                 statement_list.append(cls.parse_truncate_table_statement(scanner, sql_type=sql_type))
+
+            # 解析 SHOW DATABASES 语句
+            elif scanner.search_and_move("SHOW", "DATABASES"):
+                statement_list.append(node.ASTShowDatabasesStatement())
+
+            # 解析 SHOW TABLES 语句
+            elif scanner.search_and_move("SHOW", "TABLES"):
+                statement_list.append(node.ASTShowTablesStatement())
+
+            # 解析 SHOW COLUMNS 语句
+            elif scanner.search_and_move("SHOW", "COLUMNS"):
+                statement_list.append(cls.parse_show_columns_statement(scanner, sql_type=sql_type))
 
             # 解析 UPDATE 语句 TODO 增加支持 WITH 语句
             elif cls.check_update_statement(scanner, sql_type=sql_type):
