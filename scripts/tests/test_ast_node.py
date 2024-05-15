@@ -1,9 +1,14 @@
+"""
+检查抽象语法树（AST）节点的通用特性
+"""
+
 import dataclasses
 import enum
 import inspect
 import typing
+import unittest
 
-from metasequoia_sql import *
+from metasequoia_sql import node
 
 
 def check_hashable(cls: type, visited: typing.Optional[typing.Set[type]] = None) -> bool:
@@ -82,21 +87,35 @@ def check_hashable(cls: type, visited: typing.Optional[typing.Set[type]] = None)
     raise KeyError(f"未定义的实例化类型: {cls}")
 
 
-if __name__ == "__main__":
-    for class_name in node.__all__:
-        # 跳过不是抽象语法树的节点
-        if not class_name.startswith("AST"):
-            continue
+class TestObjectsHashable(unittest.TestCase):
+    """检验所有抽象语法树节点是否可哈希"""
 
-        # 获取抽象语法树节点
-        ast_class = getattr(node, class_name)
+    def test_node_is_dataclasses(self):
+        """检查抽象语法树节点是否为 dataclasses 对象"""
 
-        # 检查抽象语法树节点是否为 dataclasses 对象
-        assert dataclasses.is_dataclass(ast_class)
+        for class_name in node.__all__:
+            # 跳过不是抽象语法树的节点
+            if not class_name.startswith("AST"):
+                continue
 
-        # 抽象类跳过后续对实例的检查
-        if inspect.isabstract(ast_class):
-            continue
+            # 获取抽象语法树节点
+            ast_class = getattr(node, class_name)
 
-        # 实例化抽象语法树节点
-        ast_obj = check_hashable(ast_class)
+            # 检查抽象语法树节点是否为 dataclasses 对象
+            self.assertTrue(dataclasses.is_dataclass(ast_class), f"抽象语法树节点 {class_name} 不是 dataclasses 对象")
+
+    def test_node_is_hashable(self):
+        for class_name in node.__all__:
+            # 跳过不是抽象语法树的节点
+            if not class_name.startswith("AST"):
+                continue
+
+            # 获取抽象语法树节点
+            ast_class = getattr(node, class_name)
+
+            # 抽象类跳过后续对实例的检查
+            if inspect.isabstract(ast_class):
+                continue
+
+            # 实例化抽象语法树节点
+            self.assertTrue(check_hashable(ast_class), f"抽象语法树节点 {class_name} 不可哈希")
