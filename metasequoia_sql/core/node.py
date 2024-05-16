@@ -95,6 +95,9 @@ __all__ = [
     "ASTSubGeneralExpression",  # 插入语表达式：插入语一般表达式（下层为一般表达式）
     "ASTSubValueExpression",  # 插入语表达式：值表达式
 
+    # 一元表达式层级
+    "ASTUnaryExpression",  # 一元表达式
+
     # 多项表达式层级
     "ASTPolynomialExpression",  # 计算表达式
 
@@ -235,13 +238,6 @@ class ASTExpressionBase(ASTBase, abc.ABC):
 class ASTMonomialExpression(ASTExpressionBase, abc.ABC):
     """抽象语法树（AST）单项表达式节点的抽象基类"""
 
-    unary_operator: Optional[Tuple["ASTComputeOperator", ...]] = dataclasses.field(kw_only=True, default=None)  # 一元运算符
-
-    def _get_unary_operator_str(self, sql_type: SQLType = SQLType.DEFAULT):
-        if self.unary_operator is None:
-            return ""
-        return "".join(operator.source(sql_type) for operator in self.unary_operator)
-
 
 AliasPolynomialExpression = Union["ASTPolynomialExpression", ASTMonomialExpression]  # 多项式节点类型
 AliasConditionExpression = Union["ASTConditionExpression", AliasPolynomialExpression]  # 条件表达式节点类型
@@ -381,6 +377,7 @@ class EnumComputeOperator(enum.Enum):
     MOD = ["%"]  # 取模运算符
     CONCAT = ["||"]  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
     AMPERSAND = ["&"]  # 按位与（仅 Hive 中适用）
+    BITWISE_INVERSION = ["~"]  # 按位取反
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -487,6 +484,25 @@ class ASTCastDataType(ASTBase):
 AliasPolynomialExpressionElement = Union[ASTMonomialExpression, ASTComputeOperator]
 AliasConditionExpressionElement = Union[AliasPolynomialExpression, ASTCompareOperator]
 AliasGeneralExpressionElement = Union[AliasConditionExpression, ASTLogicalOperator]
+
+
+# ---------------------------------------- 一元表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTUnaryExpression(ASTMonomialExpression):
+    """一元表达式
+
+    样例：~1、+1、-1
+
+    TODO 修改继承关系
+    """
+
+    unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
+    expression: ASTMonomialExpression = dataclasses.field(kw_only=True)  # 表达式
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
 
 
 # ---------------------------------------- 列名表达式 ----------------------------------------

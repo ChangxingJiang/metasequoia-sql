@@ -2,6 +2,7 @@
 词法分析的有限状态机
 
 TODO 增加各种元素在末尾的单元测试
+TODO 将过滤空格字符的逻辑添加到自动机参数中
 """
 
 from typing import List, Union, Dict
