@@ -535,7 +535,7 @@ class SQLParser:
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpression:
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel1:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
@@ -589,7 +589,7 @@ class SQLParser:
     @classmethod
     def parse_case_expression(cls, scanner_or_string: Union[TokenScanner, str],
                               sql_type: SQLType = SQLType.DEFAULT
-                              ) -> Union[node.ASTCaseConditionExpression, node.ASTCaseValueExpression]:
+                              ) -> node.AliasCaseExpression:
         """解析 CASE 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("CASE")
@@ -679,7 +679,7 @@ class SQLParser:
     @classmethod
     def parse_monomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                   maybe_window: bool,
-                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMonomialExpression:
+                                  sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel1:
         # pylint: disable=R0911
         """解析一元表达式
 

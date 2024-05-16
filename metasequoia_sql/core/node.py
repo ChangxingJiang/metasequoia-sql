@@ -7,6 +7,9 @@
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
+第 1 层表达式：单项表达式
+第 2 层表达式：单项表达式 + 一元表达式
+
 一般表达式节点：
 1. 包含使用 AND、OR 关键字连接的一个或多个布尔值表达式
 条件表达式节点：
@@ -75,7 +78,8 @@ __all__ = [
     "ASTMultiAlisaExpression",  # 多个别名表达式
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
-    # 单项表达式层级
+    # 第 1 层：单项表达式
+    "AliasExpressionLevel1",  # 第 1 层表达式（单项表达式）的类型别名
     "ASTColumnName",  # 列名节点
     "ASTLiteral",  # 字面值节点
     "ASTWildcard",  # 通配符节点
@@ -86,6 +90,7 @@ __all__ = [
     "ASTExtractFunction",  # 函数表达式：EXTRACT 函数表达式
     "ASTArrayIndex",  # 数组下标表达式
     "ASTWindowExpression",  # 窗口表达式
+    "AliasCaseExpression",  # 两种 CASE 语句的通用类型别名
     "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
     "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
@@ -95,7 +100,7 @@ __all__ = [
     "ASTSubGeneralExpression",  # 插入语表达式：插入语一般表达式（下层为一般表达式）
     "ASTSubValueExpression",  # 插入语表达式：值表达式
 
-    # 一元表达式层级
+    # 第 2 层：单项表达式 + 一元表达式
     "ASTUnaryExpression",  # 一元表达式
 
     # 多项表达式层级
@@ -239,7 +244,7 @@ class ASTMonomialExpression(ASTExpressionBase, abc.ABC):
     """抽象语法树（AST）单项表达式节点的抽象基类"""
 
 
-AliasPolynomialExpression = Union["ASTPolynomialExpression", ASTMonomialExpression]  # 多项式节点类型
+AliasPolynomialExpression = Union["ASTPolynomialExpression", "AliasExpressionLevel1"]  # 多项式节点类型
 AliasConditionExpression = Union["ASTConditionExpression", AliasPolynomialExpression]  # 条件表达式节点类型
 AliasGeneralExpression = Union["ASTGeneralExpression", AliasConditionExpression]  # 一般表达式节点类型
 
@@ -481,28 +486,9 @@ class ASTCastDataType(ASTBase):
 # ---------------------------------------- 各层级表达式元素类型 ----------------------------------------
 
 
-AliasPolynomialExpressionElement = Union[ASTMonomialExpression, ASTComputeOperator]
+AliasPolynomialExpressionElement = Union["AliasExpressionLevel1", ASTComputeOperator]
 AliasConditionExpressionElement = Union[AliasPolynomialExpression, ASTCompareOperator]
 AliasGeneralExpressionElement = Union[AliasConditionExpression, ASTLogicalOperator]
-
-
-# ---------------------------------------- 一元表达式 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTUnaryExpression(ASTMonomialExpression):
-    """一元表达式
-
-    样例：~1、+1、-1
-
-    TODO 修改继承关系
-    """
-
-    unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
-    expression: ASTMonomialExpression = dataclasses.field(kw_only=True)  # 表达式
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
 
 
 # ---------------------------------------- 列名表达式 ----------------------------------------
@@ -654,7 +640,7 @@ class ASTWindowRow(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWildcard(ASTMonomialExpression):
+class ASTWildcard(ASTExpressionBase):
     """通配符表达式"""
 
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
@@ -715,7 +701,7 @@ class ASTOrderByColumn(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFunction(ASTMonomialExpression, abc.ABC):
+class ASTFunction(ASTExpressionBase, abc.ABC):
     """函数表达式的抽象基类"""
 
     name: ASTFunctionName = dataclasses.field(kw_only=True)
@@ -887,7 +873,7 @@ class ASTBoolBetweenExpression(ASTConditionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTArrayIndex(ASTMonomialExpression):
+class ASTArrayIndex(ASTExpressionBase):
     """数组下标表达式"""
 
     array: ASTExpressionBase = dataclasses.field(kw_only=True)
@@ -904,7 +890,7 @@ class ASTArrayIndex(ASTMonomialExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTWindowExpression(ASTMonomialExpression):
+class ASTWindowExpression(ASTExpressionBase):
     """【单项表达式】窗口表达式"""
 
     window_function: Union[ASTNormalFunction, ASTArrayIndex] = dataclasses.field(kw_only=True)
@@ -958,7 +944,7 @@ class ASTCaseConditionItem(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCaseConditionExpression(ASTMonomialExpression):
+class ASTCaseConditionExpression(ASTExpressionBase):
     """第 1 种格式的 CASE 表达式
 
     CASE
@@ -994,7 +980,7 @@ class ASTCaseValueItem(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCaseValueExpression(ASTMonomialExpression):
+class ASTCaseValueExpression(ASTExpressionBase):
     """第 2 种格式的 CASE 表达式
 
     CASE {一般表达式}
@@ -1018,6 +1004,10 @@ class ASTCaseValueExpression(ASTMonomialExpression):
         return "\n".join(result)
 
 
+# 两种 CASE 语句的通用类型别名
+AliasCaseExpression = Union[ASTCaseConditionExpression, ASTCaseValueExpression]
+
+
 # ---------------------------------------- 计算表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1035,8 +1025,8 @@ class ASTPolynomialExpression(ASTExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTParenthesisExpression(ASTMonomialExpression, abc.ABC):
-    """【单项表达式】插入语表达式"""
+class ASTParenthesisExpression(ASTExpressionBase, abc.ABC):
+    """【单项表达式】插入语表达式 TODO 待移除或改为类型别名"""
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1070,6 +1060,29 @@ class ASTSubValueExpression(ASTParenthesisExpression):
         """返回语法节点的 SQL 源码"""
         values_str = ", ".join(value.source(sql_type) for value in self.values)
         return f"({values_str})"
+
+
+# 第 1 层表达式（单项表达式）的类型别名
+AliasExpressionLevel1 = Union[
+    ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTArrayIndex, ASTWindowExpression, AliasCaseExpression,
+    ASTParenthesisExpression]
+
+
+# ---------------------------------------- 一元表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTUnaryExpression(ASTExpressionBase):
+    """一元表达式
+
+    样例：~1、+1、-1
+    """
+
+    unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
+    expression: AliasExpressionLevel1 = dataclasses.field(kw_only=True)  # 表达式
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------
