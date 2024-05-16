@@ -78,8 +78,8 @@ __all__ = [
     "ASTMultiAlisaExpression",  # 多个别名表达式
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
-    # 第 1 层：单项表达式
-    "AliasExpressionLevel1",  # 第 1 层表达式（单项表达式）的类型别名
+    # 第 1 层级：单项表达式
+    "AliasExpressionLevel1",  # 第一层级表达式的类型别名
     "ASTColumnName",  # 列名节点
     "ASTLiteral",  # 字面值节点
     "ASTWildcard",  # 通配符节点
@@ -100,7 +100,8 @@ __all__ = [
     "ASTSubGeneralExpression",  # 插入语表达式：插入语一般表达式（下层为一般表达式）
     "ASTSubValueExpression",  # 插入语表达式：值表达式
 
-    # 第 2 层：单项表达式 + 一元表达式
+    # 第 2 层级：单项表达式 + 一元表达式
+    "AliasExpressionLevel2",  # 第二层级表达式的类型别名
     "ASTUnaryExpression",  # 一元表达式
 
     # 多项表达式层级
@@ -1062,7 +1063,7 @@ class ASTSubValueExpression(ASTParenthesisExpression):
         return f"({values_str})"
 
 
-# 第 1 层表达式（单项表达式）的类型别名
+# 第 1 层级表达式的类型别名
 AliasExpressionLevel1 = Union[
     ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTArrayIndex, ASTWindowExpression, AliasCaseExpression,
     ASTParenthesisExpression]
@@ -1083,6 +1084,10 @@ class ASTUnaryExpression(ASTExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
+
+
+# 第 2 层级表达式的类型别名
+AliasExpressionLevel2 = Union[AliasExpressionLevel1, ASTUnaryExpression]
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------

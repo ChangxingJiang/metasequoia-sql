@@ -677,23 +677,12 @@ class SQLParser:
         return result
 
     @classmethod
-    def parse_monomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                  maybe_window: bool,
-                                  sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel1:
+    def parse_expression_level_1(cls, scanner_or_string: Union[TokenScanner, str],
+                                 maybe_window: bool,
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel1:
         # pylint: disable=R0911
-        """解析一元表达式
-
-        TODO 这里实际解析的是包含一元表达式的第二层，待修改名称
-        """
+        """解析第 1 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-
-        # 解析一元运算符（允许连续使用多个一元运算符）
-        if scanner.search("-") or scanner.search("+") or scanner.search("~"):
-            unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
-            return node.ASTUnaryExpression(
-                unary_operator=unary_operator,
-                expression=cls.parse_monomial_expression(scanner, maybe_window=maybe_window, sql_type=sql_type)
-            )
         if cls.check_case_expression(scanner, sql_type=sql_type):
             return cls.parse_case_expression(scanner, sql_type=sql_type)
         if maybe_window is True and cls.check_window_expression(scanner, sql_type=sql_type):
@@ -708,7 +697,22 @@ class SQLParser:
             return cls.parse_wildcard_expression(scanner, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):
             return cls.parse_parenthesis_expression(scanner, sql_type=sql_type)
-        raise SqlParseError(f"未知的一般表达式元素: {scanner}")
+        raise SqlParseError(f"未知的第 1 层级表达式元素: {scanner}")
+
+    @classmethod
+    def parse_expression_level_2(cls, scanner_or_string: Union[TokenScanner, str],
+                                 maybe_window: bool,
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel2:
+        """解析第 2 层级的表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        # 解析一元运算符（允许连续使用多个一元运算符）
+        if scanner.search("-") or scanner.search("+") or scanner.search("~"):
+            unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
+            return node.ASTUnaryExpression(
+                unary_operator=unary_operator,
+                expression=cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            )
+        return cls.parse_expression_level_1(scanner, maybe_window=maybe_window, sql_type=sql_type)
 
     @classmethod
     def parse_polynomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
@@ -716,10 +720,10 @@ class SQLParser:
                                     maybe_window: bool = True) -> node.AliasPolynomialExpression:
         """解析多项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        elements = [cls.parse_monomial_expression(scanner, maybe_window, sql_type=sql_type)]
+        elements = [cls.parse_expression_level_2(scanner, maybe_window, sql_type=sql_type)]
         while cls.check_compute_operator(scanner, sql_type=sql_type):
             elements.append(cls.parse_compute_operator(scanner, sql_type=sql_type))
-            elements.append(cls.parse_monomial_expression(scanner, maybe_window))
+            elements.append(cls.parse_expression_level_2(scanner, maybe_window))
         if len(elements) == 1:
             # 如果只有 1 个元素，则返回单项式表达式
             return elements[0]
