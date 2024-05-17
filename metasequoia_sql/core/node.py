@@ -373,7 +373,9 @@ class EnumComputeOperator(enum.Enum):
     DIVIDE = ["/"]  # 除法运算符
     MOD = ["%"]  # 取模运算符
     CONCAT = ["||"]  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
-    AMPERSAND = ["&"]  # 按位与（仅 Hive 中适用）
+    BITWISE_AND = ["&"]  # 按位与
+    BITWISE_OR = ["|"]  # 按位或
+    XOR = ["^"]  # 按位异或
     BITWISE_INVERSION = ["~"]  # 按位取反
 
 
@@ -392,6 +394,7 @@ class ASTComputeOperator(ASTBase):
         if (self.enum == EnumComputeOperator.CONCAT
                 and sql_type not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 || 运算符")
+        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 逻辑运算符 ----------------------------------------
@@ -975,14 +978,17 @@ ASTExpressionLevel3 = Union[ASTExpressionLevel2, ASTMonomialExpression]
 class ASTPolynomialExpression(ASTExpressionBase):
     """【第 4 层级表达式】多项表达式
 
-    包含第 3 层级表达式以及加号（`+`）、减号（`-`）、按位与（`&`）、按位或(`|`)、按位异或（`^`）。
+    包含第 3 层级表达式以及加号（`+`）、减号（`-`）、按位与（`&`）、按位或(`|`)、按位异或（`^`）、字符串拼接符号（`||`）。
     """
 
-    elements: Tuple[AliasPolynomialExpressionElement, ...] = dataclasses.field(kw_only=True)
+    before_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
+    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(element.source(sql_type) for element in self.elements)
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
 
 
 ASTExpressionLevel4 = Union[ASTExpressionLevel3, ASTPolynomialExpression]  # 多项式节点类型

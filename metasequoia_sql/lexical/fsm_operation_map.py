@@ -30,6 +30,7 @@ FSM_OPERATION_MAP_SOURCE = {
         frozenset({" ", "\n"}): FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.SPACE}),
         "~": FSMOperate.add_and_handle_cache_to_wait(marks=set()),
         "*": FSMOperate.add_and_handle_cache_to_wait(marks=set()),
+        "^": FSMOperate.add_and_handle_cache_to_wait(marks=set()),
         frozenset({",", ";", "=", "+", ".", "%"}): FSMOperate.add_and_handle_cache_to_wait(marks=set()),
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_DOUBLE_QUOTE),
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_SINGLE_QUOTE),
@@ -98,6 +99,7 @@ FSM_OPERATION_MAP_SOURCE = {
     # 在 | 符号之后
     FSMStatus.AFTER_7C: {
         "|": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：||
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：|
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
     },
