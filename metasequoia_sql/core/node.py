@@ -7,17 +7,17 @@
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
-第 1 层级表达式：单项表达式
-第 2 层级表达式：单项表达式 + 一元表达式
-第 3 层级表达式：单项表达式 + 一元表达式 + 乘法表达式
-第 4 层级表达式：单项表达式 + 一元表达式 + 乘法表达式 + 加法表达式
-第 5 层级表达式：单项表达式 + 一元表达式 + 乘法表达式 + 加法表达式 + 布尔表达式
-第 6 层级表达式：单项表达式 + 一元表达式 + 乘法表达式 + 加法表达式 + 布尔表达式 + NOT 表达式
-第 7 层级表达式：单项表达式 + 一元表达式 + 乘法表达式 + 加法表达式 + 布尔表达式 + NOT 表达式 + AND 表达式
-第 8 层级表达式：单项表达式 + 一元表达式 + 乘法表达式 + 加法表达式 + 布尔表达式 + NOT 表达式 + AND 表达式 + OR 表达式
+第 1 层级表达式：元素表达式
+第 2 层级表达式：元素表达式 + 一元表达式
+第 3 层级表达式：元素表达式 + 一元表达式 + 单项表达式
+第 4 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式
+第 5 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式
+第 6 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式
+第 7 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式 + AND 表达式
+第 8 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式 + AND 表达式 + OR 表达式
 
 其中：
-- 诸如函数调用、CASE、窗口等最终返回一个普通值或布尔值，且在当前层级下可以视作一个任意值节点的元素，均称为单项表达式
+- 诸如函数调用、CASE、窗口等最终返回一个普通值或布尔值，且在当前层级下可以视作一个任意值节点的元素，均称为元素表达式
 - 诸如比较运算符、BETWEEN、LIKE 等最终返回一个布尔值，且在当前层级下可以视作一个布尔值节点的元素，均称为布尔表达式
 - 第 5 层级到第 8 层级的表达式，可以统称为布尔表达式
 
@@ -25,7 +25,6 @@ TODO 将 Union 类型的转化为专门的 Type
 TODO 给通用表达式增加不同返回值类型的子类
 TODO 将 ASTExpressionBase 替换为更精确的子类
 TODO 优化各节点之间的继承关系
-TODO 优化需要一元表达式的类型
 """
 
 import abc
@@ -43,10 +42,6 @@ __all__ = [
     "ASTBase",  # 所有语法树节点的抽象基类
     "ASTStatementBase",  # 语句的抽象基类
     "ASTExpressionBase",  # 表达式的抽象基类
-    "ASTMonomialExpression",  # 表达式的子类（第 1 层）：单项式节点的抽象基类
-    "AliasPolynomialExpression",  # 表达式类型（第 2 层）：多项式节点
-    "AliasConditionExpression",  # 表达式类型（第 3 层）：条件表达式
-    "AliasGeneralExpression",  # 表达式类型（第 4 层）：一般表达式
 
     # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
     "AliasPolynomialExpressionElement",  # 多项式节点的元素类型
@@ -77,7 +72,7 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
     # 第 1 层级表达式
-    "AliasExpressionLevel1",  # 第一层级表达式的类型别名
+    "ASTExpressionLevel1",  # 【类型别名】第 1 层级表达式
     "ASTColumnName",  # 列名节点
     "ASTLiteral",  # 字面值节点
     "ASTWildcard",  # 通配符节点
@@ -99,13 +94,15 @@ __all__ = [
     "ASTSubValueExpression",  # 插入语表达式：值表达式
 
     # 第 2 层级表达式
-    "AliasExpressionLevel2",  # 第二层级表达式的类型别名
+    "ASTExpressionLevel2",  # 【类型别名】第 2 层级表达式
     "ASTUnaryExpression",  # 一元表达式
 
     # 第 4 层级表达式
+    "ASTExpressionLevel4",  # 【类型别名】第 4 层级表达式
     "ASTPolynomialExpression",  # 计算表达式
 
     # 第 5 层级表达式
+    "ASTExpressionLevel5",  # 【类型别名】第 5 层级表达式
     "ASTConditionExpression",  # 布尔值表达式
     "ASTCompareExpression",  # 布尔值表达式：使用比较运算符的布尔值表达式
     "ASTOperatorExpression",  # 布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类
@@ -118,6 +115,7 @@ __all__ = [
     "ASTRegexpExpression",  # 布尔值表达式：使用 REGEXP 的布尔值表达式
 
     # 第 8 层级表达式
+    "ASTExpressionLevel8",  # 【类型别名】第 8 层级表达式
     "ASTGeneralExpression",  # 条件表达式
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
@@ -236,16 +234,6 @@ class ASTStatementBase(ASTBase, abc.ABC):
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTExpressionBase(ASTBase, abc.ABC):
     """抽象语法树（AST）表达式节点的抽象基类"""
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTMonomialExpression(ASTExpressionBase, abc.ABC):
-    """抽象语法树（AST）单项表达式节点的抽象基类"""
-
-
-AliasPolynomialExpression = Union["ASTPolynomialExpression", "AliasExpressionLevel1"]  # 多项式节点类型
-AliasConditionExpression = Union["ASTConditionExpression", AliasPolynomialExpression]  # 条件表达式节点类型
-AliasGeneralExpression = Union["ASTGeneralExpression", AliasConditionExpression]  # 一般表达式节点类型
 
 
 # ---------------------------------------- 插入类型 ----------------------------------------
@@ -485,16 +473,16 @@ class ASTCastDataType(ASTBase):
 # ---------------------------------------- 各层级表达式元素类型 ----------------------------------------
 
 
-AliasPolynomialExpressionElement = Union["AliasExpressionLevel1", ASTComputeOperator]
-AliasConditionExpressionElement = Union[AliasPolynomialExpression, ASTCompareOperator]
-AliasGeneralExpressionElement = Union[AliasConditionExpression, ASTLogicalOperator]
+AliasPolynomialExpressionElement = Union["ASTExpressionLevel2", ASTComputeOperator]
+AliasConditionExpressionElement = Union["ASTExpressionLevel4", ASTCompareOperator]
+AliasGeneralExpressionElement = Union["ASTExpressionLevel5", ASTLogicalOperator]
 
 
 # ---------------------------------------- 列名表达式 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTColumnName(ASTMonomialExpression):
+class ASTColumnName(ASTExpressionBase):
     """列名表达式"""
 
     table_name: Optional[str] = dataclasses.field(kw_only=True, default=None)  # 表名称
@@ -554,7 +542,7 @@ class ASTFunctionName(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLiteral(ASTMonomialExpression):
+class ASTLiteral(ASTExpressionBase):
     """字面值表达式"""
 
     value: str = dataclasses.field(kw_only=True)  # 字面值
@@ -710,7 +698,7 @@ class ASTFunction(ASTExpressionBase, abc.ABC):
 class ASTNormalFunction(ASTFunction):
     """包含一般参数的函数表达式"""
 
-    params: Tuple[AliasGeneralExpression] = dataclasses.field(kw_only=True)  # 函数表达式的参数
+    params: Tuple["ASTExpressionLevel8", ...] = dataclasses.field(kw_only=True)  # 函数表达式的参数
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -760,114 +748,6 @@ class ASTExtractFunction(ASTFunction):
                 f"FROM {self.column_expression.source(sql_type)})")
 
 
-# ---------------------------------------- 布尔值表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConditionExpression(ASTExpressionBase, abc.ABC):
-    """条件表达式"""
-
-    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOperatorExpression(ASTConditionExpression, abc.ABC):
-    """布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类"""
-
-    before_value: AliasConditionExpression = dataclasses.field(kw_only=True)
-    after_value: AliasConditionExpression = dataclasses.field(kw_only=True)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCompareExpression(ASTOperatorExpression):
-    """比较运算符布尔值表达式"""
-
-    operator: ASTCompareOperator = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        is_not_str = "NOT " if self.is_not else ""
-        return (f"{is_not_str}{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTIsExpression(ASTOperatorExpression):
-    """IS运算符布尔值表达式"""
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        keyword = "IS NOT" if self.is_not else "IS"
-        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInExpression(ASTOperatorExpression):
-    """In 关键字的布尔值表达式"""
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        keyword = "NOT IN " if self.is_not else "IN"
-        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLikeExpression(ASTOperatorExpression):
-    """LIKE 运算符关联表达式"""
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        keyword = "NOT LIKE" if self.is_not else "LIKE"
-        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTRlikeExpression(ASTOperatorExpression):
-    """RLIKE 运算符关联表达式"""
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        keyword = "NOT RLIKE" if self.is_not else "RLIKE"
-        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTRegexpExpression(ASTOperatorExpression):
-    """RLIKE 运算符关联表达式"""
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        keyword = "NOT REGEXP" if self.is_not else "REGEXP"
-        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolExistsExpression(ASTConditionExpression):
-    """Exists 运算符关联表达式"""
-
-    after_value: AliasPolynomialExpression = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        keyword = "NOT EXISTS" if self.is_not else "EXISTS"
-        return f"{keyword} {self.after_value.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolBetweenExpression(ASTConditionExpression):
-    """BETWEEN 关联表达式"""
-
-    before_value: AliasPolynomialExpression = dataclasses.field(kw_only=True)
-    from_value: AliasPolynomialExpression = dataclasses.field(kw_only=True)
-    to_value: AliasPolynomialExpression = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if_not_str = "NOT " if self.is_not else ""
-        return (f"{self.before_value.source(sql_type)} {if_not_str}"
-                f"BETWEEN {self.from_value.source(sql_type)} AND {self.to_value.source(sql_type)}")
-
-
 # ---------------------------------------- 数组下标表达式 ----------------------------------------
 
 
@@ -876,7 +756,7 @@ class ASTArrayIndex(ASTExpressionBase):
     """数组下标表达式"""
 
     array: ASTExpressionBase = dataclasses.field(kw_only=True)
-    idx: AliasPolynomialExpression = dataclasses.field(kw_only=True)
+    idx: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -890,7 +770,7 @@ class ASTArrayIndex(ASTExpressionBase):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTWindowExpression(ASTExpressionBase):
-    """【单项表达式】窗口表达式"""
+    """【元素表达式】窗口表达式"""
 
     window_function: Union[ASTNormalFunction, ASTArrayIndex] = dataclasses.field(kw_only=True)
     partition_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
@@ -913,20 +793,6 @@ class ASTWindowExpression(ASTExpressionBase):
         return result
 
 
-# ---------------------------------------- 条件表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTGeneralExpression(ASTExpressionBase):
-    """一般表达式"""
-
-    elements: Tuple[AliasGeneralExpressionElement, ...] = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(element.source(sql_type) for element in self.elements)
-
-
 # ---------------------------------------- CASE 表达式 ----------------------------------------
 
 
@@ -934,7 +800,7 @@ class ASTGeneralExpression(ASTExpressionBase):
 class ASTCaseConditionItem(ASTBase):
     """第 1 种格式的 CASE 表达式的 WHEN ... THEN ... 语句节点"""
 
-    when: ASTGeneralExpression = dataclasses.field(kw_only=True)
+    when: "ASTGeneralExpression" = dataclasses.field(kw_only=True)
     then: ASTExpressionBase = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1007,30 +873,17 @@ class ASTCaseValueExpression(ASTExpressionBase):
 AliasCaseExpression = Union[ASTCaseConditionExpression, ASTCaseValueExpression]
 
 
-# ---------------------------------------- 计算表达式 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPolynomialExpression(ASTExpressionBase):
-    """【多项表达式】计算表达式"""
-
-    elements: Tuple[AliasPolynomialExpressionElement, ...] = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(element.source(sql_type) for element in self.elements)
-
-
 # ---------------------------------------- 子查询表达式 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTParenthesisExpression(ASTExpressionBase, abc.ABC):
-    """【单项表达式】插入语表达式 TODO 待移除或改为类型别名"""
+    """【元素表达式】插入语表达式 TODO 待移除或改为类型别名"""
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSubQueryExpression(ASTParenthesisExpression):
-    """【单项表达式】子查询表达式"""
+    """【元素表达式】子查询表达式"""
 
     statement: "ASTSelectStatement" = dataclasses.field(kw_only=True)
 
@@ -1041,9 +894,9 @@ class ASTSubQueryExpression(ASTParenthesisExpression):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSubGeneralExpression(ASTParenthesisExpression):
-    """【单项表达式】插入语一般表达式"""
+    """【元素表达式】插入语一般表达式"""
 
-    expression: AliasGeneralExpression = dataclasses.field(kw_only=True)
+    expression: "ASTExpressionLevel8" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         return f"({self.expression.source(sql_type)})"
@@ -1051,7 +904,7 @@ class ASTSubGeneralExpression(ASTParenthesisExpression):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSubValueExpression(ASTParenthesisExpression):
-    """【单项表达式】值表达式：INSERT INTO 表达式中，VALUES 里的表达式"""
+    """【元素表达式】值表达式：INSERT INTO 表达式中，VALUES 里的表达式"""
 
     values: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
 
@@ -1062,7 +915,7 @@ class ASTSubValueExpression(ASTParenthesisExpression):
 
 
 # 第 1 层级表达式的类型别名
-AliasExpressionLevel1 = Union[
+ASTExpressionLevel1 = Union[
     ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTArrayIndex, ASTWindowExpression, AliasCaseExpression,
     ASTParenthesisExpression]
 
@@ -1077,7 +930,7 @@ class ASTUnaryExpression(ASTExpressionBase):
     """
 
     unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
-    expression: AliasExpressionLevel1 = dataclasses.field(kw_only=True)  # 表达式
+    expression: ASTExpressionLevel1 = dataclasses.field(kw_only=True)  # 表达式
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1085,7 +938,151 @@ class ASTUnaryExpression(ASTExpressionBase):
 
 
 # 第 2 层级表达式的类型别名
-AliasExpressionLevel2 = Union[AliasExpressionLevel1, ASTUnaryExpression]
+ASTExpressionLevel2 = Union[ASTExpressionLevel1, ASTUnaryExpression]
+
+
+# ---------------------------------------- 计算表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTPolynomialExpression(ASTExpressionBase):
+    """【多项表达式】计算表达式"""
+
+    elements: Tuple[AliasPolynomialExpressionElement, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return " ".join(element.source(sql_type) for element in self.elements)
+
+
+ASTExpressionLevel4 = Union[ASTExpressionLevel2, ASTPolynomialExpression]  # 多项式节点类型
+
+
+# ---------------------------------------- 布尔值表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTConditionExpression(ASTExpressionBase, abc.ABC):
+    """条件表达式"""
+
+    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTOperatorExpression(ASTConditionExpression, abc.ABC):
+    """布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类"""
+
+    before_value: "ASTExpressionLevel5" = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel5" = dataclasses.field(kw_only=True)
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTCompareExpression(ASTOperatorExpression):
+    """比较运算符布尔值表达式"""
+
+    operator: ASTCompareOperator = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        is_not_str = "NOT " if self.is_not else ""
+        return (f"{is_not_str}{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTIsExpression(ASTOperatorExpression):
+    """IS运算符布尔值表达式"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "IS NOT" if self.is_not else "IS"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTInExpression(ASTOperatorExpression):
+    """In 关键字的布尔值表达式"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT IN " if self.is_not else "IN"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTLikeExpression(ASTOperatorExpression):
+    """LIKE 运算符关联表达式"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT LIKE" if self.is_not else "LIKE"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTRlikeExpression(ASTOperatorExpression):
+    """RLIKE 运算符关联表达式"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT RLIKE" if self.is_not else "RLIKE"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTRegexpExpression(ASTOperatorExpression):
+    """RLIKE 运算符关联表达式"""
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT REGEXP" if self.is_not else "REGEXP"
+        return f"{self.before_value.source(sql_type)} {keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTBoolExistsExpression(ASTConditionExpression):
+    """Exists 运算符关联表达式"""
+
+    after_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        keyword = "NOT EXISTS" if self.is_not else "EXISTS"
+        return f"{keyword} {self.after_value.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTBoolBetweenExpression(ASTConditionExpression):
+    """BETWEEN 关联表达式"""
+
+    before_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
+    from_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
+    to_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        if_not_str = "NOT " if self.is_not else ""
+        return (f"{self.before_value.source(sql_type)} {if_not_str}"
+                f"BETWEEN {self.from_value.source(sql_type)} AND {self.to_value.source(sql_type)}")
+
+
+ASTExpressionLevel5 = Union["ASTConditionExpression", "ASTExpressionLevel4"]  # 条件表达式节点类型
+
+
+# ---------------------------------------- 条件表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTGeneralExpression(ASTExpressionBase):
+    """一般表达式"""
+
+    elements: Tuple[AliasGeneralExpressionElement, ...] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return " ".join(element.source(sql_type) for element in self.elements)
+
+
+ASTExpressionLevel8 = Union["ASTGeneralExpression", "ASTExpressionLevel5"]  # 一般表达式节点类型
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------

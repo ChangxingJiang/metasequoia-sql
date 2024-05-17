@@ -457,7 +457,7 @@ class SQLParser:
                                      ) -> node.ASTNormalFunction:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        function_params: List[node.AliasGeneralExpression] = []
+        function_params: List[node.ASTExpressionLevel8] = []
         first_param = True
         for param_scanner in scanner.split_by(","):
             if first_param is True:
@@ -495,7 +495,7 @@ class SQLParser:
                 and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
-        function_params: List[node.AliasGeneralExpression] = []
+        function_params: List[node.ASTExpressionLevel8] = []
         for param_scanner in parenthesis_scanner.split_by(","):
             function_params.append(cls.parse_general_expression(param_scanner, sql_type=sql_type))
             if not param_scanner.is_finish:
@@ -535,7 +535,7 @@ class SQLParser:
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: Union[TokenScanner, str],
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel1:
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel1:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
@@ -679,7 +679,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_1(cls, scanner_or_string: Union[TokenScanner, str],
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel1:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel1:
         # pylint: disable=R0911
         """解析第 1 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -702,7 +702,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_2(cls, scanner_or_string: Union[TokenScanner, str],
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.AliasExpressionLevel2:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel2:
         """解析第 2 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         # 解析一元运算符（允许连续使用多个一元运算符）
@@ -717,7 +717,7 @@ class SQLParser:
     @classmethod
     def parse_polynomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                     sql_type: SQLType = SQLType.DEFAULT,
-                                    maybe_window: bool = True) -> node.AliasPolynomialExpression:
+                                    maybe_window: bool = True) -> node.ASTExpressionLevel4:
         """解析多项表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         elements = [cls.parse_expression_level_2(scanner, maybe_window, sql_type=sql_type)]
@@ -732,9 +732,9 @@ class SQLParser:
 
     @classmethod
     def parse_condition_expression_item(cls, scanner_or_string: Union[TokenScanner, str],
-                                        before_value: node.AliasPolynomialExpression,
+                                        before_value: node.ASTExpressionLevel4,
                                         is_not: bool,
-                                        sql_type: SQLType = SQLType.DEFAULT) -> node.AliasConditionExpression:
+                                        sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel5:
         # pylint: disable=R0911
         """解析条件表达式中的一个元素
         
@@ -793,7 +793,7 @@ class SQLParser:
 
     @classmethod
     def parse_condition_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.AliasConditionExpression:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel5:
         # pylint: disable=R0911
         """解析条件表达式
 
@@ -818,7 +818,7 @@ class SQLParser:
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.AliasGeneralExpression:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel8:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         first_element = cls.parse_condition_expression(scanner, sql_type=sql_type)
