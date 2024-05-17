@@ -314,12 +314,70 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.name, "spark.hadoop.parquet.enable.summary-metadata")
         self.assertEqual(ast_node.value, "false")
 
-    # def test_parse_column_name_expression(self):
-    #     """测试 parse_column_name_expression 方法"""
-    #     demo_sql = "(column2)"
-    #     ast_node = SQLParser.parse_column_name_expression(demo_sql, unary_operator=None)
-    #     self.assertEqual("column2", ast_node.column_name)
-    #
-    #     demo_sql = "((column2))"
-    #     ast_node = SQLParser.parse_column_name_expression(demo_sql, unary_operator=None)
-    #     self.assertEqual("column2", ast_node.column_name)
+    def test_parse_expression_level_2(self):
+        """测试 parse_expression_level_2 方法"""
+        demo_sql = "~1"
+        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.expression.source(), "1")
+
+        demo_sql = "+1"
+        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.unary_operator.source(), "+")
+        self.assertEqual(ast_node.expression.source(), "1")
+
+        demo_sql = "-1"
+        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.unary_operator.source(), "-")
+        self.assertEqual(ast_node.expression.source(), "1")
+
+        demo_sql = "1"
+        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.value, "1")
+        self.assertEqual(ast_node.as_int(), 1)
+
+        demo_sql = "~~1"
+        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.expression.unary_operator.source(), "~")
+        self.assertEqual(ast_node.expression.expression.source(), "1")
+
+    def test_parse_expression_level_3(self):
+        """测试 parse_expression_level_3 方法"""
+        demo_sql = "3 * ~1"
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "*")
+        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.source(), "1")
+
+        demo_sql = "3 / ~1"
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "/")
+        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.source(), "1")
+
+        demo_sql = "3 % ~1"
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "%")
+        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.source(), "1")
+
+        demo_sql = "3 % ~~1"
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "%")
+        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.expression.source(), "1")
+
+        demo_sql = "3 * ~1 / 4"
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.before_value.source(), "3")
+        self.assertEqual(ast_node.before_value.operator.source(), "*")
+        self.assertEqual(ast_node.before_value.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.before_value.after_value.expression.source(), "1")
+        self.assertEqual(ast_node.operator.source(), "/")
+        self.assertEqual(ast_node.after_value.source(), "4")

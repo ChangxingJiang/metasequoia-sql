@@ -715,6 +715,24 @@ class SQLParser:
         return cls.parse_expression_level_1(scanner, maybe_window=maybe_window, sql_type=sql_type)
 
     @classmethod
+    def parse_expression_level_3(cls, scanner_or_string: Union[TokenScanner, str],
+                                 maybe_window: bool,
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel3:
+        """解析第 3 层级表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        before_value = cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        while scanner.get_as_source() in {"*", "/", "%"}:
+            # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
+            operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
+            after_value = cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            before_value = node.ASTMonomialExpression(
+                before_value=before_value,
+                operator=operator,
+                after_value=after_value
+            )
+        return before_value
+
+    @classmethod
     def parse_polynomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
                                     sql_type: SQLType = SQLType.DEFAULT,
                                     maybe_window: bool = True) -> node.ASTExpressionLevel4:
@@ -2163,3 +2181,9 @@ class SQLParser:
 def unify_name(text: Optional[str]) -> Optional[str]:
     """格式化名称标识符：统一剔除当前引号并添加引号"""
     return text.strip("`") if text is not None else None
+
+
+if __name__ == "__main__":
+    demo_sql = "3 * ~1"
+    ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+    print(ast_node)

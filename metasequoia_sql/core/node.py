@@ -97,6 +97,10 @@ __all__ = [
     "ASTExpressionLevel2",  # 【类型别名】第 2 层级表达式
     "ASTUnaryExpression",  # 一元表达式
 
+    # 第 3 层级表达式
+    "ASTExpressionLevel3",  # 【类型别名】第 3 层级表达式
+    "ASTMonomialExpression",  # 单项表达式
+
     # 第 4 层级表达式
     "ASTExpressionLevel4",  # 【类型别名】第 4 层级表达式
     "ASTPolynomialExpression",  # 计算表达式
@@ -201,6 +205,7 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的 SHOW 语句节点 ------------------------------
     "ASTShowDatabasesStatement",
     "ASTShowTablesStatement",
+    "ASTShowColumnsStatement"
 ]
 
 
@@ -380,12 +385,13 @@ class ASTComputeOperator(ASTBase):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.enum == EnumComputeOperator.MOD and sql_type not in {SQLType.SQL_SERVER, SQLType.HIVE}:
+        if sql_type == SQLType.DEFAULT:
+            return " ".join(self.enum.value)
+        if self.enum == EnumComputeOperator.MOD and sql_type not in {SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}:
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
         if (self.enum == EnumComputeOperator.CONCAT
                 and sql_type not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 || 运算符")
-        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- 逻辑运算符 ----------------------------------------
@@ -930,7 +936,7 @@ class ASTUnaryExpression(ASTExpressionBase):
     """
 
     unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
-    expression: ASTExpressionLevel1 = dataclasses.field(kw_only=True)  # 表达式
+    expression: "ASTExpressionLevel2" = dataclasses.field(kw_only=True)  # 表达式
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -941,11 +947,36 @@ class ASTUnaryExpression(ASTExpressionBase):
 ASTExpressionLevel2 = Union[ASTExpressionLevel1, ASTUnaryExpression]
 
 
-# ---------------------------------------- 计算表达式 ----------------------------------------
+# ---------------------------------------- 单项表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTMonomialExpression(ASTExpressionBase):
+    """【第 3 层级表达式】单项表达式
+
+    包含第二层级表达式以及乘号（`*`）、除号（`/`）和取模（`%`）符号。
+    """
+
+    before_value: "ASTExpressionLevel3" = dataclasses.field(kw_only=True)
+    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel3" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+ASTExpressionLevel3 = Union[ASTExpressionLevel2, ASTMonomialExpression]
+
+
+# ---------------------------------------- 多项表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTPolynomialExpression(ASTExpressionBase):
-    """【多项表达式】计算表达式"""
+    """【第 4 层级表达式】多项表达式
+
+    包含第 3 层级表达式以及加号（`+`）、减号（`-`）、按位与（`&`）、按位或(`|`)、按位异或（`^`）。
+    """
 
     elements: Tuple[AliasPolynomialExpressionElement, ...] = dataclasses.field(kw_only=True)
 
@@ -954,7 +985,7 @@ class ASTPolynomialExpression(ASTExpressionBase):
         return " ".join(element.source(sql_type) for element in self.elements)
 
 
-ASTExpressionLevel4 = Union[ASTExpressionLevel2, ASTPolynomialExpression]  # 多项式节点类型
+ASTExpressionLevel4 = Union[ASTExpressionLevel3, ASTPolynomialExpression]  # 多项式节点类型
 
 
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
