@@ -10,8 +10,9 @@
 第 1 层级表达式：元素表达式
 第 2 层级表达式：第 1 层级表达式 + 一元表达式
 第 3 层级表达式：第 2 层级表达式 + 异或表达式
+第 4 层级表达式：第 3 层级表达式 + 单项表达式
+第 5 层级表达式：第 4 层级表达式 + 多项表达式
 
-第 3 层级表达式：元素表达式 + 一元表达式 + 单项表达式
 第 4 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式
 第 5 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式
 第 6 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式
@@ -1314,14 +1315,16 @@ class ASTGroupByClause(ASTBase):
 
     columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
     grouping_sets: ASTGroupingSets = dataclasses.field(kw_only=True)
+    with_cube: bool = dataclasses.field(kw_only=True)
     with_rollup: bool = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         columns_str = ", ".join(column.source(sql_type) for column in self.columns)
         grouping_sets_str = f" {self.grouping_sets.source(sql_type)}" if self.grouping_sets is not None else ""
+        with_cube_str = " WITH CUBE" if self.with_cube is True else ""
         with_rollup_str = " WITH ROLLUP" if self.with_rollup is True else ""
-        return f"GROUP BY {columns_str}{grouping_sets_str}{with_rollup_str}"
+        return f"GROUP BY {columns_str}{grouping_sets_str}{with_cube_str}{with_rollup_str}"
 
 
 # ---------------------------------------- HAVING 子句 ----------------------------------------

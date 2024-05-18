@@ -756,7 +756,7 @@ class SQLParser:
         """解析第 4 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.get_as_source() in {"+", "-", "&", "|", "^", "||"}:
+        while scanner.get_as_source() in {"+", "-", "&", "|", "||"}:
             # 在当前匹配结果的基础上，不断尝试匹配加号、减号、按为与号、按位或号、按位异或号、字符串拼接符号
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -1076,10 +1076,12 @@ class SQLParser:
             grouping_sets = cls.parse_grouping_sets(scanner, sql_type=sql_type)
         else:
             grouping_sets = None
+        with_cube = scanner.search_and_move("WITH", "CUBE")
         with_rollup = scanner.search_and_move("WITH", "ROLLUP")
         return node.ASTGroupByClause(
             columns=tuple(columns),
             grouping_sets=grouping_sets,
+            with_cube=with_cube,
             with_rollup=with_rollup
         )
 

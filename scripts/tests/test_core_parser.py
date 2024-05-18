@@ -243,16 +243,6 @@ class TestCoreParser(unittest.TestCase):
             SQLParser.parse_where_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4").source(SQLType.MYSQL),
             "WHERE `column1` > 3 OR `column2` BETWEEN 2 AND 4")
 
-    def test_group_by_clause(self):
-        """测试判断、解析 GROUP BY 子句"""
-        self.assertTrue(SQLParser.check_group_by_clause("GROUP BY column1, column2"))
-        self.assertTrue(SQLParser.check_group_by_clause("GROUP BY trim(column1) ASC, column2"))
-        self.assertFalse(SQLParser.check_group_by_clause("WHERE trim(column1) IS NOT NULL"))
-        self.assertEqual(SQLParser.parse_group_by_clause("GROUP BY column1, column2").source(SQLType.MYSQL),
-                         "GROUP BY `column1`, `column2`")
-        self.assertEqual(SQLParser.parse_group_by_clause("GROUP BY trim(column1), column2").source(SQLType.MYSQL),
-                         "GROUP BY trim(`column1`), `column2`")
-
     def test_having_clause(self):
         """测试判断、解析 HAVING 子句"""
         self.assertTrue(SQLParser.check_having_clause("HAVING column1 > 3 AND column2 > 2"))
@@ -448,3 +438,36 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+
+    def test_group_by_clause(self):
+        """测试判断、解析 GROUP BY 子句"""
+        self.assertTrue(SQLParser.check_group_by_clause("GROUP BY column1, column2"))
+        self.assertTrue(SQLParser.check_group_by_clause("GROUP BY trim(column1) ASC, column2"))
+        self.assertFalse(SQLParser.check_group_by_clause("WHERE trim(column1) IS NOT NULL"))
+
+        demo_sql = "GROUP BY column1, column2"
+        ast_node = SQLParser.parse_group_by_clause(demo_sql)
+        self.assertEqual(ast_node.columns[0].source(), "`column1`")
+        self.assertEqual(ast_node.columns[1].source(), "`column2`")
+
+        demo_sql = ("GROUP BY column1, column2 "
+                    "GROUPING SETS (column1, column2, (column1, column2))")
+        ast_node = SQLParser.parse_group_by_clause(demo_sql)
+        self.assertEqual(ast_node.columns[0].source(), "`column1`")
+        self.assertEqual(ast_node.columns[1].source(), "`column2`")
+        self.assertEqual(ast_node.grouping_sets.grouping_list[0][0].source(), "`column1`")
+        self.assertEqual(ast_node.grouping_sets.grouping_list[1][0].source(), "`column2`")
+        self.assertEqual(ast_node.grouping_sets.grouping_list[2][0].source(), "`column1`")
+        self.assertEqual(ast_node.grouping_sets.grouping_list[2][1].source(), "`column2`")
+
+        demo_sql = ("GROUP BY column1, column2 "
+                    "GROUPING SETS (column1, column2, (column1, column2))"
+                    "WITH CUBE")
+        ast_node = SQLParser.parse_group_by_clause(demo_sql)
+        self.assertTrue(ast_node.with_cube)
+
+        demo_sql = ("GROUP BY column1, column2 "
+                    "GROUPING SETS (column1, column2, (column1, column2))"
+                    "WITH ROLLUP")
+        ast_node = SQLParser.parse_group_by_clause(demo_sql)
+        self.assertTrue(ast_node.with_rollup)
