@@ -304,8 +304,8 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.name, "spark.hadoop.parquet.enable.summary-metadata")
         self.assertEqual(ast_node.value, "false")
 
-    def test_parse_expression_level_2(self):
-        """测试 parse_expression_level_2 方法"""
+    def test_parse_expression_level_3(self):
+        """测试 parse_expression_level_3 方法"""
         demo_sql = "~1"
         ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.unary_operator.source(), "~")
@@ -338,8 +338,8 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.unary_operator.source(), "!")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
-    def test_parse_expression_level_3(self):
-        """测试 parse_expression_level_3 方法"""
+    def test_parse_expression_level_4(self):
+        """测试 parse_expression_level_4 方法"""
         demo_sql = "3 ^ 1"
         ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
@@ -357,8 +357,8 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
         self.assertEqual(ast_node.after_value.source(), "4")
 
-    def test_parse_expression_level_4(self):
-        """测试 parse_expression_level_3 方法"""
+    def test_parse_expression_level_5(self):
+        """测试 parse_expression_level_5 方法"""
         demo_sql = "3 * ~1"
         ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
@@ -397,8 +397,8 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.operator.source(), "/")
         self.assertEqual(ast_node.after_value.source(), "4")
 
-    def test_parse_expression_level_5(self):
-        """测试 parse_expression_level_5 方法"""
+    def test_parse_expression_level_6(self):
+        """测试 parse_expression_level_6 方法"""
         demo_sql = "3 + 4"
         ast_node = SQLParser.parse_expression_level_6(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
@@ -421,8 +421,25 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.operator.source(), "-")
         self.assertEqual(ast_node.after_value.source(), "5")
 
-    def test_parse_expression_level_6(self):
-        """测试 parse_expression_level_4 方法"""
+    def test_parse_expression_level_7(self):
+        """测试 parse_expression_level_7 方法"""
+        demo_sql = "3 << 2"
+        ast_node = SQLParser.parse_expression_level_7(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "<<")
+        self.assertEqual(ast_node.after_value.source(), "2")
+
+        demo_sql = "3 << 2 >> 1"
+        ast_node = SQLParser.parse_expression_level_7(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.before_value.source(), "3")
+        self.assertEqual(ast_node.before_value.operator.source(), "<<")
+        self.assertEqual(ast_node.before_value.after_value.source(), "2")
+        self.assertEqual(ast_node.operator.source(), ">>")
+        self.assertEqual(ast_node.after_value.source(), "1")
+
+
+    def test_parse_expression_level_14(self):
+        """测试 parse_expression_level_14 方法"""
         demo_sql = "3 + 1 * 2"
         ast_node = SQLParser.parse_expression_level_14(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")

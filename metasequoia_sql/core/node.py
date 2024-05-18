@@ -389,6 +389,8 @@ class EnumComputeOperator(enum.Enum):
     XOR = ["^"]  # 按位异或
     BITWISE_INVERSION = ["~"]  # 按位取反
     LOGICAL_INVERSION = ["!"]  # 逻辑取反
+    SHIFT_LEFT = ["<<"]  # 左移位
+    SHIRT_RIGHT = [">>"]  # 右移位
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1005,7 +1007,7 @@ ASTExpressionLevel5 = Union[ASTExpressionLevel4, ASTMonomialExpression]
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTPolynomialExpression(ASTBase):
-    """第 6 层级表达式"""
+    """多项表达式"""
 
     before_value: "ASTExpressionLevel6" = dataclasses.field(kw_only=True)
     operator: ASTComputeOperator = dataclasses.field(kw_only=True)
@@ -1018,6 +1020,26 @@ class ASTPolynomialExpression(ASTBase):
 
 
 ASTExpressionLevel6 = Union[ASTExpressionLevel5, ASTPolynomialExpression]
+
+
+# ---------------------------------------- 第 7 层级表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTShiftExpression(ASTBase):
+    """移位表达式"""
+
+    before_value: "ASTExpressionLevel7" = dataclasses.field(kw_only=True)
+    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel7" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+ASTExpressionLevel7 = Union[ASTExpressionLevel6, ASTShiftExpression]
 
 
 # ---------------------------------------- 多项表达式 ----------------------------------------
