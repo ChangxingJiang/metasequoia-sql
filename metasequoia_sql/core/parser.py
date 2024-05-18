@@ -253,7 +253,7 @@ class SQLParser:
     @classmethod
     def parse_column_name_expression_maybe_with_array_index(cls, scanner_or_string: ScannerOrString,
                                                             sql_type: SQLType = SQLType.DEFAULT
-                                                            ) -> Union[node.ASTColumnName, node.ASTArrayIndex]:
+                                                            ) -> Union[node.ASTColumnName, node.ASTIndexExpression]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         column_name_expression = cls.parse_column_name_expression(scanner, sql_type=sql_type)
@@ -263,7 +263,7 @@ class SQLParser:
         children_scanner = scanner.pop_as_children_scanner()
         idx = cls.parse_bitwise_or_level_node(children_scanner, sql_type=sql_type)
         children_scanner.close()
-        return node.ASTArrayIndex(
+        return node.ASTIndexExpression(
             array=column_name_expression,
             idx=idx
         )
@@ -520,7 +520,7 @@ class SQLParser:
             cls,
             scanner_or_string: ScannerOrString,
             sql_type: SQLType = SQLType.DEFAULT
-    ) -> Union[node.ASTFunction, node.ASTArrayIndex]:
+    ) -> Union[node.ASTFunction, node.ASTIndexExpression]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         array_expression = cls.parse_function_expression(scanner, sql_type=sql_type)
@@ -530,14 +530,14 @@ class SQLParser:
         children_scanner = scanner.pop_as_children_scanner()
         idx = cls.parse_bitwise_or_level_node(children_scanner, sql_type=sql_type)
         children_scanner.close()
-        return node.ASTArrayIndex(
+        return node.ASTIndexExpression(
             array=array_expression,
             idx=idx
         )
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner_or_string: ScannerOrString,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel1:
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
@@ -681,7 +681,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_2(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel1:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
         # pylint: disable=R0911
         """解析第 2 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -704,7 +704,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_3(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel3:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeUnaryLevel:
         """解析第 3 层级的表达式 TODO 待将递归改为迭代"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
@@ -718,7 +718,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_4(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel4:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeXorLevel:
         """解析第 4 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -734,7 +734,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_5(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel5:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeMonomialLevel:
         """解析第 5 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -752,7 +752,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_6(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel6:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodePolynomialLevel:
         """解析第 6 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -769,7 +769,7 @@ class SQLParser:
     @classmethod
     def parse_expression_level_7(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel7:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeShiftLevel:
         """解析第 7 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_6(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -786,7 +786,7 @@ class SQLParser:
     @classmethod
     def parse_bitwise_and_level_node(cls, scanner_or_string: ScannerOrString,
                                      maybe_window: bool,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBitwiseAndLevelNode:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> node.NodeBitwiseAndLevel:
         """解析按位与层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_7(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -801,7 +801,7 @@ class SQLParser:
     @classmethod
     def parse_bitwise_or_level_node(cls, scanner_or_string: ScannerOrString,
                                     sql_type: SQLType = SQLType.DEFAULT,
-                                    maybe_window: bool = True) -> node.ASTBitwiseOrLevelNode:
+                                    maybe_window: bool = True) -> node.NodeBitwiseOrLevel:
         """解析按位或层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_bitwise_and_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -815,7 +815,7 @@ class SQLParser:
 
     @classmethod
     def parse_condition_expression_item(cls, scanner_or_string: ScannerOrString,
-                                        before_value: node.ASTBitwiseOrLevelNode,
+                                        before_value: node.NodeBitwiseOrLevel,
                                         is_not: bool,
                                         sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel15:
         # pylint: disable=R0911
