@@ -8,8 +8,8 @@ SQL 语法解析器
 
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 TODO 兼容各个场景下额外添加的括号
-TODO 将多项表达式、条件表达式、一般表达式中，根据计算优先级，按计算顺序生成嵌套的二元表达式
 TODO 待统一额外的插入语的实现方案
+TODO 移除 check_ 类方法
 """
 
 from typing import Optional, Tuple, List, Union

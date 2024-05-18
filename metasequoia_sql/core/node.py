@@ -908,7 +908,7 @@ class ASTSubQueryExpression(ASTParenthesisExpression):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSubGeneralExpression(ASTParenthesisExpression):
-    """【元素表达式】插入语一般表达式"""
+    """【元素表达式】插入语一般表达式 TODO 待处理"""
 
     expression: "ASTExpressionLevel18" = dataclasses.field(kw_only=True)
 
