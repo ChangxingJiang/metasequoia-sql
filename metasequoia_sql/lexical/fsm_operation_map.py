@@ -56,6 +56,7 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在 & 符号之后
     FSMStatus.AFTER_26: {
+        "&": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：&&
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：&
     },

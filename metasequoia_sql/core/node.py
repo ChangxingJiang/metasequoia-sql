@@ -143,6 +143,10 @@ __all__ = [
     "NodeLogicalNotLevel",  # 【类型别名】逻辑否表达式层级节点
     "ASTLogicalNotExpression",  # 逻辑否表达式
 
+    # 逻辑与表达式层级
+    "NodeLogicalAndLevel",  # 【类型别名】逻辑与表达式层级节点
+    "ASTLogicalAndExpression",  # 逻辑与表达式
+
     # 第 8 层级表达式
     "ASTExpressionLevel18",  # 【类型别名】第 8 层级表达式
     "ASTGeneralExpression",  # 条件表达式
@@ -1215,6 +1219,24 @@ class ASTLogicalNotExpression(ASTBase):
 
 
 NodeLogicalNotLevel = Union[NodeOperatorConditionLevel, ASTLogicalNotExpression]
+
+
+# ---------------------------------------- 逻辑与表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTLogicalAndExpression(ASTBase):
+    """逻辑与表达式"""
+
+    before_value: NodeLogicalNotLevel = dataclasses.field(kw_only=True)
+    after_value: NodeLogicalNotLevel = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.before_value.source(sql_type)} AND {self.after_value.source(sql_type)}"
+
+
+NodeLogicalAndLevel = Union[NodeLogicalNotLevel, ASTLogicalAndExpression]
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
