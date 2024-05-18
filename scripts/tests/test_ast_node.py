@@ -101,6 +101,10 @@ class TestObjectsHashable(unittest.TestCase):
             # 获取抽象语法树节点
             ast_class = getattr(node, class_name)
 
+            # 跳过不是类的对象
+            if not isinstance(ast_class, type):
+                continue
+
             # 检查抽象语法树节点是否为 dataclasses 对象
             self.assertTrue(dataclasses.is_dataclass(ast_class), f"抽象语法树节点 {class_name} 不是 dataclasses 对象")
 

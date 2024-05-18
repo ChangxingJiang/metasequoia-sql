@@ -120,9 +120,9 @@ __all__ = [
     "ASTBitwiseAndLevelNode",  # 【类型别名】按位与层级节点
     "ASTBitwiseAndExpression",  # 按位与表达式
 
-    # 第 4 层级表达式
-    "ASTExpressionLevel14",  # 【类型别名】第 4 层级表达式
-    "ASTCommonPolynomialExpression",  # 多项表达式
+    # 按为或层级表达式
+    "ASTBitwiseOrLevelNode",  # 【类型别名】按位或层级节点
+    "ASTBitwiseOrExpression",  # 按位或表达式
 
     # 第 5 层级表达式
     "ASTExpressionLevel15",  # 【类型别名】第 5 层级表达式
@@ -207,7 +207,7 @@ __all__ = [
     "ASTAlterRenameColumnExpression",  # ALTER TABLE 语句的 RENAME ... TO ... 子句
     "ASTAlterTableStatement",  # ALTER TABLE 语句
 
-    # ------------------------------ 抽象语法树（AST）节点的 MCSK REPAIR TABLE 语句节点 ------------------------------
+    # ------------------------------ 抽象语法树（AST）节点的 MSCK REPAIR TABLE 语句节点 ------------------------------
     "ASTMsckRepairTableStatement",  # MSCK REPAIR TABLE 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 USE 语句节点 ------------------------------
@@ -427,6 +427,7 @@ class EnumLogicalOperator(enum.Enum):
     AND = ["AND"]
     OR = ["OR"]
     NOT = ["NOT"]
+    LOGICAL_OR = ["||"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -939,7 +940,7 @@ class ASTArrayIndex(ASTExpressionBase):
     """数组下标表达式"""
 
     array: ASTExpressionBase = dataclasses.field(kw_only=True)
-    idx: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
+    idx: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1068,26 +1069,22 @@ class ASTBitwiseAndExpression(ASTBase):
 ASTBitwiseAndLevelNode = Union[ASTExpressionLevel7, ASTShiftExpression]
 
 
-# ---------------------------------------- 多项表达式 ----------------------------------------
+# ---------------------------------------- 按位或层级表达式 ----------------------------------------
+
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCommonPolynomialExpression(ASTExpressionBase):
-    """【第 4 层级表达式】多项表达式
+class ASTBitwiseOrExpression(ASTBase):
+    """按位或表达式"""
 
-    包含第 3 层级表达式以及加号（`+`）、减号（`-`）、按位与（`&`）、按位或(`|`)、按位异或（`^`）、字符串拼接符号（`||`）。
-    """
-
-    before_value: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
-    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-    after_value: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
+    before_value: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
+    after_value: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
+        return f"{self.before_value.source(sql_type)} | {self.after_value.source(sql_type)}"
 
 
-ASTExpressionLevel14 = Union[ASTExpressionLevel5, ASTCommonPolynomialExpression]  # 多项式节点类型
+ASTBitwiseOrLevelNode = Union[ASTBitwiseAndLevelNode, ASTShiftExpression]
 
 
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
@@ -1175,7 +1172,7 @@ class ASTRegexpExpression(ASTOperatorExpression):
 class ASTBoolExistsExpression(ASTConditionExpression):
     """Exists 运算符关联表达式"""
 
-    after_value: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
+    after_value: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1187,9 +1184,9 @@ class ASTBoolExistsExpression(ASTConditionExpression):
 class ASTBoolBetweenExpression(ASTConditionExpression):
     """BETWEEN 关联表达式"""
 
-    before_value: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
-    from_value: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
-    to_value: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
+    before_value: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
+    from_value: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
+    to_value: "ASTBitwiseOrLevelNode" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1198,7 +1195,7 @@ class ASTBoolBetweenExpression(ASTConditionExpression):
                 f"BETWEEN {self.from_value.source(sql_type)} AND {self.to_value.source(sql_type)}")
 
 
-ASTExpressionLevel15 = Union["ASTConditionExpression", "ASTExpressionLevel14"]  # 条件表达式节点类型
+ASTExpressionLevel15 = Union["ASTConditionExpression", "ASTBitwiseOrLevelNode"]  # 条件表达式节点类型
 
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
@@ -1608,7 +1605,7 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
-AliasPartitionParam = Union[ASTCommonPolynomialExpression, ASTCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
+AliasPartitionParam = Union[ASTBitwiseOrLevelNode, ASTCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
