@@ -750,17 +750,34 @@ class SQLParser:
         return before_value
 
     @classmethod
+    def parse_expression_level_5(cls, scanner_or_string: ScannerOrString,
+                                 maybe_window: bool,
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel5:
+        """解析第 5 层级表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        while scanner.get_as_source() in {"+", "-"}:
+            operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
+            after_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            before_value = node.ASTPolynomialExpression(
+                before_value=before_value,
+                operator=operator,
+                after_value=after_value
+            )
+        return before_value
+
+    @classmethod
     def parse_expression_level_14(cls, scanner_or_string: ScannerOrString,
                                   sql_type: SQLType = SQLType.DEFAULT,
                                   maybe_window: bool = True) -> node.ASTExpressionLevel14:
         """解析第 4 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.get_as_source() in {"+", "-", "&", "|", "||"}:
+        before_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        while scanner.get_as_source() in {"&", "|", "||"}:
             # 在当前匹配结果的基础上，不断尝试匹配加号、减号、按为与号、按位或号、按位异或号、字符串拼接符号
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
-            before_value = node.ASTPolynomialExpression(
+            after_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            before_value = node.ASTCommonPolynomialExpression(
                 before_value=before_value,
                 operator=operator,
                 after_value=after_value

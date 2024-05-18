@@ -105,9 +105,13 @@ __all__ = [
     "ASTExpressionLevel4",  # 【类型别名】第 4 层级表达式
     "ASTMonomialExpression",  # 单项表达式
 
+    # 第 5 层级表达式
+    "ASTExpressionLevel5",  # 【类别别名】第 5 层级表达式
+    "ASTPolynomialExpression",  # 多项表达式
+
     # 第 4 层级表达式
     "ASTExpressionLevel14",  # 【类型别名】第 4 层级表达式
-    "ASTPolynomialExpression",  # 多项表达式
+    "ASTCommonPolynomialExpression",  # 多项表达式
 
     # 第 5 层级表达式
     "ASTExpressionLevel15",  # 【类型别名】第 5 层级表达式
@@ -953,6 +957,9 @@ class ASTUnaryExpression(ASTExpressionBase):
 ASTExpressionLevel2 = Union[ASTExpressionLevel1, ASTUnaryExpression]
 
 
+# ---------------------------------------- 第 3 层级表达式 ----------------------------------------
+
+
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTXorExpression(ASTBase):
     """异或表达式"""
@@ -969,11 +976,11 @@ class ASTXorExpression(ASTBase):
 ASTExpressionLevel3 = Union[ASTExpressionLevel2, ASTXorExpression]
 
 
-# ---------------------------------------- 单项表达式 ----------------------------------------
+# ---------------------------------------- 第 4 层级表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTMonomialExpression(ASTExpressionBase):
-    """【第 3 层级表达式】单项表达式
+    """【第 4 层级表达式】单项表达式
 
     包含第二层级表达式以及乘号（`*`）、除号（`/`）和取模（`%`）符号。
     """
@@ -991,10 +998,29 @@ class ASTMonomialExpression(ASTExpressionBase):
 ASTExpressionLevel4 = Union[ASTExpressionLevel3, ASTMonomialExpression]
 
 
+# ---------------------------------------- 第 5 层级表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTPolynomialExpression(ASTBase):
+    """第 5 层级表达式"""
+
+    before_value: "ASTExpressionLevel5" = dataclasses.field(kw_only=True)
+    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel5" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+ASTExpressionLevel5 = Union[ASTExpressionLevel4, ASTPolynomialExpression]
+
+
 # ---------------------------------------- 多项表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPolynomialExpression(ASTExpressionBase):
+class ASTCommonPolynomialExpression(ASTExpressionBase):
     """【第 4 层级表达式】多项表达式
 
     包含第 3 层级表达式以及加号（`+`）、减号（`-`）、按位与（`&`）、按位或(`|`)、按位异或（`^`）、字符串拼接符号（`||`）。
@@ -1010,7 +1036,7 @@ class ASTPolynomialExpression(ASTExpressionBase):
                 f"{self.after_value.source(sql_type)}")
 
 
-ASTExpressionLevel14 = Union[ASTExpressionLevel4, ASTPolynomialExpression]  # 多项式节点类型
+ASTExpressionLevel14 = Union[ASTExpressionLevel4, ASTCommonPolynomialExpression]  # 多项式节点类型
 
 
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
@@ -1121,7 +1147,7 @@ class ASTBoolBetweenExpression(ASTConditionExpression):
                 f"BETWEEN {self.from_value.source(sql_type)} AND {self.to_value.source(sql_type)}")
 
 
-ASTExpressionLevel15 = Union["ASTConditionExpression", "ASTExpressionLevel4"]  # 条件表达式节点类型
+ASTExpressionLevel15 = Union["ASTConditionExpression", "ASTExpressionLevel14"]  # 条件表达式节点类型
 
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
@@ -1138,7 +1164,7 @@ class ASTGeneralExpression(ASTExpressionBase):
         return " ".join(element.source(sql_type) for element in self.elements)
 
 
-ASTExpressionLevel18 = Union["ASTGeneralExpression", "ASTExpressionLevel5"]  # 一般表达式节点类型
+ASTExpressionLevel18 = Union["ASTGeneralExpression", "ASTExpressionLevel15"]  # 一般表达式节点类型
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------
@@ -1531,7 +1557,7 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
-AliasPartitionParam = Union[ASTPolynomialExpression, ASTCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
+AliasPartitionParam = Union[ASTCommonPolynomialExpression, ASTCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
