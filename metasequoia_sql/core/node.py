@@ -124,18 +124,20 @@ __all__ = [
     "NodeBitwiseOrLevel",  # 【类型别名】按位或层级节点
     "ASTBitwiseOrExpression",  # 按位或表达式
 
-    # 第 5 层级表达式
-    "ASTExpressionLevel15",  # 【类型别名】第 5 层级表达式
-    "ASTConditionExpression",  # 布尔值表达式
-    "ASTCompareExpression",  # 布尔值表达式：使用比较运算符的布尔值表达式
+    # 关键字条件表达式层级
+    "NodeKeywordConditionLevel",  # 【类型别名】关键字条件表达式层级节点
     "ASTOperatorExpression",  # 布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类
     "ASTIsExpression",  # 布尔值表达式：使用 IS 的布尔值表达式
     "ASTInExpression",  # 布尔值表达式：使用 IN 的布尔值表达式
     "ASTLikeExpression",  # 布尔值表达式：使用 LIKE 的布尔值表达式
-    "ASTBoolExistsExpression",  # 布尔值表达式：使用 EXISTS 的布尔值表达式
-    "ASTBoolBetweenExpression",  # 布尔值表达式：使用 BETWEEN 的布尔值表达式
+    "ASTExistsExpression",  # 布尔值表达式：使用 EXISTS 的布尔值表达式
+    "ASTBetweenExpression",  # 布尔值表达式：使用 BETWEEN 的布尔值表达式
     "ASTRlikeExpression",  # 布尔值表达式：使用 RLIKE 的布尔值表达式
     "ASTRegexpExpression",  # 布尔值表达式：使用 REGEXP 的布尔值表达式
+
+    # 运算符条件表达式层级
+    "NodeOperatorConditionLevel",  # 【类型别名】运算符条件表达式层级节点
+    "ASTOperatorConditionExpression",  # 运算符条件表达式
 
     # 第 8 层级表达式
     "ASTExpressionLevel18",  # 【类型别名】第 8 层级表达式
@@ -1081,35 +1083,16 @@ class ASTBitwiseOrExpression(ASTBase):
 NodeBitwiseOrLevel = Union[NodeBitwiseAndLevel, ASTShiftExpression]
 
 
-# ---------------------------------------- 布尔值表达式 ----------------------------------------
+# ---------------------------------------- 关键字条件表达式 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTConditionExpression(ASTExpressionBase, abc.ABC):
-    """条件表达式"""
+class ASTOperatorExpression(ASTBase, abc.ABC):
+    """包含前后两个元素的关键字条件表达式"""
 
-    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOperatorExpression(ASTConditionExpression, abc.ABC):
-    """布尔值表达式：通过运算符或关键字比较运算符前后两个表达式的抽象类"""
-
-    before_value: "ASTExpressionLevel15" = dataclasses.field(kw_only=True)
-    after_value: "ASTExpressionLevel15" = dataclasses.field(kw_only=True)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCompareExpression(ASTOperatorExpression):
-    """比较运算符布尔值表达式"""
-
-    operator: ASTCompareOperator = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        is_not_str = "NOT " if self.is_not else ""
-        return (f"{is_not_str}{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
+    is_not: bool = dataclasses.field(kw_only=True)
+    before_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
+    after_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1163,10 +1146,11 @@ class ASTRegexpExpression(ASTOperatorExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolExistsExpression(ASTConditionExpression):
+class ASTExistsExpression(ASTBase):
     """Exists 运算符关联表达式"""
 
-    after_value: "NodeBitwiseOrLevel" = dataclasses.field(kw_only=True)
+    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
+    after_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)  # 子查询
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1175,12 +1159,13 @@ class ASTBoolExistsExpression(ASTConditionExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBoolBetweenExpression(ASTConditionExpression):
+class ASTBetweenExpression(ASTBase):
     """BETWEEN 关联表达式"""
 
-    before_value: "NodeBitwiseOrLevel" = dataclasses.field(kw_only=True)
-    from_value: "NodeBitwiseOrLevel" = dataclasses.field(kw_only=True)
-    to_value: "NodeBitwiseOrLevel" = dataclasses.field(kw_only=True)
+    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
+    before_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
+    from_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
+    to_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1189,13 +1174,34 @@ class ASTBoolBetweenExpression(ASTConditionExpression):
                 f"BETWEEN {self.from_value.source(sql_type)} AND {self.to_value.source(sql_type)}")
 
 
-ASTExpressionLevel15 = Union["ASTConditionExpression", "ASTBitwiseOrLevelNode"]  # 条件表达式节点类型
+NodeKeywordConditionLevel = Union[NodeBitwiseOrLevel, ASTOperatorExpression, ASTExistsExpression, ASTBetweenExpression]
 
+
+# ---------------------------------------- 运算符条件表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTOperatorConditionExpression(ASTBase):
+    """运算符条件表达式"""
+
+    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
+    before_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
+    operator: ASTCompareOperator = dataclasses.field(kw_only=True)
+    after_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        is_not_str = "NOT " if self.is_not else ""
+        return (f"{is_not_str}{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+NodeOperatorConditionLevel = Union[NodeKeywordConditionLevel, ASTOperatorConditionExpression]
 
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
 
-AliasGeneralExpressionElement = Union[ASTExpressionLevel15, ASTLogicalOperator]
+AliasGeneralExpressionElement = Union[NodeOperatorConditionLevel, ASTLogicalOperator]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1209,7 +1215,7 @@ class ASTGeneralExpression(ASTExpressionBase):
         return " ".join(element.source(sql_type) for element in self.elements)
 
 
-ASTExpressionLevel18 = Union["ASTGeneralExpression", "ASTExpressionLevel15"]  # 一般表达式节点类型
+ASTExpressionLevel18 = Union[ASTGeneralExpression, NodeOperatorConditionLevel]  # 一般表达式节点类型
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------
@@ -1602,7 +1608,7 @@ class ASTUnionSelectStatement(ASTSelectStatement):
 # ---------------------------------------- 分区表达式 ----------------------------------------
 
 
-AliasPartitionParam = Union[NodeBitwiseOrLevel, ASTCompareExpression]  # 分区参数：包含动态分区和非动态分区两种情况
+AliasPartitionParam = Union[NodeBitwiseOrLevel, ASTOperatorConditionExpression]  # 分区参数：包含动态分区和非动态分区两种情况
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

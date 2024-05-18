@@ -705,7 +705,7 @@ class SQLParser:
     def parse_expression_level_3(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.NodeUnaryLevel:
-        """解析第 3 层级的表达式 TODO 待将递归改为迭代"""
+        """解析第 3 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
             unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
@@ -817,7 +817,7 @@ class SQLParser:
     def parse_condition_expression_item(cls, scanner_or_string: ScannerOrString,
                                         before_value: node.NodeBitwiseOrLevel,
                                         is_not: bool,
-                                        sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel15:
+                                        sql_type: SQLType = SQLType.DEFAULT) -> node.NodeOperatorConditionLevel:
         # pylint: disable=R0911
         """解析条件表达式中的一个元素
         
@@ -828,8 +828,8 @@ class SQLParser:
             from_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
             scanner.match("AND")
             to_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTBoolBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
-                                                 to_value=to_value)
+            return node.ASTBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
+                                             to_value=to_value)
         if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
             is_not = is_not or scanner.search_and_move("NOT")
             after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
@@ -849,7 +849,7 @@ class SQLParser:
         if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
             compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTCompareExpression(
+            return node.ASTOperatorConditionExpression(
                 is_not=is_not,
                 operator=compare_operator,
                 before_value=before_value,
@@ -866,17 +866,17 @@ class SQLParser:
 
     @classmethod
     def parse_exists_expression(cls, scanner_or_string: ScannerOrString,
-                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBoolExistsExpression:
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExistsExpression:
         """解析 EXISTS 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         is_not = scanner.search_and_move(static.get_not_operator_set(sql_type))
         if scanner.search_and_move("EXISTS"):
             after_value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
-            return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
+            return node.ASTExistsExpression(is_not=is_not, after_value=after_value)
 
     @classmethod
     def parse_condition_expression(cls, scanner_or_string: ScannerOrString,
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel15:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> node.NodeOperatorConditionLevel:
         # pylint: disable=R0911
         """解析条件表达式
 
@@ -894,9 +894,9 @@ class SQLParser:
         while cls.check_compare_operator(scanner, sql_type=sql_type):
             compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            before_value = node.ASTCompareExpression(is_not=is_not, operator=compare_operator,
-                                                     before_value=before_value,
-                                                     after_value=after_value)
+            before_value = node.ASTOperatorConditionExpression(is_not=is_not, operator=compare_operator,
+                                                               before_value=before_value,
+                                                               after_value=after_value)
         return before_value
 
     @classmethod
@@ -1463,7 +1463,7 @@ class SQLParser:
                 is_non_dynamic_partition = True
                 operator = cls.parse_compare_operator(partition_scanner, sql_type=sql_type)
                 after_value = cls.parse_bitwise_or_level_node(partition_scanner, sql_type=sql_type)
-                partition_list.append(node.ASTCompareExpression(
+                partition_list.append(node.ASTOperatorConditionExpression(
                     is_not=False,
                     before_value=before_value,
                     operator=operator,
