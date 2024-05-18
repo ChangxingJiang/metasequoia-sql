@@ -133,8 +133,7 @@ class SQLParser:
         """判断是否为比较运算符"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return (scanner.search("=") or scanner.search("!=") or scanner.search("<>") or scanner.search("<") or
-                scanner.search("<=") or scanner.search(">") or scanner.search(">=") or scanner.search("<>") or
-                scanner.search("<=>"))
+                scanner.search("<=") or scanner.search(">") or scanner.search(">=") or scanner.search("<=>"))
 
     @classmethod
     def parse_compare_operator(cls, scanner_or_string: ScannerOrString,
@@ -143,13 +142,13 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         compare_operator_hash = {
             "=": node.EnumCompareOperator.EQUAL_TO,
+            "!=": node.EnumCompareOperator.NOT_EQUAL_TO,
+            "<>": node.EnumCompareOperator.NOT_EQUAL_TO,
             "<": node.EnumCompareOperator.LESS_THAN,
             "<=": node.EnumCompareOperator.LESS_THAN_OR_EQUAL,
             ">": node.EnumCompareOperator.GREATER_THAN,
             ">=": node.EnumCompareOperator.GREATER_THAN_OR_EQUAL,
-            "!=": node.EnumCompareOperator.NOT_EQUAL_TO,
-            "<>": node.EnumCompareOperator.NOT_EQUAL_TO,
-            "<=>": node.EnumCompareOperator.NOT_EQUAL_TO
+            "<=>": node.EnumCompareOperator.SAME_EQUAL
         }
         compare_operator = compare_operator_hash.get(scanner.pop_as_source())
         if compare_operator is not None:
@@ -814,102 +813,132 @@ class SQLParser:
         return before_value
 
     @classmethod
-    def parse_condition_expression_item(cls, scanner_or_string: ScannerOrString,
-                                        before_value: node.NodeBitwiseOrLevel,
-                                        is_not: bool,
-                                        sql_type: SQLType = SQLType.DEFAULT) -> node.NodeOperatorConditionLevel:
+    def parse_keyword_condition_level_node(cls, scanner_or_string: ScannerOrString,
+                                           sql_type: SQLType = SQLType.DEFAULT,
+                                           before_value: Optional[node.NodeKeywordConditionLevel] = None
+                                           ) -> node.NodeKeywordConditionLevel:
         # pylint: disable=R0911
-        """解析条件表达式中的一个元素
-        
-        TODO 待根据运算优先级，生成嵌套的二元运算逻辑后，这个逻辑需要被移除
+        """解析关键字条件表达式（不包含前置 NOT，但包含中间的 NOT）
+
+        Parameters
+        ----------
+        scanner_or_string : ScannerOrString
+            扫描器
+        before_value : Optional[node.NodeKeywordConditionLevel], default = None
+            已经遍历的上一个关键字条件表达式，用于递归，在第一次时置为 None 即可
+        sql_type : SQLType
+            SQL 类型
         """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if scanner.search_and_move("BETWEEN"):  # "... BETWEEN ... AND ..."
-            from_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            scanner.match("AND")
-            to_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
-                                             to_value=to_value)
-        if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
-            is_not = is_not or scanner.search_and_move("NOT")
-            after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("IN"):  # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
-            after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
-            return node.ASTInExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("LIKE"):
-            after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTLikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("RLIKE"):
-            after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTRlikeExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if scanner.search_and_move("REGEXP"):
-            after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTRegexpExpression(is_not=is_not, before_value=before_value, after_value=after_value)
-        if cls.check_compare_operator(scanner, sql_type=sql_type):  # "... > ..."
+
+        # 首先尝试解析第一个关键字条件表达式
+        if before_value is None and scanner.search_and_move("EXISTS"):
+            # 正在解析第一个关键字表达式，且开头的关键字表达式为 EXISTS 语句
+            value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+            result_value = node.ASTExistsExpression(value=value)
+        else:
+            if before_value is None:
+                # 如果正在解析第一个关键字表达式，则解析按位或表达式或更低等级表达式作为关键字之前的部分
+                before_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+
+            # 解析可能存在于关键字之间的 NOT
+            is_not = scanner.search_and_move(static.get_not_operator_set(sql_type))
+
+            if scanner.search_and_move("BETWEEN"):
+                from_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+                scanner.match("AND")
+                to_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+                result_value = node.ASTBetweenExpression(
+                    is_not=is_not,
+                    before_value=before_value,
+                    from_value=from_value,
+                    to_value=to_value
+                )
+            elif scanner.search_and_move("IS"):
+                is_not = is_not or scanner.search_and_move("NOT")
+                after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+                result_value = node.ASTIsExpression(
+                    is_not=is_not,
+                    before_value=before_value,
+                    after_value=after_value
+                )
+            elif scanner.search_and_move("IN"):
+                after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
+                result_value = node.ASTInExpression(
+                    is_not=is_not,
+                    before_value=before_value,
+                    after_value=after_value
+                )
+            elif scanner.search_and_move("LIKE"):
+                after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+                result_value = node.ASTLikeExpression(
+                    is_not=is_not,
+                    before_value=before_value,
+                    after_value=after_value
+                )
+            elif scanner.search_and_move("RLIKE"):
+                after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+                result_value = node.ASTRlikeExpression(
+                    is_not=is_not,
+                    before_value=before_value,
+                    after_value=after_value
+                )
+            elif scanner.search_and_move("REGEXP"):
+                after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
+                result_value = node.ASTRegexpExpression(
+                    is_not=is_not,
+                    before_value=before_value,
+                    after_value=after_value
+                )
+            else:
+                # 没有关键字表达式，直接返回按位或表达式或更低等级表达式
+                return before_value
+
+        # 如果后续是连续的关键字条件表达式的关键字，则将当前关键字表达式作为下一个关键字表达式的 before_value 继续解析
+        if scanner.get_as_source() in {"NOT", "BETWEEN", "IS", "IN", "LIKE", "RLIKE", "REGEXP"}:
+            return cls.parse_keyword_condition_level_node(scanner, before_value=result_value, sql_type=sql_type)
+
+        # 如果后续不是关键字条件表达式的关键字，则直接返回当前的关键字条件表达式
+        return result_value
+
+    @classmethod
+    def parse_operator_condition_level(cls, scanner_or_string: ScannerOrString,
+                                       sql_type: SQLType = SQLType.DEFAULT) -> node.NodeOperatorConditionLevel:
+        """解析运算符条件表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        before_value = cls.parse_keyword_condition_level_node(scanner, sql_type=sql_type)
+        while cls.check_compare_operator(scanner, sql_type=sql_type):
             compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            return node.ASTOperatorConditionExpression(
-                is_not=is_not,
+            after_value = cls.parse_keyword_condition_level_node(scanner, sql_type=sql_type)
+            before_value = node.ASTOperatorConditionExpression(
                 operator=compare_operator,
                 before_value=before_value,
                 after_value=after_value
             )
-        return before_value  # 如果无法构成条件表达式，则返回多项式表达式或单项式表达式
-
-    @classmethod
-    def check_exists_expression(cls, scanner_or_string: ScannerOrString,
-                                sql_type: SQLType = SQLType.DEFAULT) -> bool:
-        """判断是否为 EXISTS 表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return scanner.search("EXISTS") or scanner.search("NOT", "EXISTS")
-
-    @classmethod
-    def parse_exists_expression(cls, scanner_or_string: ScannerOrString,
-                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExistsExpression:
-        """解析 EXISTS 表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        is_not = scanner.search_and_move(static.get_not_operator_set(sql_type))
-        if scanner.search_and_move("EXISTS"):
-            after_value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
-            return node.ASTExistsExpression(is_not=is_not, after_value=after_value)
-
-    @classmethod
-    def parse_condition_expression(cls, scanner_or_string: ScannerOrString,
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.NodeOperatorConditionLevel:
-        # pylint: disable=R0911
-        """解析条件表达式
-
-        TODO 待根据运算优先级，生成嵌套的二元运算逻辑
-        """
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if cls.check_exists_expression(scanner, sql_type=sql_type):
-            return cls.parse_exists_expression(scanner, sql_type=sql_type)
-        is_not = scanner.search_and_move(static.get_not_operator_set(sql_type))
-        before_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-        is_not = is_not or scanner.search_and_move(static.get_not_operator_set(sql_type))
-        # 解析第一个条件表达式
-        before_value = cls.parse_condition_expression_item(scanner, before_value, is_not, sql_type=sql_type)
-        # 如果后续还有更多的等号，则继续合并为二元表达式
-        while cls.check_compare_operator(scanner, sql_type=sql_type):
-            compare_operator = cls.parse_compare_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
-            before_value = node.ASTOperatorConditionExpression(is_not=is_not, operator=compare_operator,
-                                                               before_value=before_value,
-                                                               after_value=after_value)
         return before_value
+
+    @classmethod
+    def parse_logical_not_level(cls, scanner_or_string: ScannerOrString,
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.NodeLogicalNotLevel:
+        """解析逻辑否表达式层级"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        if scanner.search_and_move(static.get_not_operator_set(sql_type)):
+            return node.ASTLogicalNotExpression(
+                expression=cls.parse_logical_not_level(scanner, sql_type=sql_type)
+            )
+        return cls.parse_operator_condition_level(scanner, sql_type=sql_type)
 
     @classmethod
     def parse_general_expression(cls, scanner_or_string: ScannerOrString,
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel18:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        first_element = cls.parse_condition_expression(scanner, sql_type=sql_type)
+        first_element = cls.parse_logical_not_level(scanner, sql_type=sql_type)
         if scanner.search("AND") or scanner.search("OR") or scanner.search("||"):
             elements: List[node.AliasGeneralExpressionElement] = [first_element]
             while scanner.search("AND") or scanner.search("OR") or scanner.search("||"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
                 elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
-                elements.append(cls.parse_condition_expression(scanner, sql_type=sql_type))
+                elements.append(cls.parse_logical_not_level(scanner, sql_type=sql_type))
             return node.ASTGeneralExpression(elements=tuple(elements))
         return first_element
 
@@ -1464,7 +1493,6 @@ class SQLParser:
                 operator = cls.parse_compare_operator(partition_scanner, sql_type=sql_type)
                 after_value = cls.parse_bitwise_or_level_node(partition_scanner, sql_type=sql_type)
                 partition_list.append(node.ASTOperatorConditionExpression(
-                    is_not=False,
                     before_value=before_value,
                     operator=operator,
                     after_value=after_value
@@ -2248,3 +2276,9 @@ class SQLParser:
 def unify_name(text: Optional[str]) -> Optional[str]:
     """格式化名称标识符：统一剔除当前引号并添加引号"""
     return text.strip("`") if text is not None else None
+
+
+if __name__ == "__main__":
+    demo_sql = "2 IS NOT TRUE NOT IN ('0')"
+    ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+    print(ast_node)

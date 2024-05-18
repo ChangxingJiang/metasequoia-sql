@@ -106,18 +106,6 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(SQLParser.parse_function_expression("trim(`column_name`) AND").source(SQLType.MYSQL),
                          "trim(`column_name`)")
 
-    def test_bool_expression(self):
-        """测试解析布尔值表达式"""
-        self.assertEqual(SQLParser.parse_condition_expression("column1 > 3").source(SQLType.MYSQL), "`column1` > 3")
-        self.assertEqual(SQLParser.parse_condition_expression("t2.column1 > 3").source(SQLType.MYSQL),
-                         "`t2`.`column1` > 3")
-        self.assertEqual(SQLParser.parse_condition_expression("t2.column1 + 3 > 3").source(SQLType.MYSQL),
-                         "`t2`.`column1` + 3 > 3")
-        self.assertEqual(SQLParser.parse_condition_expression("column1 BETWEEN 3 AND 4").source(SQLType.MYSQL),
-                         "`column1` BETWEEN 3 AND 4")
-        self.assertEqual(SQLParser.parse_condition_expression("column1 + 3 BETWEEN 3 AND 4").source(SQLType.MYSQL),
-                         "`column1` + 3 BETWEEN 3 AND 4")
-
     def test_window_expression(self):
         """测试判断、解析窗口表达式"""
         self.assertTrue(
@@ -499,6 +487,114 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
         self.assertEqual(ast_node.operator.source(), "*")
         self.assertEqual(ast_node.after_value.source(), "2")
+
+    def test_parse_keyword_condition_level_node(self):
+        """测试 parse_keyword_condition_level_node 方法"""
+
+        # demo_sql = "EXISTS (SELECT 1)"
+        # ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        # self.assertEqual(ast_node.value.source(), "SELECT 1")
+
+        demo_sql = "a BETWEEN 2 AND 3"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "`a`")
+        self.assertFalse(ast_node.is_not)
+        self.assertEqual(ast_node.from_value.source(), "2")
+        self.assertEqual(ast_node.to_value.source(), "3")
+
+        demo_sql = "a NOT BETWEEN 2 AND 3"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "`a`")
+        self.assertTrue(ast_node.is_not)
+        self.assertEqual(ast_node.from_value.source(), "2")
+        self.assertEqual(ast_node.to_value.source(), "3")
+
+        demo_sql = "2 IS TRUE"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "2")
+        self.assertFalse(ast_node.is_not)
+        self.assertEqual(ast_node.after_value.source(), "TRUE")
+
+        demo_sql = "2 IN ('0')"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "2")
+        self.assertFalse(ast_node.is_not)
+        self.assertEqual(ast_node.after_value.source(), "('0')")
+
+        demo_sql = "2 LIKE 'a%'"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "2")
+        self.assertFalse(ast_node.is_not)
+        self.assertEqual(ast_node.after_value.source(), "'a%'")
+
+        demo_sql = "2 RLIKE 'a%'"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "2")
+        self.assertFalse(ast_node.is_not)
+        self.assertEqual(ast_node.after_value.source(), "'a%'")
+
+        demo_sql = "2 REGEXP 'a%'"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "2")
+        self.assertFalse(ast_node.is_not)
+        self.assertEqual(ast_node.after_value.source(), "'a%'")
+
+        demo_sql = "2 IS TRUE IN ('0')"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.before_value.source(), "2")
+        self.assertFalse(ast_node.before_value.is_not)
+        self.assertEqual(ast_node.before_value.after_value.source(), "TRUE")
+        self.assertEqual(ast_node.after_value.source(), "('0')")
+
+        demo_sql = "2 IS NOT TRUE NOT IN ('0')"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.before_value.source(), "2")
+        self.assertTrue(ast_node.before_value.is_not)
+        self.assertEqual(ast_node.before_value.after_value.source(), "TRUE")
+        self.assertEqual(ast_node.after_value.source(), "('0')")
+
+    def test_parse_operator_condition_level(self):
+        """测试 parse_operator_condition_leve 方法"""
+
+        demo_sql = "2 IS NOT TRUE NOT IN ('0')"
+        ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
+        self.assertEqual(ast_node.before_value.before_value.source(), "2")
+        self.assertTrue(ast_node.before_value.is_not)
+        self.assertEqual(ast_node.before_value.after_value.source(), "TRUE")
+        self.assertEqual(ast_node.after_value.source(), "('0')")
+
+        demo_sql = "column1 > 3"
+        ast_node = SQLParser.parse_operator_condition_level(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "`column1`")
+        self.assertEqual(ast_node.operator.source(), ">")
+        self.assertEqual(ast_node.after_value.source(), "3")
+
+        demo_sql = "column1 > 3 < 1"
+        ast_node = SQLParser.parse_operator_condition_level(demo_sql)
+        self.assertEqual(ast_node.before_value.before_value.source(), "`column1`")
+        self.assertEqual(ast_node.before_value.operator.source(), ">")
+        self.assertEqual(ast_node.before_value.after_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "<")
+        self.assertEqual(ast_node.after_value.source(), "1")
+
+    def test_parse_logical_not_level(self):
+        """测试 parse_logical_not_level 方法"""
+
+        demo_sql = "column1 > 3 < 1"
+        ast_node = SQLParser.parse_logical_not_level(demo_sql)
+        self.assertEqual(ast_node.before_value.before_value.source(), "`column1`")
+        self.assertEqual(ast_node.before_value.operator.source(), ">")
+        self.assertEqual(ast_node.before_value.after_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "<")
+        self.assertEqual(ast_node.after_value.source(), "1")
+
+        demo_sql = "NOT column1 > 3 < 1"
+        ast_node = SQLParser.parse_logical_not_level(demo_sql)
+        self.assertEqual(ast_node.expression.before_value.before_value.source(), "`column1`")
+        self.assertEqual(ast_node.expression.before_value.operator.source(), ">")
+        self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
+        self.assertEqual(ast_node.expression.operator.source(), "<")
+        self.assertEqual(ast_node.expression.after_value.source(), "1")
 
     def test_group_by_clause(self):
         """测试判断、解析 GROUP BY 子句"""

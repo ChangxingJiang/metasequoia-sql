@@ -139,6 +139,10 @@ __all__ = [
     "NodeOperatorConditionLevel",  # 【类型别名】运算符条件表达式层级节点
     "ASTOperatorConditionExpression",  # 运算符条件表达式
 
+    # 逻辑否表达式层级
+    "NodeLogicalNotLevel",  # 【类型别名】逻辑否表达式层级节点
+    "ASTLogicalNotExpression",  # 逻辑否表达式
+
     # 第 8 层级表达式
     "ASTExpressionLevel18",  # 【类型别名】第 8 层级表达式
     "ASTGeneralExpression",  # 条件表达式
@@ -371,6 +375,7 @@ class EnumCompareOperator(enum.Enum):
     GREATER_THAN = [">"]
     GTE = [">="]
     GREATER_THAN_OR_EQUAL = [">="]
+    SAME_EQUAL = ["<=>"]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1149,13 +1154,11 @@ class ASTRegexpExpression(ASTOperatorExpression):
 class ASTExistsExpression(ASTBase):
     """Exists 运算符关联表达式"""
 
-    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
-    after_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)  # 子查询
+    value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)  # 子查询
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        keyword = "NOT EXISTS" if self.is_not else "EXISTS"
-        return f"{keyword} {self.after_value.source(sql_type)}"
+        return f"EXISTS {self.value.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1184,24 +1187,39 @@ NodeKeywordConditionLevel = Union[NodeBitwiseOrLevel, ASTOperatorExpression, AST
 class ASTOperatorConditionExpression(ASTBase):
     """运算符条件表达式"""
 
-    is_not: bool = dataclasses.field(kw_only=True)  # 一元表达式
     before_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
     operator: ASTCompareOperator = dataclasses.field(kw_only=True)
     after_value: "NodeOperatorConditionLevel" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        is_not_str = "NOT " if self.is_not else ""
-        return (f"{is_not_str}{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
                 f"{self.after_value.source(sql_type)}")
 
 
 NodeOperatorConditionLevel = Union[NodeKeywordConditionLevel, ASTOperatorConditionExpression]
 
+
+# ---------------------------------------- 逻辑否表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTLogicalNotExpression(ASTBase):
+    """逻辑否表达式"""
+
+    expression: NodeOperatorConditionLevel = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"NOT {self.expression.source(sql_type)}"
+
+
+NodeLogicalNotLevel = Union[NodeOperatorConditionLevel, ASTLogicalNotExpression]
+
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
 
-AliasGeneralExpressionElement = Union[NodeOperatorConditionLevel, ASTLogicalOperator]
+AliasGeneralExpressionElement = Union[NodeLogicalNotLevel, ASTLogicalOperator]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -1215,7 +1233,7 @@ class ASTGeneralExpression(ASTExpressionBase):
         return " ".join(element.source(sql_type) for element in self.elements)
 
 
-ASTExpressionLevel18 = Union[ASTGeneralExpression, NodeOperatorConditionLevel]  # 一般表达式节点类型
+ASTExpressionLevel18 = Union[ASTGeneralExpression, NodeLogicalNotLevel]  # 一般表达式节点类型
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------
