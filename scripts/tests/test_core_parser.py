@@ -437,6 +437,19 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.operator.source(), ">>")
         self.assertEqual(ast_node.after_value.source(), "1")
 
+    def test_parse_bitwise_and_level_node(self):
+        """测试 parse_bitwise_and_level_node 方法"""
+        demo_sql = "3 & 2"
+        ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.after_value.source(), "2")
+
+        demo_sql = "3 & 2 & 1"
+        ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.before_value.source(), "3")
+        self.assertEqual(ast_node.before_value.after_value.source(), "2")
+        self.assertEqual(ast_node.after_value.source(), "1")
+
 
     def test_parse_expression_level_14(self):
         """测试 parse_expression_level_14 方法"""

@@ -112,6 +112,14 @@ __all__ = [
     "ASTExpressionLevel6",  # 【类别别名】第 6 层级表达式
     "ASTPolynomialExpression",  # 多项表达式
 
+    # 第 7 层级表达式
+    "ASTExpressionLevel7",  # 【类型别名】第 7 层级表达式
+    "ASTShiftExpression",  # 移位表达式
+
+    # 按位与层级表达式
+    "ASTBitwiseAndLevelNode",  # 【类型别名】按位与层级节点
+    "ASTBitwiseAndExpression",  # 按位与表达式
+
     # 第 4 层级表达式
     "ASTExpressionLevel14",  # 【类型别名】第 4 层级表达式
     "ASTCommonPolynomialExpression",  # 多项表达式
@@ -1040,6 +1048,24 @@ class ASTShiftExpression(ASTBase):
 
 
 ASTExpressionLevel7 = Union[ASTExpressionLevel6, ASTShiftExpression]
+
+
+# ---------------------------------------- 按位与层级表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTBitwiseAndExpression(ASTBase):
+    """按位与表达式"""
+
+    before_value: "ASTBitwiseAndLevelNode" = dataclasses.field(kw_only=True)
+    after_value: "ASTBitwiseAndLevelNode" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.before_value.source(sql_type)} & {self.after_value.source(sql_type)}"
+
+
+ASTBitwiseAndLevelNode = Union[ASTExpressionLevel7, ASTShiftExpression]
 
 
 # ---------------------------------------- 多项表达式 ----------------------------------------
