@@ -16,7 +16,7 @@ from typing import Optional, Tuple, List, Union
 
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.common import name_set
-from metasequoia_sql.core import node
+from metasequoia_sql.core import node, static
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError, UnSupportSqlTypeError
 from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
@@ -707,8 +707,7 @@ class SQLParser:
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel2:
         """解析第 2 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        # 解析一元运算符（允许连续使用多个一元运算符）
-        if scanner.search("-") or scanner.search("+") or scanner.search("~"):
+        if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
             unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             return node.ASTUnaryExpression(
                 unary_operator=unary_operator,
@@ -770,7 +769,7 @@ class SQLParser:
             return node.ASTBoolBetweenExpression(is_not=is_not, before_value=before_value, from_value=from_value,
                                                  to_value=to_value)
         if scanner.search_and_move("IS"):  # ".... IS ...." 或 "... IS NOT ..."
-            is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
+            is_not = is_not or scanner.search_and_move("NOT")
             after_value = cls.parse_expression_level_4(scanner, sql_type=sql_type)
             return node.ASTIsExpression(is_not=is_not, before_value=before_value, after_value=after_value)
         if scanner.search_and_move("IN"):  # "... IN (1, 2, 3)" 或 "... IN (SELECT ... )"
@@ -808,7 +807,7 @@ class SQLParser:
                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTBoolExistsExpression:
         """解析 EXISTS 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        is_not = scanner.search_and_move(static.get_not_operator_set(sql_type))
         if scanner.search_and_move("EXISTS"):
             after_value = cls.parse_sub_query_expression(scanner, sql_type=sql_type)
             return node.ASTBoolExistsExpression(is_not=is_not, after_value=after_value)
@@ -824,9 +823,9 @@ class SQLParser:
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_exists_expression(scanner, sql_type=sql_type):
             return cls.parse_exists_expression(scanner, sql_type=sql_type)
-        is_not = scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        is_not = scanner.search_and_move(static.get_not_operator_set(sql_type))
         before_value = cls.parse_expression_level_4(scanner, sql_type=sql_type)
-        is_not = is_not or scanner.search_and_move("NOT") or scanner.search_and_move("!")
+        is_not = is_not or scanner.search_and_move(static.get_not_operator_set(sql_type))
         # 解析第一个条件表达式
         before_value = cls.parse_condition_expression_item(scanner, before_value, is_not, sql_type=sql_type)
         # 如果后续还有更多的等号，则继续合并为二元表达式

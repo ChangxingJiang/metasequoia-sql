@@ -2,7 +2,7 @@
 抽象语法树扫描器
 """
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Set
 
 from metasequoia_sql.errors import ScannerError
 from metasequoia_sql.lexical import AMTBase, AMTMark
@@ -108,16 +108,32 @@ class TokenScanner:
                 return False
         return True
 
-    def search_and_move(self, *tokens: Union[str, AMTMark]) -> bool:
+    def search_and_move(self, *tokens: Union[str, AMTMark, Set[Union[str, AMTMark]]]) -> bool:
         """从当前配置开始匹配 tokens
+
+        当 token 为 str 类型或 AMTMark 类型时，判断当前元素是否与 token 一致；
+        当 token 为 set 类型时，判断当前元素是否在 set 集合中
+
+        TODO 待优化集合判断的性能
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素并返回 True
         - 如果匹配失败，则不移动指针并返回 False
         """
         for idx, token in enumerate(tokens):
             refer = self._get_by_offset(idx)
-            if refer is None or not refer.equals(token):
+            if refer is None:
                 return False
+            if isinstance(token, str) or isinstance(token, AMTMark):
+                if not refer.equals(token):
+                    return False
+            elif isinstance(token, set):
+                for elem in token:
+                    if refer.equals(elem):
+                        break
+                else:
+                    return False
+            else:
+                raise KeyError(f"不支持的参数类型: {token} (type={type(token)})")
         for _ in range(len(tokens)):
             self.pop()
         return True

@@ -342,6 +342,12 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.unary_operator.source(), "~")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
+        demo_sql = "!!1"
+        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.unary_operator.source(), "!")
+        self.assertEqual(ast_node.expression.unary_operator.source(), "!")
+        self.assertEqual(ast_node.expression.expression.source(), "1")
+
     def test_parse_expression_level_3(self):
         """测试 parse_expression_level_3 方法"""
         demo_sql = "3 * ~1"

@@ -22,7 +22,6 @@
 - 第 5 层级到第 8 层级的表达式，可以统称为布尔表达式
 
 TODO 将 Union 类型的转化为专门的 Type
-TODO 给通用表达式增加不同返回值类型的子类
 TODO 将 ASTExpressionBase 替换为更精确的子类
 TODO 优化各节点之间的继承关系
 """
@@ -44,8 +43,6 @@ __all__ = [
     "ASTExpressionBase",  # 表达式的抽象基类
 
     # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
-    "AliasPolynomialExpressionElement",  # 多项式节点的元素类型
-    "AliasConditionExpressionElement",  # 条件表达式的元素类型
     "AliasGeneralExpressionElement",  # 一般表达式的元素类型
     "AliasTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
     "AliasCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
@@ -377,6 +374,7 @@ class EnumComputeOperator(enum.Enum):
     BITWISE_OR = ["|"]  # 按位或
     XOR = ["^"]  # 按位异或
     BITWISE_INVERSION = ["~"]  # 按位取反
+    LOGICAL_INVERSION = ["!"]  # 逻辑取反
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -482,8 +480,6 @@ class ASTCastDataType(ASTBase):
 # ---------------------------------------- 各层级表达式元素类型 ----------------------------------------
 
 
-AliasPolynomialExpressionElement = Union["ASTExpressionLevel2", ASTComputeOperator]
-AliasConditionExpressionElement = Union["ASTExpressionLevel4", ASTCompareOperator]
 AliasGeneralExpressionElement = Union["ASTExpressionLevel5", ASTLogicalOperator]
 
 
