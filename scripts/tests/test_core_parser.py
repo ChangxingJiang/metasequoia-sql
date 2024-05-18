@@ -307,33 +307,33 @@ class TestCoreParser(unittest.TestCase):
     def test_parse_expression_level_2(self):
         """测试 parse_expression_level_2 方法"""
         demo_sql = "~1"
-        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.unary_operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "+1"
-        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.unary_operator.source(), "+")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "-1"
-        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.unary_operator.source(), "-")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "1"
-        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.value, "1")
         self.assertEqual(ast_node.as_int(), 1)
 
         demo_sql = "~~1"
-        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.unary_operator.source(), "~")
         self.assertEqual(ast_node.expression.unary_operator.source(), "~")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
         demo_sql = "!!1"
-        ast_node = SQLParser.parse_expression_level_2(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.unary_operator.source(), "!")
         self.assertEqual(ast_node.expression.unary_operator.source(), "!")
         self.assertEqual(ast_node.expression.expression.source(), "1")
@@ -341,18 +341,18 @@ class TestCoreParser(unittest.TestCase):
     def test_parse_expression_level_3(self):
         """测试 parse_expression_level_3 方法"""
         demo_sql = "3 ^ 1"
-        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "1")
 
         demo_sql = "3 ^ ~1"
-        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 ^ 1 ^ 4"
-        ast_node = SQLParser.parse_expression_level_3(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
         self.assertEqual(ast_node.after_value.source(), "4")
@@ -360,28 +360,28 @@ class TestCoreParser(unittest.TestCase):
     def test_parse_expression_level_4(self):
         """测试 parse_expression_level_3 方法"""
         demo_sql = "3 * ~1"
-        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "*")
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 / ~1"
-        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "/")
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 % ~1"
-        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 % ~~1"
-        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
@@ -389,7 +389,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.after_value.expression.expression.source(), "1")
 
         demo_sql = "3 * ~1 / 4"
-        ast_node = SQLParser.parse_expression_level_4(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.operator.source(), "*")
         self.assertEqual(ast_node.before_value.after_value.unary_operator.source(), "~")
@@ -400,13 +400,13 @@ class TestCoreParser(unittest.TestCase):
     def test_parse_expression_level_5(self):
         """测试 parse_expression_level_5 方法"""
         demo_sql = "3 + 4"
-        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_6(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "+")
         self.assertEqual(ast_node.after_value.source(), "4")
 
         demo_sql = "3 + 4 * 5"
-        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_6(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "+")
         self.assertEqual(ast_node.after_value.before_value.source(), "4")
@@ -414,7 +414,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.after_value.after_value.source(), "5")
 
         demo_sql = "3 + 4 - 5"
-        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
+        ast_node = SQLParser.parse_expression_level_6(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.operator.source(), "+")
         self.assertEqual(ast_node.before_value.after_value.source(), "4")

@@ -249,11 +249,9 @@ class SQLParser:
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
-    def parse_column_name_expression_maybe_with_array_index(
-            cls,
-            scanner_or_string: ScannerOrString,
-            sql_type: SQLType = SQLType.DEFAULT
-    ) -> Union[node.ASTColumnName, node.ASTArrayIndex]:
+    def parse_column_name_expression_maybe_with_array_index(cls, scanner_or_string: ScannerOrString,
+                                                            sql_type: SQLType = SQLType.DEFAULT
+                                                            ) -> Union[node.ASTColumnName, node.ASTArrayIndex]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         column_name_expression = cls.parse_column_name_expression(scanner, sql_type=sql_type)
@@ -679,15 +677,15 @@ class SQLParser:
         return result
 
     @classmethod
-    def parse_expression_level_1(cls, scanner_or_string: ScannerOrString,
+    def parse_expression_level_2(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel1:
         # pylint: disable=R0911
-        """解析第 1 层级的表达式"""
+        """解析第 2 层级的表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_case_expression(scanner, sql_type=sql_type):
             return cls.parse_case_expression(scanner, sql_type=sql_type)
-        if maybe_window is True and cls.check_window_expression(scanner, sql_type=sql_type):
+        if maybe_window and cls.check_window_expression(scanner, sql_type=sql_type):
             return cls.parse_window_expression(scanner, sql_type=sql_type)
         if cls.check_function_expression(scanner, sql_type=sql_type):
             return cls.parse_function_expression_maybe_with_array_index(scanner, sql_type=sql_type)
@@ -702,34 +700,18 @@ class SQLParser:
         raise SqlParseError(f"未知的第 1 层级表达式元素: {scanner}")
 
     @classmethod
-    def parse_expression_level_2(cls, scanner_or_string: ScannerOrString,
+    def parse_expression_level_3(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel2:
-        """解析第 2 层级的表达式 TODO 待将递归改为迭代"""
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel3:
+        """解析第 3 层级的表达式 TODO 待将递归改为迭代"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
             unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             return node.ASTUnaryExpression(
                 unary_operator=unary_operator,
-                expression=cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
+                expression=cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
             )
-        return cls.parse_expression_level_1(scanner, maybe_window=maybe_window, sql_type=sql_type)
-
-    @classmethod
-    def parse_expression_level_3(cls, scanner_or_string: ScannerOrString,
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel3:
-        """解析第 3 层级表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.search_and_move("^"):
-            # 在当前匹配结果的基础上，不断尝试匹配异或号，从而支持多个相连的异或号
-            after_value = cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
-            before_value = node.ASTXorExpression(
-                before_value=before_value,
-                after_value=after_value
-            )
-        return before_value
+        return cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
 
     @classmethod
     def parse_expression_level_4(cls, scanner_or_string: ScannerOrString,
@@ -738,13 +720,11 @@ class SQLParser:
         """解析第 4 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.get_as_source() in {"*", "/", "%"}:
-            # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
-            operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
+        while scanner.search_and_move("^"):
+            # 在当前匹配结果的基础上，不断尝试匹配异或号，从而支持多个相连的异或号
             after_value = cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
-            before_value = node.ASTMonomialExpression(
+            before_value = node.ASTXorExpression(
                 before_value=before_value,
-                operator=operator,
                 after_value=after_value
             )
         return before_value
@@ -756,9 +736,27 @@ class SQLParser:
         """解析第 5 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.get_as_source() in {"+", "-"}:
+        while scanner.get_as_source() in {"*", "/", "%"}:
+            # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            before_value = node.ASTMonomialExpression(
+                before_value=before_value,
+                operator=operator,
+                after_value=after_value
+            )
+        return before_value
+
+    @classmethod
+    def parse_expression_level_6(cls, scanner_or_string: ScannerOrString,
+                                 maybe_window: bool,
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel6:
+        """解析第 6 层级表达式"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        before_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        while scanner.get_as_source() in {"+", "-"}:
+            operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
+            after_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTPolynomialExpression(
                 before_value=before_value,
                 operator=operator,
@@ -772,11 +770,11 @@ class SQLParser:
                                   maybe_window: bool = True) -> node.ASTExpressionLevel14:
         """解析第 4 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        before_value = cls.parse_expression_level_6(scanner, maybe_window=maybe_window, sql_type=sql_type)
         while scanner.get_as_source() in {"&", "|", "||"}:
             # 在当前匹配结果的基础上，不断尝试匹配加号、减号、按为与号、按位或号、按位异或号、字符串拼接符号
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            after_value = cls.parse_expression_level_6(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTCommonPolynomialExpression(
                 before_value=before_value,
                 operator=operator,

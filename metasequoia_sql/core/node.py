@@ -81,7 +81,6 @@ __all__ = [
     "ASTAggregationFunction",  # 函数表达式：聚集函数表达式
     "ASTCastFunction",  # 函数表达式：CAST 函数表达式
     "ASTExtractFunction",  # 函数表达式：EXTRACT 函数表达式
-    "ASTArrayIndex",  # 数组下标表达式
     "ASTWindowExpression",  # 窗口表达式
     "AliasCaseExpression",  # 两种 CASE 语句的通用类型别名
     "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
@@ -95,18 +94,22 @@ __all__ = [
 
     # 第 2 层级表达式
     "ASTExpressionLevel2",  # 【类型别名】第 2 层级表达式
-    "ASTUnaryExpression",  # 一元表达式
+    "ASTArrayIndex",  # 数组下标表达式
 
     # 第 3 层级表达式
     "ASTExpressionLevel3",  # 【类型别名】第 3 层级表达式
-    "ASTXorExpression",  # 异或表达式
+    "ASTUnaryExpression",  # 一元表达式
 
     # 第 4 层级表达式
     "ASTExpressionLevel4",  # 【类型别名】第 4 层级表达式
-    "ASTMonomialExpression",  # 单项表达式
+    "ASTXorExpression",  # 异或表达式
 
     # 第 5 层级表达式
-    "ASTExpressionLevel5",  # 【类别别名】第 5 层级表达式
+    "ASTExpressionLevel5",  # 【类型别名】第 5 层级表达式
+    "ASTMonomialExpression",  # 单项表达式
+
+    # 第 6 层级表达式
+    "ASTExpressionLevel6",  # 【类别别名】第 6 层级表达式
     "ASTPolynomialExpression",  # 多项表达式
 
     # 第 4 层级表达式
@@ -764,23 +767,6 @@ class ASTExtractFunction(ASTFunction):
                 f"FROM {self.column_expression.source(sql_type)})")
 
 
-# ---------------------------------------- 数组下标表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTArrayIndex(ASTExpressionBase):
-    """数组下标表达式"""
-
-    array: ASTExpressionBase = dataclasses.field(kw_only=True)
-    idx: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if sql_type != SQLType.HIVE:
-            raise UnSupportSqlTypeError(f"数组下标不支持SQL类型:{sql_type}")
-        return f"{self.array.source(sql_type)}"
-
-
 # ---------------------------------------- 窗口表达式 ----------------------------------------
 
 
@@ -788,7 +774,7 @@ class ASTArrayIndex(ASTExpressionBase):
 class ASTWindowExpression(ASTExpressionBase):
     """【元素表达式】窗口表达式"""
 
-    window_function: Union[ASTNormalFunction, ASTArrayIndex] = dataclasses.field(kw_only=True)
+    window_function: Union[ASTNormalFunction, "ASTArrayIndex"] = dataclasses.field(kw_only=True)
     partition_by_columns: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
     order_by_columns: Tuple[ASTOrderByColumn, ...] = dataclasses.field(kw_only=True)
     row_expression: Optional[ASTWindowRow] = dataclasses.field(kw_only=True)
@@ -930,13 +916,32 @@ class ASTSubValueExpression(ASTParenthesisExpression):
         return f"({values_str})"
 
 
-# 第 1 层级表达式的类型别名
 ASTExpressionLevel1 = Union[
-    ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTArrayIndex, ASTWindowExpression, AliasCaseExpression,
+    ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTWindowExpression, AliasCaseExpression,
     ASTParenthesisExpression]
 
 
 # ---------------------------------------- 第 2 层级表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTArrayIndex(ASTExpressionBase):
+    """数组下标表达式"""
+
+    array: ASTExpressionBase = dataclasses.field(kw_only=True)
+    idx: "ASTExpressionLevel14" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        if sql_type != SQLType.HIVE:
+            raise UnSupportSqlTypeError(f"数组下标不支持SQL类型:{sql_type}")
+        return f"{self.array.source(sql_type)}"
+
+
+ASTExpressionLevel2 = Union[ASTExpressionLevel1, ASTArrayIndex]
+
+
+# ---------------------------------------- 第 3 层级表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTUnaryExpression(ASTExpressionBase):
@@ -946,63 +951,42 @@ class ASTUnaryExpression(ASTExpressionBase):
     """
 
     unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
-    expression: "ASTExpressionLevel2" = dataclasses.field(kw_only=True)  # 表达式
+    expression: "ASTExpressionLevel3" = dataclasses.field(kw_only=True)  # 表达式
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
 
 
-# 第 2 层级表达式的类型别名
-ASTExpressionLevel2 = Union[ASTExpressionLevel1, ASTUnaryExpression]
+ASTExpressionLevel3 = Union[ASTExpressionLevel1, ASTUnaryExpression]
 
 
-# ---------------------------------------- 第 3 层级表达式 ----------------------------------------
+# ---------------------------------------- 第 4 层级表达式 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTXorExpression(ASTBase):
     """异或表达式"""
 
-    before_value: "ASTExpressionLevel3" = dataclasses.field(kw_only=True)
-    after_value: "ASTExpressionLevel3" = dataclasses.field(kw_only=True)
+    before_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"{self.before_value.source(sql_type)} ^ {self.after_value.source(sql_type)}"
 
 
-# 第 3 层级表达式的类型别名
-ASTExpressionLevel3 = Union[ASTExpressionLevel2, ASTXorExpression]
-
-
-# ---------------------------------------- 第 4 层级表达式 ----------------------------------------
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTMonomialExpression(ASTExpressionBase):
-    """【第 4 层级表达式】单项表达式
-
-    包含第二层级表达式以及乘号（`*`）、除号（`/`）和取模（`%`）符号。
-    """
-
-    before_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
-    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-    after_value: "ASTExpressionLevel4" = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
-
-
-ASTExpressionLevel4 = Union[ASTExpressionLevel3, ASTMonomialExpression]
+ASTExpressionLevel4 = Union[ASTExpressionLevel3, ASTXorExpression]
 
 
 # ---------------------------------------- 第 5 层级表达式 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPolynomialExpression(ASTBase):
-    """第 5 层级表达式"""
+class ASTMonomialExpression(ASTExpressionBase):
+    """【第 5 层级表达式】单项表达式
+
+    包含第二层级表达式以及乘号（`*`）、除号（`/`）和取模（`%`）符号。
+    """
 
     before_value: "ASTExpressionLevel5" = dataclasses.field(kw_only=True)
     operator: ASTComputeOperator = dataclasses.field(kw_only=True)
@@ -1014,7 +998,26 @@ class ASTPolynomialExpression(ASTBase):
                 f"{self.after_value.source(sql_type)}")
 
 
-ASTExpressionLevel5 = Union[ASTExpressionLevel4, ASTPolynomialExpression]
+ASTExpressionLevel5 = Union[ASTExpressionLevel4, ASTMonomialExpression]
+
+
+# ---------------------------------------- 第 6 层级表达式 ----------------------------------------
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTPolynomialExpression(ASTBase):
+    """第 6 层级表达式"""
+
+    before_value: "ASTExpressionLevel6" = dataclasses.field(kw_only=True)
+    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
+    after_value: "ASTExpressionLevel6" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+ASTExpressionLevel6 = Union[ASTExpressionLevel5, ASTPolynomialExpression]
 
 
 # ---------------------------------------- 多项表达式 ----------------------------------------
@@ -1036,7 +1039,7 @@ class ASTCommonPolynomialExpression(ASTExpressionBase):
                 f"{self.after_value.source(sql_type)}")
 
 
-ASTExpressionLevel14 = Union[ASTExpressionLevel4, ASTCommonPolynomialExpression]  # 多项式节点类型
+ASTExpressionLevel14 = Union[ASTExpressionLevel5, ASTCommonPolynomialExpression]  # 多项式节点类型
 
 
 # ---------------------------------------- 布尔值表达式 ----------------------------------------
