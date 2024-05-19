@@ -28,6 +28,7 @@ from metasequoia_sql.common.basic import is_int_literal, is_bool_literal, is_flo
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.errors import UnSupportSqlTypeError
+from metasequoia_sql.core import static
 
 __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的抽象类 ------------------------------
@@ -263,18 +264,11 @@ class ASTExpressionBase(ASTBase, abc.ABC):
 # ---------------------------------------- 插入类型 ----------------------------------------
 
 
-class EnumInsertType(enum.Enum):
-    """插入类型的枚举类"""
-    INSERT_INTO = ["INSERT", "INTO"]
-    INSERT_IGNORE_INTO = ["INSERT", "IGNORE", "INTO"]
-    INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTInsertType(ASTBase):
     """插入类型"""
 
-    enum: EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
+    enum: static.EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

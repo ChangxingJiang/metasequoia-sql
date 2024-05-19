@@ -64,14 +64,6 @@ class SQLParser:
     # ------------------------------ 枚举类节点的解析方法 ------------------------------
 
     @classmethod
-    def check_insert_type(cls, scanner_or_string: ScannerOrString,
-                          sql_type: SQLType = SQLType.DEFAULT) -> bool:
-        """判断是否为插入类型"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return (scanner.search_and_move("INSERT", "INTO") or
-                scanner.search_and_move("INSERT", "OVERWRITE"))
-
-    @classmethod
     def parse_insert_type(cls, scanner_or_string: ScannerOrString,
                           sql_type: SQLType = SQLType.DEFAULT) -> node.ASTInsertType:
         """解析插入类型"""

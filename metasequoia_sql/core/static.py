@@ -4,10 +4,20 @@
 TODO 待将 SQL 默认语法添加到文档中
 """
 
+import enum
 from typing import Set
+
 from metasequoia_sql.core.sql_type import SQLType
 
-__all__ = ["get_unary_operator_set", "get_not_operator_set"]
+__all__ = ["get_unary_operator_set", "get_not_operator_set",
+           "EnumInsertType"]
+
+
+class EnumInsertType(enum.Enum):
+    """插入类型的枚举类"""
+    INSERT_INTO = ["INSERT", "INTO"]
+    INSERT_IGNORE_INTO = ["INSERT", "IGNORE", "INTO"]
+    INSERT_OVERWRITE = ["INSERT", "OVERWRITE"]
 
 
 def get_unary_operator_set(sql_type: SQLType):
