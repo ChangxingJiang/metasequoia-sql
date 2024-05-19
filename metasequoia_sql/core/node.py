@@ -40,6 +40,7 @@ __all__ = [
     "AliasPartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
+    "ASTEnumBase",  # 抽象语法树枚举类型的基类
     "ASTInsertType",  # 插入类型
     "ASTJoinType",  # 关联类型
     "ASTOrderType",  # 排序类型
@@ -259,77 +260,53 @@ class ASTExpressionBase(ASTBase, abc.ABC):
     """抽象语法树（AST）表达式节点的抽象基类"""
 
 
-# ---------------------------------------- 插入类型 ----------------------------------------
+# ---------------------------------------- 枚举类的抽象语法树节点 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertType(ASTBase):
+class ASTEnumBase(ASTBase):
+    """抽象语法树枚举类型的基类"""
+
+    enum: Any = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return " ".join(self.enum.value)
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTInsertType(ASTEnumBase):
     """插入类型"""
 
     enum: static.EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
 
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(self.enum.value)
-
-
-# ---------------------------------------- 关联类型 ----------------------------------------
-
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinType(ASTBase):
+class ASTJoinType(ASTEnumBase):
     """关联类型"""
 
     enum: static.EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
 
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(self.enum.value)
-
-
-# ---------------------------------------- 排序类型 ----------------------------------------
-
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderType(ASTBase):
+class ASTOrderType(ASTEnumBase):
     """排序类型"""
 
     enum: static.EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
 
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(self.enum.value)
-
-
-# ---------------------------------------- 组合类型 ----------------------------------------
-
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTUnionType(ASTBase):
+class ASTUnionType(ASTEnumBase):
     """组合类型"""
 
     enum: static.EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
 
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(self.enum.value)
-
-
-# ---------------------------------------- 比较运算符 ----------------------------------------
-
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCompareOperator(ASTBase):
+class ASTCompareOperator(ASTEnumBase):
     """比较运算符"""
 
     enum: static.EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(self.enum.value)
-
-
-# ---------------------------------------- 计算运算符 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -340,26 +317,17 @@ class ASTComputeOperator(ASTBase):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if sql_type == SQLType.DEFAULT:
-            return " ".join(self.enum.value)
-        if self.enum == static.EnumComputeOperator.MOD and sql_type not in {SQLType.MYSQL, SQLType.SQL_SERVER,
-                                                                            SQLType.HIVE}:
+        if (self.enum == static.EnumComputeOperator.MOD
+                and sql_type not in {SQLType.DEFAULT, SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}):
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
-        return " ".join(self.enum.value)
-
-
-# ---------------------------------------- 逻辑运算符 ----------------------------------------
+        return super().source(sql_type)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalOperator(ASTBase):
+class ASTLogicalOperator(ASTEnumBase):
     """逻辑运算符"""
 
     enum: static.EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return " ".join(self.enum.value)
 
 
 # ---------------------------------------- CASE 函数中的字段类型表达式 ----------------------------------------
