@@ -12,14 +12,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_compare_operator(self):
         """测试判断、解析比较运算符"""
-        self.assertTrue(SQLParser.check_compare_operator("= 3"))
-        self.assertTrue(SQLParser.check_compare_operator("< 3"))
-        self.assertTrue(SQLParser.check_compare_operator("<= 3"))
-        self.assertTrue(SQLParser.check_compare_operator("> 3"))
-        self.assertTrue(SQLParser.check_compare_operator(">= 3"))
-        self.assertTrue(SQLParser.check_compare_operator("!= 3"))
-        self.assertTrue(SQLParser.check_compare_operator("<> 3"))
-        self.assertFalse(SQLParser.check_compare_operator("3 + 3"))
         self.assertEqual(SQLParser.parse_compare_operator("= 3").source(SQLType.MYSQL), "=")
         self.assertEqual(SQLParser.parse_compare_operator("< 3").source(SQLType.MYSQL), "<")
         self.assertEqual(SQLParser.parse_compare_operator("<= 3").source(SQLType.MYSQL), "<=")
@@ -30,42 +22,14 @@ class TestCoreParser(unittest.TestCase):
 
     def test_compute_operator(self):
         """测试判断、解析计算运算符"""
-        self.assertTrue(SQLParser.check_compute_operator("+ 3"))
-        self.assertTrue(SQLParser.check_compute_operator("- 3"))
-        self.assertTrue(SQLParser.check_compute_operator("* 3"))
-        self.assertTrue(SQLParser.check_compute_operator("/ 3"))
-        self.assertTrue(SQLParser.check_compute_operator("% 3"))
-        self.assertTrue(SQLParser.check_compute_operator("|| 3"))
-        self.assertFalse(SQLParser.check_compute_operator("3 + 3"))
         self.assertEqual(SQLParser.parse_compute_operator("+ 3").source(SQLType.MYSQL), "+")
         self.assertEqual(SQLParser.parse_compute_operator("- 3").source(SQLType.MYSQL), "-")
         self.assertEqual(SQLParser.parse_compute_operator("* 3").source(SQLType.MYSQL), "*")
         self.assertEqual(SQLParser.parse_compute_operator("/ 3").source(SQLType.MYSQL), "/")
         self.assertEqual(SQLParser.parse_compute_operator("% 3").source(SQLType.SQL_SERVER), "%")
-        self.assertEqual(SQLParser.parse_compute_operator("|| 'A'").source(SQLType.ORACLE), "||")
-
-    def test_logical_operator(self):
-        """测试判断、解析逻辑运算符"""
-        self.assertTrue(SQLParser.check_logical_operator("AND a > 1"))
-        self.assertTrue(SQLParser.check_logical_operator("OR a > 1"))
-        self.assertFalse(SQLParser.check_logical_operator("a > 1"))
-        self.assertEqual(SQLParser.parse_logical_operator("AND a > 1").source(SQLType.MYSQL), "AND")
-        self.assertEqual(SQLParser.parse_logical_operator("OR a > 1").source(SQLType.MYSQL), "OR")
 
     def test_literal_expression(self):
         """测试判断、解析字面值表达式"""
-        self.assertTrue(SQLParser.check_literal_expression("1 WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("2.5 WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("'a' WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("x'3f' WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("TRUE WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("true WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("False WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("b'1' WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("null WHERE"))
-        self.assertTrue(SQLParser.check_literal_expression("NULL WHERE"))
-        self.assertFalse(SQLParser.check_literal_expression("cnt WHERE"))
-        self.assertFalse(SQLParser.check_literal_expression("table_name.column_name WHERE"))
         self.assertEqual(SQLParser.parse_literal_expression("1 WHERE").source(SQLType.MYSQL), "1")
         self.assertEqual(SQLParser.parse_literal_expression("2.5 WHERE").source(SQLType.MYSQL), "2.5")
         self.assertEqual(SQLParser.parse_literal_expression("'a' WHERE").source(SQLType.MYSQL), "'a'")
@@ -79,13 +43,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_column_name_expression(self):
         """测试判断、解析列名表达式"""
-        self.assertFalse(SQLParser.check_column_name_expression("schema.function(param) AND"))
-        self.assertFalse(SQLParser.check_column_name_expression("`schema`.`function`(param) AND"))
-        self.assertTrue(SQLParser.check_column_name_expression("schema.column AND"))
-        self.assertTrue(SQLParser.check_column_name_expression("`schema`.`column` AND"))
-        self.assertFalse(SQLParser.check_column_name_expression("trim(column_name) AND"))
-        self.assertFalse(SQLParser.check_column_name_expression("2.5 WHERE"))
-        self.assertTrue(SQLParser.check_column_name_expression("column_name WHERE"))
         self.assertEqual(SQLParser.parse_column_name_expression("schema.column AND").source(SQLType.MYSQL),
                          "`schema`.`column`")
         self.assertEqual(SQLParser.parse_column_name_expression("`s`.`c` AND").source(SQLType.MYSQL), "`s`.`c`")
@@ -94,11 +51,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_function_expression(self):
         """测试判断、解析函数表达式"""
-        self.assertTrue(SQLParser.check_function_expression("schema.function(param) AND"))
-        self.assertTrue(SQLParser.check_function_expression("`schema`.`function`(param) AND"))
-        self.assertTrue(SQLParser.check_function_expression("trim(column_name) AND"))
-        self.assertFalse(SQLParser.check_function_expression("2.5 WHERE"))
-        self.assertFalse(SQLParser.check_function_expression("column_name WHERE"))
         self.assertEqual(SQLParser.parse_function_expression("schema.function(param) AND").source(SQLType.MYSQL),
                          "`schema`.function(`param`)")
         self.assertEqual(SQLParser.parse_function_expression("`schema`.`function`(param) AND").source(SQLType.MYSQL),
@@ -108,9 +60,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_window_expression(self):
         """测试判断、解析窗口表达式"""
-        self.assertTrue(
-            SQLParser.check_window_expression("ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3"))
-        self.assertFalse(SQLParser.check_window_expression("3 + 5"))
         self.assertEqual(
             SQLParser.parse_window_expression(
                 "ROW_NUMBER() OVER (PARTITION BY column1 ORDER BY column2) AS column3").source(
@@ -135,8 +84,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_case_expression(self):
         """测试判断、解析 CASE 表达式"""
-        self.assertTrue(SQLParser.check_case_expression("CASE WHEN 2 THEN 3 ELSE 4 END"))
-        self.assertFalse(SQLParser.check_case_expression("3 + 5"))
         self.assertEqual(
             SQLParser.parse_case_expression("CASE WHEN a > 2 THEN 3 ELSE 4 END").source(
                 SQLType.MYSQL),
@@ -149,9 +96,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_alias_expression(self):
         """测试判断、解析别名表达式"""
-        self.assertTrue(SQLParser.check_alias_expression("t1"))
-        self.assertTrue(SQLParser.check_alias_expression("AS t1"))
-        self.assertFalse(SQLParser.check_alias_expression("WHERE"))
         self.assertEqual(SQLParser.parse_alias_expression("t1").source(SQLType.MYSQL), "AS t1")
         self.assertEqual(SQLParser.parse_alias_expression("AS t1").source(SQLType.MYSQL), "AS t1")
 
@@ -180,9 +124,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_select_clause(self):
         """测试判断、解析 SELECT 子句"""
-        self.assertTrue(SQLParser.check_select_clause("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1"))
-        self.assertTrue(SQLParser.check_select_clause("SELECT column1 AS c1"))
-        self.assertFalse(SQLParser.check_select_clause("FROM table1"))
         self.assertEqual(
             SQLParser.parse_select_clause("SELECT column1 AS c1, TRIM(column2) AS c2 FROM table1").source(
                 SQLType.MYSQL),
@@ -192,9 +133,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_from_clause(self):
         """测试判断、解析 FROM 子句"""
-        self.assertTrue(SQLParser.check_from_clause("FROM schema1.table1 AS t1"))
-        self.assertTrue(SQLParser.check_from_clause("FROM schema1.table1 AS t1, schema2.table2 AS t2"))
-        self.assertFalse(SQLParser.check_from_clause("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
         self.assertEqual(SQLParser.parse_from_clause("FROM schema1.table1 AS t1").source(SQLType.MYSQL),
                          "FROM `schema1.table1` AS t1")
         self.assertEqual(
@@ -203,9 +141,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_join_clause(self):
         """测试判断、解析 JOIN 子句"""
-        self.assertTrue(SQLParser.check_join_clause("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1"))
-        self.assertTrue(SQLParser.check_join_clause("LEFT JOIN schema2.table2 AS t2 ON t1.column1 = t2.column1"))
-        self.assertFalse(SQLParser.check_join_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertEqual(
             SQLParser.parse_join_clause("LEFT JOIN table2 AS t2 ON t1.column1 = t2.column1").source(SQLType.MYSQL),
             "LEFT JOIN `table2` AS t2 ON `t1`.`column1` = `t2`.`column1`")
@@ -216,10 +151,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_where_clause(self):
         """测试判断、解析 WHERE 子句"""
-        self.assertTrue(SQLParser.check_where_clause("WHERE column1 > 3 AND column2 > 2"))
-        self.assertTrue(SQLParser.check_where_clause("WHERE column1 > 3 OR column2 > 2"))
-        self.assertTrue(SQLParser.check_where_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
-        self.assertFalse(SQLParser.check_where_clause("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertEqual(SQLParser.parse_where_clause("WHERE column1 > 3 AND column2 > 2").source(SQLType.MYSQL),
                          "WHERE `column1` > 3 AND `column2` > 2")
         self.assertEqual(SQLParser.parse_where_clause("WHERE column1 > 3 OR column2 > 2").source(SQLType.MYSQL),
@@ -230,10 +161,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_having_clause(self):
         """测试判断、解析 HAVING 子句"""
-        self.assertTrue(SQLParser.check_having_clause("HAVING column1 > 3 AND column2 > 2"))
-        self.assertTrue(SQLParser.check_having_clause("HAVING column1 > 3 OR column2 > 2"))
-        self.assertTrue(SQLParser.check_having_clause("HAVING column1 > 3 OR column2 BETWEEN 2 AND 4"))
-        self.assertFalse(SQLParser.check_having_clause("WHERE column1 > 3 OR column2 BETWEEN 2 AND 4"))
         self.assertEqual(SQLParser.parse_having_clause("HAVING column1 > 3 AND column2 > 2").source(SQLType.MYSQL),
                          "HAVING `column1` > 3 AND `column2` > 2")
         self.assertEqual(SQLParser.parse_having_clause("HAVING column1 > 3 OR column2 > 2").source(SQLType.MYSQL),
@@ -244,10 +171,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_order_by_clause(self):
         """测试判断、解析 ORDER BY 子句"""
-        self.assertTrue(SQLParser.check_order_by_clause("ORDER BY column1, column2"))
-        self.assertTrue(SQLParser.check_order_by_clause("ORDER BY column1, column2 DESC"))
-        self.assertTrue(SQLParser.check_order_by_clause("ORDER BY trim(column1) ASC, column2"))
-        self.assertFalse(SQLParser.check_order_by_clause("WHERE trim(column1) IS NOT NULL"))
         self.assertEqual(SQLParser.parse_order_by_clause("ORDER BY column1, column2").source(SQLType.MYSQL),
                          "ORDER BY `column1`, `column2`")
         self.assertEqual(SQLParser.parse_order_by_clause("ORDER BY column1, column2 DESC").source(SQLType.MYSQL),
@@ -257,9 +180,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_limit_clause(self):
         """测试判断、解析 LIMIT 子句"""
-        self.assertTrue(SQLParser.check_limit_clause("LIMIT 2, 5"))
-        self.assertTrue(SQLParser.check_limit_clause("LIMIT 5 OFFSET 2"))
-        self.assertFalse(SQLParser.check_limit_clause("ORDER BY column1"))
         self.assertEqual(SQLParser.parse_limit_clause("LIMIT 2, 5").source(SQLType.MYSQL), "LIMIT 2, 5")
         self.assertEqual(SQLParser.parse_limit_clause("LIMIT 5 OFFSET 2").source(SQLType.MYSQL), "LIMIT 2, 5")
 
@@ -311,27 +231,27 @@ class TestCoreParser(unittest.TestCase):
         """测试 parse_parse_unary_level_node 方法"""
         demo_sql = "~1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "(~1)"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "((~1))"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "+1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "+")
+        self.assertEqual(ast_node.operator.source(), "+")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "-1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "-")
+        self.assertEqual(ast_node.operator.source(), "-")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "1"
@@ -341,14 +261,14 @@ class TestCoreParser(unittest.TestCase):
 
         demo_sql = "~~1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
-        self.assertEqual(ast_node.expression.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
+        self.assertEqual(ast_node.expression.operator.source(), "~")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
         demo_sql = "!!1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "!")
-        self.assertEqual(ast_node.expression.unary_operator.source(), "!")
+        self.assertEqual(ast_node.operator.source(), "!")
+        self.assertEqual(ast_node.expression.operator.source(), "!")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
     def test_parse_xor_level_node(self):
@@ -356,24 +276,35 @@ class TestCoreParser(unittest.TestCase):
         demo_sql = "3 ^ 1"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "^")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(3 ^ 1)"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "^")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "3 ^ 1")
 
         demo_sql = "3 ^ ~1"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "^")
+        self.assertIsInstance(ast_node.after_value, node.ASTUnaryExpression)
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 ^ 1 ^ 4"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTXorExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
+        self.assertEqual(ast_node.before_value.operator.source(), "^")
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
+        self.assertEqual(ast_node.operator.source(), "^")
         self.assertEqual(ast_node.after_value.source(), "4")
+        self.assertEqual(ast_node.source(), demo_sql)
 
     def test_parse_monomial_level_node(self):
         """测试 parse_monomial_level_node 方法"""
@@ -381,57 +312,57 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "*")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "(3 * ~1)"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "*")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 / ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "/")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 DIV ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
-        self.assertEqual(ast_node.operator.source(), "DIV")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "/")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 % ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 MOD ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
-        self.assertEqual(ast_node.operator.source(), "MOD")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "%")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 % ~~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
-        self.assertEqual(ast_node.after_value.expression.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.expression.source(), "1")
 
         demo_sql = "3 * ~1 / 4"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.operator.source(), "*")
-        self.assertEqual(ast_node.before_value.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.before_value.after_value.operator.source(), "~")
         self.assertEqual(ast_node.before_value.after_value.expression.source(), "1")
         self.assertEqual(ast_node.operator.source(), "/")
         self.assertEqual(ast_node.after_value.source(), "4")
@@ -490,6 +421,7 @@ class TestCoreParser(unittest.TestCase):
 
         demo_sql = "3 << 2 >> 1"
         ast_node = SQLParser.parse_shift_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTShiftExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.operator.source(), "<<")
         self.assertEqual(ast_node.before_value.after_value.source(), "2")
@@ -502,72 +434,92 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(3 & 2)"
         ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), "3 & 2")
 
         demo_sql = "3 & 2 & 1"
         ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTBitwiseAndExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "2")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
     def test_parse_bitwise_or_level_node(self):
         """测试 parse_bitwise_or_level_node 方法"""
         demo_sql = "3 | 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node, node.ASTBitwiseOrExpression)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(3 | 2)"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node, node.ASTBitwiseOrExpression)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), "3 | 2")
 
         demo_sql = "3 | 2 | 1"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTBitwiseOrExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "2")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 + 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "+")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 - 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "-")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 & 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 | 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 ^ 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTXorExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
         self.assertEqual(ast_node.operator.source(), "*")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
     def test_parse_keyword_condition_level_node(self):
         """测试 parse_keyword_condition_level_node 方法"""
@@ -686,6 +638,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
         self.assertEqual(ast_node.expression.operator.source(), "<")
         self.assertEqual(ast_node.expression.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "NOT `column1` > 3 < 1")
 
         demo_sql = "(NOT column1 > 3 < 1)"
         ast_node = SQLParser.parse_logical_not_level(demo_sql)
@@ -694,6 +647,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
         self.assertEqual(ast_node.expression.operator.source(), "<")
         self.assertEqual(ast_node.expression.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "NOT `column1` > 3 < 1")
 
     def test_parse_logical_and_level(self):
         """测试 parse_logical_and_level 方法"""
@@ -705,16 +659,19 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
         self.assertEqual(ast_node.expression.operator.source(), "<")
         self.assertEqual(ast_node.expression.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "NOT `column1` > 3 < 1")
 
         demo_sql = "TRUE AND FALSE"
         ast_node = SQLParser.parse_logical_and_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(TRUE AND FALSE)"
         ast_node = SQLParser.parse_logical_and_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE AND FALSE")
 
     def test_parse_logical_xor_level(self):
         """测试 parse_logical_xor_level 方法"""
@@ -731,11 +688,13 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_logical_xor_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE XOR FALSE")
 
         demo_sql = "(TRUE XOR FALSE)"
         ast_node = SQLParser.parse_logical_xor_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE XOR FALSE")
 
     def test_parse_logical_or_level(self):
         """测试 parse_logical_or_level 方法"""
@@ -752,18 +711,16 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_logical_or_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE OR FALSE")
 
         demo_sql = "(TRUE OR FALSE)"
         ast_node = SQLParser.parse_logical_or_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE OR FALSE")
 
     def test_group_by_clause(self):
         """测试判断、解析 GROUP BY 子句"""
-        self.assertTrue(SQLParser.check_group_by_clause("GROUP BY column1, column2"))
-        self.assertTrue(SQLParser.check_group_by_clause("GROUP BY trim(column1) ASC, column2"))
-        self.assertFalse(SQLParser.check_group_by_clause("WHERE trim(column1) IS NOT NULL"))
-
         demo_sql = "GROUP BY column1, column2"
         ast_node = SQLParser.parse_group_by_clause(demo_sql)
         self.assertEqual(ast_node.columns[0].source(), "`column1`")

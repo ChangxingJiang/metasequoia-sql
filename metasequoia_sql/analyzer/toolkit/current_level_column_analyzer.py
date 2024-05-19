@@ -167,7 +167,7 @@ class CurrentColumnSelectToDirectQuoteHash(AnalyzerSelectASTToDictBase):
         for column_idx, column_expression in enumerate(node.select_clause.columns):
             if column_expression.alias is not None:
                 select_column = StandardColumn(column_name=column_expression.alias.name, column_idx=column_idx)
-            elif isinstance(column_expression.value, core.ASTColumnName):
+            elif isinstance(column_expression.value, core.ASTColumnNameExpression):
                 select_column = StandardColumn(column_name=column_expression.value.column_name,
                                                column_idx=column_idx)
             else:
