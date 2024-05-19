@@ -8,7 +8,6 @@ SQL 语法解析器
 
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 TODO 兼容各个场景下额外添加的括号
-TODO 待统一额外的插入语的实现方案
 TODO 移除 check_ 类方法
 """
 
@@ -24,7 +23,7 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 __all__ = ["SQLParser"]
 
 ScannerOrString = Union[TokenScanner, str]  # 输入参数的类型别名
-AliasParenthesis = Union[node.ASTLogicalOrExpression, node.ASTSubQueryExpression, node.ASTSubValueExpression]
+AliasGeneralParenthesis = Union[node.ASTLogicalOrExpression, node.ASTSubQueryExpression, node.ASTSubValueExpression]
 
 
 class SQLParser:
@@ -536,11 +535,11 @@ class SQLParser:
         )
 
     @classmethod
-    def _parse_in_parenthesis(cls, scanner_or_string: ScannerOrString,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
+    def parse_in_parenthesis(cls, scanner_or_string: ScannerOrString,
+                             sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):
+        if scanner.get_as_children_scanner().get_as_source() in {"SELECT", "WITH"}:
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         return cls.parse_value_expression(scanner, sql_type=sql_type)
 
@@ -570,9 +569,9 @@ class SQLParser:
                 partition_by_columns.append(cls.parse_bitwise_or_level_node(parenthesis_scanner,
                                                                             maybe_window=False, sql_type=sql_type))
         if parenthesis_scanner.search_and_move("ORDER", "BY"):
-            order_by_columns = [cls._parse_order_by_item(parenthesis_scanner, sql_type=sql_type)]
+            order_by_columns = [cls.parse_order_by_item(parenthesis_scanner, sql_type=sql_type)]
             while parenthesis_scanner.search_and_move(","):
-                order_by_columns.append(cls._parse_order_by_item(parenthesis_scanner, sql_type=sql_type))
+                order_by_columns.append(cls.parse_order_by_item(parenthesis_scanner, sql_type=sql_type))
         if parenthesis_scanner.search("ROWS", "BETWEEN"):
             row_expression = cls.parse_window_row(parenthesis_scanner, sql_type=sql_type)
         parenthesis_scanner.close()
@@ -631,17 +630,6 @@ class SQLParser:
         )
 
     @classmethod
-    def check_sub_query_parenthesis(cls, scanner_or_string: ScannerOrString,
-                                    sql_type: SQLType = SQLType.DEFAULT) -> bool:
-        """判断是否为子查询的插入语
-
-        1. 在子查询中，也可以使用包含 WITH 子句的 SELECT 语句
-        """
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        parenthesis_scanner = scanner.get_as_children_scanner()
-        return parenthesis_scanner.search("SELECT") or parenthesis_scanner.search("WITH")
-
-    @classmethod
     def parse_sub_query_expression(cls, scanner_or_string: ScannerOrString,
                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSubQueryExpression:
         """解析子查询表达式"""
@@ -665,19 +653,16 @@ class SQLParser:
         return node.ASTSubValueExpression(values=tuple(values))
 
     @classmethod
-    def parse_parenthesis_expression(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> AliasParenthesis:
-        """解析插入语表达式"""
+    def parse_general_parenthesis_expression(cls, scanner_or_string: ScannerOrString,
+                                             sql_type: SQLType = SQLType.DEFAULT) -> AliasGeneralParenthesis:
+        """解析一般表达式中的插入语"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        # 处理插入语中是子查询的情况
+        if scanner.get_as_children_scanner().get_as_source() in {"SELECT", "WITH"}:
+            return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
+        # 处理插入语中是一般表达式的情况：如果有嵌套的插入语，那么会自动压缩为一层
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        if parenthesis_scanner.search("SELECT") or parenthesis_scanner.search("WITH"):
-            # 处理插入语中是子查询的情况
-            result = node.ASTSubQueryExpression(
-                statement=cls.parse_select_statement(parenthesis_scanner, sql_type=sql_type)
-            )
-        else:
-            # 处理插入语中不是子查询的情况：如果有嵌套的插入语，那么会自动压缩为一层
-            result = cls.parse_logical_or_level(parenthesis_scanner, sql_type=sql_type)
+        result = cls.parse_logical_or_level(parenthesis_scanner, sql_type=sql_type)
         parenthesis_scanner.close()
         return result
 
@@ -689,7 +674,7 @@ class SQLParser:
         """解析元素表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 处理包含插入语的情况
-            return cls.parse_parenthesis_expression(scanner, sql_type=sql_type)
+            return cls.parse_general_parenthesis_expression(scanner, sql_type=sql_type)
         if cls.check_case_expression(scanner, sql_type=sql_type):
             return cls.parse_case_expression(scanner, sql_type=sql_type)
         if maybe_window and cls.check_window_expression(scanner, sql_type=sql_type):
@@ -867,7 +852,7 @@ class SQLParser:
                     after_value=after_value
                 )
             elif scanner.search_and_move("IN"):
-                after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
+                after_value = cls.parse_in_parenthesis(scanner, sql_type=sql_type)
                 result_value = node.ASTInExpression(
                     is_not=is_not,
                     before_value=before_value,
@@ -1015,7 +1000,7 @@ class SQLParser:
                                     sql_type: SQLType = SQLType.DEFAULT) -> node.AliasTableExpression:
         """解析表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):  # 子查询
+        if scanner.get_as_children_scanner().get_as_source() in {"SELECT", "WITH"}:
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
             return cls.parse_type_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
@@ -1215,8 +1200,8 @@ class SQLParser:
         return scanner.search("ORDER", "BY")
 
     @classmethod
-    def _parse_order_by_item(cls, scanner: TokenScanner,
-                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumn:
+    def parse_order_by_item(cls, scanner: TokenScanner,
+                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumn:
         column = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
         order = cls.parse_order_type(scanner, sql_type=sql_type)
         nulls_first = scanner.search_and_move("NULLS", "FIRST")
@@ -1236,9 +1221,9 @@ class SQLParser:
         """解析 ORDER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("ORDER", "BY")
-        columns = [cls._parse_order_by_item(scanner, sql_type=sql_type)]
+        columns = [cls.parse_order_by_item(scanner, sql_type=sql_type)]
         while scanner.search_and_move(","):
-            columns.append(cls._parse_order_by_item(scanner, sql_type=sql_type))
+            columns.append(cls.parse_order_by_item(scanner, sql_type=sql_type))
         return node.ASTOrderByClause(columns=tuple(columns))
 
     @classmethod
@@ -1254,9 +1239,9 @@ class SQLParser:
         """解析 SORT BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("SORT", "BY")
-        columns = [cls._parse_order_by_item(scanner, sql_type=sql_type)]
+        columns = [cls.parse_order_by_item(scanner, sql_type=sql_type)]
         while scanner.search_and_move(","):
-            columns.append(cls._parse_order_by_item(scanner, sql_type=sql_type))
+            columns.append(cls.parse_order_by_item(scanner, sql_type=sql_type))
         return node.ASTSortByClause(columns=tuple(columns))
 
     @classmethod
