@@ -307,7 +307,7 @@ class ASTCompareOperator(ASTEnumBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTComputeOperator(ASTBase):
+class ASTComputeOperator(ASTEnumBase):
     """计算运算符"""
 
     enum: static.EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
@@ -317,7 +317,7 @@ class ASTComputeOperator(ASTBase):
         if (self.enum == static.EnumComputeOperator.MOD
                 and sql_type not in {SQLType.DEFAULT, SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}):
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
-        return super().source(sql_type)
+        return super(ASTComputeOperator, self).source(sql_type)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

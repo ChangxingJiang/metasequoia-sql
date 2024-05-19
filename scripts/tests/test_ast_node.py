@@ -55,6 +55,8 @@ def check_hashable(cls: type, visited: typing.Optional[typing.Set[type]] = None)
             if check_hashable(arg, visited=visited) is False:
                 return False
         return True
+    if cls.__name__ == "Any":  # typing.Any
+        return True
 
     # 处理可哈希的内置类型
     if issubclass(cls, bool):  # 布尔值
