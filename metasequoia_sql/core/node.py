@@ -3,6 +3,10 @@
 """
 抽象语法树（AST）节点
 
+节点命名规范：
+1. 非语句层级的抽象类统一使用 Base 后缀，语句层级的抽象类可以不使用 Base 后缀
+2. 抽象语法树节点包含
+
 在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
@@ -12,7 +16,7 @@
 - 诸如比较运算符、BETWEEN、LIKE 等最终返回一个布尔值，且在当前层级下可以视作一个布尔值节点的元素，均称为布尔表达式
 - 第 5 层级到第 8 层级的表达式，可以统称为布尔表达式
 
-TODO 增加省略 operator 的对象的 operator 方法
+TODO 优化 WITH 语句的封装逻辑
 """
 
 import abc
@@ -91,7 +95,7 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
     "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
     "ASTFromTable",  # FROM 和 JOIN 子句元素：包含别名的表表达式
-    "ASTJoinExpression",  # JOIN 子句元素：关联表达式的抽象类
+    "ASTJoinExpressionBase",  # JOIN 子句元素：关联表达式的抽象类
     "ASTJoinOnExpression",  # JOIN 子句元素：使用 ON 关键字的关联表达式
     "ASTJoinUsingExpression",  # JOIN 子句元素：使用 USING 函数的关联表达式
     "ASTGroupingSets",  # GROUP BY 子句元素：GROUPING SETS 表达式
@@ -873,12 +877,13 @@ class ASTLogicalOrExpression(ASTBinaryExpressionBase):
 # ---------------------------------------- 关联表达式 ----------------------------------------
 
 
-class ASTJoinExpression(ASTBase, abc.ABC):
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTJoinExpressionBase(ASTBase, abc.ABC):
     """关联表达式"""
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinOnExpression(ASTJoinExpression):
+class ASTJoinOnExpression(ASTJoinExpressionBase):
     """ON 关联表达式"""
 
     condition: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
@@ -889,7 +894,7 @@ class ASTJoinOnExpression(ASTJoinExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinUsingExpression(ASTJoinExpression):
+class ASTJoinUsingExpression(ASTJoinExpressionBase):
     """USING 关联表达式"""
 
     using_function: ASTFunctionExpressionBase = dataclasses.field(kw_only=True)
@@ -992,7 +997,7 @@ class ASTJoinClause(ASTBase):
 
     type: ASTJoinType = dataclasses.field(kw_only=True)
     table: ASTFromTable = dataclasses.field(kw_only=True)
-    rule: Optional[ASTJoinExpression] = dataclasses.field(kw_only=True)
+    rule: Optional[ASTJoinExpressionBase] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

@@ -908,7 +908,7 @@ class SQLParser:
 
     @classmethod
     def parse_join_expression(cls, scanner_or_string: ScannerOrString,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTJoinExpression:
+                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTJoinExpressionBase:
         """解析关联表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search("ON"):
