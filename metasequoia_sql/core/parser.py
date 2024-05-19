@@ -309,7 +309,10 @@ class SQLParser:
     @classmethod
     def check_literal_expression(cls, scanner_or_string: ScannerOrString,
                                  sql_type: SQLType = SQLType.DEFAULT) -> bool:
-        """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
+        """判断是否为字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值
+
+        TODO 优化 - 符号的处理逻辑
+        """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return scanner.search(AMTMark.LITERAL) or scanner.search("-")
 
@@ -381,7 +384,7 @@ class SQLParser:
 
     @classmethod
     def _get_name(cls, scanner: TokenScanner) -> str:
-        """获取名称或别名：如果抽象词法树（AMT）没有 NAME 标记，则抛出异常"""
+        """获取名称或别名：如果抽象词法树（AMT）没有 NAME 标记，则抛出异常 TODO 待移除"""
         if not scanner.search(AMTMark.NAME):
             raise SqlParseError(f"无法解析为名称: {scanner}")
         return unify_name(scanner.pop_as_source())
@@ -1002,7 +1005,7 @@ class SQLParser:
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
             return cls.parse_type_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
-        return cls.parse_table_name_expression(scanner, sql_type=sql_type)  # 表名
+        return cls.parse_table_name_expression(scanner, sql_type=sql_type)
 
     @classmethod
     def parse_table_expression(cls, scanner_or_string: ScannerOrString,
@@ -1305,8 +1308,8 @@ class SQLParser:
         return node.ASTLimitClause(limit=limit_int, offset=offset_int)
 
     @classmethod
-    def _parse_single_with_table(cls, scanner_or_string: ScannerOrString,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWithTable:
+    def parse_with_table(cls, scanner_or_string: ScannerOrString,
+                         sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWithTable:
         """解析一个 WITH 临时表"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         table_name = unify_name(scanner.pop_as_source())
@@ -1319,14 +1322,15 @@ class SQLParser:
         return node.ASTWithTable(name=table_name, statement=table_statement)
 
     @classmethod
-    def parse_with_clause(cls, scanner_or_string: ScannerOrString, sql_type: SQLType = SQLType.DEFAULT) -> \
-            Optional[node.ASTWithClause]:
+    def parse_with_clause(cls,
+                          scanner_or_string: ScannerOrString,
+                          sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTWithClause]:
         """解析 WITH 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("WITH"):
-            tables = [cls._parse_single_with_table(scanner, sql_type=sql_type)]
+            tables = [cls.parse_with_table(scanner, sql_type=sql_type)]
             while scanner.search_and_move(","):
-                table_statement = cls._parse_single_with_table(scanner, sql_type=sql_type)
+                table_statement = cls.parse_with_table(scanner, sql_type=sql_type)
                 tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
             return node.ASTWithClause(tables=tuple(tables))
         return node.ASTWithClause.empty()
