@@ -14,9 +14,9 @@ from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, Curre
                                       CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
                                       AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
                                       CurrentColumnSelectToDirectQuoteHash)
+from metasequoia_sql.analyzer.node import StandardColumn
 from metasequoia_sql.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
-from metasequoia_sql.analyzer.node import StandardColumn
 
 
 def format_rule_1(columns: List[QuoteColumn]) -> List[str]:
@@ -71,7 +71,7 @@ def make_sql_basic_tutorial(force: bool = False):
             # 词法分析
             sql = getattr(sql_basic_tutorial, name)
 
-            if not SQLParser.check_select_statement(sql):
+            if not sql.startswith("SELECT"):
                 continue  # 当前只处理 SELECT 语句
 
             # 语法分析并打印结果
@@ -127,7 +127,6 @@ def make_sql_basic_tutorial(force: bool = False):
                     file.write(
                         f"        self.assertEqual({method_result_dump}, \n"
                         f"                         format_rule_2({check_analyzer.__name__}.handle(statement)))\n")
-
 
             file.write("\n")
 

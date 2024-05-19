@@ -42,12 +42,12 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "ASTInsertType",  # 插入类型
-    "EnumJoinType", "ASTJoinType",  # 关联类型
+    "ASTJoinType",  # 关联类型
     "EnumOrderType", "ASTOrderType",  # 排序类型
     "EnumUnionType", "ASTUnionType",  # 组合类型
     "EnumCastDataType", "ASTCastDataType",  # CAST 函数中的字段类型枚举类
-    "EnumCompareOperator", "ASTCompareOperator",  # 比较运算符
-    "EnumComputeOperator", "ASTComputeOperator",  # 计算运算符
+    "ASTCompareOperator",  # 比较运算符
+    "ASTComputeOperator",  # 计算运算符
     "EnumLogicalOperator", "ASTLogicalOperator",  # 逻辑运算符
 
     # ------------------------------ 抽象语法树（AST）节点的基础类节点 ------------------------------
@@ -278,26 +278,11 @@ class ASTInsertType(ASTBase):
 # ---------------------------------------- 关联类型 ----------------------------------------
 
 
-class EnumJoinType(enum.Enum):
-    """关联类型的枚举类"""
-    JOIN = ["JOIN"]  # 内连接
-    INNER_JOIN = ["INNER", "JOIN"]  # 内连接
-    LEFT_JOIN = ["LEFT", "JOIN"]  # 左外连接
-    LEFT_OUTER_JOIN = ["LEFT", "OUTER", "JOIN"]  # 左外连接
-    LEFT_SEMI_JOIN = ["LEFT", "SEMI", "JOIN"]  # 左半连接
-    RIGHT_JOIN = ["RIGHT", "JOIN"]  # 右外连接
-    RIGHT_OUTER_JOIN = ["RIGHT", "OUTER", "JOIN"]  # 右外连接
-    RIGHT_SEMI_JOIN = ["RIGHT", "SEMI", "JOIN"]  # 右半连接
-    FULL_JOIN = ["FULL", "JOIN"]  # 全外连接
-    FULL_OUTER_JOIN = ["FULL", "OUTER", "JOIN"]  # 全外连接
-    CROSS_JOIN = ["CROSS", "JOIN"]  # 交叉连接
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTJoinType(ASTBase):
     """关联类型"""
 
-    enum: EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
+    enum: static.EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -349,28 +334,12 @@ class ASTUnionType(ASTBase):
 
 # ---------------------------------------- 比较运算符 ----------------------------------------
 
-class EnumCompareOperator(enum.Enum):
-    """比较运算符的枚举类"""
-    EQ = ["="]
-    EQUAL_TO = ["="]
-    NEQ = ["!="]
-    NOT_EQUAL_TO = ["!="]
-    LT = ["<"]
-    LESS_THAN = ["<"]
-    LTE = ["<="]
-    LESS_THAN_OR_EQUAL = ["<="]
-    GT = [">"]
-    GREATER_THAN = [">"]
-    GTE = [">="]
-    GREATER_THAN_OR_EQUAL = [">="]
-    SAME_EQUAL = ["<=>"]
-
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTCompareOperator(ASTBase):
     """比较运算符"""
 
-    enum: EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
+    enum: static.EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -379,40 +348,19 @@ class ASTCompareOperator(ASTBase):
 
 # ---------------------------------------- 计算运算符 ----------------------------------------
 
-class EnumComputeOperator(enum.Enum):
-    """计算运算符的枚举类 TODO 待优化 MOD 和 DIV"""
-    PLUS = ["+"]  # 加法运算符
-    SUBTRACT = ["-"]  # 减法运算符
-    MULTIPLE = ["*"]  # 乘法运算符
-    DIVIDE = ["/"]  # 除法运算符
-    DIVIDE_2 = ["DIV"]  # 除法运算符
-    MOD = ["%"]  # 取模运算符
-    MOD_2 = ["MOD"]  # 取模运算符
-    CONCAT = ["||"]  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
-    BITWISE_AND = ["&"]  # 按位与
-    BITWISE_OR = ["|"]  # 按位或
-    XOR = ["^"]  # 按位异或
-    BITWISE_INVERSION = ["~"]  # 按位取反
-    LOGICAL_INVERSION = ["!"]  # 逻辑取反
-    SHIFT_LEFT = ["<<"]  # 左移位
-    SHIRT_RIGHT = [">>"]  # 右移位
-
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTComputeOperator(ASTBase):
     """计算运算符"""
 
-    enum: EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
+    enum: static.EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if sql_type == SQLType.DEFAULT:
             return " ".join(self.enum.value)
-        if self.enum == EnumComputeOperator.MOD and sql_type not in {SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}:
+        if self.enum == static.EnumComputeOperator.MOD and sql_type not in {SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}:
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
-        if (self.enum == EnumComputeOperator.CONCAT
-                and sql_type not in {SQLType.ORACLE, SQLType.DB2, SQLType.POSTGRE_SQL}):
-            raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 || 运算符")
         return " ".join(self.enum.value)
 
 
@@ -1892,10 +1840,7 @@ AliasColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, AS
 class ASTCreateTableStatement(ASTStatementBase):
     # pylint: disable=R0902 忽略对象属性过多的问题
 
-    """【DDL】CREATE TABLE 语句
-
-    TODO Hive 的 ROW FORMAT 和 STORED AS 属性整合
-    """
+    """【DDL】CREATE TABLE 语句"""
 
     table_name: ASTTableName = dataclasses.field(kw_only=True)
     if_not_exists: bool = dataclasses.field(kw_only=True)
