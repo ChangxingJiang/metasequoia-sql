@@ -678,11 +678,11 @@ class SQLParser:
         return result
 
     @classmethod
-    def parse_expression_level_2(cls, scanner_or_string: ScannerOrString,
+    def parse_element_level_node(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
         # pylint: disable=R0911
-        """解析第 2 层级的表达式"""
+        """解析元素表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if cls.check_case_expression(scanner, sql_type=sql_type):
             return cls.parse_case_expression(scanner, sql_type=sql_type)
@@ -701,29 +701,29 @@ class SQLParser:
         raise SqlParseError(f"未知的第 1 层级表达式元素: {scanner}")
 
     @classmethod
-    def parse_expression_level_3(cls, scanner_or_string: ScannerOrString,
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeUnaryLevel:
-        """解析第 3 层级的表达式"""
+    def parse_unary_level_node(cls, scanner_or_string: ScannerOrString,
+                               maybe_window: bool,
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.NodeUnaryLevel:
+        """解析一元表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
             unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             return node.ASTUnaryExpression(
                 unary_operator=unary_operator,
-                expression=cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
+                expression=cls.parse_unary_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             )
-        return cls.parse_expression_level_2(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        return cls.parse_element_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
 
     @classmethod
-    def parse_expression_level_4(cls, scanner_or_string: ScannerOrString,
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeXorLevel:
-        """解析第 4 层级表达式"""
+    def parse_xor_level_node(cls, scanner_or_string: ScannerOrString,
+                             maybe_window: bool,
+                             sql_type: SQLType = SQLType.DEFAULT) -> node.NodeXorLevel:
+        """解析异或表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        before_value = cls.parse_unary_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
         while scanner.search_and_move("^"):
             # 在当前匹配结果的基础上，不断尝试匹配异或号，从而支持多个相连的异或号
-            after_value = cls.parse_expression_level_3(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            after_value = cls.parse_unary_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTXorExpression(
                 before_value=before_value,
                 after_value=after_value
@@ -731,16 +731,16 @@ class SQLParser:
         return before_value
 
     @classmethod
-    def parse_expression_level_5(cls, scanner_or_string: ScannerOrString,
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeMonomialLevel:
-        """解析第 5 层级表达式"""
+    def parse_monomial_level_node(cls, scanner_or_string: ScannerOrString,
+                                  maybe_window: bool,
+                                  sql_type: SQLType = SQLType.DEFAULT) -> node.NodeMonomialLevel:
+        """解析单项表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        before_value = cls.parse_xor_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
         while scanner.get_as_source() in {"*", "/", "%", "MOD", "DIV"}:
             # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            after_value = cls.parse_xor_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTMonomialExpression(
                 before_value=before_value,
                 operator=operator,
@@ -749,15 +749,15 @@ class SQLParser:
         return before_value
 
     @classmethod
-    def parse_expression_level_6(cls, scanner_or_string: ScannerOrString,
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodePolynomialLevel:
-        """解析第 6 层级表达式"""
+    def parse_polynomial_level_node(cls, scanner_or_string: ScannerOrString,
+                                    maybe_window: bool,
+                                    sql_type: SQLType = SQLType.DEFAULT) -> node.NodePolynomialLevel:
+        """解析多项式表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        before_value = cls.parse_monomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
         while scanner.get_as_source() in {"+", "-"}:
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_expression_level_5(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            after_value = cls.parse_monomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTPolynomialExpression(
                 before_value=before_value,
                 operator=operator,
@@ -766,15 +766,15 @@ class SQLParser:
         return before_value
 
     @classmethod
-    def parse_expression_level_7(cls, scanner_or_string: ScannerOrString,
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeShiftLevel:
-        """解析第 7 层级表达式"""
+    def parse_shift_level_node(cls, scanner_or_string: ScannerOrString,
+                               maybe_window: bool,
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.NodeShiftLevel:
+        """解析移位表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_6(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        before_value = cls.parse_polynomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
         while scanner.get_as_source() in {"<<", ">>"}:
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
-            after_value = cls.parse_expression_level_6(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            after_value = cls.parse_polynomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTPolynomialExpression(
                 before_value=before_value,
                 operator=operator,
@@ -788,9 +788,9 @@ class SQLParser:
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.NodeBitwiseAndLevel:
         """解析按位与层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        before_value = cls.parse_expression_level_7(scanner, maybe_window=maybe_window, sql_type=sql_type)
+        before_value = cls.parse_shift_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
         while scanner.search_and_move("&"):
-            after_value = cls.parse_expression_level_7(scanner, maybe_window=maybe_window, sql_type=sql_type)
+            after_value = cls.parse_shift_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTBitwiseAndExpression(
                 before_value=before_value,
                 after_value=after_value

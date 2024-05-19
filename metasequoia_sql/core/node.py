@@ -15,6 +15,7 @@
 TODO 将 Union 类型的转化为专门的 Type
 TODO 将 ASTExpressionBase 替换为更精确的子类
 TODO 增加省略 operator 的对象的 operator 方法
+TODO 将 enum 枚举类方法移动到 static 中
 """
 
 import abc

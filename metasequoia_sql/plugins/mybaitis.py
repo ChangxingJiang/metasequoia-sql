@@ -76,15 +76,15 @@ class SQLParserMyBatis(SQLParser):
         return TokenScanner(FSMMachineMyBatis.parse(string), ignore_space=True, ignore_comment=True)
 
     @classmethod
-    def parse_expression_level_3(cls, scanner_or_string: Union[TokenScanner, str],
-                                 maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT
-                                 ) -> ASTBase:
+    def parse_unary_level_node(cls, scanner_or_string: Union[TokenScanner, str],
+                               maybe_window: bool,
+                               sql_type: SQLType = SQLType.DEFAULT
+                               ) -> ASTBase:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
-        return super().parse_expression_level_3(scanner, maybe_window, sql_type=sql_type)
+        return super().parse_unary_level_node(scanner, maybe_window, sql_type=sql_type)
 
 
 class GetAllMybatisParams(AnalyzerRecursionASTToListBase):
