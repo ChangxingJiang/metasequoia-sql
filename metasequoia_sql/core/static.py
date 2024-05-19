@@ -224,10 +224,21 @@ COMPARE_OPERATOR_SET = set(COMPARE_OPERATOR_HASH)
 
 class EnumLogicalOperator(enum.Enum):
     """逻辑运算符的枚举类"""
-    AND = ["AND"]
-    OR = ["OR"]
-    NOT = ["NOT"]
-    LOGICAL_OR = ["||"]
+    LOGICAL_AND = ["AND"]
+    LOGICAL_OR = ["OR"]
+    LOGICAL_XOR = ["XOR"]
+    LOGICAL_NOT = ["NOT"]
+
+
+# 逻辑运算符字符串到枚举类的映射关系
+LOGICAL_OPERATOR_HASH = {
+    "AND": EnumLogicalOperator.LOGICAL_AND,
+    "&&": EnumLogicalOperator.LOGICAL_AND,
+    "OR": EnumLogicalOperator.LOGICAL_AND,
+    "||": EnumLogicalOperator.LOGICAL_AND,
+    "XOR": EnumLogicalOperator.LOGICAL_XOR,
+    "NOT": EnumLogicalOperator.LOGICAL_NOT,
+}
 
 
 # ---------------------------------------- 一元运算符 ----------------------------------------

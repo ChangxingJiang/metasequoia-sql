@@ -627,7 +627,7 @@ class SQLParser:
         if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
             unary_operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             return node.ASTUnaryExpression(
-                unary_operator=unary_operator,
+                operator=unary_operator,
                 expression=cls.parse_unary_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             )
         return cls.parse_element_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -673,7 +673,7 @@ class SQLParser:
         """解析多项式表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_monomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.get_as_source() in {"+", "-"}:
+        while scanner.search({"+", "-"}):
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_monomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
             before_value = node.ASTPolynomialExpression(
@@ -693,7 +693,7 @@ class SQLParser:
         while scanner.get_as_source() in {"<<", ">>"}:
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_polynomial_level_node(scanner, maybe_window=maybe_window, sql_type=sql_type)
-            before_value = node.ASTPolynomialExpression(
+            before_value = node.ASTShiftExpression(
                 before_value=before_value,
                 operator=operator,
                 after_value=after_value
@@ -2025,3 +2025,8 @@ class SQLParser:
 def unify_name(text: Optional[str]) -> Optional[str]:
     """格式化名称标识符：统一剔除当前引号并添加引号"""
     return text.strip("`") if text is not None else None
+
+if __name__ == "__main__":
+    demo_sql = "3 << 2 >> 1"
+    ast_node = SQLParser.parse_shift_level_node(demo_sql, maybe_window=True)
+    print(ast_node)

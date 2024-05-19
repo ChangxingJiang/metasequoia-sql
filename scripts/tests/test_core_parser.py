@@ -231,27 +231,27 @@ class TestCoreParser(unittest.TestCase):
         """测试 parse_parse_unary_level_node 方法"""
         demo_sql = "~1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "(~1)"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "((~1))"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "+1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "+")
+        self.assertEqual(ast_node.operator.source(), "+")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "-1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "-")
+        self.assertEqual(ast_node.operator.source(), "-")
         self.assertEqual(ast_node.expression.source(), "1")
 
         demo_sql = "1"
@@ -261,14 +261,14 @@ class TestCoreParser(unittest.TestCase):
 
         demo_sql = "~~1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "~")
-        self.assertEqual(ast_node.expression.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "~")
+        self.assertEqual(ast_node.expression.operator.source(), "~")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
         demo_sql = "!!1"
         ast_node = SQLParser.parse_unary_level_node(demo_sql, maybe_window=True)
-        self.assertEqual(ast_node.unary_operator.source(), "!")
-        self.assertEqual(ast_node.expression.unary_operator.source(), "!")
+        self.assertEqual(ast_node.operator.source(), "!")
+        self.assertEqual(ast_node.expression.operator.source(), "!")
         self.assertEqual(ast_node.expression.expression.source(), "1")
 
     def test_parse_xor_level_node(self):
@@ -276,24 +276,35 @@ class TestCoreParser(unittest.TestCase):
         demo_sql = "3 ^ 1"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "^")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(3 ^ 1)"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "^")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "3 ^ 1")
 
         demo_sql = "3 ^ ~1"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.operator.source(), "^")
+        self.assertIsInstance(ast_node.after_value, node.ASTUnaryExpression)
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 ^ 1 ^ 4"
         ast_node = SQLParser.parse_xor_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTXorExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
+        self.assertEqual(ast_node.before_value.operator.source(), "^")
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
+        self.assertEqual(ast_node.operator.source(), "^")
         self.assertEqual(ast_node.after_value.source(), "4")
+        self.assertEqual(ast_node.source(), demo_sql)
 
     def test_parse_monomial_level_node(self):
         """测试 parse_monomial_level_node 方法"""
@@ -301,57 +312,57 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "*")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "(3 * ~1)"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "*")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 / ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "/")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 DIV ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "/")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 % ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 MOD ~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
         demo_sql = "3 % ~~1"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
-        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
-        self.assertEqual(ast_node.after_value.expression.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.expression.source(), "1")
 
         demo_sql = "3 * ~1 / 4"
         ast_node = SQLParser.parse_monomial_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.operator.source(), "*")
-        self.assertEqual(ast_node.before_value.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.before_value.after_value.operator.source(), "~")
         self.assertEqual(ast_node.before_value.after_value.expression.source(), "1")
         self.assertEqual(ast_node.operator.source(), "/")
         self.assertEqual(ast_node.after_value.source(), "4")
@@ -410,6 +421,7 @@ class TestCoreParser(unittest.TestCase):
 
         demo_sql = "3 << 2 >> 1"
         ast_node = SQLParser.parse_shift_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTShiftExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.operator.source(), "<<")
         self.assertEqual(ast_node.before_value.after_value.source(), "2")
@@ -422,72 +434,92 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(3 & 2)"
         ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), "3 & 2")
 
         demo_sql = "3 & 2 & 1"
         ast_node = SQLParser.parse_bitwise_and_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTBitwiseAndExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "2")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
     def test_parse_bitwise_or_level_node(self):
         """测试 parse_bitwise_or_level_node 方法"""
         demo_sql = "3 | 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node, node.ASTBitwiseOrExpression)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(3 | 2)"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node, node.ASTBitwiseOrExpression)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), "3 | 2")
 
         demo_sql = "3 | 2 | 1"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTBitwiseOrExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "2")
         self.assertEqual(ast_node.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 + 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "+")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 - 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "-")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 & 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 | 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertIsInstance(ast_node.after_value, node.ASTMonomialExpression)
         self.assertEqual(ast_node.after_value.before_value.source(), "1")
         self.assertEqual(ast_node.after_value.operator.source(), "*")
         self.assertEqual(ast_node.after_value.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "3 ^ 1 * 2"
         ast_node = SQLParser.parse_bitwise_or_level_node(demo_sql, maybe_window=True)
+        self.assertIsInstance(ast_node.before_value, node.ASTXorExpression)
         self.assertEqual(ast_node.before_value.before_value.source(), "3")
         self.assertEqual(ast_node.before_value.after_value.source(), "1")
         self.assertEqual(ast_node.operator.source(), "*")
         self.assertEqual(ast_node.after_value.source(), "2")
+        self.assertEqual(ast_node.source(), demo_sql)
 
     def test_parse_keyword_condition_level_node(self):
         """测试 parse_keyword_condition_level_node 方法"""
@@ -625,16 +657,19 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
         self.assertEqual(ast_node.expression.operator.source(), "<")
         self.assertEqual(ast_node.expression.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "NOT `column1` > 3 < 1")
 
         demo_sql = "TRUE AND FALSE"
         ast_node = SQLParser.parse_logical_and_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), demo_sql)
 
         demo_sql = "(TRUE AND FALSE)"
         ast_node = SQLParser.parse_logical_and_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE AND FALSE")
 
     def test_parse_logical_xor_level(self):
         """测试 parse_logical_xor_level 方法"""
@@ -651,11 +686,13 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_logical_xor_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE XOR FALSE")
 
         demo_sql = "(TRUE XOR FALSE)"
         ast_node = SQLParser.parse_logical_xor_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE XOR FALSE")
 
     def test_parse_logical_or_level(self):
         """测试 parse_logical_or_level 方法"""
@@ -672,11 +709,13 @@ class TestCoreParser(unittest.TestCase):
         ast_node = SQLParser.parse_logical_or_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE OR FALSE")
 
         demo_sql = "(TRUE OR FALSE)"
         ast_node = SQLParser.parse_logical_or_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
+        self.assertEqual(ast_node.source(), "TRUE OR FALSE")
 
     def test_group_by_clause(self):
         """测试判断、解析 GROUP BY 子句"""

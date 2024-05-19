@@ -48,6 +48,7 @@ __all__ = [
     "ASTMultiAlisa",  # 多个别名节点（用于在 LATERAL VIEW 子句中配合返回多个字段使用）
 
     # ------------------------------ 抽象语法树（AST）节点的一般表达式类节点 ------------------------------
+    "ASTBinaryExpressionBase",  # 二元表达式的抽象基类
     "ASTColumnNameExpression",  # 【元素表达式层级】列名表达式节点
     "ASTLiteralExpression",  # 【元素表达式层级】字面值表达式节点
     "ASTWildcardExpression",  # 【元素表达式层级】通配符表达式节点
@@ -368,6 +369,20 @@ class ASTMultiAlisa(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTBinaryExpressionBase(ASTExpressionBase):
+    """二元表达式的抽象基类"""
+
+    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
+    operator = None
+    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
+                f"{self.after_value.source(sql_type)}")
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTColumnNameExpression(ASTExpressionBase):
     """列名表达式"""
 
@@ -676,93 +691,57 @@ class ASTUnaryExpression(ASTExpressionBase):
     样例：~1、+1、-1
     """
 
-    unary_operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
+    operator: ASTComputeOperator = dataclasses.field(kw_only=True)  # 一元运算符
     expression: ASTExpressionBase = dataclasses.field(kw_only=True)  # 表达式
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
+        return f"{self.operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTXorExpression(ASTExpressionBase):
-    """异或表达式"""
+class ASTXorExpression(ASTBinaryExpressionBase):
+    """【异或表达式层级】异或表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} ^ {self.after_value.source(sql_type)}"
+    operator = ASTComputeOperator(enum=static.EnumComputeOperator.BITWISE_XOR)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTMonomialExpression(ASTExpressionBase):
-    """【第 5 层级表达式】单项表达式
+class ASTMonomialExpression(ASTBinaryExpressionBase):
+    """【单项表达式层级】单项表达式
 
     包含第二层级表达式以及乘号（`*`）、除号（`/`）和取模（`%`）符号。
     """
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
     operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPolynomialExpression(ASTExpressionBase):
+class ASTPolynomialExpression(ASTBinaryExpressionBase):
     """多项表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
     operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTShiftExpression(ASTExpressionBase):
+class ASTShiftExpression(ASTBinaryExpressionBase):
     """移位表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
     operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBitwiseAndExpression(ASTExpressionBase):
+class ASTBitwiseAndExpression(ASTBinaryExpressionBase):
     """按位与表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} & {self.after_value.source(sql_type)}"
+    operator = ASTComputeOperator(enum=static.EnumComputeOperator.BITWISE_AND)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBitwiseOrExpression(ASTExpressionBase):
+class ASTBitwiseOrExpression(ASTBinaryExpressionBase):
     """按位或表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} | {self.after_value.source(sql_type)}"
+    operator = ASTComputeOperator(enum=static.EnumComputeOperator.BITWISE_OR)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -852,17 +831,10 @@ class ASTBetweenExpression(ASTExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOperatorConditionExpression(ASTExpressionBase):
+class ASTOperatorConditionExpression(ASTBinaryExpressionBase):
     """运算符条件表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
     operator: ASTCompareOperator = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return (f"{self.before_value.source(sql_type)} {self.operator.source(sql_type)} "
-                f"{self.after_value.source(sql_type)}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -877,39 +849,24 @@ class ASTLogicalNotExpression(ASTExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalAndExpression(ASTExpressionBase):
+class ASTLogicalAndExpression(ASTBinaryExpressionBase):
     """逻辑与表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} AND {self.after_value.source(sql_type)}"
+    operator = ASTLogicalOperator(enum=static.EnumLogicalOperator.LOGICAL_AND)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalXorExpression(ASTExpressionBase):
+class ASTLogicalXorExpression(ASTBinaryExpressionBase):
     """逻辑异或表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} XOR {self.after_value.source(sql_type)}"
+    operator = ASTLogicalOperator(enum=static.EnumLogicalOperator.LOGICAL_XOR)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalOrExpression(ASTExpressionBase):
+class ASTLogicalOrExpression(ASTBinaryExpressionBase):
     """逻辑或表达式"""
 
-    before_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    after_value: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.before_value.source(sql_type)} OR {self.after_value.source(sql_type)}"
+    operator = ASTLogicalOperator(enum=static.EnumLogicalOperator.LOGICAL_OR)
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------
