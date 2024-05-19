@@ -2,7 +2,7 @@
 抽象语法树扫描器
 """
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Set
 
 from metasequoia_sql.errors import ScannerError
 from metasequoia_sql.lexical import AMTBase, AMTMark
@@ -96,7 +96,7 @@ class TokenScanner:
     def __repr__(self):
         return f"<{self.__class__.__name__} tokens={self.elements[self.pos:]}, pos={self.pos}>"
 
-    def search(self, *tokens: Union[str, AMTMark]) -> bool:
+    def search(self, *tokens: Union[str, AMTMark, Set[Union[str, AMTMark]]]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则返回 True
@@ -104,20 +104,47 @@ class TokenScanner:
         """
         for idx, token in enumerate(tokens):
             refer = self._get_by_offset(idx)
-            if refer is None or not refer.equals(token):
+            if refer is None:
                 return False
+            if isinstance(token, (AMTMark, str)):
+                if not refer.equals(token):
+                    return False
+            elif isinstance(token, set):
+                for elem in token:
+                    if refer.equals(elem):
+                        break
+                else:
+                    return False
+            else:
+                raise KeyError(f"不支持的参数类型: {token} (type={type(token)})")
         return True
 
-    def search_and_move(self, *tokens: Union[str, AMTMark]) -> bool:
+    def search_and_move(self, *tokens: Union[str, AMTMark, Set[Union[str, AMTMark]]]) -> bool:
         """从当前配置开始匹配 tokens
+
+        当 token 为 str 类型或 AMTMark 类型时，判断当前元素是否与 token 一致；
+        当 token 为 set 类型时，判断当前元素是否在 set 集合中
+
+        TODO 待优化集合判断的性能
 
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素并返回 True
         - 如果匹配失败，则不移动指针并返回 False
         """
         for idx, token in enumerate(tokens):
             refer = self._get_by_offset(idx)
-            if refer is None or not refer.equals(token):
+            if refer is None:
                 return False
+            if isinstance(token, (AMTMark, str)):
+                if not refer.equals(token):
+                    return False
+            elif isinstance(token, set):
+                for elem in token:
+                    if refer.equals(elem):
+                        break
+                else:
+                    return False
+            else:
+                raise KeyError(f"不支持的参数类型: {token} (type={type(token)})")
         for _ in range(len(tokens)):
             self.pop()
         return True
@@ -132,9 +159,12 @@ class TokenScanner:
             if not self.pop().equals(word):
                 raise ScannerError(f"没有解析到目标词语:目标词={tokens} - {self}")
 
-    def get_as_source(self) -> str:
+    def get_as_source(self) -> Optional[str]:
         """不移动指针，并返回当前元素的 source"""
-        return self.get().source
+        element = self.get()
+        if element is not None:
+            return self.get().source
+        return None
 
     def pop_as_source(self) -> str:
         """将指针向后移动 1 个元素，并返回当前元素的 source"""

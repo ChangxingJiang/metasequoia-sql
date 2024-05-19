@@ -16,7 +16,7 @@ from typing import Union, List
 from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionASTToListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.common import TokenScanner
-from metasequoia_sql.core import SQLParser, ASTExpressionBase, ASTSingleSelectStatement
+from metasequoia_sql.core import SQLParser, ASTSingleSelectStatement
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTSingle, AMTMark
 
@@ -58,7 +58,7 @@ class FSMMachineMyBatis(FSMMachine):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class SQLMyBatisExpression(ASTExpressionBase):
+class SQLMyBatisExpression(ASTBase):
     """增加 MyBatis 元素节点作为一般表达式的子类"""
 
     mybatis_source: str = dataclasses.field(kw_only=True)
@@ -71,20 +71,20 @@ class SQLParserMyBatis(SQLParser):
     """继承并重写解析器以支持 MyBatis 元素解析"""
 
     @classmethod
-    def build_token_scanner(cls, string: str) -> TokenScanner:
+    def _build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
         return TokenScanner(FSMMachineMyBatis.parse(string), ignore_space=True, ignore_comment=True)
 
     @classmethod
-    def parse_monomial_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                  maybe_window: bool,
-                                  sql_type: SQLType = SQLType.DEFAULT
-                                  ) -> ASTExpressionBase:
+    def parse_unary_level_node(cls, scanner_or_string: Union[TokenScanner, str],
+                               maybe_window: bool,
+                               sql_type: SQLType = SQLType.DEFAULT
+                               ) -> ASTBase:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
-        return super().parse_monomial_expression(scanner, maybe_window, sql_type=sql_type)
+        return super().parse_unary_level_node(scanner, maybe_window, sql_type=sql_type)
 
 
 class GetAllMybatisParams(AnalyzerRecursionASTToListBase):

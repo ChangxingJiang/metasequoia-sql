@@ -1,5 +1,7 @@
 """
 抽象词法树（AMT）的解析器
+
+TODO -- 后面必须有空格才是单行注释
 """
 
 from metasequoia_sql.lexical.amt_node import AMTMark, AMTBase, AMTSingle, AMTParenthesis

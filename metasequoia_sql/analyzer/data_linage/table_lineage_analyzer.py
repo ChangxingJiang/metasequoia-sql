@@ -215,7 +215,7 @@ class TableLineageAnalyzer:
                 standard_column = StandardColumn(column_name=column.alias.name, column_idx=column_idx)
                 column_idx += 1
                 result.append((standard_column, toolkit.CurrentNodeUsedQuoteColumn.handle(column.value)))
-            elif isinstance(column.value, core.ASTWildcardExpression):  # 通配符的情况
+            elif isinstance(column.value, core.ASTWildcard):  # 通配符的情况
                 if column.value.table_name is not None:  # 有表名的通配符
                     standard_table = table_name_analyzer.get_standard_table(column.value.table_name)
                     table_lineage = table_lineage_storage.get_table_lineage(standard_table)
