@@ -1195,6 +1195,7 @@ class SQLParser:
     @classmethod
     def parse_order_by_item(cls, scanner: TokenScanner,
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumn:
+        """解析 ORDER BY 子句的元素"""
         column = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
         order = cls.parse_order_type(scanner, sql_type=sql_type)
         nulls_first = scanner.search_and_move("NULLS", "FIRST")

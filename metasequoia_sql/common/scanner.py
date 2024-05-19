@@ -106,7 +106,7 @@ class TokenScanner:
             refer = self._get_by_offset(idx)
             if refer is None:
                 return False
-            if isinstance(token, str) or isinstance(token, AMTMark):
+            if isinstance(token, (AMTMark, str)):
                 if not refer.equals(token):
                     return False
             elif isinstance(token, set):
@@ -134,7 +134,7 @@ class TokenScanner:
             refer = self._get_by_offset(idx)
             if refer is None:
                 return False
-            if isinstance(token, str) or isinstance(token, AMTMark):
+            if isinstance(token, (AMTMark, str)):
                 if not refer.equals(token):
                     return False
             elif isinstance(token, set):

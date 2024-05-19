@@ -587,11 +587,12 @@ class ASTLiteral(ASTExpressionBase):
         if is_int_literal(self.value):
             return int(self.value)
         if is_bool_literal(self.value):
-            return True if self.value.upper() == "TRUE" else False
+            return self.value.upper() == "TRUE"
         if is_float_literal(self.value):
             return float(self.value)
         if is_null_literal(self.value):
             return None
+        raise KeyError(f"未知的字面值元素类型: {self.value}")
 
 
 # ---------------------------------------- 窗口函数的行数限制 ----------------------------------------

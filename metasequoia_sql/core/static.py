@@ -35,7 +35,7 @@ def get_unary_operator_set(sql_type: SQLType):
     """
     if sql_type == SQLType.MYSQL:
         return {"-", "+", "~", "!"}
-    elif sql_type == SQLType.HIVE:
+    if sql_type == SQLType.HIVE:
         return {"-", "+", "~"}
     return {"-", "+", "~", "!"}
 
