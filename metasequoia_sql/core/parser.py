@@ -737,7 +737,7 @@ class SQLParser:
         """解析第 5 层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         before_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
-        while scanner.get_as_source() in {"*", "/", "%"}:
+        while scanner.get_as_source() in {"*", "/", "%", "MOD", "DIV"}:
             # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
             operator = cls.parse_compute_operator(scanner, sql_type=sql_type)
             after_value = cls.parse_expression_level_4(scanner, maybe_window=maybe_window, sql_type=sql_type)
@@ -2304,9 +2304,3 @@ class SQLParser:
 def unify_name(text: Optional[str]) -> Optional[str]:
     """格式化名称标识符：统一剔除当前引号并添加引号"""
     return text.strip("`") if text is not None else None
-
-
-if __name__ == "__main__":
-    demo_sql = "2 IS NOT TRUE NOT IN ('0')"
-    ast_node = SQLParser.parse_keyword_condition_level_node(demo_sql)
-    print(ast_node)

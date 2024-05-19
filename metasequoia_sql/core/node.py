@@ -387,12 +387,14 @@ class ASTCompareOperator(ASTBase):
 # ---------------------------------------- 计算运算符 ----------------------------------------
 
 class EnumComputeOperator(enum.Enum):
-    """计算运算符的枚举类"""
+    """计算运算符的枚举类 TODO 待优化 MOD 和 DIV"""
     PLUS = ["+"]  # 加法运算符
     SUBTRACT = ["-"]  # 减法运算符
     MULTIPLE = ["*"]  # 乘法运算符
     DIVIDE = ["/"]  # 除法运算符
+    DIVIDE_2 = ["DIV"]  # 除法运算符
     MOD = ["%"]  # 取模运算符
+    MOD_2 = ["MOD"]  # 取模运算符
     CONCAT = ["||"]  # 字符串拼接运算符（仅 Oracle、DB2、PostgreSQL 中适用）
     BITWISE_AND = ["&"]  # 按位与
     BITWISE_OR = ["|"]  # 按位或

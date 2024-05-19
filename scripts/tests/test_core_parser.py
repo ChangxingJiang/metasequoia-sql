@@ -361,10 +361,24 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
+        demo_sql = "3 DIV ~1"
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "DIV")
+        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.source(), "1")
+
         demo_sql = "3 % ~1"
         ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
         self.assertEqual(ast_node.before_value.source(), "3")
         self.assertEqual(ast_node.operator.source(), "%")
+        self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
+        self.assertEqual(ast_node.after_value.expression.source(), "1")
+
+        demo_sql = "3 MOD ~1"
+        ast_node = SQLParser.parse_expression_level_5(demo_sql, maybe_window=True)
+        self.assertEqual(ast_node.before_value.source(), "3")
+        self.assertEqual(ast_node.operator.source(), "MOD")
         self.assertEqual(ast_node.after_value.unary_operator.source(), "~")
         self.assertEqual(ast_node.after_value.expression.source(), "1")
 
