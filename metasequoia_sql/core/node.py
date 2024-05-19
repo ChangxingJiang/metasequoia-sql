@@ -75,7 +75,6 @@ __all__ = [
     "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
     "ASTCaseValueItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
-    "ASTParenthesisExpression",  # 插入语表达式
     "ASTSubQueryExpression",  # 插入语表达式：子查询表达式
     "ASTSubGeneralExpression",  # 插入语表达式：插入语一般表达式（下层为一般表达式）
     "ASTSubValueExpression",  # 插入语表达式：值表达式
@@ -885,16 +884,8 @@ class ASTCaseValueExpression(ASTExpressionBase):
 AliasCaseExpression = Union[ASTCaseConditionExpression, ASTCaseValueExpression]
 
 
-# ---------------------------------------- 子查询表达式 ----------------------------------------
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTParenthesisExpression(ASTExpressionBase, abc.ABC):
-    """【元素表达式】插入语表达式 TODO 待移除或改为类型别名"""
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSubQueryExpression(ASTParenthesisExpression):
+class ASTSubQueryExpression(ASTExpressionBase):
     """【元素表达式】子查询表达式"""
 
     statement: "ASTSelectStatement" = dataclasses.field(kw_only=True)
@@ -905,7 +896,7 @@ class ASTSubQueryExpression(ASTParenthesisExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSubGeneralExpression(ASTParenthesisExpression):
+class ASTSubGeneralExpression(ASTExpressionBase):
     """【元素表达式】插入语一般表达式 TODO 待处理"""
 
     expression: "NodeLogicalOrLevel" = dataclasses.field(kw_only=True)
@@ -915,7 +906,7 @@ class ASTSubGeneralExpression(ASTParenthesisExpression):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSubValueExpression(ASTParenthesisExpression):
+class ASTSubValueExpression(ASTExpressionBase):
     """【元素表达式】值表达式：INSERT INTO 表达式中，VALUES 里的表达式"""
 
     values: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)
@@ -928,7 +919,7 @@ class ASTSubValueExpression(ASTParenthesisExpression):
 
 NodeElementLevel = Union[
     ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTWindowExpression, AliasCaseExpression,
-    ASTParenthesisExpression]
+    ASTSubQueryExpression, ASTSubGeneralExpression, ASTSubValueExpression]
 
 
 # ---------------------------------------- 第 2 层级表达式 ----------------------------------------
