@@ -16,6 +16,7 @@ TODO 将 Union 类型的转化为专门的 Type
 TODO 将 ASTExpressionBase 替换为更精确的子类
 TODO 增加省略 operator 的对象的 operator 方法
 TODO 将 enum 枚举类方法移动到 static 中
+TODO 移除不需要的类型别名
 """
 
 import abc
@@ -36,7 +37,6 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
     "AliasTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
-    "AliasCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
     "AliasPartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
@@ -948,7 +948,7 @@ class ASTUnaryExpression(ASTExpressionBase):
         return f"{self.unary_operator.source(sql_type=sql_type)}{self.expression.source(sql_type=sql_type)}"
 
 
-NodeUnaryLevel = Union[NodeElementLevel, ASTUnaryExpression]
+NodeUnaryLevel = Union[NodeIndexLevel, ASTUnaryExpression]
 
 
 # ---------------------------------------- 第 4 层级表达式 ----------------------------------------
@@ -2037,9 +2037,6 @@ class ASTCreateTableAsStatement(ASTStatementBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return f"CREATE TABLE {self.table_name.source(sql_type)} AS {self.select_statement.source(sql_type)}"
-
-
-AliasCreateTableStatement = Union[ASTCreateTableStatement, ASTCreateTableAsStatement]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

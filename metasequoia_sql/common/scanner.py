@@ -96,7 +96,7 @@ class TokenScanner:
     def __repr__(self):
         return f"<{self.__class__.__name__} tokens={self.elements[self.pos:]}, pos={self.pos}>"
 
-    def search(self, *tokens: Union[str, AMTMark]) -> bool:
+    def search(self, *tokens: Union[str, AMTMark, Set[Union[str, AMTMark]]]) -> bool:
         """从当前配置开始匹配 tokens
 
         - 如果匹配成功，则返回 True
@@ -104,8 +104,19 @@ class TokenScanner:
         """
         for idx, token in enumerate(tokens):
             refer = self._get_by_offset(idx)
-            if refer is None or not refer.equals(token):
+            if refer is None:
                 return False
+            if isinstance(token, str) or isinstance(token, AMTMark):
+                if not refer.equals(token):
+                    return False
+            elif isinstance(token, set):
+                for elem in token:
+                    if refer.equals(elem):
+                        break
+                else:
+                    return False
+            else:
+                raise KeyError(f"不支持的参数类型: {token} (type={type(token)})")
         return True
 
     def search_and_move(self, *tokens: Union[str, AMTMark, Set[Union[str, AMTMark]]]) -> bool:

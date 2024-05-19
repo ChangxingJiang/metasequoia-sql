@@ -22,8 +22,14 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 
 __all__ = ["SQLParser"]
 
-ScannerOrString = Union[TokenScanner, str]  # 输入参数的类型别名
-AliasGeneralParenthesis = Union[node.ASTLogicalOrExpression, node.ASTSubQueryExpression, node.ASTSubValueExpression]
+# 输入参数的类型别名
+ScannerOrString = Union[TokenScanner, str]
+
+# 两种 CREATE TABLE 语句的通用类型别名
+AliasCreateTableStatement = Union[node.ASTCreateTableStatement, node.ASTCreateTableAsStatement]
+
+# 两种 CASE 语句的通用类型别名
+AliasCaseExpression = Union[node.ASTCaseConditionExpression, node.ASTCaseValueExpression]
 
 
 class SQLParser:
@@ -31,7 +37,7 @@ class SQLParser:
     """SQL 语法解析器"""
 
     @classmethod
-    def build_token_scanner(cls, string: str) -> TokenScanner:
+    def _build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
         return TokenScanner(FSMMachine.parse(string), ignore_space=True, ignore_comment=True)
 
@@ -52,7 +58,7 @@ class SQLParser:
                 # 兼容 HIVE 的 == 语法
                 scanner_or_string = scanner_or_string.replace("==", "=")
 
-            return cls.build_token_scanner(scanner_or_string)
+            return cls._build_token_scanner(scanner_or_string)
         raise SqlParseError(f"未知的参数类型: {scanner_or_string} (type={type(scanner_or_string)})")
 
     # ------------------------------ 枚举类节点的解析方法 ------------------------------
@@ -539,7 +545,7 @@ class SQLParser:
                              sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if scanner.get_as_children_scanner().get_as_source() in {"SELECT", "WITH"}:
+        if scanner.get_as_children_scanner().search({"SELECT", "WITH"}):
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         return cls.parse_value_expression(scanner, sql_type=sql_type)
 
@@ -654,11 +660,11 @@ class SQLParser:
 
     @classmethod
     def parse_general_parenthesis_expression(cls, scanner_or_string: ScannerOrString,
-                                             sql_type: SQLType = SQLType.DEFAULT) -> AliasGeneralParenthesis:
+                                             sql_type: SQLType = SQLType.DEFAULT) -> node.NodeLogicalOrLevel:
         """解析一般表达式中的插入语"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         # 处理插入语中是子查询的情况
-        if scanner.get_as_children_scanner().get_as_source() in {"SELECT", "WITH"}:
+        if scanner.get_as_children_scanner().search({"SELECT", "WITH"}):
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         # 处理插入语中是一般表达式的情况：如果有嵌套的插入语，那么会自动压缩为一层
         parenthesis_scanner = scanner.pop_as_children_scanner()
@@ -669,9 +675,9 @@ class SQLParser:
     @classmethod
     def parse_element_level_node(cls, scanner_or_string: ScannerOrString,
                                  maybe_window: bool,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeElementLevel:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.NodeLogicalOrLevel:
         # pylint: disable=R0911
-        """解析元素表达式层级"""
+        """解析元素表达式层级（因为可能包含插入语，所以返回值类型是一般表达式）"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 处理包含插入语的情况
             return cls.parse_general_parenthesis_expression(scanner, sql_type=sql_type)
@@ -1000,7 +1006,7 @@ class SQLParser:
                                     sql_type: SQLType = SQLType.DEFAULT) -> node.AliasTableExpression:
         """解析表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if scanner.get_as_children_scanner().get_as_source() in {"SELECT", "WITH"}:
+        if scanner.get_as_children_scanner().search({"SELECT", "WITH"}):
             return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
             return cls.parse_type_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
@@ -1818,8 +1824,7 @@ class SQLParser:
 
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT
-                                     ) -> node.AliasCreateTableStatement:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> AliasCreateTableStatement:
         # pylint: disable=R0912
         # pylint: disable=R0914
         # pylint: disable=R0915

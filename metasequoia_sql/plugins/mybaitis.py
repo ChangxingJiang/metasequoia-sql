@@ -71,7 +71,7 @@ class SQLParserMyBatis(SQLParser):
     """继承并重写解析器以支持 MyBatis 元素解析"""
 
     @classmethod
-    def build_token_scanner(cls, string: str) -> TokenScanner:
+    def _build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
         return TokenScanner(FSMMachineMyBatis.parse(string), ignore_space=True, ignore_comment=True)
 
