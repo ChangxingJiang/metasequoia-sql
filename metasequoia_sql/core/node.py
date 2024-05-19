@@ -138,9 +138,9 @@ __all__ = [
     "NodeLogicalXorLevel",  # 【类型别名】逻辑异或表达式层级节点
     "ASTLogicalXorExpression",  # 逻辑异或表达式
 
-    # 第 8 层级表达式
-    "NodeLogicalOrLevel",  # 【类型别名】第 8 层级表达式
-    "ASTLogicalOrExpression",  # 条件表达式
+    # 逻辑或表达式层级
+    "NodeLogicalOrLevel",  # 【类型别名】逻辑或表达式层级
+    "ASTLogicalOrExpression",  # 逻辑或表达式层级
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
     "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
