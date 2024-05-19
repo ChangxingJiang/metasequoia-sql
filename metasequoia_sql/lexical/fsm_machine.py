@@ -104,12 +104,7 @@ class FSMMachine:
 
     def handle(self, ch: str) -> bool:
         # pylint: disable=R0912
-
-        """处理一个字符；如果指针需要移动则返回 True，否则返回 False
-
-        TODO 待增加两种插入语在栈中的标记
-        TODO 待调整实现方法，优化 R0912
-        """
+        """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
         if self.status not in FSM_OPERATION_MAP:
             raise AMTParseError(f"未定义处理规则的状态: {self.status}")
 
