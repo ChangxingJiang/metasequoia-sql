@@ -459,7 +459,7 @@ class SQLParser:
     @classmethod
     def parse_case_expression(cls, scanner_or_string: ScannerOrString,
                               sql_type: SQLType = SQLType.DEFAULT
-                              ) -> node.AliasCaseExpression:
+                              ) -> AliasCaseExpression:
         """解析 CASE 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("CASE")

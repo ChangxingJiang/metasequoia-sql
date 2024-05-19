@@ -35,10 +35,6 @@ __all__ = [
     "ASTStatementBase",  # 语句的抽象基类
     "ASTExpressionBase",  # 表达式的抽象基类
 
-    # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
-    "AliasTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
-    "AliasPartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
-
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "ASTEnumBase",  # 抽象语法树枚举类型的基类
     "ASTInsertType",  # 插入类型
@@ -70,7 +66,6 @@ __all__ = [
     "ASTCastFunction",  # 函数表达式：CAST 函数表达式
     "ASTExtractFunction",  # 函数表达式：EXTRACT 函数表达式
     "ASTWindowExpression",  # 窗口表达式
-    "AliasCaseExpression",  # 两种 CASE 语句的通用类型别名
     "ASTCaseConditionExpression",  # CASE 表达式：CASE 之后没有变量，WHEN 中为条件语句的 CASE 表达式
     "ASTCaseConditionItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
@@ -143,6 +138,7 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
     "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
+    "AliasTableExpression",  # ASTFromTable 的元素：表名表达式和子查询表达式的类型别名
     "ASTFromTable",  # FROM 和 JOIN 子句元素：包含别名的表表达式
     "ASTOrderByColumn",  # ORDER BY 子句元素：包含排序字段及排序顺序的表达式
     "ASTJoinExpression",  # JOIN 子句元素：关联表达式的抽象类
@@ -168,13 +164,13 @@ __all__ = [
     "ASTUnionSelectStatement",  # SELECT 语句：UNION 了多个 SELECT 语句的组合后的 SELECT 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 INSERT 语句节点 ------------------------------
+    "AliasPartitionParam",  # 分区表达式的参数：包含动态分区和非动态分区两种情况
     "ASTPartitionExpression",  # 分区表达式
     "ASTInsertStatement",  # INSERT 语句
     "ASTInsertValuesStatement",  # INSERT ... VALUES ... 语句
     "ASTInsertSelectStatement",  # INSERT ... SELECT ... 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 CREATE TABLE 语句节点 ------------------------------
-    "AliasColumnOrIndex",  # DDL 的字段或索引类型
     "ASTConfigStringExpression",  # 配置值为字符串的配置表达式
     "ASTColumnTypeExpression",  # 字段类型表达式
     "ASTDefineColumnExpression",  # 字段定义表达式
@@ -185,6 +181,7 @@ __all__ = [
     "ASTNormalIndexExpression",  # 普通索引声明表达式
     "ASTFulltextIndexExpression",  # 全文本索引声明表达式
     "ASTForeignKeyExpression",  # 声明外键表达式
+    "AliasColumnOrIndex",  # DDL 的字段或索引类型
     "ASTCreateTableStatement",  # CREATE TABLE 语句
     "ASTCreateTableAsStatement",  # CREATE TABLE ... AS ... 语句
 
@@ -721,10 +718,6 @@ class ASTCaseValueExpression(ASTExpressionBase):
         return "\n".join(result)
 
 
-# 两种 CASE 语句的通用类型别名
-AliasCaseExpression = Union[ASTCaseConditionExpression, ASTCaseValueExpression]
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSubQueryExpression(ASTExpressionBase):
     """【元素表达式】子查询表达式"""
@@ -749,8 +742,8 @@ class ASTSubValueExpression(ASTExpressionBase):
 
 
 NodeElementLevel = Union[
-    ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTWindowExpression, AliasCaseExpression,
-    ASTSubQueryExpression, ASTSubValueExpression]
+    ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTWindowExpression, ASTCaseConditionExpression,
+    ASTCaseValueExpression, ASTSubQueryExpression, ASTSubValueExpression]
 
 
 # ---------------------------------------- 第 2 层级表达式 ----------------------------------------
