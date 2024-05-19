@@ -943,16 +943,30 @@ class SQLParser:
         return before_value
 
     @classmethod
+    def parse_logical_xor_level(cls, scanner_or_string: ScannerOrString,
+                                sql_type: SQLType = SQLType.DEFAULT) -> node.NodeLogicalXorLevel:
+        """解析逻辑异或表达式层级"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        before_value = cls.parse_logical_and_level(scanner, sql_type=sql_type)
+        while scanner.search_and_move("XOR"):
+            after_value = cls.parse_logical_and_level(scanner, sql_type=sql_type)
+            before_value = node.ASTLogicalXorExpression(
+                before_value=before_value,
+                after_value=after_value
+            )
+        return before_value
+
+    @classmethod
     def parse_general_expression(cls, scanner_or_string: ScannerOrString,
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTExpressionLevel18:
         """解析一般表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        first_element = cls.parse_logical_and_level(scanner, sql_type=sql_type)
+        first_element = cls.parse_logical_xor_level(scanner, sql_type=sql_type)
         if scanner.search("OR") or scanner.search("||"):
             elements: List[node.AliasGeneralExpressionElement] = [first_element]
             while scanner.search("OR") or scanner.search("||"):  # 如果是用 AND 和 OR 连接的多个表达式，则继续解析
                 elements.append(cls.parse_logical_operator(scanner, sql_type=sql_type))
-                elements.append(cls.parse_logical_and_level(scanner, sql_type=sql_type))
+                elements.append(cls.parse_logical_xor_level(scanner, sql_type=sql_type))
             return node.ASTGeneralExpression(elements=tuple(elements))
         return first_element
 

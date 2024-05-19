@@ -147,6 +147,10 @@ __all__ = [
     "NodeLogicalAndLevel",  # 【类型别名】逻辑与表达式层级节点
     "ASTLogicalAndExpression",  # 逻辑与表达式
 
+    # 逻辑异或表达式层级
+    "NodeLogicalXorLevel",  # 【类型别名】逻辑异或表达式层级节点
+    "ASTLogicalXorExpression",  # 逻辑异或表达式
+
     # 第 8 层级表达式
     "ASTExpressionLevel18",  # 【类型别名】第 8 层级表达式
     "ASTGeneralExpression",  # 条件表达式
@@ -1211,7 +1215,7 @@ NodeOperatorConditionLevel = Union[NodeKeywordConditionLevel, ASTOperatorConditi
 class ASTLogicalNotExpression(ASTBase):
     """逻辑否表达式"""
 
-    expression: NodeOperatorConditionLevel = dataclasses.field(kw_only=True)
+    expression: "NodeLogicalNotLevel" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1228,8 +1232,8 @@ NodeLogicalNotLevel = Union[NodeOperatorConditionLevel, ASTLogicalNotExpression]
 class ASTLogicalAndExpression(ASTBase):
     """逻辑与表达式"""
 
-    before_value: NodeLogicalNotLevel = dataclasses.field(kw_only=True)
-    after_value: NodeLogicalNotLevel = dataclasses.field(kw_only=True)
+    before_value: "NodeLogicalAndLevel" = dataclasses.field(kw_only=True)
+    after_value: "NodeLogicalAndLevel" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1238,10 +1242,28 @@ class ASTLogicalAndExpression(ASTBase):
 
 NodeLogicalAndLevel = Union[NodeLogicalNotLevel, ASTLogicalAndExpression]
 
+
+# ---------------------------------------- 逻辑异或表达式 ----------------------------------------
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTLogicalXorExpression(ASTBase):
+    """逻辑异或表达式"""
+
+    before_value: "NodeLogicalXorLevel" = dataclasses.field(kw_only=True)
+    after_value: "NodeLogicalXorLevel" = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.before_value.source(sql_type)} XOR {self.after_value.source(sql_type)}"
+
+
+NodeLogicalXorLevel = Union[NodeLogicalAndLevel, ASTLogicalAndExpression]
+
 # ---------------------------------------- 条件表达式 ----------------------------------------
 
 
-AliasGeneralExpressionElement = Union[NodeLogicalNotLevel, ASTLogicalOperator]
+AliasGeneralExpressionElement = Union[NodeLogicalXorLevel, ASTLogicalOperator]
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

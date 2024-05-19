@@ -612,6 +612,22 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
 
+    def test_parse_logical_xor_level(self):
+        """测试 parse_logical_xor_level 方法"""
+
+        demo_sql = "NOT column1 > 3 < 1"
+        ast_node = SQLParser.parse_logical_xor_level(demo_sql)
+        self.assertEqual(ast_node.expression.before_value.before_value.source(), "`column1`")
+        self.assertEqual(ast_node.expression.before_value.operator.source(), ">")
+        self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
+        self.assertEqual(ast_node.expression.operator.source(), "<")
+        self.assertEqual(ast_node.expression.after_value.source(), "1")
+
+        demo_sql = "TRUE XOR FALSE"
+        ast_node = SQLParser.parse_logical_xor_level(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "TRUE")
+        self.assertEqual(ast_node.after_value.source(), "FALSE")
+
     def test_group_by_clause(self):
         """测试判断、解析 GROUP BY 子句"""
         self.assertTrue(SQLParser.check_group_by_clause("GROUP BY column1, column2"))
