@@ -7,7 +7,6 @@ SQL 语法解析器
 如需替换词法解析器，重写 build_token_scanner 方法即可。
 
 TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
-TODO 兼容各个场景下额外添加的括号
 TODO 移除 check_ 类方法
 """
 
@@ -69,11 +68,11 @@ class SQLParser:
         """解析插入类型"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("INSERT", "INTO"):
-            return node.ASTInsertType(enum=node.EnumInsertType.INSERT_INTO)
+            return node.ASTInsertType(enum=static.EnumInsertType.INSERT_INTO)
         if scanner.search_and_move("INSERT", "IGNORE", "INTO"):
-            return node.ASTInsertType(enum=node.EnumInsertType.INSERT_INTO)
+            return node.ASTInsertType(enum=static.EnumInsertType.INSERT_INTO)
         if scanner.search_and_move("INSERT", "OVERWRITE"):
-            return node.ASTInsertType(enum=node.EnumInsertType.INSERT_OVERWRITE)
+            return node.ASTInsertType(enum=static.EnumInsertType.INSERT_OVERWRITE)
         raise SqlParseError(f"未知的 INSERT 类型: {scanner}")
 
     @classmethod
@@ -353,13 +352,6 @@ class SQLParser:
         scanner.match("AND")
         to_row = cls.parse_window_row_item(scanner, sql_type=sql_type)
         return node.ASTWindowRow(from_row=from_row, to_row=to_row)
-
-    @classmethod
-    def check_wildcard_expression(cls, scanner_or_string: ScannerOrString,
-                                  sql_type: SQLType = SQLType.DEFAULT) -> bool:
-        """判断是否可能为通配符表达式"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return scanner.search("*") or scanner.search(AMTMark.NAME, ".", "*")
 
     @classmethod
     def parse_wildcard_expression(cls, scanner_or_string: ScannerOrString,
@@ -686,7 +678,7 @@ class SQLParser:
             return cls.parse_literal_expression(scanner, sql_type=sql_type)
         if cls.check_column_name_expression(scanner, sql_type=sql_type):
             return cls.parse_column_name_expression_maybe_with_array_index(scanner, sql_type=sql_type)
-        if cls.check_wildcard_expression(scanner, sql_type=sql_type):
+        if scanner.search("*") or scanner.search(AMTMark.NAME, ".", "*"):
             return cls.parse_wildcard_expression(scanner, sql_type=sql_type)
         raise SqlParseError(f"未知的元素表达式元素: {scanner}")
 

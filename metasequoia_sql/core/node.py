@@ -41,7 +41,7 @@ __all__ = [
     "AliasPartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
-    "EnumInsertType", "ASTInsertType",  # 插入类型
+    "ASTInsertType",  # 插入类型
     "EnumJoinType", "ASTJoinType",  # 关联类型
     "EnumOrderType", "ASTOrderType",  # 排序类型
     "EnumUnionType", "ASTUnionType",  # 组合类型

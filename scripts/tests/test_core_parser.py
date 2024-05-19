@@ -119,9 +119,6 @@ class TestCoreParser(unittest.TestCase):
 
     def test_wildcard_expression(self):
         """测试判断、解析通配符表达式"""
-        self.assertTrue(SQLParser.check_wildcard_expression("*"))
-        self.assertTrue(SQLParser.check_wildcard_expression("t1.*"))
-        self.assertFalse(SQLParser.check_wildcard_expression("t1"))
         self.assertEqual(SQLParser.parse_wildcard_expression("*").source(SQLType.MYSQL), "*")
         self.assertEqual(SQLParser.parse_wildcard_expression("t1.*").source(SQLType.MYSQL), "t1.*")
 
