@@ -10,24 +10,29 @@ from typing import Set
 from metasequoia_sql.core.sql_type import SQLType
 
 __all__ = [
-    # 插入类型
+    # SQL 的各种类型的枚举类
     "EnumInsertType",  # 插入类型的枚举类
-
-    # 关联类型
     "EnumJoinType",  # 关联类型的枚举类
+    "EnumOrderType",  # 排序类型的枚举类
+    "EnumUnionType",  # 组合类型的枚举类
+    "EnumWindowRowType",  # 窗口函数中的行限制的类型
+    "EnumCastDataType",  # CAST 函数的字段类型
+
+    # 一元运算符
+    "get_unary_operator_set",  # 获取一元运算符的集合
 
     # 计算运算符
     "EnumComputeOperator",  # 计算运算符的枚举类
+    "COMPUTE_OPERATOR_HASH",  # 计算运算符字符串到枚举类的映射关系
+    "COMPUTE_OPERATOR_SET",  # 计算运算符字符串的集合
 
     # 比较运算符
     "EnumCompareOperator",  # 比较运算符的枚举类
     "COMPARE_OPERATOR_HASH",  # 比较运算符字符串到枚举类的映射关系
     "COMPARE_OPERATOR_SET",  # 比较运算符字符串的集合
 
-    # 一元运算符
-    "get_unary_operator_set",  # 获取一元运算符的集合
-
-    # 逻辑否运算符
+    # 逻辑运算符
+    "EnumLogicalOperator",  # 逻辑运算符的枚举类
     "get_not_operator_set",  # 获取逻辑否运算符的集合
 ]
 
@@ -58,6 +63,78 @@ class EnumJoinType(enum.Enum):
     FULL_JOIN = ["FULL", "JOIN"]  # 全外连接
     FULL_OUTER_JOIN = ["FULL", "OUTER", "JOIN"]  # 全外连接
     CROSS_JOIN = ["CROSS", "JOIN"]  # 交叉连接
+
+
+# ---------------------------------------- 排序类型 ----------------------------------------
+
+
+class EnumOrderType(enum.Enum):
+    """排序类型的枚举类"""
+    ASC = ["ASC"]  # 升序
+    DESC = ["DESC"]  # 降序
+
+
+# ---------------------------------------- 组合类型 ----------------------------------------
+
+
+class EnumUnionType(enum.Enum):
+    """组合类型的枚举类"""
+    UNION_ALL = ["UNION", "ALL"]
+    UNION = ["UNION"]
+    EXCEPT = ["EXCEPT"]
+    INTERSECT = ["INTERSECT"]
+    MINUS = ["MINUS"]
+
+
+# ---------------------------------------- CAST 函数的字段类型 ----------------------------------------
+
+
+class EnumCastDataType(enum.Enum):
+    """CAST 函数的字段类型"""
+    # MySQL 类型
+    CHAR = "CHAR"
+    ENUM = "ENUM"
+    LONGTEXT = "LONGTEXT"
+    MEDIUMTEXT = "MEDIUMTEXT"
+    SET = "SET"
+    TEXT = "TEXT"
+    TINYTEXT = "TINYTEXT"
+    VARCHAR = "VARCHAR"
+    BIT = "BIT"
+    BIGINT = "BIGINT"
+    BOOLEAN = "BOOLEAN"
+    BOOL = "BOOL"
+    DECIMAL = "DECIMAL"
+    DEC = "DEC"
+    DOUBLE = "DOUBLE"
+    INT = "INT"
+    INTEGER = "INTEGER"
+    MEDIUMINT = "MEDIUMINT"
+    REAL = "REAL"
+    SMALLINT = "SMALLINT"
+    TINYINT = "TINYINT"
+    DATE = "DATE"
+    DATETIME = "DATETIME"
+    TIMESTAMP = "TIMESTAMP"
+    TIME = "TIME"
+    YEAR = "YEAR"
+    BOLB = "BOLB"
+    MEDIUMBLOB = "MEDIUMBLOB"
+    LONGBLOB = "LONGBLOB"
+    TINYBLOB = "TINYBLOB"
+
+    # Hive 类型
+    STRING = "STRING"
+
+
+# ---------------------------------------- 窗口函数中的行限制的类型 ----------------------------------------
+
+
+class EnumWindowRowType(enum.Enum):
+    """窗口函数中的行限制的类型"""
+    PRECEDING = "PRECEDING"
+    CURRENT_ROW = "CURRENT ROW"
+    FOLLOWING = "FOLLOWING"
 
 
 # ---------------------------------------- 计算运算符 ----------------------------------------
@@ -140,6 +217,17 @@ COMPARE_OPERATOR_HASH = {
 
 # 比较运算符字符串的集合
 COMPARE_OPERATOR_SET = set(COMPARE_OPERATOR_HASH)
+
+
+# ---------------------------------------- 逻辑运算符 ----------------------------------------
+
+
+class EnumLogicalOperator(enum.Enum):
+    """逻辑运算符的枚举类"""
+    AND = ["AND"]
+    OR = ["OR"]
+    NOT = ["NOT"]
+    LOGICAL_OR = ["||"]
 
 
 # ---------------------------------------- 一元运算符 ----------------------------------------

@@ -15,7 +15,7 @@ from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.common import name_set
 from metasequoia_sql.core import node, static
 from metasequoia_sql.core.sql_type import SQLType
-from metasequoia_sql.errors import SqlParseError, UnSupportSqlTypeError
+from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 
 __all__ = ["SQLParser"]
@@ -90,17 +90,17 @@ class SQLParser:
         """解析排序类型"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("DESC"):
-            return node.ASTOrderType(enum=node.EnumOrderType.DESC)
+            return node.ASTOrderType(enum=static.EnumOrderType.DESC)
         if scanner.search_and_move("ASC"):
-            return node.ASTOrderType(enum=node.EnumOrderType.ASC)
-        return node.ASTOrderType(enum=node.EnumOrderType.ASC)
+            return node.ASTOrderType(enum=static.EnumOrderType.ASC)
+        return node.ASTOrderType(enum=static.EnumOrderType.ASC)
 
     @classmethod
     def parse_union_type(cls, scanner_or_string: ScannerOrString,
                          sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUnionType:
         """解析组合类型"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        for union_type in node.EnumUnionType:
+        for union_type in static.EnumUnionType:
             if scanner.search_and_move(*union_type.value):
                 return node.ASTUnionType(enum=union_type)
         raise SqlParseError(f"无法解析的组合类型: {scanner}")
@@ -126,33 +126,11 @@ class SQLParser:
         return node.ASTComputeOperator(enum=compute_operator)
 
     @classmethod
-    def parse_logical_operator(cls, scanner_or_string: ScannerOrString,
-                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLogicalOperator:
-        """解析逻辑运算符"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if scanner.search_and_move("AND"):
-            return node.ASTLogicalOperator(enum=node.EnumLogicalOperator.AND)
-        if scanner.search_and_move("OR"):
-            return node.ASTLogicalOperator(enum=node.EnumLogicalOperator.OR)
-        if scanner.search_and_move("NOT"):
-            return node.ASTLogicalOperator(enum=node.EnumLogicalOperator.NOT)
-        if scanner.search_and_move("||"):
-            return node.ASTLogicalOperator(enum=node.EnumLogicalOperator.LOGICAL_OR)
-        if scanner.search_and_move("!"):
-            if sql_type not in {SQLType.HIVE, SQLType.MYSQL}:
-                raise UnSupportSqlTypeError(f"当前 SQL 类型不支持 ! 运算符: sql_type={sql_type}")
-            return node.ASTLogicalOperator(enum=node.EnumLogicalOperator.NOT)
-        for logical_operator in node.EnumLogicalOperator:
-            if scanner.search_and_move(*logical_operator.value):
-                return node.ASTLogicalOperator(enum=logical_operator)
-        raise SqlParseError(f"无法解析的逻辑运算符: {scanner}")
-
-    @classmethod
     def parse_cast_data_type(cls, scanner_or_string: ScannerOrString,
-                             sql_type: SQLType = SQLType.DEFAULT) -> node.EnumCastDataType:
+                             sql_type: SQLType = SQLType.DEFAULT) -> static.EnumCastDataType:
         """解析 CAST 函数表达式中的类型"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        for cast_type in node.EnumCastDataType:
+        for cast_type in static.EnumCastDataType:
             if scanner.search_and_move(cast_type.value):
                 return cast_type
         raise SqlParseError(f"无法解析的 CAST 函数表达式中的类型: {scanner}")
@@ -253,18 +231,18 @@ class SQLParser:
         """解析窗口函数行限制中的行"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("CURRENT", "ROW"):
-            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.CURRENT_ROW)
+            return node.ASTWindowRowItem(row_type=static.EnumWindowRowType.CURRENT_ROW)
         if scanner.search_and_move("UNBOUNDED"):
             if scanner.search_and_move("PRECEDING"):
-                return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, is_unbounded=True)
+                return node.ASTWindowRowItem(row_type=static.EnumWindowRowType.PRECEDING, is_unbounded=True)
             if scanner.search_and_move("FOLLOWING"):
-                return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, is_unbounded=True)
+                return node.ASTWindowRowItem(row_type=static.EnumWindowRowType.FOLLOWING, is_unbounded=True)
             raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
         row_num = int(scanner.pop_as_source())
         if scanner.search_and_move("PRECEDING"):
-            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.PRECEDING, row_num=row_num)
+            return node.ASTWindowRowItem(row_type=static.EnumWindowRowType.PRECEDING, row_num=row_num)
         if scanner.search_and_move("FOLLOWING"):
-            return node.ASTWindowRowItem(row_type=node.EnumWindowRowType.FOLLOWING, row_num=row_num)
+            return node.ASTWindowRowItem(row_type=static.EnumWindowRowType.FOLLOWING, row_num=row_num)
         raise SqlParseError(f"无法解析的窗口函数限制行: {scanner}")
 
     @classmethod

@@ -15,20 +15,19 @@
 TODO 将 Union 类型的转化为专门的 Type
 TODO 将 ASTExpressionBase 替换为更精确的子类
 TODO 增加省略 operator 的对象的 operator 方法
-TODO 将 enum 枚举类方法移动到 static 中
 TODO 移除不需要的类型别名
+TODO 优化各种节点的继承关系
 """
 
 import abc
 import dataclasses
-import enum
 from typing import Optional, Tuple, Union, Dict, Any
 
 from metasequoia_sql.common.basic import is_int_literal, is_bool_literal, is_float_literal, is_null_literal
+from metasequoia_sql.core import static
 from metasequoia_sql.core.sql_type import SQLType
 from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.errors import UnSupportSqlTypeError
-from metasequoia_sql.core import static
 
 __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的抽象类 ------------------------------
@@ -43,17 +42,16 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
     "ASTInsertType",  # 插入类型
     "ASTJoinType",  # 关联类型
-    "EnumOrderType", "ASTOrderType",  # 排序类型
-    "EnumUnionType", "ASTUnionType",  # 组合类型
-    "EnumCastDataType", "ASTCastDataType",  # CAST 函数中的字段类型枚举类
+    "ASTOrderType",  # 排序类型
+    "ASTUnionType",  # 组合类型
+    "ASTCastDataType",  # CAST 函数中的字段类型枚举类
     "ASTCompareOperator",  # 比较运算符
     "ASTComputeOperator",  # 计算运算符
-    "EnumLogicalOperator", "ASTLogicalOperator",  # 逻辑运算符
+    "ASTLogicalOperator",  # 逻辑运算符
 
     # ------------------------------ 抽象语法树（AST）节点的基础类节点 ------------------------------
     "ASTTableName",  # 表名表达式
     "ASTFunctionName",  # 函数名表达式
-    "EnumWindowRowType",  # 窗口函数中的行限制的类型
     "ASTWindowRowItem",  # 窗口函数中的行限制
     "ASTWindowRow",  # 窗口函数的行数限制表达式
     "ASTAlisaExpression",  # 别名表达式
@@ -292,17 +290,11 @@ class ASTJoinType(ASTBase):
 # ---------------------------------------- 排序类型 ----------------------------------------
 
 
-class EnumOrderType(enum.Enum):
-    """排序类型的枚举类"""
-    ASC = ["ASC"]  # 升序
-    DESC = ["DESC"]  # 降序
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTOrderType(ASTBase):
     """排序类型"""
 
-    enum: EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
+    enum: static.EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -312,20 +304,11 @@ class ASTOrderType(ASTBase):
 # ---------------------------------------- 组合类型 ----------------------------------------
 
 
-class EnumUnionType(enum.Enum):
-    """组合类型的枚举类"""
-    UNION_ALL = ["UNION", "ALL"]
-    UNION = ["UNION"]
-    EXCEPT = ["EXCEPT"]
-    INTERSECT = ["INTERSECT"]
-    MINUS = ["MINUS"]
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTUnionType(ASTBase):
     """组合类型"""
 
-    enum: EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
+    enum: static.EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -359,7 +342,8 @@ class ASTComputeOperator(ASTBase):
         """返回语法节点的 SQL 源码"""
         if sql_type == SQLType.DEFAULT:
             return " ".join(self.enum.value)
-        if self.enum == static.EnumComputeOperator.MOD and sql_type not in {SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}:
+        if self.enum == static.EnumComputeOperator.MOD and sql_type not in {SQLType.MYSQL, SQLType.SQL_SERVER,
+                                                                            SQLType.HIVE}:
             raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
         return " ".join(self.enum.value)
 
@@ -367,19 +351,11 @@ class ASTComputeOperator(ASTBase):
 # ---------------------------------------- 逻辑运算符 ----------------------------------------
 
 
-class EnumLogicalOperator(enum.Enum):
-    """逻辑运算符的枚举类"""
-    AND = ["AND"]
-    OR = ["OR"]
-    NOT = ["NOT"]
-    LOGICAL_OR = ["||"]
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTLogicalOperator(ASTBase):
     """逻辑运算符"""
 
-    enum: EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
+    enum: static.EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -389,50 +365,12 @@ class ASTLogicalOperator(ASTBase):
 # ---------------------------------------- CASE 函数中的字段类型表达式 ----------------------------------------
 
 
-class EnumCastDataType(enum.Enum):
-    """CAST 函数的字段类型"""
-    # MySQL 类型
-    CHAR = "CHAR"
-    ENUM = "ENUM"
-    LONGTEXT = "LONGTEXT"
-    MEDIUMTEXT = "MEDIUMTEXT"
-    SET = "SET"
-    TEXT = "TEXT"
-    TINYTEXT = "TINYTEXT"
-    VARCHAR = "VARCHAR"
-    BIT = "BIT"
-    BIGINT = "BIGINT"
-    BOOLEAN = "BOOLEAN"
-    BOOL = "BOOL"
-    DECIMAL = "DECIMAL"
-    DEC = "DEC"
-    DOUBLE = "DOUBLE"
-    INT = "INT"
-    INTEGER = "INTEGER"
-    MEDIUMINT = "MEDIUMINT"
-    REAL = "REAL"
-    SMALLINT = "SMALLINT"
-    TINYINT = "TINYINT"
-    DATE = "DATE"
-    DATETIME = "DATETIME"
-    TIMESTAMP = "TIMESTAMP"
-    TIME = "TIME"
-    YEAR = "YEAR"
-    BOLB = "BOLB"
-    MEDIUMBLOB = "MEDIUMBLOB"
-    LONGBLOB = "LONGBLOB"
-    TINYBLOB = "TINYBLOB"
-
-    # Hive 类型
-    STRING = "STRING"
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTCastDataType(ASTBase):
     """CAST 语句中的数据类型"""
 
     signed: bool = dataclasses.field(kw_only=True)  # 是否包含 SIGNED 关键字
-    type: EnumCastDataType = dataclasses.field(kw_only=True)  # 目标转换的数据类型
+    type: static.EnumCastDataType = dataclasses.field(kw_only=True)  # 目标转换的数据类型
     params: Optional[Tuple[int, ...]] = dataclasses.field(kw_only=True)  # 目标转换的数据类型的参数列表
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -546,13 +484,6 @@ class ASTLiteral(ASTExpressionBase):
 # ---------------------------------------- 窗口函数的行数限制 ----------------------------------------
 
 
-class EnumWindowRowType(enum.Enum):
-    """窗口函数中的行限制的类型"""
-    PRECEDING = "PRECEDING"
-    CURRENT_ROW = "CURRENT ROW"
-    FOLLOWING = "FOLLOWING"
-
-
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTWindowRowItem(ASTBase):
     """窗口函数中的行限制
@@ -564,13 +495,13 @@ class ASTWindowRowItem(ASTBase):
     unbounded following = 当前行之后的所有行
     """
 
-    row_type: EnumWindowRowType = dataclasses.field(kw_only=True)
+    row_type: static.EnumWindowRowType = dataclasses.field(kw_only=True)
     is_unbounded: bool = dataclasses.field(kw_only=True, default=False)
     row_num: Optional[int] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        if self.row_type == EnumWindowRowType.CURRENT_ROW:
+        if self.row_type == static.EnumWindowRowType.CURRENT_ROW:
             return "CURRENT ROW"
         row_type_str = self.row_type.value
         if self.is_unbounded is True:

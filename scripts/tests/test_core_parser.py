@@ -28,11 +28,6 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(SQLParser.parse_compute_operator("/ 3").source(SQLType.MYSQL), "/")
         self.assertEqual(SQLParser.parse_compute_operator("% 3").source(SQLType.SQL_SERVER), "%")
 
-    def test_logical_operator(self):
-        """测试判断、解析逻辑运算符"""
-        self.assertEqual(SQLParser.parse_logical_operator("AND a > 1").source(SQLType.MYSQL), "AND")
-        self.assertEqual(SQLParser.parse_logical_operator("OR a > 1").source(SQLType.MYSQL), "OR")
-
     def test_literal_expression(self):
         """测试判断、解析字面值表达式"""
         self.assertEqual(SQLParser.parse_literal_expression("1 WHERE").source(SQLType.MYSQL), "1")
