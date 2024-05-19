@@ -271,6 +271,7 @@ class ASTComputeOperator(ASTEnumBase):
     enum: static.EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        # pylint: disable=R1725
         """返回语法节点的 SQL 源码"""
         if (self.enum == static.EnumComputeOperator.MOD
                 and sql_type not in {SQLType.DEFAULT, SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}):

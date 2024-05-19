@@ -2025,8 +2025,3 @@ class SQLParser:
 def unify_name(text: Optional[str]) -> Optional[str]:
     """格式化名称标识符：统一剔除当前引号并添加引号"""
     return text.strip("`") if text is not None else None
-
-if __name__ == "__main__":
-    demo_sql = "3 << 2 >> 1"
-    ast_node = SQLParser.parse_shift_level_node(demo_sql, maybe_window=True)
-    print(ast_node)
