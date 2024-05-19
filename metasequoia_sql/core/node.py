@@ -841,11 +841,12 @@ class ASTOperatorConditionExpression(ASTBinaryExpressionBase):
 class ASTLogicalNotExpression(ASTExpressionBase):
     """逻辑否表达式"""
 
+    operator = ASTLogicalOperator(enum=static.EnumLogicalOperator.LOGICAL_NOT)
     expression: ASTExpressionBase = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return f"NOT {self.expression.source(sql_type)}"
+        return f"{self.operator.source(sql_type)} {self.expression.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

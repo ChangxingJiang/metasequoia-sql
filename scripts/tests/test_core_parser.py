@@ -638,6 +638,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
         self.assertEqual(ast_node.expression.operator.source(), "<")
         self.assertEqual(ast_node.expression.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "NOT `column1` > 3 < 1")
 
         demo_sql = "(NOT column1 > 3 < 1)"
         ast_node = SQLParser.parse_logical_not_level(demo_sql)
@@ -646,6 +647,7 @@ class TestCoreParser(unittest.TestCase):
         self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
         self.assertEqual(ast_node.expression.operator.source(), "<")
         self.assertEqual(ast_node.expression.after_value.source(), "1")
+        self.assertEqual(ast_node.source(), "NOT `column1` > 3 < 1")
 
     def test_parse_logical_and_level(self):
         """测试 parse_logical_and_level 方法"""
