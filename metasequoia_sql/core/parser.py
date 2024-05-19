@@ -139,7 +139,7 @@ class SQLParser:
 
     @classmethod
     def parse_column_name_expression(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTColumnName:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTColumnNameExpression:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if (scanner.search(AMTMark.NAME, ".", AMTMark.NAME) and
@@ -147,14 +147,14 @@ class SQLParser:
             table_name = scanner.pop_as_source()
             scanner.match(".")
             column_name = scanner.pop_as_source()
-            return node.ASTColumnName(
+            return node.ASTColumnNameExpression(
                 table_name=unify_name(table_name),
                 column_name=unify_name(column_name)
             )
         if (scanner.search(AMTMark.NAME)
                 and not scanner.search(AMTMark.NAME, ".")
                 and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS)):
-            return node.ASTColumnName(
+            return node.ASTColumnNameExpression(
                 column_name=unify_name(scanner.pop_as_source())
             )
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
@@ -162,7 +162,7 @@ class SQLParser:
     @classmethod
     def parse_column_name_expression_maybe_with_array_index(cls, scanner_or_string: ScannerOrString,
                                                             sql_type: SQLType = SQLType.DEFAULT
-                                                            ) -> Union[node.ASTColumnName, node.ASTIndexExpression]:
+                                                            ) -> Union[node.ASTColumnNameExpression, node.ASTIndexExpression]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         column_name_expression = cls.parse_column_name_expression(scanner, sql_type=sql_type)
@@ -220,10 +220,10 @@ class SQLParser:
 
     @classmethod
     def parse_literal_expression(cls, scanner_or_string: ScannerOrString,
-                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLiteral:
+                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLiteralExpression:
         """解析字面值：包含整型字面值、浮点型字面值、字符串型字面值、十六进制型字面值、布尔型字面值、位值型字面值、空值的字面值"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return node.ASTLiteral(value=scanner.pop_as_source())
+        return node.ASTLiteralExpression(value=scanner.pop_as_source())
 
     @classmethod
     def parse_window_row_item(cls, scanner_or_string: ScannerOrString,
@@ -258,16 +258,16 @@ class SQLParser:
 
     @classmethod
     def parse_wildcard_expression(cls, scanner_or_string: ScannerOrString,
-                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWildcard:
+                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWildcardExpression:
         """解析通配符表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("*"):
-            return node.ASTWildcard()
+            return node.ASTWildcardExpression()
         if scanner.search(AMTMark.NAME, ".", "*"):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             scanner.pop()
-            return node.ASTWildcard(table_name=schema_name)
+            return node.ASTWildcardExpression(table_name=schema_name)
         raise SqlParseError("无法解析为通配符表达式")
 
     @classmethod
@@ -279,43 +279,43 @@ class SQLParser:
 
     @classmethod
     def parse_alias_expression(cls, scanner_or_string: ScannerOrString,
-                               sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTAlisaExpression]:
+                               sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTAlisa]:
         """解析别名表达式：如果当前位置是别名表达式则返回别名表达式节点，否则返回 None"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if not scanner.search({"AS", AMTMark.NAME}):
             return None  # 当前位置不是别名表达式
         scanner.search_and_move("AS")
-        return node.ASTAlisaExpression(name=cls._get_name(scanner))
+        return node.ASTAlisa(name=cls._get_name(scanner))
 
     @classmethod
     def parse_multi_alias_expression(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMultiAlisaExpression:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMultiAlisa:
         """解析多个别名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("AS")
         names = [cls._get_name(scanner)]
         while scanner.search_and_move(","):
             names.append(cls._get_name(scanner))
-        return node.ASTMultiAlisaExpression(names=tuple(names))
+        return node.ASTMultiAlisa(names=tuple(names))
 
     # ------------------------------ SELECT 语句节点的解析方法 ------------------------------
 
     @classmethod
     def parse_extract_function_expression(cls, scanner_or_string: ScannerOrString,
                                           sql_type: SQLType = SQLType.DEFAULT
-                                          ) -> node.ASTExtractFunction:
+                                          ) -> node.ASTExtractFunctionExpression:
         """解析 EXTRACT 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         extract_name = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
         scanner.match("FROM")
         column_expression = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
         scanner.close()
-        return node.ASTExtractFunction(extract_name=extract_name, column_expression=column_expression)
+        return node.ASTExtractFunctionExpression(extract_name=extract_name, column_expression=column_expression)
 
     @classmethod
     def parse_cast_function_expression(cls, scanner_or_string: ScannerOrString,
                                        sql_type: SQLType = SQLType.DEFAULT
-                                       ) -> node.ASTCastFunction:
+                                       ) -> node.ASTCastFunctionExpression:
         """解析 CAST 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         column_expression = cls.parse_bitwise_or_level_node(scanner, sql_type=sql_type)
@@ -333,12 +333,12 @@ class SQLParser:
             cast_params = None
         scanner.close()
         cast_data_type = node.ASTCastDataType(signed=signed, type=cast_type, params=cast_params)
-        return node.ASTCastFunction(column_expression=column_expression, cast_type=cast_data_type)
+        return node.ASTCastFunctionExpression(column_expression=column_expression, cast_type=cast_data_type)
 
     @classmethod
     def parse_if_function_expression(cls, scanner_or_string: ScannerOrString,
                                      sql_type: SQLType = SQLType.DEFAULT
-                                     ) -> node.ASTNormalFunction:
+                                     ) -> node.ASTNormalFunctionExpression:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         function_params: List[node.NodeLogicalOrLevel] = []
@@ -350,12 +350,12 @@ class SQLParser:
             else:
                 function_params.append(cls.parse_logical_or_level(param_scanner, sql_type=sql_type))
             param_scanner.close()
-        return node.ASTNormalFunction(name=node.ASTFunctionName(function_name="IF"),
-                                      params=tuple(function_params))
+        return node.ASTNormalFunctionExpression(name=node.ASTFunctionName(function_name="IF"),
+                                                params=tuple(function_params))
 
     @classmethod
     def parse_function_expression(cls, scanner_or_string: ScannerOrString, sql_type: SQLType = SQLType.DEFAULT
-                                  ) -> Union[node.ASTFunction]:
+                                  ) -> Union[node.ASTFunctionExpressionBase]:
         """解析函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         function_name = cls.parse_function_name_expression(scanner, sql_type=sql_type)
@@ -393,7 +393,7 @@ class SQLParser:
                 name=function_name,
                 params=tuple(function_params),
                 is_distinct=is_distinct)
-        return node.ASTNormalFunction(
+        return node.ASTNormalFunctionExpression(
             name=function_name,
             params=tuple(function_params))
 
@@ -402,7 +402,7 @@ class SQLParser:
             cls,
             scanner_or_string: ScannerOrString,
             sql_type: SQLType = SQLType.DEFAULT
-    ) -> Union[node.ASTFunction, node.ASTIndexExpression]:
+    ) -> Union[node.ASTFunctionExpressionBase, node.ASTIndexExpression]:
         """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         array_expression = cls.parse_function_expression(scanner, sql_type=sql_type)
