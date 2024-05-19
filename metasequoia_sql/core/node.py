@@ -58,7 +58,7 @@ __all__ = [
     "ASTAlisaExpression",  # 别名表达式
     "ASTMultiAlisaExpression",  # 多个别名表达式
 
-    # ------------------------------ 抽象语法树（AST）节点的通用表达式类节点 ------------------------------
+    # ------------------------------ 抽象语法树（AST）节点的一般表达式类节点 ------------------------------
     # 元素表达式层级
     "NodeElementLevel",  # 【类型别名】元素表达式层级节点
     "ASTColumnName",  # 列名节点
@@ -76,7 +76,6 @@ __all__ = [
     "ASTCaseValueExpression",  # CASE 表达式：CASE 之后有变量，WHEN 中为该变量的枚举值的 CASE 表达式
     "ASTCaseValueItem",  # CASE 表达式元素：WHEN ... CASE ... 表达式
     "ASTSubQueryExpression",  # 插入语表达式：子查询表达式
-    "ASTSubGeneralExpression",  # 插入语表达式：插入语一般表达式（下层为一般表达式）
     "ASTSubValueExpression",  # 插入语表达式：值表达式
 
     # 下标表达式层级
@@ -896,16 +895,6 @@ class ASTSubQueryExpression(ASTExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSubGeneralExpression(ASTExpressionBase):
-    """【元素表达式】插入语一般表达式 TODO 待处理"""
-
-    expression: "NodeLogicalOrLevel" = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        return f"({self.expression.source(sql_type)})"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTSubValueExpression(ASTExpressionBase):
     """【元素表达式】值表达式：INSERT INTO 表达式中，VALUES 里的表达式"""
 
@@ -919,7 +908,7 @@ class ASTSubValueExpression(ASTExpressionBase):
 
 NodeElementLevel = Union[
     ASTColumnName, ASTLiteral, ASTWildcard, ASTFunction, ASTWindowExpression, AliasCaseExpression,
-    ASTSubQueryExpression, ASTSubGeneralExpression, ASTSubValueExpression]
+    ASTSubQueryExpression, ASTSubValueExpression]
 
 
 # ---------------------------------------- 第 2 层级表达式 ----------------------------------------

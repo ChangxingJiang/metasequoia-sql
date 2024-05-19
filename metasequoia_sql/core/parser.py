@@ -24,7 +24,7 @@ from metasequoia_sql.lexical import AMTMark, AMTSingle, FSMMachine
 __all__ = ["SQLParser"]
 
 ScannerOrString = Union[TokenScanner, str]  # 输入参数的类型别名
-AliasParenthesis = Union[node.ASTSubQueryExpression, node.ASTSubGeneralExpression, node.ASTSubValueExpression]
+AliasParenthesis = Union[node.ASTLogicalOrExpression, node.ASTSubQueryExpression, node.ASTSubValueExpression]
 
 
 class SQLParser:
@@ -669,12 +669,15 @@ class SQLParser:
                                      sql_type: SQLType = SQLType.DEFAULT) -> AliasParenthesis:
         """解析插入语表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        if cls.check_sub_query_parenthesis(scanner, sql_type=sql_type):  # 子查询的情况
-            return cls.parse_sub_query_expression(scanner, sql_type=sql_type)
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        result = node.ASTSubGeneralExpression(
-            expression=cls.parse_logical_or_level(parenthesis_scanner, sql_type=sql_type)
-        )
+        if parenthesis_scanner.search("SELECT") or parenthesis_scanner.search("WITH"):
+            # 处理插入语中是子查询的情况
+            result = node.ASTSubQueryExpression(
+                statement=cls.parse_select_statement(parenthesis_scanner, sql_type=sql_type)
+            )
+        else:
+            # 处理插入语中不是子查询的情况：如果有嵌套的插入语，那么会自动压缩为一层
+            result = cls.parse_logical_or_level(parenthesis_scanner, sql_type=sql_type)
         parenthesis_scanner.close()
         return result
 
@@ -685,6 +688,8 @@ class SQLParser:
         # pylint: disable=R0911
         """解析元素表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        if scanner.search(AMTMark.PARENTHESIS):  # 处理包含插入语的情况
+            return cls.parse_parenthesis_expression(scanner, sql_type=sql_type)
         if cls.check_case_expression(scanner, sql_type=sql_type):
             return cls.parse_case_expression(scanner, sql_type=sql_type)
         if maybe_window and cls.check_window_expression(scanner, sql_type=sql_type):
@@ -697,9 +702,7 @@ class SQLParser:
             return cls.parse_column_name_expression_maybe_with_array_index(scanner, sql_type=sql_type)
         if cls.check_wildcard_expression(scanner, sql_type=sql_type):
             return cls.parse_wildcard_expression(scanner, sql_type=sql_type)
-        if scanner.search(AMTMark.PARENTHESIS):
-            return cls.parse_parenthesis_expression(scanner, sql_type=sql_type)
-        raise SqlParseError(f"未知的第 1 层级表达式元素: {scanner}")
+        raise SqlParseError(f"未知的元素表达式元素: {scanner}")
 
     @classmethod
     def parse_unary_level_node(cls, scanner_or_string: ScannerOrString,
