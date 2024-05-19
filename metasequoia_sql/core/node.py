@@ -7,18 +7,6 @@
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
 - 未来，我们为每个元素提供 .changeable() 方法，返回该元素的可变节点形式
 
-第 1 层级表达式：元素表达式
-第 2 层级表达式：第 1 层级表达式 + 一元表达式
-第 3 层级表达式：第 2 层级表达式 + 异或表达式
-第 4 层级表达式：第 3 层级表达式 + 单项表达式
-第 5 层级表达式：第 4 层级表达式 + 多项表达式
-
-第 4 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式
-第 5 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式
-第 6 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式
-第 7 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式 + AND 表达式
-第 8 层级表达式：元素表达式 + 一元表达式 + 单项表达式 + 加法表达式 + 布尔表达式 + NOT 表达式 + AND 表达式 + OR 表达式
-
 其中：
 - 诸如函数调用、CASE、窗口等最终返回一个普通值或布尔值，且在当前层级下可以视作一个任意值节点的元素，均称为元素表达式
 - 诸如比较运算符、BETWEEN、LIKE 等最终返回一个布尔值，且在当前层级下可以视作一个布尔值节点的元素，均称为布尔表达式
@@ -26,7 +14,7 @@
 
 TODO 将 Union 类型的转化为专门的 Type
 TODO 将 ASTExpressionBase 替换为更精确的子类
-TODO 优化各节点之间的继承关系
+TODO 增加省略 operator 的对象的 operator 方法
 """
 
 import abc
@@ -46,7 +34,6 @@ __all__ = [
     "ASTExpressionBase",  # 表达式的抽象基类
 
     # ------------------------------ 抽象语法树（AST）节点的类型 ------------------------------
-    "AliasGeneralExpressionElement",  # 一般表达式的元素类型
     "AliasTableExpression",  # 表表达式（表名表达式 + 子查询表达式）
     "AliasCreateTableStatement",  # 建表语句表达式（普通建表语句 + CREATE TABLE ... AS ... 语句）
     "AliasPartitionParam",  # 分区参数：包含动态分区和非动态分区两种情况
@@ -152,8 +139,8 @@ __all__ = [
     "ASTLogicalXorExpression",  # 逻辑异或表达式
 
     # 第 8 层级表达式
-    "ASTExpressionLevel18",  # 【类型别名】第 8 层级表达式
-    "ASTGeneralExpression",  # 条件表达式
+    "NodeLogicalOrLevel",  # 【类型别名】第 8 层级表达式
+    "ASTLogicalOrExpression",  # 条件表达式
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
     "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
@@ -737,7 +724,7 @@ class ASTFunction(ASTExpressionBase, abc.ABC):
 class ASTNormalFunction(ASTFunction):
     """包含一般参数的函数表达式"""
 
-    params: Tuple["ASTExpressionLevel18", ...] = dataclasses.field(kw_only=True)  # 函数表达式的参数
+    params: Tuple["NodeLogicalOrLevel", ...] = dataclasses.field(kw_only=True)  # 函数表达式的参数
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -822,7 +809,7 @@ class ASTWindowExpression(ASTExpressionBase):
 class ASTCaseConditionItem(ASTBase):
     """第 1 种格式的 CASE 表达式的 WHEN ... THEN ... 语句节点"""
 
-    when: "ASTGeneralExpression" = dataclasses.field(kw_only=True)
+    when: "ASTLogicalOrExpression" = dataclasses.field(kw_only=True)
     then: ASTExpressionBase = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -918,7 +905,7 @@ class ASTSubQueryExpression(ASTParenthesisExpression):
 class ASTSubGeneralExpression(ASTParenthesisExpression):
     """【元素表达式】插入语一般表达式 TODO 待处理"""
 
-    expression: "ASTExpressionLevel18" = dataclasses.field(kw_only=True)
+    expression: "NodeLogicalOrLevel" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         return f"({self.expression.source(sql_type)})"
@@ -1260,24 +1247,23 @@ class ASTLogicalXorExpression(ASTBase):
 
 NodeLogicalXorLevel = Union[NodeLogicalAndLevel, ASTLogicalAndExpression]
 
-# ---------------------------------------- 条件表达式 ----------------------------------------
 
-
-AliasGeneralExpressionElement = Union[NodeLogicalXorLevel, ASTLogicalOperator]
+# ---------------------------------------- 逻辑或表达式 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTGeneralExpression(ASTExpressionBase):
-    """一般表达式"""
+class ASTLogicalOrExpression(ASTExpressionBase):
+    """逻辑或表达式"""
 
-    elements: Tuple[AliasGeneralExpressionElement, ...] = dataclasses.field(kw_only=True)
+    before_value: "NodeLogicalOrLevel" = dataclasses.field(kw_only=True)
+    after_value: "NodeLogicalOrLevel" = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        return " ".join(element.source(sql_type) for element in self.elements)
+        return f"{self.before_value.source(sql_type)} OR {self.after_value.source(sql_type)}"
 
 
-ASTExpressionLevel18 = Union[ASTGeneralExpression, NodeLogicalNotLevel]  # 一般表达式节点类型
+NodeLogicalOrLevel = Union[NodeLogicalNotLevel, ASTLogicalOrExpression]
 
 
 # ---------------------------------------- 关联表达式 ----------------------------------------
@@ -1291,7 +1277,7 @@ class ASTJoinExpression(ASTBase, abc.ABC):
 class ASTJoinOnExpression(ASTJoinExpression):
     """ON 关联表达式"""
 
-    condition: ASTGeneralExpression = dataclasses.field(kw_only=True)
+    condition: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1422,7 +1408,7 @@ class ASTJoinClause(ASTBase):
 class ASTWhereClause(ASTBase):
     """WHERE 子句"""
 
-    condition: ASTGeneralExpression = dataclasses.field(kw_only=True)
+    condition: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1473,7 +1459,7 @@ class ASTGroupByClause(ASTBase):
 class ASTHavingClause(ASTBase):
     """HAVING 子句"""
 
-    condition: ASTGeneralExpression = dataclasses.field(kw_only=True)
+    condition: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -2247,7 +2233,7 @@ class ASTUpdateSetColumn(ASTBase):
     """UPDATE 语句的 SET 子句中的元素"""
 
     column_name: str = dataclasses.field(kw_only=True)
-    column_value: ASTGeneralExpression = dataclasses.field(kw_only=True)
+    column_value: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""

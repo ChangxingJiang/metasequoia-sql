@@ -128,12 +128,12 @@ class TestCoreParser(unittest.TestCase):
     def test_condition_expression(self):
         """测试解析条件表达式"""
         self.assertEqual(
-            SQLParser.parse_general_expression("column1 > 3 AND column2 > 2 WHERE").source(SQLType.MYSQL),
+            SQLParser.parse_logical_or_level("column1 > 3 AND column2 > 2 WHERE").source(SQLType.MYSQL),
             "`column1` > 3 AND `column2` > 2")
-        self.assertEqual(SQLParser.parse_general_expression("column1 > 3 OR column2 > 2 WHERE").source(SQLType.MYSQL),
+        self.assertEqual(SQLParser.parse_logical_or_level("column1 > 3 OR column2 > 2 WHERE").source(SQLType.MYSQL),
                          "`column1` > 3 OR `column2` > 2")
         self.assertEqual(
-            SQLParser.parse_general_expression("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE").source(SQLType.MYSQL),
+            SQLParser.parse_logical_or_level("column1 > 3 OR column2 BETWEEN 2 AND 4 WHERE").source(SQLType.MYSQL),
             "`column1` > 3 OR `column2` BETWEEN 2 AND 4")
 
     def test_case_expression(self):
@@ -625,6 +625,22 @@ class TestCoreParser(unittest.TestCase):
 
         demo_sql = "TRUE XOR FALSE"
         ast_node = SQLParser.parse_logical_xor_level(demo_sql)
+        self.assertEqual(ast_node.before_value.source(), "TRUE")
+        self.assertEqual(ast_node.after_value.source(), "FALSE")
+
+    def test_parse_logical_or_level(self):
+        """测试 parse_logical_or_level 方法"""
+
+        demo_sql = "NOT column1 > 3 < 1"
+        ast_node = SQLParser.parse_logical_or_level(demo_sql)
+        self.assertEqual(ast_node.expression.before_value.before_value.source(), "`column1`")
+        self.assertEqual(ast_node.expression.before_value.operator.source(), ">")
+        self.assertEqual(ast_node.expression.before_value.after_value.source(), "3")
+        self.assertEqual(ast_node.expression.operator.source(), "<")
+        self.assertEqual(ast_node.expression.after_value.source(), "1")
+
+        demo_sql = "TRUE OR FALSE"
+        ast_node = SQLParser.parse_logical_or_level(demo_sql)
         self.assertEqual(ast_node.before_value.source(), "TRUE")
         self.assertEqual(ast_node.after_value.source(), "FALSE")
 
