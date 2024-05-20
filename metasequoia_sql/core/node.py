@@ -5,7 +5,11 @@
 
 节点命名规范：
 1. 非语句层级的抽象类统一使用 Base 后缀，语句层级的抽象类可以不使用 Base 后缀
-2. 抽象语法树节点包含
+2. 抽象语法树节点包含语句（Statement）、子句（Clause）、表达式（Expression）、元素共 4 个层级：
+  - 语句层级：是可以执行运行的 SQL 语句，节点统一使用 Statement 后缀
+  - 子句层级：是包括 FROM、WHERE 等在内的子句，是语句的组成部分，节点统一使用 Clause 后缀
+  - 表达式层级：是子句的组成部分，相对于元素来说，表达式更加通用一些，会在不同场景中使用，节点统一使用 Expression 后缀
+  - 元素层级：是表达式或在子句的组成部分，相对于表达式来说，元素层级往往仅在少数特定场景下使用，仅用于封装多个元素或用于封装枚举类，节点没有后缀
 
 在设计上，要求每个节点都是不可变节点，从而保证节点是可哈希的。同时，我们提供专门的修改方法：
 - 当前，我们使用复制并返回新元素的方法，且不提供 inplace 参数
@@ -34,7 +38,7 @@ __all__ = [
     "ASTStatementBase",  # 语句的抽象基类
     "ASTExpressionBase",  # 一般表达式的抽象基类
 
-    # ------------------------------ 抽象语法树（AST）节点的枚举类节点 ------------------------------
+    # ------------------------------ 抽象语法树（AST）节点的枚举类元素节点 ------------------------------
     "ASTEnumBase",  # 抽象语法树枚举类型的基类
     "ASTInsertType",  # 插入类型
     "ASTJoinType",  # 关联类型
@@ -45,13 +49,13 @@ __all__ = [
     "ASTComputeOperator",  # 计算运算符
     "ASTLogicalOperator",  # 逻辑运算符
 
-    # ------------------------------ 抽象语法树（AST）节点的基础类节点 ------------------------------
-    "ASTTableName",  # 表名节点
-    "ASTFunctionName",  # 函数名节点
-    "ASTAlisa",  # 别名节点
-    "ASTMultiAlisa",  # 多个别名节点（用于在 LATERAL VIEW 子句中配合返回多个字段使用）
+    # ------------------------------ 抽象语法树（AST）节点的基础表达式节点 ------------------------------
+    "ASTTableNameExpression",  # 表名节点
+    "ASTFunctionNameExpression",  # 函数名节点
+    "ASTAlisaExpression",  # 别名节点
+    "ASTMultiAlisaExpression",  # 多个别名节点（用于在 LATERAL VIEW 子句中配合返回多个字段使用）
 
-    # ------------------------------ 抽象语法树（AST）节点的一般表达式类节点 ------------------------------
+    # ------------------------------ 抽象语法树（AST）节点的一般表达式节点 ------------------------------
     "ASTBinaryExpressionBase",  # 二元表达式的抽象基类
     "ASTColumnNameExpression",  # 【元素表达式层级】列名表达式节点
     "ASTLiteralExpression",  # 【元素表达式层级】字面值表达式节点
@@ -94,16 +98,15 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
     "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
-    "ASTFromTable",  # FROM 和 JOIN 子句元素：包含别名的表表达式
-    "ASTJoinExpressionBase",  # JOIN 子句元素：关联表达式的抽象类
-    "ASTJoinOnExpression",  # JOIN 子句元素：使用 ON 关键字的关联表达式
-    "ASTJoinUsingExpression",  # JOIN 子句元素：使用 USING 函数的关联表达式
-    "ASTGroupingSets",  # GROUP BY 子句元素：GROUPING SETS 表达式
     "ASTSelectClause",  # SELECT 子句
+    "ASTFromTable",  # FROM 和 JOIN 子句元素：包含别名的表表达式
     "ASTFromClause",  # FROM 子句
     "ASTLateralViewClause",  # LATERAL VIEW 子句
+    "ASTJoinOnExpression",  # JOIN 子句元素：使用 ON 关键字的关联表达式
+    "ASTJoinUsingExpression",  # JOIN 子句元素：使用 USING 函数的关联表达式
     "ASTJoinClause",  # JOIN 子句
     "ASTWhereClause",  # WHERE 子句
+    "ASTGroupingSets",  # GROUP BY 子句元素：GROUPING SETS 表达式
     "ASTGroupByClause",  # GROUP BY 子句
     "ASTHavingClause",  # HAVING 子句
     "ASTOrderByColumn",  # ORDER BY 子句元素：包含排序字段及排序顺序的表达式
@@ -128,7 +131,7 @@ __all__ = [
     "ASTConfigStringExpression",  # 配置值为字符串的配置表达式
     "ASTColumnTypeExpression",  # 字段类型表达式
     "ASTDefineColumnExpression",  # 字段定义表达式
-    "ASTIndexColumn",  # 索引声明表达式中的字段
+    "ASTIndexColumn",  # 索引声明表达式元素：索引声明表达式中的字段
     "ASTIndexExpressionBase",  # 索引声明表达式（抽象类）
     "ASTPrimaryIndexExpression",  # 主键索引声明表达式
     "ASTUniqueIndexExpression",  # 唯一键索引声明表达式
@@ -167,14 +170,14 @@ __all__ = [
     "ASTTruncateTable",  # TRUNCATE TABLE 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 UPDATE 语句节点 ------------------------------
-    "ASTUpdateSetColumn",
-    "ASTUpdateSetClause",
-    "ASTUpdateStatement",
+    "ASTUpdateSetColumn",  # SET 子句元素：SET 的列
+    "ASTUpdateSetClause",  # UPDATE 语句中的 SET 子句
+    "ASTUpdateStatement",  # UPDATE 语句
 
     # ------------------------------ 抽象语法树（AST）节点的 SHOW 语句节点 ------------------------------
-    "ASTShowDatabasesStatement",
-    "ASTShowTablesStatement",
-    "ASTShowColumnsStatement"
+    "ASTShowDatabasesStatement",  # SHOW DATABASES 语句
+    "ASTShowTablesStatement",  # SHOW TABLES 语句
+    "ASTShowColumnsStatement"  # SHOW COLUMNS 语句
 ]
 
 
@@ -313,7 +316,7 @@ class ASTCastDataType(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTTableName(ASTBase):
+class ASTTableNameExpression(ASTBase):
     """表名表达式"""
 
     schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
@@ -328,16 +331,16 @@ class ASTTableName(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFunctionName(ASTBase):
+class ASTFunctionNameExpression(ASTBase):
     """函数名表达式"""
 
     schema_name: Optional[str] = dataclasses.field(kw_only=True, default=None)
     function_name: str = dataclasses.field(kw_only=True)
 
     @staticmethod
-    def by_name(function_name: str) -> "ASTFunctionName":
+    def by_name(function_name: str) -> "ASTFunctionNameExpression":
         """使用函数名构造"""
-        return ASTFunctionName(function_name=function_name)
+        return ASTFunctionNameExpression(function_name=function_name)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -348,7 +351,7 @@ class ASTFunctionName(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTAlisa(ASTBase):
+class ASTAlisaExpression(ASTBase):
     """别名表达式，例如：AS name"""
 
     name: str = dataclasses.field(kw_only=True)
@@ -359,7 +362,7 @@ class ASTAlisa(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTMultiAlisa(ASTBase):
+class ASTMultiAlisaExpression(ASTBase):
     """多个别名表达式，例如：AS name1, name2, name3（在 Hive 的 LATERAL VIEW 语句中配合 json_tuple 等返回多个值的函数使用）"""
 
     names: Tuple[str, ...] = dataclasses.field(kw_only=True)
@@ -457,7 +460,7 @@ class ASTWildcardExpression(ASTExpressionBase):
 class ASTFunctionExpressionBase(ASTExpressionBase, abc.ABC):
     """函数表达式的抽象基类"""
 
-    name: ASTFunctionName = dataclasses.field(kw_only=True)
+    name: ASTFunctionNameExpression = dataclasses.field(kw_only=True)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -490,7 +493,7 @@ class ASTAggregationFunction(ASTNormalFunctionExpression):
 class ASTCastFunctionExpression(ASTFunctionExpressionBase):
     """Cast 函数表达式"""
 
-    name: ASTFunctionName = dataclasses.field(init=False, default=ASTFunctionName.by_name("CAST"))
+    name: ASTFunctionNameExpression = dataclasses.field(init=False, default=ASTFunctionNameExpression.by_name("CAST"))
     column_expression: ASTExpressionBase = dataclasses.field(kw_only=True)  # CAST 表达式中要转换的列表达式
     cast_type: ASTCastDataType = dataclasses.field(kw_only=True)  # CAST 参数中目标要转换的函数类型
 
@@ -504,7 +507,8 @@ class ASTCastFunctionExpression(ASTFunctionExpressionBase):
 class ASTExtractFunctionExpression(ASTFunctionExpressionBase):
     """Extract 函数表达式"""
 
-    name: ASTFunctionName = dataclasses.field(init=False, default=ASTFunctionName.by_name("EXTRACT"))
+    name: ASTFunctionNameExpression = dataclasses.field(init=False,
+                                                        default=ASTFunctionNameExpression.by_name("EXTRACT"))
     extract_name: ASTExpressionBase = dataclasses.field(kw_only=True)  # FROM 关键字之前的提取名称
     column_expression: ASTExpressionBase = dataclasses.field(kw_only=True)  # FROM 关键字之后的一般表达式
 
@@ -875,36 +879,6 @@ class ASTLogicalOrExpression(ASTBinaryExpressionBase):
     operator = ASTLogicalOperator(enum=static.EnumLogicalOperator.LOGICAL_OR)
 
 
-# ---------------------------------------- 关联表达式 ----------------------------------------
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinExpressionBase(ASTBase, abc.ABC):
-    """关联表达式"""
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinOnExpression(ASTJoinExpressionBase):
-    """ON 关联表达式"""
-
-    condition: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"ON {self.condition.source(sql_type)}"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinUsingExpression(ASTJoinExpressionBase):
-    """USING 关联表达式"""
-
-    using_function: ASTFunctionExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.using_function.source(sql_type)}"
-
-
 # ---------------------------------------- 表表达式 ----------------------------------------
 
 
@@ -912,8 +886,8 @@ class ASTJoinUsingExpression(ASTJoinExpressionBase):
 class ASTFromTable(ASTBase):
     """表表达式"""
 
-    name: Union[ASTTableName, ASTSubQueryExpression] = dataclasses.field(kw_only=True)
-    alias: Optional[ASTAlisa] = dataclasses.field(kw_only=True, default=None)
+    name: Union[ASTTableNameExpression, ASTSubQueryExpression] = dataclasses.field(kw_only=True)
+    alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -922,7 +896,7 @@ class ASTFromTable(ASTBase):
         return f"{self.name.source(sql_type)}"
 
 
-# ---------------------------------------- 列表达式 ----------------------------------------
+# ---------------------------------------- SELECT 子句 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -930,16 +904,13 @@ class ASTSelectColumn(ASTBase):
     """在 SELECT 语句中的每一列的表达式"""
 
     value: ASTExpressionBase = dataclasses.field(kw_only=True)
-    alias: Optional[ASTAlisa] = dataclasses.field(kw_only=True, default=None)
+    alias: Optional[ASTAlisaExpression] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if self.alias is not None:
             return f"{self.value.source(sql_type)} {self.alias.source(sql_type)}"
         return f"{self.value.source(sql_type)}"
-
-
-# ---------------------------------------- SELECT 子句 ----------------------------------------
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -981,7 +952,7 @@ class ASTLateralViewClause(ASTBase):
     outer: bool = dataclasses.field(kw_only=True)
     function: ASTFunctionExpressionBase = dataclasses.field(kw_only=True)
     view_name: str = dataclasses.field(kw_only=True)
-    alias: ASTMultiAlisa = dataclasses.field(kw_only=True)
+    alias: ASTMultiAlisaExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -993,12 +964,34 @@ class ASTLateralViewClause(ASTBase):
 # ---------------------------------------- JOIN 子句 ----------------------------------------
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTJoinOnExpression(ASTBase):
+    """ON 关联表达式"""
+
+    condition: ASTLogicalOrExpression = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"ON {self.condition.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTJoinUsingExpression(ASTBase):
+    """USING 关联表达式"""
+
+    using_function: ASTFunctionExpressionBase = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.using_function.source(sql_type)}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTJoinClause(ASTBase):
     """JOIN 子句"""
 
     type: ASTJoinType = dataclasses.field(kw_only=True)
     table: ASTFromTable = dataclasses.field(kw_only=True)
-    rule: Optional[ASTJoinExpressionBase] = dataclasses.field(kw_only=True)
+    rule: Optional[Union[ASTJoinOnExpression, ASTJoinUsingExpression]] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1309,7 +1302,7 @@ class ASTInsertStatement(ASTStatementBase, abc.ABC):
 
     with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
     insert_type: ASTInsertType = dataclasses.field(kw_only=True)
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True)
     columns: Optional[Tuple[ASTColumnNameExpression, ...]] = dataclasses.field(kw_only=True)
 
@@ -1538,7 +1531,7 @@ class ASTCreateTableStatement(ASTStatementBase):
 
     """【DDL】CREATE TABLE 语句"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     if_not_exists: bool = dataclasses.field(kw_only=True)
     columns: Optional[Tuple[ASTDefineColumnExpression, ...]] = dataclasses.field(kw_only=True)
     primary_key: Optional[ASTPrimaryIndexExpression] = dataclasses.field(kw_only=True)  # MySQL
@@ -1563,7 +1556,7 @@ class ASTCreateTableStatement(ASTStatementBase):
     tblproperties: Optional[Tuple[ASTConfigStringExpression, ...]] = dataclasses.field(
         kw_only=True, default=None)  # Hive
 
-    def set_table_name(self, table_name_expression: ASTTableName) -> "ASTCreateTableStatement":
+    def set_table_name(self, table_name_expression: ASTTableNameExpression) -> "ASTCreateTableStatement":
         """设置表名并返回新对象"""
         params = self.get_params_dict()
         params["table_name"] = table_name_expression
@@ -1667,7 +1660,7 @@ class ASTCreateTableStatement(ASTStatementBase):
 class ASTCreateTableAsStatement(ASTStatementBase):
     """CREATE TABLE ... AS ... 语句"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     select_statement: ASTSelectStatement = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1680,7 +1673,7 @@ class ASTDropTableStatement(ASTStatementBase):
     """DROP TABLE 语句"""
 
     if_exists: bool = dataclasses.field(kw_only=True, default=False)  # 是否包含 IF EXISTS 关键字
-    table_name: ASTTableName = dataclasses.field(kw_only=True)  # 表名
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)  # 表名
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1703,7 +1696,7 @@ class ASTSetStatement(ASTStatementBase):
 class ASTAnalyzeTableStatement(ASTStatementBase):
     """ANALYZE TABLE 语句"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True, default=None)
     for_columns: bool = dataclasses.field(kw_only=True, default=False)  # [Hive]
     cache_metadata: bool = dataclasses.field(kw_only=True, default=False)  # [Hive]
@@ -1802,7 +1795,7 @@ class ASTAlterDropPartitionExpression(ASTAlterExpressionBase):
 class ASTAlterTableStatement(ASTStatementBase):
     """ALTER TABLE 语句"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     expressions: Tuple[ASTAlterExpressionBase, ...] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
@@ -1815,7 +1808,7 @@ class ASTAlterTableStatement(ASTStatementBase):
 class ASTMsckRepairTableStatement(ASTStatementBase):
     """MSCK REPAIR TABLE 语句：扫描 HDFS 上的文件并更新元数据的分区信息"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1837,7 +1830,7 @@ class ASTUseStatement(ASTStatementBase):
 class ASTTruncateTable(ASTStatementBase):
     """TRUNCATE TABLE 语句"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
@@ -1872,7 +1865,7 @@ class ASTUpdateSetClause(ASTBase):
 class ASTUpdateStatement(ASTStatementBase):
     """UPDATE 语句"""
 
-    table_name: ASTTableName = dataclasses.field(kw_only=True)
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     set_clause: ASTUpdateSetClause = dataclasses.field(kw_only=True)
     where_clause: Optional[ASTWhereClause] = dataclasses.field(kw_only=True)
     order_by_clause: Optional[ASTOrderByClause] = dataclasses.field(kw_only=True)

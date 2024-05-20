@@ -29,8 +29,11 @@ AliasCreateTableStatement = Union[node.ASTCreateTableStatement, node.ASTCreateTa
 # 两种 CASE 语句的通用类型别名
 AliasCaseExpression = Union[node.ASTCaseConditionExpression, node.ASTCaseValueExpression]
 
-# 表名表达式和子查询表达式
-AliasTableExpression = Union[node.ASTTableName, node.ASTSubQueryExpression]
+# 表名表达式和子查询表达式的通用类型别名
+AliasTableExpression = Union[node.ASTTableNameExpression, node.ASTSubQueryExpression]
+
+# 两种 JOIN 表达式的通用类型别名
+AliasJoinExpression = Union[node.ASTJoinOnExpression, node.ASTJoinUsingExpression]
 
 # ---------------------------------------- 一般表达式层级类型 ----------------------------------------
 
@@ -234,43 +237,43 @@ class SQLParser:
 
     @classmethod
     def parse_table_name_expression(cls, scanner_or_string: ScannerOrString,
-                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTTableName:
+                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTTableNameExpression:
         """解析表名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
-            return node.ASTTableName(schema_name=unify_name(schema_name), table_name=unify_name(table_name))
+            return node.ASTTableNameExpression(schema_name=unify_name(schema_name), table_name=unify_name(table_name))
         if scanner.search(AMTMark.NAME):
             name_source = scanner.pop_as_source()
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
             else:
                 schema_name, table_name = None, name_source
-            return node.ASTTableName(schema_name=unify_name(schema_name), table_name=unify_name(table_name))
+            return node.ASTTableNameExpression(schema_name=unify_name(schema_name), table_name=unify_name(table_name))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
     def parse_function_name_expression(cls, scanner_or_string: ScannerOrString,
                                        sql_type: SQLType = SQLType.DEFAULT
-                                       ) -> node.ASTFunctionName:
+                                       ) -> node.ASTFunctionNameExpression:
         """解析函数名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
             scanner.pop()
             table_name = scanner.pop_as_source()
-            return node.ASTFunctionName(schema_name=unify_name(schema_name),
-                                        function_name=unify_name(table_name))
+            return node.ASTFunctionNameExpression(schema_name=unify_name(schema_name),
+                                                  function_name=unify_name(table_name))
         if scanner.search(AMTMark.NAME):
             name_source = scanner.pop_as_source()
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
             else:
                 schema_name, table_name = None, name_source
-            return node.ASTFunctionName(schema_name=unify_name(schema_name),
-                                        function_name=unify_name(table_name))
+            return node.ASTFunctionNameExpression(schema_name=unify_name(schema_name),
+                                                  function_name=unify_name(table_name))
         raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
@@ -334,24 +337,24 @@ class SQLParser:
 
     @classmethod
     def parse_alias_expression(cls, scanner_or_string: ScannerOrString,
-                               sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTAlisa]:
+                               sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTAlisaExpression]:
         """解析别名表达式：如果当前位置是别名表达式则返回别名表达式节点，否则返回 None"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if not scanner.search({"AS", AMTMark.NAME}):
             return None  # 当前位置不是别名表达式
         scanner.search_and_move("AS")
-        return node.ASTAlisa(name=cls._get_name(scanner))
+        return node.ASTAlisaExpression(name=cls._get_name(scanner))
 
     @classmethod
     def parse_multi_alias_expression(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMultiAlisa:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMultiAlisaExpression:
         """解析多个别名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("AS")
         names = [cls._get_name(scanner)]
         while scanner.search_and_move(","):
             names.append(cls._get_name(scanner))
-        return node.ASTMultiAlisa(names=tuple(names))
+        return node.ASTMultiAlisaExpression(names=tuple(names))
 
     # ------------------------------ SELECT 语句节点的解析方法 ------------------------------
 
@@ -405,7 +408,7 @@ class SQLParser:
             else:
                 function_params.append(cls.parse_logical_or_level(param_scanner, sql_type=sql_type))
             param_scanner.close()
-        return node.ASTNormalFunctionExpression(name=node.ASTFunctionName(function_name="IF"),
+        return node.ASTNormalFunctionExpression(name=node.ASTFunctionNameExpression(function_name="IF"),
                                                 params=tuple(function_params))
 
     @classmethod
@@ -908,7 +911,7 @@ class SQLParser:
 
     @classmethod
     def parse_join_expression(cls, scanner_or_string: ScannerOrString,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTJoinExpressionBase:
+                              sql_type: SQLType = SQLType.DEFAULT) -> AliasJoinExpression:
         """解析关联表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search("ON"):
