@@ -19,8 +19,6 @@
 - 诸如函数调用、CASE、窗口等最终返回一个普通值或布尔值，且在当前层级下可以视作一个任意值节点的元素，均称为元素表达式
 - 诸如比较运算符、BETWEEN、LIKE 等最终返回一个布尔值，且在当前层级下可以视作一个布尔值节点的元素，均称为布尔表达式
 - 第 5 层级到第 8 层级的表达式，可以统称为布尔表达式
-
-TODO 优化 WITH 语句的封装逻辑
 """
 
 import abc
@@ -36,6 +34,7 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的抽象类 ------------------------------
     "ASTBase",  # 所有语法树节点的抽象基类
     "ASTStatementBase",  # 语句的抽象基类
+    "ASTStatementHasWithClauseBase",  # 包含 WITH 子句的语句的抽象基类
     "ASTExpressionBase",  # 一般表达式的抽象基类
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类元素节点 ------------------------------
@@ -96,7 +95,7 @@ __all__ = [
     "ASTLogicalXorExpression",  # 【逻辑异或表达式层级】逻辑异或表达式节点
     "ASTLogicalOrExpression",  # 【逻辑或表达式层级】逻辑或表达式节点
 
-    # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
+    # ------------------------------ 抽象语法树（AST）节点的子句节点 ------------------------------
     "ASTSelectColumn",  # SELECT 子句元素：包含别名的列表达式
     "ASTSelectClause",  # SELECT 子句
     "ASTFromTable",  # FROM 和 JOIN 子句元素：包含别名的表表达式
@@ -117,6 +116,8 @@ __all__ = [
     "ASTLimitClause",  # LIMIT 子句
     "ASTWithClause",  # WITH 子句
     "ASTWithTable",  # WITH 子句元素：WITH 语句中的每个表
+
+    # ------------------------------ 抽象语法树（AST）节点的 SELECT 语句节点 ------------------------------
     "ASTSelectStatement",  # SELECT 语句的抽象类
     "ASTSingleSelectStatement",  # SELECT 语句：没有 UNION 多个 SELECT 语句的 SELECT 语句
     "ASTUnionSelectStatement",  # SELECT 语句：UNION 了多个 SELECT 语句的组合后的 SELECT 语句
@@ -1199,10 +1200,15 @@ class ASTWithClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTSelectStatement(ASTStatementBase, abc.ABC):
-    """SELECT 语句"""
+class ASTStatementHasWithClauseBase(ASTStatementBase, abc.ABC):
+    """包含 WITH 语句的语句的抽象基类"""
 
     with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTSelectStatement(ASTStatementHasWithClauseBase, abc.ABC):
+    """SELECT 语句"""
 
     @abc.abstractmethod
     def set_with_clauses(self, with_clause: Optional[ASTWithClause]) -> "ASTSelectStatement":
@@ -1290,7 +1296,7 @@ class ASTPartitionExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertStatement(ASTStatementBase, abc.ABC):
+class ASTInsertStatement(ASTStatementHasWithClauseBase, abc.ABC):
     """INSERT 表达式
 
     两个子类包含 VALUES 和 SELECT 两种方式
@@ -1300,7 +1306,6 @@ class ASTInsertStatement(ASTStatementBase, abc.ABC):
     {VALUES <value_expression> [,<value_expression> ...] | <select_statement>}
     """
 
-    with_clause: Optional[ASTWithClause] = dataclasses.field(kw_only=True, default=None)
     insert_type: ASTInsertType = dataclasses.field(kw_only=True)
     table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
     partition: Optional[ASTPartitionExpression] = dataclasses.field(kw_only=True)
@@ -1862,7 +1867,7 @@ class ASTUpdateSetClause(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTUpdateStatement(ASTStatementBase):
+class ASTUpdateStatement(ASTStatementHasWithClauseBase):
     """UPDATE 语句"""
 
     table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
@@ -1873,7 +1878,8 @@ class ASTUpdateStatement(ASTStatementBase):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
-        result = f"UPDATE {self.table_name.source(sql_type)} {self.set_clause.source(sql_type)}"
+        with_clause_str = self.with_clause.source(sql_type) + "\n\n" if not self.with_clause.is_empty() else ""
+        result = f"{with_clause_str}UPDATE {self.table_name.source(sql_type)} {self.set_clause.source(sql_type)}"
         if self.where_clause is not None:
             result += f" {self.where_clause.source(sql_type)}"
         if self.order_by_clause is not None:

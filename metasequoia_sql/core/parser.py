@@ -1927,6 +1927,7 @@ class SQLParser:
 
     @classmethod
     def parse_update_statement(cls, scanner_or_string: ScannerOrString,
+                               with_clause: Optional[node.ASTWithClause],
                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateStatement:
         """解析 UPDATE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -1950,6 +1951,7 @@ class SQLParser:
             limit_clause = None
 
         return node.ASTUpdateStatement(
+            with_clause=with_clause,
             table_name=table_name,
             set_clause=set_clause,
             where_clause=where_clause,
@@ -2027,20 +2029,25 @@ class SQLParser:
             elif scanner.search_and_move("SHOW", "COLUMNS"):
                 statement_list.append(cls.parse_show_columns_statement(scanner, sql_type=sql_type))
 
-            # 解析 UPDATE 语句 TODO 增加支持 WITH 语句
-            elif scanner.search("UPDATE"):
-                statement_list.append(cls.parse_update_statement(scanner, sql_type=sql_type))
-
             else:
                 # 解析可能包含 WITH 子句的语句类型
                 with_clause = cls.parse_with_clause(scanner, sql_type=sql_type)
 
+                # 解析 SELECT 语句
                 if scanner.search("SELECT"):
                     statement_list.append(cls.parse_select_statement(scanner,
                                                                      with_clause=with_clause, sql_type=sql_type))
+
+                # 解析 INSERT 语句
                 elif scanner.search("INSERT"):
                     statement_list.append(cls.parse_insert_statement(scanner,
                                                                      with_clause=with_clause, sql_type=sql_type))
+
+                # 解析 UPDATE 语句
+                elif scanner.search("UPDATE"):
+                    statement_list.append(cls.parse_update_statement(scanner, with_clause=with_clause,
+                                                                     sql_type=sql_type))
+
                 else:
                     raise SqlParseError(f"未知语句类型: {scanner}")
 
