@@ -1,7 +1,7 @@
 """
 静态方法
 
-TODO 待将 SQL 默认语法添加到文档中
+针对 MySQL 和 Hive 在 ! 计算优先级的冲突，在默认场景（SQLType.DEFAULT）中，我们使用 MySQL 中 ! 的优先级。
 """
 
 import enum

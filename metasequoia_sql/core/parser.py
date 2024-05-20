@@ -5,8 +5,6 @@ SQL 语法解析器
 
 将所有解析方法合并到这个类中，以支持插件开发。
 如需替换词法解析器，重写 build_token_scanner 方法即可。
-
-TODO 将 CURRENT_TIMESTAMP、CURRENT_DATE、CURRENT_TIME 改为单独节点处理
 """
 
 from typing import Optional, Tuple, List, Union
@@ -1342,10 +1340,16 @@ class SQLParser:
 
     @classmethod
     def parse_partition_expression(cls, scanner_or_string: ScannerOrString,
+                                   already_match_partition: bool = False,
                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTPartitionExpression:
-        """解析分区表达式"""
+        """解析分区表达式
+
+        already_match_partition : bool, default = False
+            是否已匹配 PARTITION 关键字
+        """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        scanner.match("PARTITION")
+        if not already_match_partition:
+            scanner.match("PARTITION")
         partition_list = []
         is_dynamic_partition = False  # 是否有动态分区
         is_non_dynamic_partition = False  # 是否有非动态分区
@@ -1806,10 +1810,7 @@ class SQLParser:
     def parse_alter_expression(cls, scanner_or_string: ScannerOrString,
                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAlterExpressionBase:
         # pylint: disable=R0911
-        """解析 ALTER TABLE 的子句表达式
-
-        TODO 优化 PARTITION 的解析逻辑，将 search 和 match 合并为 1 个
-        """
+        """解析 ALTER TABLE 的子句表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search_and_move("ADD"):
             return node.ASTAlterAddExpression(
@@ -1838,17 +1839,15 @@ class SQLParser:
             return node.ASTAlterDropColumnExpression(
                 column_name=cls._unify_name(scanner.pop_as_source())
             )
-        if scanner.search("DROP", "PARTITION"):
-            scanner.match("DROP")
+        if scanner.search_and_move("DROP", "PARTITION"):
             return node.ASTAlterDropPartitionExpression(
                 if_exists=False,
-                partition=cls.parse_partition_expression(scanner, sql_type=sql_type)
+                partition=cls.parse_partition_expression(scanner, already_match_partition=True, sql_type=sql_type)
             )
-        if scanner.search("DROP", "IF", "EXISTS", "PARTITION"):
-            scanner.match("DROP", "IF", "EXISTS")
+        if scanner.search_and_move("DROP", "IF", "EXISTS", "PARTITION"):
             return node.ASTAlterDropPartitionExpression(
                 if_exists=True,
-                partition=cls.parse_partition_expression(scanner, sql_type=sql_type)
+                partition=cls.parse_partition_expression(scanner, already_match_partition=True, sql_type=sql_type)
             )
         raise SqlParseError(f"未知的 ALTER TABLE 类型: {scanner}")
 
