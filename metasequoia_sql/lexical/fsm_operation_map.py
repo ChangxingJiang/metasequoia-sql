@@ -2,7 +2,7 @@
 词法分析有限状态机，针对不同状态、不同输入值的行为映射表
 """
 
-from typing import Dict
+from typing import Dict, Tuple
 
 from metasequoia_sql.common import char_set
 from metasequoia_sql.errors import AMTParseError
@@ -283,14 +283,13 @@ FSM_OPERATION_MAP_SOURCE = {
 }
 
 # 状态行为映射表（用于用时行为映射信息，输入参数必须是一个字符）
-FSM_OPERATION_MAP: Dict[FSMStatus, Dict[str, FSMOperate]] = {}
+FSM_OPERATION_MAP: Dict[Tuple[FSMStatus, str], FSMOperate] = {}
 for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
-    FSM_OPERATION_MAP[status] = {}
     for ch_or_set, fsm_operation in operation_map.items():
         if isinstance(ch_or_set, str):
-            FSM_OPERATION_MAP[status][ch_or_set] = fsm_operation
+            FSM_OPERATION_MAP[(status, ch_or_set)] = fsm_operation
         elif isinstance(ch_or_set, frozenset):
             for ch in ch_or_set:
-                FSM_OPERATION_MAP[status][ch] = fsm_operation
+                FSM_OPERATION_MAP[(status, ch)] = fsm_operation
         else:
             raise AMTParseError("非法的行为映射表设置表")

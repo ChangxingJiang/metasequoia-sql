@@ -66,14 +66,12 @@ class FSMMachine:
         return fsm_machine.memory.stack[0]
 
     def handle(self, ch: str) -> bool:
-        # pylint: disable=R0912
         """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
-        if self.memory.status not in FSM_OPERATION_MAP:
-            raise AMTParseError(f"未定义处理规则的状态: {self.memory.status}")
-
         # 获取需要执行的行为
-        operations = FSM_OPERATION_MAP[self.memory.status]
-        operate: FSMOperate = operations.get(ch, operations[DEFAULT])
+        operate: FSMOperate = FSM_OPERATION_MAP.get((self.memory.status, ch))
+
+        if operate is None:
+            operate = FSM_OPERATION_MAP[(self.memory.status, DEFAULT)]  # 如果没有则使用当前状态的默认处理规则
 
         # 执行行为
         return operate.execute(self.memory, ch)
