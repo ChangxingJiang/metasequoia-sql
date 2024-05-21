@@ -11,7 +11,7 @@ from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTBase
 from metasequoia_sql.lexical.fsm_memory import FSMMemory
-from metasequoia_sql.lexical.fsm_operate import FSMOperateBase
+from metasequoia_sql.lexical.fsm_operate import FSMOperate
 from metasequoia_sql.lexical.fsm_operation_map import END, DEFAULT, FSM_OPERATION_MAP
 from metasequoia_sql.lexical.fsm_status import FSMStatus
 
@@ -21,12 +21,12 @@ __all__ = ["FSMMachine"]
 class FSMMachine:
     """词法分析的有限状态机"""
 
-    def __init__(self, operation_map: Dict[FSMStatus, Dict[str, FSMOperateBase]] = None):
+    def __init__(self, operation_map: Dict[FSMStatus, Dict[str, FSMOperate]] = None):
         """
 
         Parameters
         ----------
-        operation_map : Dict[FSMStatus, Dict[str, FSMOperateBase]]
+        operation_map : Dict[FSMStatus, Dict[str, FSMOperate]]
             状态行为映射表
         """
         if operation_map is None:
@@ -73,7 +73,7 @@ class FSMMachine:
 
         # 获取需要执行的行为
         operations = FSM_OPERATION_MAP[self.memory.status]
-        operate: FSMOperateBase = operations.get(ch, operations[DEFAULT])
+        operate: FSMOperate = operations.get(ch, operations[DEFAULT])
 
         # 执行行为
         return operate.execute(self.memory, ch)

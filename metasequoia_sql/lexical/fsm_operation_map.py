@@ -7,7 +7,7 @@ from typing import Dict
 from metasequoia_sql.common import char_set
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTMark
-from metasequoia_sql.lexical.fsm_operate import FSMOperate, FSMOperateBase
+from metasequoia_sql.lexical.fsm_operate import FSMOperate, FSMOperate
 from metasequoia_sql.lexical.fsm_status import FSMStatus
 
 __all__ = ["END", "DEFAULT", "FSM_OPERATION_MAP"]
@@ -283,7 +283,7 @@ FSM_OPERATION_MAP_SOURCE = {
 }
 
 # 状态行为映射表（用于用时行为映射信息，输入参数必须是一个字符）
-FSM_OPERATION_MAP: Dict[FSMStatus, Dict[str, FSMOperateBase]] = {}
+FSM_OPERATION_MAP: Dict[FSMStatus, Dict[str, FSMOperate]] = {}
 for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
     FSM_OPERATION_MAP[status] = {}
     for ch_or_set, fsm_operation in operation_map.items():
