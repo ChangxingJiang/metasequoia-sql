@@ -2,12 +2,18 @@
 词法分析的有限状态机的行为描述类
 """
 
+import abc
 import dataclasses
 import enum
 
+from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.lexical.amt_node import AMTMark, AMTSingle, AMTParenthesis, AMTSlice
+from metasequoia_sql.lexical.fsm_memory import FSMMemory
 from metasequoia_sql.lexical.fsm_status import FSMStatus
 
-__all__ = ["FSMOperateType", "FSMOperate"]
+__all__ = ["FSMOperateType", "FSMOperateBase", "FSMOperate"]
+
+END = "<end>"  # 结束标识符
 
 
 class FSMOperateType(enum.Enum):
@@ -25,8 +31,16 @@ class FSMOperateType(enum.Enum):
     RAISE = enum.auto()  # 抛出异常
 
 
+class FSMOperateBase(abc.ABC):
+    """词法分析有限状态机的操作的抽象基类"""
+
+    @abc.abstractmethod
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+
+
 @dataclasses.dataclass(slots=True, frozen=True)
-class FSMOperate:
+class FSMOperate(FSMOperateBase):
     """词法分析的有限状态机的行为描述类"""
 
     type: FSMOperateType = dataclasses.field(kw_only=True)  # 有限状态机的行为类型
@@ -36,12 +50,12 @@ class FSMOperate:
     @staticmethod
     def set_status(new_status: FSMStatus):
         """实例化 SET_STATUS 类型的行为"""
-        return FSMOperate(type=FSMOperateType.SET_STATUS, new_status=new_status)
+        return FSMOperateSetStatus(new_status=new_status)
 
     @staticmethod
     def add_cache(new_status: FSMStatus):
         """实例化 ADD_CACHE 类型的行为"""
-        return FSMOperate(type=FSMOperateType.ADD_CACHE, new_status=new_status)
+        return FSMOperateAddCache(new_status=new_status)
 
     @staticmethod
     def handle_cache_to_wait(marks: int):
@@ -92,3 +106,69 @@ class FSMOperate:
     def end_slice():
         """实例化 END_SLICE 类型的行为"""
         return FSMOperate(type=FSMOperateType.END_SLICE)
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        if self.type == FSMOperateType.HANDLE_CACHE:
+            memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(), self.marks))
+            memory.status = self.new_status
+            need_move = False
+        elif self.type == FSMOperateType.HANDLE_CACHE_WORD:
+            memory.cache_reset_and_handle()
+            memory.status = self.new_status
+            need_move = False
+        elif self.type == FSMOperateType.ADD_AND_HANDLE_CACHE:
+            memory.cache.append(ch)
+            memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(), self.marks))
+            memory.status = self.new_status
+            need_move = True
+        elif self.type == FSMOperateType.START_PARENTHESIS:
+            memory.stack.append([])
+            need_move = True
+        elif self.type == FSMOperateType.END_PARENTHESIS:
+            if len(memory.stack) <= 1:
+                raise AMTParseError("插入语结束标记数量大于开始标记数量")
+            tokens = memory.stack.pop()
+            memory.stack[-1].append(AMTParenthesis(tokens, AMTMark.PARENTHESIS))
+            need_move = True
+        elif self.type == FSMOperateType.START_SLICE:
+            memory.stack.append([])
+            need_move = True
+        elif self.type == FSMOperateType.END_SLICE:
+            if len(memory.stack) <= 1:
+                raise AMTParseError("结束语结束标记数量大于开始标记数量")
+            tokens = memory.stack.pop()
+            memory.stack[-1].append(AMTSlice(tokens, AMTMark.ARRAY_INDEX))
+            need_move = True
+        elif self.type == FSMOperateType.RAISE:
+            if ch == END:
+                raise AMTParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法结束符")
+            raise AMTParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法字符: {ch}")
+        else:
+            raise AMTParseError(f"未知状态行为: {self.type}")
+        return need_move
+
+
+class FSMOperateAddCache(FSMOperateBase):
+    """【操作类】将当前字符添加到的缓冲区"""
+
+    def __init__(self, new_status: FSMStatus):
+        self.new_status = new_status  # 需要切换到状态机状态（仅抛出异常时不需要默认值）
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        memory.cache.append(ch)
+        memory.status = self.new_status
+        return True
+
+
+class FSMOperateSetStatus(FSMOperateBase):
+    """【操作类】仅设置当前状态"""
+
+    def __init__(self, new_status: FSMStatus):
+        self.new_status = new_status  # 需要切换到状态机状态（仅抛出异常时不需要默认值）
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        memory.status = self.new_status
+        return False
