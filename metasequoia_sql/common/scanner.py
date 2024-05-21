@@ -63,9 +63,9 @@ class TokenScanner:
         - 如果指针已到达字符串末尾，则返回 None
         - 如果指针超出字符串长度，则抛出异常
         """
-        if self.pos > self._len:
-            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self.pos}")
-        if self.pos == self._len:
+        if self._pos > self._len:
+            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos}")
+        if self._pos == self._len:
             return None
         return self._elements[self._pos]
 
@@ -74,19 +74,19 @@ class TokenScanner:
 
         - 如果要移动到的指针位置超出字符串长度，则抛出异常
         """
-        if self.pos >= self._len:
-            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self.pos + 1} {self}")
+        if self._pos >= self._len:
+            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1} {self}")
 
-        result = self._elements[self.pos]
+        result = self._elements[self._pos]
         self._pos += 1  # 移动指针
         return result
 
     def _get_by_offset(self, idx: int) -> Optional[AMTBase]:
         """获取当前指针位置 + idx 位置的元素，但不一定指针
         """
-        if self.pos + idx >= self._len or self.pos + idx < 0:
+        if self._pos + idx >= self._len or self._pos + idx < 0:
             return None
-        return self._elements[self.pos + idx]
+        return self._elements[self._pos + idx]
 
     def close(self) -> None:
         """关闭扫描器，如果扫描器没有遍历完成则抛出异常"""
@@ -94,7 +94,7 @@ class TokenScanner:
             raise ScannerError(f"关闭了没有遍历完成的扫描器 {self}")
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} tokens={self.elements[self.pos:]}, pos={self.pos}>"
+        return f"<{self.__class__.__name__} tokens={self._elements[self._pos:]}, pos={self._pos}>"
 
     def search(self, *tokens: Union[str, AMTMark, Set[Union[str, AMTMark]]]) -> bool:
         """从当前配置开始匹配 tokens
