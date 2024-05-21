@@ -32,7 +32,7 @@ class FSMMemory:
     def cache_get_and_reset(self) -> str:
         """获取当前正在缓存的词语，并重置词语缓存"""
         result = "".join(self.cache)
-        self.cache = []
+        self.cache.clear()
         return result
 
     def cache_reset_and_handle(self) -> None:
