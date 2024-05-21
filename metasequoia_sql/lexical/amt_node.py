@@ -9,37 +9,37 @@
 
 import abc
 import enum
-from typing import List, Optional, Set, Union
+from typing import List, Union
 
 __all__ = ["AMTBase", "AMTMark", "AMTSingle", "AMTParenthesis", "AMTSlice"]
 
 
-class AMTMark(enum.Enum):
-    """抽象语法树节点标记"""
-    SPACE = "<space>"
-    NAME = "<name>"
-    PARENTHESIS = "<parenthesis>"
-    LITERAL = "<literal>"
-    LITERAL_HEX = "<literal_hex>"
-    LITERAL_BIT = "<literal_bit>"
-    LITERAL_INT = "<literal_int>"
-    LITERAL_FLOAT = "<literal_float>"
-    COMMENT = "<comment>"
-    ARRAY_INDEX = "<array_index>"  # 数组下标类型
-    CUSTOM_1 = "<custom_1>"  # 自定义标记（用于插件开发）
-    CUSTOM_2 = "<custom_2>"  # 自定义标记（用于插件开发）
-    CUSTOM_3 = "<custom_3>"  # 自定义标记（用于插件开发）
-    CUSTOM_4 = "<custom_4>"  # 自定义标记（用于插件开发）
-    CUSTOM_5 = "<custom_5>"  # 自定义标记（用于插件开发）
-    CUSTOM_6 = "<custom_6>"  # 自定义标记（用于插件开发）
-    CUSTOM_7 = "<custom_7>"  # 自定义标记（用于插件开发）
-    CUSTOM_8 = "<custom_8>"  # 自定义标记（用于插件开发）
-    CUSTOM_9 = "<custom_9>"  # 自定义标记（用于插件开发）
-    CUSTOM_10 = "<custom_10>"  # 自定义标记（用于插件开发）
+class AMTMark(enum.IntEnum):
+    """抽象语法树节点标记
 
-
-# 抽象语法树节点标记映射
-MARK_HASH = {mark.value: mark for mark in AMTMark}
+    使用整型枚举值，每个标签为一个二进制数，用于实现状态压缩，提高计算性能
+    """
+    NONE = 0
+    SPACE = 1 << 0
+    NAME = 1 << 1
+    PARENTHESIS = 1 << 2
+    LITERAL = 1 << 3
+    LITERAL_HEX = 1 << 4
+    LITERAL_BIT = 1 << 5
+    LITERAL_INT = 1 << 6
+    LITERAL_FLOAT = 1 << 7
+    COMMENT = 1 << 8
+    ARRAY_INDEX = 1 << 9
+    CUSTOM_1 = 1 << 22  # 自定义标记（用于插件开发）
+    CUSTOM_2 = 1 << 23  # 自定义标记（用于插件开发）
+    CUSTOM_3 = 1 << 24  # 自定义标记（用于插件开发）
+    CUSTOM_4 = 1 << 25  # 自定义标记（用于插件开发）
+    CUSTOM_5 = 1 << 26  # 自定义标记（用于插件开发）
+    CUSTOM_6 = 1 << 27  # 自定义标记（用于插件开发）
+    CUSTOM_7 = 1 << 28  # 自定义标记（用于插件开发）
+    CUSTOM_8 = 1 << 29  # 自定义标记（用于插件开发）
+    CUSTOM_9 = 1 << 30  # 自定义标记（用于插件开发）
+    CUSTOM_10 = 1 << 31  # 自定义标记（用于插件开发）
 
 
 # ------------------------------ 抽象节点类 ------------------------------
@@ -48,8 +48,15 @@ MARK_HASH = {mark.value: mark for mark in AMTMark}
 class AMTBase(abc.ABC):
     """抽象词法树（AMT）节点类的抽象基类"""
 
-    def __init__(self, marks: Optional[Set[AMTMark]] = None):
-        self.marks: Set[AMTMark] = marks if marks is not None else set()
+    def __init__(self, marks: int = 0):
+        """
+
+        Parameters
+        ----------
+        marks : int, default = 0
+            状态压缩后的枚举值，从而将判断 AMTMark 是否在一个集合中的操作，变为一次按位与的计算
+        """
+        self.marks = marks
 
     @property
     @abc.abstractmethod
@@ -61,19 +68,28 @@ class AMTBase(abc.ABC):
         """返回所有下游节点，若为叶子节点，则返回空列表"""
         return []
 
-    def equals(self, other: Union[str, AMTMark]) -> bool:
-        """判断当前 AMT 节点是否与一段源代码相同"""
+    def equals(self, other: Union[str, AMTMark]) -> Union[bool, int]:
+        """判断当前抽象词法树节点是否等价于 other
+
+        Parameters
+        ----------
+        other : Union[str, AMTMark]
+            字符串格式的源码，或 AMTMark 格式的标记
+
+        Returns
+        -------
+        Union[bool, int]
+            如果当前抽象词法树节点等价于 other，则返回真值，否则返回假值
+        """
         if isinstance(other, AMTMark):
-            return other in self.marks  # 枚举类的类型标记
-        if other not in {"<>", "<=>"} and other.startswith("<") and other.endswith(">"):
-            return MARK_HASH.get(other) in self.marks  # 字符串格式的类型标记
+            return other & self.marks  # 枚举类的类型标记
         return self.source.upper() == other.upper()  # 字符串格式文本
 
 
 class AMTSingle(AMTBase):
     """单元素节点"""
 
-    def __init__(self, source: str, marks: Optional[Set[AMTMark]] = None):
+    def __init__(self, source: str, marks: int = 0):
         super().__init__(marks)
         self._source = source
 
@@ -94,7 +110,7 @@ class AMTSingle(AMTBase):
 class AMTParenthesisBase(AMTBase):
     """插入语节点的基类"""
 
-    def __init__(self, tokens: List[AMTBase], marks: Optional[Set[AMTMark]] = None):
+    def __init__(self, tokens: List[AMTBase], marks: int = 0):
         super().__init__(marks)
         self._tokens: List[AMTBase] = tokens
 

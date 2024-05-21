@@ -27,11 +27,11 @@ FSM_OPERATION_MAP_SOURCE = {
         ">": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3E),
         "|": FSMOperate.add_cache(new_status=FSMStatus.AFTER_7C),
         "0": FSMOperate.add_cache(new_status=FSMStatus.AFTER_0),
-        frozenset({" ", "\n"}): FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.SPACE}),
-        "~": FSMOperate.add_and_handle_cache_to_wait(marks=set()),
-        "*": FSMOperate.add_and_handle_cache_to_wait(marks=set()),
-        "^": FSMOperate.add_and_handle_cache_to_wait(marks=set()),
-        frozenset({",", ";", "=", "+", ".", "%"}): FSMOperate.add_and_handle_cache_to_wait(marks=set()),
+        frozenset({" ", "\n"}): FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.SPACE),
+        "~": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),
+        "*": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),
+        "^": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),
+        frozenset({",", ";", "=", "+", ".", "%"}): FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_DOUBLE_QUOTE),
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_SINGLE_QUOTE),
         "`": FSMOperate.add_cache(new_status=FSMStatus.IN_BACK_QUOTE),
@@ -49,60 +49,60 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在 ! 符号之后
     FSMStatus.AFTER_21: {
-        "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：!=
+        "=": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：!=
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：!
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：!
     },
 
     # 在 & 符号之后
     FSMStatus.AFTER_26: {
-        "&": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：&&
+        "&": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：&&
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：&
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：&
     },
 
     # 在 - 符号之后
     FSMStatus.AFTER_2D: {
         "-": FSMOperate.add_cache(new_status=FSMStatus.IN_EXPLAIN_1),  # 符号：--
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE)
     },
 
     # 在 / 符号之后
     FSMStatus.AFTER_2F: {
         "*": FSMOperate.add_cache(new_status=FSMStatus.IN_EXPLAIN_2),  # 符号：/*
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE)
     },
 
     # 在 < 符号之后
     FSMStatus.AFTER_3C: {
         "=": FSMOperate.add_cache(new_status=FSMStatus.AFTER_3C_3D),  # 符号：<=
-        ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<>
-        "<": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<<
+        ">": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：<>
+        "<": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：<<
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：<
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE)  # 符号：<
     },
 
     # 在 < 符号之后
     FSMStatus.AFTER_3C_3D: {
-        ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：<=>
+        ">": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：<=>
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：<=
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE)  # 符号：<=
     },
 
     # 在 > 符号之后
     FSMStatus.AFTER_3E: {
-        "=": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：>=
-        ">": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：>>
+        "=": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：>=
+        ">": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：>>
         END: FSMOperate.raise_error(),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks=set())  # 符号：>
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE)  # 符号：>
     },
 
     # 在 | 符号之后
     FSMStatus.AFTER_7C: {
-        "|": FSMOperate.add_and_handle_cache_to_wait(marks=set()),  # 符号：||
-        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=set()),  # 符号：|
+        "|": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：||
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=AMTMark.NONE),  # 符号：|
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
     },
@@ -113,8 +113,8 @@ FSM_OPERATION_MAP_SOURCE = {
         "b": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_AFTER_0B),  # "0b" 开头的位值字面值
         ".": FSMOperate.add_cache(new_status=FSMStatus.IN_FLOAT),  # "0." 开头的浮点数
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INT),  # "0+整数" 开头的整数
-        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_INT}),  # 0
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_INT}),  # 0
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_INT),  # 0
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.LITERAL_INT),  # 0
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)
     },
 
@@ -123,8 +123,8 @@ FSM_OPERATION_MAP_SOURCE = {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_DOUBLE_QUOTE),  # 位值字面值
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_SINGLE_QUOTE),  # 位值字面值
         ".": FSMOperate.handle_cache_word_to_wait(),
-        char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks={AMTMark.NAME}),  # b 或 B
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.NAME}),  # b 或 B
+        char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks=AMTMark.NAME),  # b 或 B
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.NAME),  # b 或 B
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)
     },
 
@@ -133,14 +133,14 @@ FSM_OPERATION_MAP_SOURCE = {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_DOUBLE_QUOTE),  # 十六进制字面值
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_SINGLE_QUOTE),  # 十六进制字面值
         ".": FSMOperate.handle_cache_word_to_wait(),
-        char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks={AMTMark.NAME}),  # x 或 X
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.NAME}),  # x 或 X
+        char_set.END_TOKEN_WITHOUT_QUOTE: FSMOperate.handle_cache_to_wait(marks=AMTMark.NAME),  # x 或 X
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.NAME),  # x 或 X
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD)
     },
 
     # 在十六机制字面值的双引号中
     FSMStatus.IN_HEX_LITERAL_OF_DOUBLE_QUOTE: {
-        "\"": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_HEX}),
+        "\"": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_HEX),
         char_set.HEX_LITERAL: FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_DOUBLE_QUOTE),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
@@ -148,7 +148,7 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在十六进制字面值的单引号中
     FSMStatus.IN_HEX_LITERAL_OF_SINGLE_QUOTE: {
-        "'": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_HEX}),
+        "'": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_HEX),
         char_set.HEX_LITERAL: FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_OF_SINGLE_QUOTE),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
@@ -157,14 +157,14 @@ FSM_OPERATION_MAP_SOURCE = {
     # 在 0x 开头的十六进制字面值中，例如：0x2F
     FSMStatus.IN_HEX_LITERAL_AFTER_0X: {
         char_set.HEX_LITERAL: FSMOperate.add_cache(new_status=FSMStatus.IN_HEX_LITERAL_AFTER_0X),
-        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_HEX}),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_HEX}),
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_HEX),
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.LITERAL_HEX),
         DEFAULT: FSMOperate.raise_error()
     },
 
     # 在二进制字面值的双引号中
     FSMStatus.IN_BIT_LITERAL_OF_DOUBLE_QUOTE: {
-        "\"": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_BIT}),
+        "\"": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_BIT),
         char_set.BIT_LITERAL: FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_DOUBLE_QUOTE),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
@@ -172,7 +172,7 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在二进制字面值的单引号中
     FSMStatus.IN_BIT_LITERAL_OF_SINGLE_QUOTE: {
-        "'": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_BIT}),
+        "'": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_BIT),
         char_set.BIT_LITERAL: FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_OF_SINGLE_QUOTE),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.raise_error()
@@ -181,8 +181,8 @@ FSM_OPERATION_MAP_SOURCE = {
     # 在 0b 开头的位值字面值中，例如：0b01
     FSMStatus.IN_BIT_LITERAL_AFTER_0B: {
         char_set.BIT_LITERAL: FSMOperate.add_cache(new_status=FSMStatus.IN_BIT_LITERAL_AFTER_0B),
-        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_BIT}),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_BIT}),
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_BIT),
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.LITERAL_BIT),
         DEFAULT: FSMOperate.raise_error()
     },
 
@@ -190,16 +190,16 @@ FSM_OPERATION_MAP_SOURCE = {
     FSMStatus.IN_INT: {
         ".": FSMOperate.add_cache(new_status=FSMStatus.IN_FLOAT),
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_INT),
-        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_INT}),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_INT}),
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_INT),
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.LITERAL_INT),
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_WORD),
     },
 
     # 在浮点数中
     FSMStatus.IN_FLOAT: {
         char_set.NUMBER: FSMOperate.add_cache(new_status=FSMStatus.IN_FLOAT),
-        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.LITERAL_FLOAT}),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.LITERAL_FLOAT}),
+        char_set.END_TOKEN: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.LITERAL_FLOAT),
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.LITERAL_FLOAT),
         DEFAULT: FSMOperate.raise_error()
     },
 
@@ -214,8 +214,8 @@ FSM_OPERATION_MAP_SOURCE = {
     # 在双引号中的、的 \" 符号之后
     FSMStatus.IN_DOUBLE_QUOTE_AFTER_22: {
         "\"": FSMOperate.add_cache(new_status=FSMStatus.IN_DOUBLE_QUOTE),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.NAME}),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.NAME})
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.NAME),
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.NAME)
     },
 
     # 在双引号中的 \\ 符号之后
@@ -235,8 +235,8 @@ FSM_OPERATION_MAP_SOURCE = {
     # 在单引号中的、的 ' 符号之后
     FSMStatus.IN_SINGLE_QUOTE_AFTER_27: {
         "'": FSMOperate.add_cache(new_status=FSMStatus.IN_SINGLE_QUOTE),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.LITERAL, AMTMark.NAME}),
-        DEFAULT: FSMOperate.handle_cache_to_wait(marks={AMTMark.LITERAL, AMTMark.NAME})
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.LITERAL | AMTMark.NAME),
+        DEFAULT: FSMOperate.handle_cache_to_wait(marks=AMTMark.LITERAL | AMTMark.NAME)
     },
 
     # 在单引号中的 \\ 符号之后
@@ -247,15 +247,15 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在反引号中
     FSMStatus.IN_BACK_QUOTE: {
-        "`": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.NAME}),
+        "`": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NAME),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_BACK_QUOTE)
     },
 
     # 在 # 或 -- 标记的单行注释中
     FSMStatus.IN_EXPLAIN_1: {
-        "\n": FSMOperate.handle_cache_to_wait(marks={AMTMark.COMMENT}),
-        END: FSMOperate.handle_cache_to_end(marks={AMTMark.COMMENT}),
+        "\n": FSMOperate.handle_cache_to_wait(marks=AMTMark.COMMENT),
+        END: FSMOperate.handle_cache_to_end(marks=AMTMark.COMMENT),
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_EXPLAIN_1)
     },
 
@@ -268,7 +268,7 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在多行注释中的 * 符号之后
     FSMStatus.IN_EXPLAIN_2_AFTER_2A: {
-        "/": FSMOperate.add_and_handle_cache_to_wait(marks={AMTMark.COMMENT}),
+        "/": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.COMMENT),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.add_cache(new_status=FSMStatus.IN_EXPLAIN_2)
     },

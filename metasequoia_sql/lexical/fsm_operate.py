@@ -4,9 +4,7 @@
 
 import dataclasses
 import enum
-from typing import Set, Optional
 
-from metasequoia_sql.lexical.amt_node import AMTMark
 from metasequoia_sql.lexical.fsm_status import FSMStatus
 
 __all__ = ["FSMOperateType", "FSMOperate"]
@@ -32,7 +30,7 @@ class FSMOperate:
     """词法分析的有限状态机的行为描述类"""
 
     type: FSMOperateType = dataclasses.field(kw_only=True)  # 有限状态机的行为类型
-    marks: Optional[Set[AMTMark]] = dataclasses.field(kw_only=True, default=None)  # 构造的词法树节点的标记
+    marks: int = dataclasses.field(kw_only=True, default=0)  # 状态压缩后的标签集合
     new_status: FSMStatus = dataclasses.field(kw_only=True, default=None)  # 需要切换到状态机状态（仅抛出异常时不需要默认值）
 
     @staticmethod
@@ -46,12 +44,12 @@ class FSMOperate:
         return FSMOperate(type=FSMOperateType.ADD_CACHE, new_status=new_status)
 
     @staticmethod
-    def handle_cache_to_wait(marks: Set[AMTMark]):
+    def handle_cache_to_wait(marks: int):
         """实例化 HANDLE_CACHE 类型的行为，并将状态置为 WAIT"""
         return FSMOperate(type=FSMOperateType.HANDLE_CACHE, marks=marks, new_status=FSMStatus.WAIT)
 
     @staticmethod
-    def handle_cache_to_end(marks: Set[AMTMark]):
+    def handle_cache_to_end(marks: int):
         """实例化 HANDLE_CACHE 类型的行为，并将状态置为 END"""
         return FSMOperate(type=FSMOperateType.HANDLE_CACHE, marks=marks, new_status=FSMStatus.END)
 
@@ -66,7 +64,7 @@ class FSMOperate:
         return FSMOperate(type=FSMOperateType.HANDLE_CACHE_WORD, new_status=FSMStatus.END)
 
     @staticmethod
-    def add_and_handle_cache_to_wait(marks: Set[AMTMark]):
+    def add_and_handle_cache_to_wait(marks: int):
         """实例化 ADD_AND_HANDLE_CACHE 类型的行为，并将状态置为 WAIT"""
         return FSMOperate(type=FSMOperateType.ADD_AND_HANDLE_CACHE, marks=marks, new_status=FSMStatus.WAIT)
 

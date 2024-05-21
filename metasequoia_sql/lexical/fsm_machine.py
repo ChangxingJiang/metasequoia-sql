@@ -98,9 +98,9 @@ class FSMMachine:
                               "INTERSECT", "AND", "NOT", "OR"}:
             self.stack[-1].append(AMTSingle(origin))
         elif origin.upper() in {"TRUE", "FALSE", "NULL"}:
-            self.stack[-1].append(AMTSingle(origin, {AMTMark.LITERAL}))
+            self.stack[-1].append(AMTSingle(origin, AMTMark.LITERAL))
         else:
-            self.stack[-1].append(AMTSingle(origin, {AMTMark.NAME}))
+            self.stack[-1].append(AMTSingle(origin, AMTMark.NAME))
 
     def handle(self, ch: str) -> bool:
         # pylint: disable=R0912
@@ -137,7 +137,7 @@ class FSMMachine:
             if len(self.stack) <= 1:
                 raise AMTParseError("插入语结束标记数量大于开始标记数量")
             tokens = self.stack.pop()
-            self.stack[-1].append(AMTParenthesis(tokens, {AMTMark.PARENTHESIS}))
+            self.stack[-1].append(AMTParenthesis(tokens, AMTMark.PARENTHESIS))
             need_move = True
         elif operate.type == FSMOperateType.START_SLICE:
             self.stack.append([])
@@ -146,7 +146,7 @@ class FSMMachine:
             if len(self.stack) <= 1:
                 raise AMTParseError("结束语结束标记数量大于开始标记数量")
             tokens = self.stack.pop()
-            self.stack[-1].append(AMTSlice(tokens, {AMTMark.ARRAY_INDEX}))
+            self.stack[-1].append(AMTSlice(tokens, AMTMark.ARRAY_INDEX))
             need_move = True
         elif operate.type == FSMOperateType.SET_STATUS:
             self.status = operate.new_status
