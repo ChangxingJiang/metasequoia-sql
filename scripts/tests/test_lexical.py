@@ -19,4 +19,4 @@ class TestLexical(unittest.TestCase):
     def test_bitwise_inversion(self):
         """测试按位取反符号"""
         for sql in ["~1", "~ 1", "~~ 1"]:
-            self.assertEqual(get_amt_source(lexical.FSMMachine.parse(sql)), sql)
+            self.assertEqual(get_amt_source(lexical.FSMMachine.parse(sql)), sql.replace(" ", ""))

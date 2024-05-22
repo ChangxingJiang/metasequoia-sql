@@ -5,6 +5,7 @@
 from typing import Dict, Tuple
 
 from metasequoia_sql.common import char_set
+from metasequoia_sql.config import LEXICAL_IGNORE_SPACE, LEXICAL_IGNORE_LINEBREAK, LEXICAL_IGNORE_COMMENT
 from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTMark
 from metasequoia_sql.lexical.fsm_operate import FSMOperate
@@ -27,7 +28,10 @@ FSM_OPERATION_MAP_SOURCE = {
         ">": FSMOperate.add_cache_to(status=FSMStatus.AFTER_3E),
         "|": FSMOperate.add_cache_to(status=FSMStatus.AFTER_7C),
         "0": FSMOperate.add_cache_to(status=FSMStatus.AFTER_0),
-        frozenset({" ", "\n"}): FSMOperate.add_and_handle_cache(marks=AMTMark.SPACE),
+        " ": (FSMOperate.add_and_handle_cache(marks=AMTMark.SPACE)
+              if not LEXICAL_IGNORE_SPACE else FSMOperate.move_and_clean_cache()),
+        "\n": (FSMOperate.add_and_handle_cache(marks=AMTMark.SPACE)
+               if not LEXICAL_IGNORE_LINEBREAK else FSMOperate.move_and_clean_cache()),
         "~": FSMOperate.add_and_handle_cache(marks=AMTMark.NONE),
         "*": FSMOperate.add_and_handle_cache(marks=AMTMark.NONE),
         "^": FSMOperate.add_and_handle_cache(marks=AMTMark.NONE),
@@ -254,8 +258,10 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在 # 或 -- 标记的单行注释中
     FSMStatus.IN_EXPLAIN_1: {
-        "\n": FSMOperate.handle_cache_to_wait(marks=AMTMark.COMMENT),
-        END: FSMOperate.handle_cache_to_end(marks=AMTMark.COMMENT),
+        "\n": (FSMOperate.handle_cache_to_wait(marks=AMTMark.COMMENT)
+               if not LEXICAL_IGNORE_COMMENT else FSMOperate.clean_cache_to_wait()),
+        END: (FSMOperate.handle_cache_to_end(marks=AMTMark.COMMENT)
+              if not LEXICAL_IGNORE_COMMENT else FSMOperate.clean_cache_to_end()),
         DEFAULT: FSMOperate.add_cache_to(status=FSMStatus.IN_EXPLAIN_1)
     },
 
@@ -268,7 +274,8 @@ FSM_OPERATION_MAP_SOURCE = {
 
     # 在多行注释中的 * 符号之后
     FSMStatus.IN_EXPLAIN_2_AFTER_2A: {
-        "/": FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.COMMENT),
+        "/": (FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.COMMENT)
+              if not LEXICAL_IGNORE_COMMENT else FSMOperate.move_and_clean_cache_to_wait()),
         END: FSMOperate.raise_error(),
         DEFAULT: FSMOperate.add_cache_to(status=FSMStatus.IN_EXPLAIN_2)
     },

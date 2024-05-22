@@ -94,7 +94,7 @@ class SQLParser:
     @classmethod
     def _build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
-        return TokenScanner(FSMMachine.parse(string), ignore_space=True, ignore_comment=True)
+        return TokenScanner(FSMMachine.parse(string))
 
     @classmethod
     def _unify_input_scanner(cls, scanner_or_string: ScannerOrString,

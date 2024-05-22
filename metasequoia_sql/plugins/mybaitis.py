@@ -73,7 +73,7 @@ class SQLParserMyBatis(SQLParser):
     @classmethod
     def _build_token_scanner(cls, string: str) -> TokenScanner:
         """构造词法扫描器"""
-        return TokenScanner(FSMMachineMyBatis.parse(string), ignore_space=True, ignore_comment=True)
+        return TokenScanner(FSMMachineMyBatis.parse(string))
 
     @classmethod
     def parse_unary_level_expression(cls, scanner_or_string: Union[TokenScanner, str],

@@ -18,6 +18,26 @@ class FSMOperate(abc.ABC):
     """词法分析的有限状态机的行为描述类"""
 
     @staticmethod
+    def move_and_clean_cache():
+        """向后移动指针，清空缓存区"""
+        return FSMOperateMoveAndCleanCache()
+
+    @staticmethod
+    def move_and_clean_cache_to_wait():
+        """向后移动指针，清空缓存区，并将状态改为 WAIT"""
+        return FSMOperateMoveAndCleanCacheToWait()
+
+    @staticmethod
+    def clean_cache_to_wait():
+        """清空缓存区，并将状态改为 WAIT"""
+        return FSMOperateCleanCacheToWait()
+
+    @staticmethod
+    def clean_cache_to_end():
+        """清空缓存区，并将状态改为 END"""
+        return FSMOperateCleanCacheToEnd()
+
+    @staticmethod
     def do_nothing_to(status: FSMStatus):
         """实例化 SET_STATUS 类型的行为"""
         return FSMOperateSetStatus(status=status)
@@ -85,6 +105,45 @@ class FSMOperate(abc.ABC):
     @abc.abstractmethod
     def execute(self, memory: FSMMemory, ch: str):
         """执行操作"""
+
+
+class FSMOperateMoveAndCleanCache(FSMOperate):
+    """【状态机操作】向后移动指针，清空缓存区"""
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        memory.cache.clear()
+        return True
+
+
+class FSMOperateMoveAndCleanCacheToWait(FSMOperate):
+    """【状态机操作】向后移动指针，清空缓存区，并将状态改为 WAIT"""
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        memory.cache.clear()
+        memory.status = FSMStatus.WAIT
+        return True
+
+
+class FSMOperateCleanCacheToWait(FSMOperate):
+    """【状态机操作】清空缓存区，并将状态改为 WAIT"""
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        memory.cache.clear()
+        memory.status = FSMStatus.WAIT
+        return False
+
+
+class FSMOperateCleanCacheToEnd(FSMOperate):
+    """【状态机操作】清空缓存区，并将状态改为 END"""
+
+    def execute(self, memory: FSMMemory, ch: str):
+        """执行操作"""
+        memory.cache.clear()
+        memory.status = FSMStatus.END
+        return False
 
 
 class FSMOperateAddCache(FSMOperate):
