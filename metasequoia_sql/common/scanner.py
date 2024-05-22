@@ -170,18 +170,15 @@ class TokenScanner:
         """将指针向后移动 1 个元素，并返回当前元素的 source"""
         return self.pop().source
 
-    def get_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
+    def get_as_children_scanner(self) -> "TokenScanner":
         """不移动指针，并返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.get().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.get().children(), ignore_space=True, ignore_comment=True)
 
-    def pop_as_children_scanner(self, ignore_space: bool = True, ignore_comment: bool = True) -> "TokenScanner":
+    def pop_as_children_scanner(self) -> "TokenScanner":
         """将指针向后移动 1 个元素，并返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.pop().children(), ignore_space=ignore_space, ignore_comment=ignore_comment)
+        return TokenScanner(self.pop().children(), ignore_space=True, ignore_comment=True)
 
-    def split_by(self,
-                 source: str,
-                 ignore_space: bool = True,
-                 ignore_comment: bool = True) -> List["TokenScanner"]:
+    def split_by(self, source: str) -> List["TokenScanner"]:
         """将指针移动到末尾，并将后续元素拆分为使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
@@ -189,30 +186,27 @@ class TokenScanner:
             token: AMTBase = self.pop()
             if token.equals(source):
                 if len(tokens) > 0:
-                    result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
+                    result.append(TokenScanner(tokens, ignore_space=True, ignore_comment=True))
                     tokens = []
             else:
                 tokens.append(token)
         if len(tokens) > 0:
-            result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
+            result.append(TokenScanner(tokens, ignore_space=True, ignore_comment=True))
         return result
 
-    def pop_as_children_scanner_list_split_by(self,
-                                              source: str,
-                                              ignore_space: bool = True,
-                                              ignore_comment: bool = True) -> List["TokenScanner"]:
+    def pop_as_children_scanner_list_split_by(self, source: str) -> List["TokenScanner"]:
         """将指针向后移动一个元素，并返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
         result = []
         tokens = []
         for token in self.pop().children():
             if token.equals(source):
                 if len(tokens) > 0:
-                    result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
+                    result.append(TokenScanner(tokens, ignore_space=True, ignore_comment=True))
                     tokens = []
             else:
                 tokens.append(token)
         if len(tokens) > 0:
-            result.append(TokenScanner(tokens, ignore_space=ignore_space, ignore_comment=ignore_comment))
+            result.append(TokenScanner(tokens, ignore_space=True, ignore_comment=True))
         return result
 
     @property
