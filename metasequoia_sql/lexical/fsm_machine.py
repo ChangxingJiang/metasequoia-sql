@@ -51,10 +51,10 @@ class FSMMachine:
         text = preproc_sql(text)
         fsm_machine = cls()
 
-        idx = 0
-        while idx < len(text):
-            if fsm_machine.handle(text[idx]):
-                idx += 1
+        # 因为在 Python 中，遍历字符串的性能要远高于遍历下标后再用下标获取字符，所以优先使用遍历字符串的方法实现
+        for ch in text:
+            while not fsm_machine.handle(ch):
+                pass  # 不断循环，直到处理方法返回需要移动指针为止
         fsm_machine.handle(END)  # 处理结束标记
 
         if fsm_machine.memory.status != FSMStatus.END:
