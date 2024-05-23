@@ -293,7 +293,7 @@ class SQLParser:
             return column_name_expression  # 如果没有数组下标则直接返回
         # 解析数组下标
         children_scanner = scanner.pop_as_children_scanner()
-        idx = cls._parse_bitwise_or_level_expression(children_scanner, True, sql_type=sql_type)  # TODO
+        idx = cls._parse_bitwise_or_level_expression(children_scanner, True, sql_type=sql_type)
         children_scanner.close()
         return node.ASTIndexExpression(
             array=column_name_expression,
