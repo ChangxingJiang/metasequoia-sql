@@ -84,7 +84,7 @@ class SQLParserMyBatis(SQLParser):
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
-        return super().parse_unary_level_expression(scanner, maybe_window, sql_type=sql_type)
+        return super()._parse_unary_level_expression(scanner, maybe_window, sql_type=sql_type)
 
 
 class GetAllMybatisParams(AnalyzerRecursionASTToListBase):
