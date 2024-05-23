@@ -1259,14 +1259,15 @@ class SQLParser:
 
     @classmethod
     def parse_where_clause(cls, scanner_or_string: ScannerOrString,
-                           sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWhereClause:
+                           sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTWhereClause]:
         """解析 WHERE 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_where_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_where_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTWhereClause:
-        scanner.match("WHERE")
+    def _parse_where_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTWhereClause]:
+        if not scanner.search_and_move("WHERE"):
+            return None
         return node.ASTWhereClause(condition=cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
 
     @classmethod
@@ -1297,14 +1298,15 @@ class SQLParser:
 
     @classmethod
     def parse_group_by_clause(cls, scanner_or_string: ScannerOrString,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGroupByClause:
+                              sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTGroupByClause]:
         """解析 GROUP BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_group_by_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_group_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTGroupByClause:
-        scanner.match("GROUP", "BY")
+    def _parse_group_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTGroupByClause]:
+        if not scanner.search_and_move("GROUP", "BY"):
+            return None
         columns = []
         if not scanner.search("GROUPING", "SETS"):
             # 如果当 GROUP BY 子句中直接就是 GROUPING SETS 时，则不尝试解析字段
@@ -1326,14 +1328,15 @@ class SQLParser:
 
     @classmethod
     def parse_having_clause(cls, scanner_or_string: ScannerOrString,
-                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTHavingClause:
+                            sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTHavingClause]:
         """解析 HAVING 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_having_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_having_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTHavingClause:
-        scanner.match("HAVING")
+    def _parse_having_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTHavingClause]:
+        if not scanner.search_and_move("HAVING"):
+            return None
         return node.ASTHavingClause(condition=cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
 
     @classmethod
@@ -1354,14 +1357,15 @@ class SQLParser:
 
     @classmethod
     def parse_order_by_clause(cls, scanner_or_string: ScannerOrString,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByClause:
+                              sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTOrderByClause]:
         """解析 ORDER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_order_by_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_order_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTOrderByClause:
-        scanner.match("ORDER", "BY")
+    def _parse_order_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTOrderByClause]:
+        if not scanner.search_and_move("ORDER", "BY"):
+            return None
         columns = [cls._parse_order_by_column(scanner, sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_order_by_column(scanner, sql_type))
@@ -1513,14 +1517,10 @@ class SQLParser:
         join_clause = []
         while scanner.rich_search({"JOIN", "INNER", "LEFT", "RIGHT", "FULL", "CROSS"}):
             join_clause.append(cls._parse_join_clause(inner_scanner, sql_type))
-        where_clause = (cls._parse_where_clause(inner_scanner, sql_type)
-                        if inner_scanner.search("WHERE") else None)
-        group_by_clause = (cls._parse_group_by_clause(inner_scanner, sql_type)
-                           if inner_scanner.search("GROUP", "BY") else None)
-        having_clause = (cls._parse_having_clause(inner_scanner, sql_type)
-                         if inner_scanner.search("HAVING") else None)
-        order_by_clause = (cls._parse_order_by_clause(inner_scanner, sql_type)
-                           if inner_scanner.search("ORDER", "BY") else None)
+        where_clause = cls._parse_where_clause(inner_scanner, sql_type)
+        group_by_clause = cls._parse_group_by_clause(inner_scanner, sql_type)
+        having_clause = cls._parse_having_clause(inner_scanner, sql_type)
+        order_by_clause = cls._parse_order_by_clause(inner_scanner, sql_type)
 
         if sql_type == SQLType.HIVE and inner_scanner.search("SORT", "BY"):
             sort_by_clause = cls._parse_sort_by_clause(inner_scanner, sql_type)
@@ -2305,16 +2305,8 @@ class SQLParser:
         scanner.match("UPDATE")
         table_name = cls._parse_table_name_expression(scanner)
         set_clause = cls._parse_update_set_clause(scanner, sql_type)
-
-        if scanner.search("WHERE"):
-            where_clause = cls._parse_where_clause(scanner, sql_type)
-        else:
-            where_clause = None
-
-        if scanner.search("ORDER", "BY"):
-            order_by_clause = cls._parse_order_by_clause(scanner, sql_type)
-        else:
-            order_by_clause = None
+        where_clause = cls._parse_where_clause(scanner, sql_type)
+        order_by_clause = cls._parse_order_by_clause(scanner, sql_type)
 
         if scanner.search("LIMIT"):
             limit_clause = cls._parse_limit_clause(scanner)
@@ -2341,12 +2333,7 @@ class SQLParser:
     def _parse_show_columns_statement(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTShowColumnsStatement:
         scanner.match("SHOW", "COLUMNS")
         from_clause = cls._parse_from_clause(scanner, sql_type)
-
-        if scanner.search("WHERE"):
-            where_clause = cls._parse_where_clause(scanner, sql_type)
-        else:
-            where_clause = None
-
+        where_clause = cls._parse_where_clause(scanner, sql_type)
         return node.ASTShowColumnsStatement(
             from_clause=from_clause,
             where_clause=where_clause
