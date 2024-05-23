@@ -436,7 +436,7 @@ class SQLParser:
 
     @classmethod
     def _parse_alias_expression(cls, scanner: TokenScanner) -> Optional[node.ASTAlisaExpression]:
-        if not scanner.rich_search({"AS", AMTMark.NAME}):
+        if not scanner.search("AS") and not scanner.search(AMTMark.NAME):
             return None  # 当前位置不是别名表达式
         scanner.search_and_move("AS")
         return node.ASTAlisaExpression(name=cls._get_alias_name(scanner))
