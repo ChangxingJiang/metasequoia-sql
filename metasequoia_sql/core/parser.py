@@ -636,9 +636,9 @@ class SQLParser:
                                                                                    maybe_window=False,
                                                                                    sql_type=sql_type))
         if parenthesis_scanner.search_and_move("ORDER", "BY"):
-            order_by_columns = [cls.parse_order_by_column(parenthesis_scanner, sql_type=sql_type)]
+            order_by_columns = [cls._parse_order_by_column(parenthesis_scanner, sql_type)]
             while parenthesis_scanner.search_and_move(","):
-                order_by_columns.append(cls.parse_order_by_column(parenthesis_scanner, sql_type=sql_type))
+                order_by_columns.append(cls._parse_order_by_column(parenthesis_scanner, sql_type))
         if parenthesis_scanner.search("ROWS", "BETWEEN"):
             row_expression = cls._parse_window_row(parenthesis_scanner)
         parenthesis_scanner.close()
@@ -706,7 +706,7 @@ class SQLParser:
     def _parse_sub_query_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTSubQueryExpression:
         parenthesis_scanner = scanner.pop_as_children_scanner()
         result = node.ASTSubQueryExpression(
-            statement=cls.parse_select_statement(parenthesis_scanner, sql_type=sql_type)
+            statement=cls._parse_select_statement(parenthesis_scanner, None, sql_type=sql_type)
         )
         parenthesis_scanner.close()
         return result
@@ -1116,6 +1116,10 @@ class SQLParser:
                                  sql_type: SQLType = SQLType.DEFAULT) -> node.ASTJoinOnExpression:
         """解析 ON 关联表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_join_on_expression(scanner, sql_type)
+
+    @classmethod
+    def _parse_join_on_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTJoinOnExpression:
         if not scanner.search_and_move("ON"):
             raise SqlParseError(f"无法解析为 ON 关联表达式: {scanner}")
         return node.ASTJoinOnExpression(condition=cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
@@ -1125,6 +1129,10 @@ class SQLParser:
                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTJoinUsingExpression:
         """解析 USING 关联表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_join_using_expression(scanner, sql_type)
+
+    @classmethod
+    def _parse_join_using_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTJoinUsingExpression:
         if not scanner.search("USING"):
             raise SqlParseError(f"无法解析为 USING 关联表达式: {scanner}")
         return node.ASTJoinUsingExpression(using_function=cls._parse_function_expression(scanner, sql_type=sql_type))
@@ -1134,10 +1142,14 @@ class SQLParser:
                               sql_type: SQLType = SQLType.DEFAULT) -> AliasJoinExpression:
         """解析关联表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_join_expression(scanner, sql_type)
+
+    @classmethod
+    def _parse_join_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> AliasJoinExpression:
         if scanner.search("ON"):
-            return cls.parse_join_on_expression(scanner, sql_type=sql_type)
+            return cls._parse_join_on_expression(scanner, sql_type=sql_type)
         if scanner.search("USING"):
-            return cls.parse_join_using_expression(scanner, sql_type=sql_type)
+            return cls._parse_join_using_expression(scanner, sql_type=sql_type)
         raise SqlParseError(f"无法解析为关联表达式: {scanner}")
 
     @classmethod
@@ -1145,10 +1157,14 @@ class SQLParser:
                                sql_type: SQLType = SQLType.DEFAULT) -> AliasTableExpression:
         """解析表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_table_expression(scanner, sql_type)
+
+    @classmethod
+    def _parse_table_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> AliasTableExpression:
         if scanner.get_as_children_scanner().search({"SELECT", "WITH"}):
             return cls._parse_sub_query_expression(scanner, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
-            return cls.parse_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
+            return cls._parse_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
         return cls._parse_table_name_expression(scanner)
 
     @classmethod
@@ -1156,7 +1172,11 @@ class SQLParser:
                          sql_type: SQLType = SQLType.DEFAULT) -> node.ASTFromTable:
         """解析 FROM 和 JOIN 子句元素：包含别名的表表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        name_expression = cls.parse_table_expression(scanner, sql_type=sql_type)
+        return cls._parse_from_table(scanner, sql_type)
+
+    @classmethod
+    def _parse_from_table(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFromTable:
+        name_expression = cls._parse_table_expression(scanner, sql_type=sql_type)
         alias_expression = cls._parse_alias_expression(scanner)
         return node.ASTFromTable(name=name_expression, alias=alias_expression)
 
@@ -1165,6 +1185,10 @@ class SQLParser:
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSelectColumn:
         """解析列名表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_select_column(scanner, sql_type)
+
+    @classmethod
+    def _parse_select_column(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTSelectColumn:
         general_expression = cls._parse_logical_or_level_expression(scanner, sql_type=sql_type)
         alias_expression = cls._parse_alias_expression(scanner)
         return node.ASTSelectColumn(value=general_expression, alias=alias_expression)
@@ -1174,11 +1198,15 @@ class SQLParser:
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSelectClause:
         """解析 SELECT 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_select_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_select_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTSelectClause:
         scanner.match("SELECT")
         distinct = scanner.search_and_move("DISTINCT")
-        columns = [cls.parse_select_column(scanner, sql_type=sql_type)]
+        columns = [cls._parse_select_column(scanner, sql_type)]
         while scanner.search_and_move(","):
-            columns.append(cls.parse_select_column(scanner, sql_type=sql_type))
+            columns.append(cls._parse_select_column(scanner, sql_type))
         return node.ASTSelectClause(distinct=distinct, columns=tuple(columns))
 
     @classmethod
@@ -1186,10 +1214,14 @@ class SQLParser:
                           sql_type: SQLType = SQLType.DEFAULT) -> node.ASTFromClause:
         """解析 FROM 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_from_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_from_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFromClause:
         scanner.match("FROM")
-        tables = [cls.parse_from_table(scanner, sql_type=sql_type)]
+        tables = [cls._parse_from_table(scanner, sql_type=sql_type)]
         while scanner.search_and_move(","):
-            tables.append(cls.parse_from_table(scanner, sql_type=sql_type))
+            tables.append(cls._parse_from_table(scanner, sql_type=sql_type))
         return node.ASTFromClause(tables=tuple(tables))
 
     @classmethod
@@ -1197,6 +1229,10 @@ class SQLParser:
                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLateralViewClause:
         """解析 LATERAL VIEW 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_lateral_view_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_lateral_view_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTLateralViewClause:
         scanner.match("LATERAL", "VIEW")
         outer = scanner.search_and_move("OUTER")
         function = cls._parse_function_expression(scanner, sql_type=sql_type)
@@ -1209,10 +1245,14 @@ class SQLParser:
                           sql_type: SQLType = SQLType.DEFAULT) -> node.ASTJoinClause:
         """解析 JOIN 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_join_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_join_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTJoinClause:
         join_type = cls._parse_join_type(scanner)
-        table_expression = cls.parse_from_table(scanner, sql_type=sql_type)
+        table_expression = cls._parse_from_table(scanner, sql_type=sql_type)
         if scanner.search({"ON", "USING"}):
-            join_rule = cls.parse_join_expression(scanner, sql_type=sql_type)
+            join_rule = cls._parse_join_expression(scanner, sql_type=sql_type)
         else:
             join_rule = None
         return node.ASTJoinClause(type=join_type, table=table_expression, rule=join_rule)
@@ -1222,6 +1262,10 @@ class SQLParser:
                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWhereClause:
         """解析 WHERE 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_where_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_where_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTWhereClause:
         scanner.match("WHERE")
         return node.ASTWhereClause(condition=cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
 
@@ -1230,6 +1274,10 @@ class SQLParser:
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGroupingSets:
         """解析 GROUP BY 子句的元素"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_grouping_sets(scanner, sql_type)
+
+    @classmethod
+    def _parse_grouping_sets(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTGroupingSets:
         scanner.match("GROUPING", "SETS")
         grouping_list = []
         for grouping_scanner in scanner.pop_as_children_scanner_list_split_by(","):
@@ -1252,6 +1300,10 @@ class SQLParser:
                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTGroupByClause:
         """解析 GROUP BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_group_by_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_group_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTGroupByClause:
         scanner.match("GROUP", "BY")
         columns = []
         if not scanner.search("GROUPING", "SETS"):
@@ -1260,7 +1312,7 @@ class SQLParser:
             while scanner.search_and_move(","):
                 columns.append(cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type))
         if scanner.search("GROUPING", "SETS"):
-            grouping_sets = cls.parse_grouping_sets(scanner, sql_type=sql_type)
+            grouping_sets = cls._parse_grouping_sets(scanner, sql_type)
         else:
             grouping_sets = None
         with_cube = scanner.search_and_move("WITH", "CUBE")
@@ -1277,12 +1329,15 @@ class SQLParser:
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTHavingClause:
         """解析 HAVING 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_having_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_having_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTHavingClause:
         scanner.match("HAVING")
         return node.ASTHavingClause(condition=cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
 
     @classmethod
-    def parse_order_by_column(cls, scanner: TokenScanner,
-                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByColumn:
+    def _parse_order_by_column(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTOrderByColumn:
         """解析 ORDER BY 子句的元素"""
         column = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
         order = cls._parse_order_type(scanner)
@@ -1302,10 +1357,14 @@ class SQLParser:
                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTOrderByClause:
         """解析 ORDER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_order_by_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_order_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTOrderByClause:
         scanner.match("ORDER", "BY")
-        columns = [cls.parse_order_by_column(scanner, sql_type=sql_type)]
+        columns = [cls._parse_order_by_column(scanner, sql_type)]
         while scanner.search_and_move(","):
-            columns.append(cls.parse_order_by_column(scanner, sql_type=sql_type))
+            columns.append(cls._parse_order_by_column(scanner, sql_type))
         return node.ASTOrderByClause(columns=tuple(columns))
 
     @classmethod
@@ -1313,10 +1372,14 @@ class SQLParser:
                              sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSortByClause:
         """解析 SORT BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_sort_by_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_sort_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTSortByClause:
         scanner.match("SORT", "BY")
-        columns = [cls.parse_order_by_column(scanner, sql_type=sql_type)]
+        columns = [cls._parse_order_by_column(scanner, sql_type)]
         while scanner.search_and_move(","):
-            columns.append(cls.parse_order_by_column(scanner, sql_type=sql_type))
+            columns.append(cls._parse_order_by_column(scanner, sql_type))
         return node.ASTSortByClause(columns=tuple(columns))
 
     @classmethod
@@ -1324,6 +1387,10 @@ class SQLParser:
                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDistributeByClause:
         """解析 DISTRIBUTE BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_distribute_by_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_distribute_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTDistributeByClause:
         scanner.match("DISTRIBUTE", "BY")
         columns = [cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)]
         while scanner.search_and_move(","):
@@ -1335,7 +1402,11 @@ class SQLParser:
                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTClusterByClause:
         """解析 CLUSTER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        scanner.match("DISTRIBUTE", "BY")
+        return cls._parse_cluster_by_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_cluster_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTClusterByClause:
+        scanner.match("CLUSTER", "BY")
         columns = [cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type))
@@ -1346,6 +1417,10 @@ class SQLParser:
                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLimitClause:
         """解析 LIMIT 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_limit_clause(scanner)
+
+    @classmethod
+    def _parse_limit_clause(cls, scanner: TokenScanner) -> node.ASTLimitClause:
         if not scanner.search_and_move("LIMIT"):
             raise SqlParseError("无法解析为 LIMIT 子句")
         cnt_1 = cls._parse_literal_expression(scanner).as_int()
@@ -1365,12 +1440,14 @@ class SQLParser:
                          sql_type: SQLType = SQLType.DEFAULT) -> node.ASTWithTable:
         """解析一个 WITH 临时表"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_with_table(scanner, sql_type)
+
+    @classmethod
+    def _parse_with_table(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTWithTable:
         table_name = cls._unify_name(scanner.pop_as_source())
         scanner.match("AS")
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        table_statement = cls.parse_select_statement(parenthesis_scanner,
-                                                     with_clause=node.ASTWithClause.empty(),
-                                                     sql_type=sql_type)
+        table_statement = cls._parse_select_statement(parenthesis_scanner, node.ASTWithClause.empty(), sql_type)
         parenthesis_scanner.close()
         return node.ASTWithTable(name=table_name, statement=table_statement)
 
@@ -1380,10 +1457,14 @@ class SQLParser:
                           sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTWithClause]:
         """解析 WITH 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_with_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_with_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTWithClause]:
         if scanner.search_and_move("WITH"):
-            tables = [cls.parse_with_table(scanner, sql_type=sql_type)]
+            tables = [cls._parse_with_table(scanner, sql_type)]
             while scanner.search_and_move(","):
-                table_statement = cls.parse_with_table(scanner, sql_type=sql_type)
+                table_statement = cls._parse_with_table(scanner, sql_type)
                 tables.append(table_statement)  # 将前置的 WITH 作为当前解析临时表的 WITH 子句
             return node.ASTWithClause(tables=tuple(tables))
         return node.ASTWithClause.empty()
@@ -1393,8 +1474,6 @@ class SQLParser:
                                       with_clause: Optional[node.ASTWithClause] = None,
                                       sql_type: SQLType = SQLType.DEFAULT
                                       ) -> node.ASTSingleSelectStatement:
-        # pylint: disable=R0912
-        # pylint: disable=R0914
         """
 
         Parameters
@@ -1407,8 +1486,16 @@ class SQLParser:
             SQL 类型
         """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_single_select_statement(scanner, with_clause, sql_type)
+
+    @classmethod
+    def _parse_single_select_statement(cls, scanner: TokenScanner,
+                                       with_clause: Optional[node.ASTWithClause],
+                                       sql_type: SQLType) -> node.ASTSingleSelectStatement:
+        # pylint: disable=R0912
+        # pylint: disable=R0914
         if with_clause is None:
-            with_clause = cls.parse_with_clause(scanner, sql_type=sql_type)
+            with_clause = cls._parse_with_clause(scanner, sql_type)
 
         # 允许在外层添加任意数量的括号
         inner_scanner = scanner
@@ -1417,41 +1504,41 @@ class SQLParser:
             inner_scanner = scanner.pop_as_children_scanner()
             parenthesis_stack.append(inner_scanner)
 
-        select_clause = cls.parse_select_clause(inner_scanner, sql_type=sql_type)
-        from_clause = (cls.parse_from_clause(inner_scanner, sql_type=sql_type)
+        select_clause = cls._parse_select_clause(inner_scanner, sql_type)
+        from_clause = (cls._parse_from_clause(inner_scanner, sql_type)
                        if inner_scanner.search("FROM") else None)
         lateral_view_clauses = []
         while scanner.search("LATERAL", "VIEW"):
-            lateral_view_clauses.append(cls.parse_lateral_view_clause(inner_scanner, sql_type=sql_type))
+            lateral_view_clauses.append(cls._parse_lateral_view_clause(inner_scanner, sql_type))
         join_clause = []
         while scanner.search({"JOIN", "INNER", "LEFT", "RIGHT", "FULL", "CROSS"}):
-            join_clause.append(cls.parse_join_clause(inner_scanner, sql_type=sql_type))
-        where_clause = (cls.parse_where_clause(inner_scanner, sql_type=sql_type)
+            join_clause.append(cls._parse_join_clause(inner_scanner, sql_type))
+        where_clause = (cls._parse_where_clause(inner_scanner, sql_type)
                         if inner_scanner.search("WHERE") else None)
-        group_by_clause = (cls.parse_group_by_clause(inner_scanner, sql_type=sql_type)
+        group_by_clause = (cls._parse_group_by_clause(inner_scanner, sql_type)
                            if inner_scanner.search("GROUP", "BY") else None)
-        having_clause = (cls.parse_having_clause(inner_scanner, sql_type=sql_type)
+        having_clause = (cls._parse_having_clause(inner_scanner, sql_type)
                          if inner_scanner.search("HAVING") else None)
-        order_by_clause = (cls.parse_order_by_clause(inner_scanner, sql_type=sql_type)
+        order_by_clause = (cls._parse_order_by_clause(inner_scanner, sql_type)
                            if inner_scanner.search("ORDER", "BY") else None)
 
         if sql_type == SQLType.HIVE and inner_scanner.search("SORT", "BY"):
-            sort_by_clause = cls.parse_sort_by_clause(inner_scanner, sql_type=sql_type)
+            sort_by_clause = cls._parse_sort_by_clause(inner_scanner, sql_type)
         else:
             sort_by_clause = None
 
         if sql_type == SQLType.HIVE and inner_scanner.search("DISTRIBUTE", "BY"):
-            distribute_by_clause = cls.parse_distribute_by_clause(inner_scanner, sql_type=sql_type)
+            distribute_by_clause = cls._parse_distribute_by_clause(inner_scanner, sql_type)
         else:
             distribute_by_clause = None
 
         if sql_type == SQLType.HIVE and inner_scanner.search("CLUSTER", "BY"):
-            cluster_by_clause = cls.parse_cluster_by_clause(inner_scanner, sql_type=sql_type)
+            cluster_by_clause = cls._parse_cluster_by_clause(inner_scanner, sql_type)
         else:
             cluster_by_clause = None
 
         if inner_scanner.search("LIMIT"):
-            limit_clause = cls.parse_limit_clause(inner_scanner, sql_type=sql_type)
+            limit_clause = cls._parse_limit_clause(inner_scanner)
         else:
             limit_clause = None
 
@@ -1481,12 +1568,18 @@ class SQLParser:
                                ) -> node.ASTSelectStatement:
         """解析 SELECT 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_select_statement(scanner, with_clause, sql_type)
+
+    @classmethod
+    def _parse_select_statement(cls, scanner: TokenScanner,
+                                with_clause: Optional[node.ASTWithClause],
+                                sql_type: SQLType) -> node.ASTSelectStatement:
         if with_clause is None:
-            with_clause = cls.parse_with_clause(scanner, sql_type=sql_type)
-        result = [cls.parse_single_select_statement(scanner, with_clause=with_clause, sql_type=sql_type)]
+            with_clause = cls._parse_with_clause(scanner, sql_type)
+        result = [cls._parse_single_select_statement(scanner, with_clause, sql_type)]
         while scanner.search({"UNION", "EXCEPT", "INTERSECT", "MINUS"}):
             result.append(cls._parse_union_type(scanner))
-            result.append(cls.parse_single_select_statement(scanner, with_clause=with_clause, sql_type=sql_type))
+            result.append(cls._parse_single_select_statement(scanner, with_clause, sql_type))
         if len(result) == 1:
             return result[0]
         return node.ASTUnionSelectStatement(with_clause=with_clause, elements=tuple(result))
@@ -1497,6 +1590,10 @@ class SQLParser:
                                        ) -> node.ASTConfigStringExpression:
         """解析配置值为字符串的配置表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_config_string_expression(scanner)
+
+    @classmethod
+    def _parse_config_string_expression(cls, scanner: TokenScanner) -> node.ASTConfigStringExpression:
         config_name = cls._parse_config_string(scanner)
         scanner.match("=")
         config_value = cls._parse_config_string(scanner)
@@ -1507,7 +1604,10 @@ class SQLParser:
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTColumnTypeExpression:
         """解析 DDL 的字段类型：要求当前指针位置节点为函数名，下一个节点可能为函数参数也可能不是，解析为 SQLColumnType 对象"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_column_type_expression(scanner, sql_type)
 
+    @classmethod
+    def _parse_column_type_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTColumnTypeExpression:
         # 解析字段类型名称
         function_name: str = scanner.pop_as_source()
 
@@ -1530,6 +1630,11 @@ class SQLParser:
             是否已匹配 PARTITION 关键字
         """
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_partition_expression(scanner, already_match_partition, sql_type)
+
+    @classmethod
+    def _parse_partition_expression(cls, scanner: TokenScanner, already_match_partition: bool,
+                                    sql_type: SQLType) -> node.ASTPartitionExpression:
         if not already_match_partition:
             scanner.match("PARTITION")
         partition_list = []
@@ -1559,6 +1664,10 @@ class SQLParser:
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTForeignKeyExpression:
         """解析外键表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_foreign_key_expression(scanner)
+
+    @classmethod
+    def _parse_foreign_key_expression(cls, scanner: TokenScanner) -> node.ASTForeignKeyExpression:
         scanner.match("CONSTRAINT")
         constraint_name = scanner.pop_as_source()
         scanner.match("FOREIGN", "KEY")
@@ -1586,6 +1695,10 @@ class SQLParser:
                            sql_type: SQLType = SQLType.DEFAULT) -> node.ASTIndexColumn:
         """解析索引声明表达式中的字段"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_index_column(scanner)
+
+    @classmethod
+    def _parse_index_column(cls, scanner: TokenScanner) -> node.ASTIndexColumn:
         name = cls._unify_name(scanner.pop_as_source())
         max_length = None
         if scanner.search(AMTMark.PARENTHESIS):
@@ -1595,13 +1708,11 @@ class SQLParser:
         return node.ASTIndexColumn(name=name, max_length=max_length)
 
     @classmethod
-    def _get_index_columns(cls, scanner: TokenScanner,
-                           sql_type: SQLType = SQLType.DEFAULT
-                           ) -> Tuple[node.ASTIndexColumn, ...]:
+    def _get_index_columns(cls, scanner: TokenScanner) -> Tuple[node.ASTIndexColumn, ...]:
         """解析索引表达式中的索引字段"""
         columns = []
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-            columns.append(cls.parse_index_column(column_scanner, sql_type=sql_type))
+            columns.append(cls._parse_index_column(column_scanner))
             column_scanner.close()
         return tuple(columns)
 
@@ -1611,8 +1722,12 @@ class SQLParser:
                                        ) -> node.ASTPrimaryIndexExpression:
         """解析主键表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_primary_index_expression(scanner)
+
+    @classmethod
+    def _parse_primary_index_expression(cls, scanner: TokenScanner) -> node.ASTPrimaryIndexExpression:
         scanner.match("PRIMARY", "KEY")
-        columns = cls._get_index_columns(scanner, sql_type=sql_type)
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
         key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
@@ -1625,9 +1740,13 @@ class SQLParser:
                                       ) -> node.ASTUniqueIndexExpression:
         """解析唯一键表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_unique_index_expression(scanner)
+
+    @classmethod
+    def _parse_unique_index_expression(cls, scanner: TokenScanner) -> node.ASTUniqueIndexExpression:
         scanner.match("UNIQUE", "KEY")
         name = scanner.pop_as_source()
-        columns = cls._get_index_columns(scanner, sql_type=sql_type)
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
         key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
@@ -1640,9 +1759,13 @@ class SQLParser:
                                       ) -> node.ASTNormalIndexExpression:
         """解析一般索引表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_normal_index_expression(scanner)
+
+    @classmethod
+    def _parse_normal_index_expression(cls, scanner: TokenScanner) -> node.ASTNormalIndexExpression:
         scanner.match("KEY")
         name = scanner.pop_as_source()
-        columns = cls._get_index_columns(scanner, sql_type=sql_type)
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
         key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
@@ -1654,9 +1777,13 @@ class SQLParser:
                                   ) -> node.ASTFulltextIndexExpression:
         """解析全文索引表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_fulltext_expression(scanner)
+
+    @classmethod
+    def _parse_fulltext_expression(cls, scanner: TokenScanner) -> node.ASTFulltextIndexExpression:
         scanner.match("FULLTEXT", "KEY")
         name = scanner.pop_as_source()
-        columns = cls._get_index_columns(scanner, sql_type=sql_type)
+        columns = cls._get_index_columns(scanner)
         using = scanner.pop_as_source() if scanner.search_and_move("USING") else None
         comment = scanner.pop_as_source() if scanner.search_and_move("COMMENT") else None
         key_block_size = int(scanner.pop_as_source()) if scanner.search_and_move("KEY_BLOCK_SIZE", "=") else None
@@ -1668,12 +1795,16 @@ class SQLParser:
                                        sql_type: SQLType = SQLType.DEFAULT
                                        ) -> node.ASTDefineColumnExpression:
         # pylint: disable=R0914
-
         """解析 DDL 的字段表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_define_column_expression(scanner, sql_type)
+
+    @classmethod
+    def _parse_define_column_expression(cls, scanner: TokenScanner, sql_type: SQLType
+                                        ) -> node.ASTDefineColumnExpression:
         # 解析顺序固定的信息
         column_name = scanner.pop_as_source()
-        column_type = cls.parse_column_type_expression(scanner, sql_type=sql_type)
+        column_type = cls._parse_column_type_expression(scanner, sql_type)
 
         # 解析顺序可能不定的字段信息
         comment: Optional[str] = None
@@ -1733,9 +1864,15 @@ class SQLParser:
                                ) -> node.ASTInsertStatement:
         """解析 INSERT 表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_insert_statement(scanner, with_clause, sql_type)
 
+    @classmethod
+    def _parse_insert_statement(cls, scanner: TokenScanner,
+                                with_clause: Optional[node.ASTWithClause],
+                                sql_type: SQLType
+                                ) -> node.ASTInsertStatement:
         if with_clause is None:
-            with_clause = cls.parse_with_clause(scanner, sql_type=sql_type)
+            with_clause = cls._parse_with_clause(scanner, sql_type)
 
         insert_type = cls._parse_insert_type(scanner)
 
@@ -1747,7 +1884,7 @@ class SQLParser:
 
         # 匹配分区表达式
         if scanner.search("PARTITION"):
-            partition = cls.parse_partition_expression(scanner, sql_type=sql_type)
+            partition = cls._parse_partition_expression(scanner, False, sql_type)
         else:
             partition = None
 
@@ -1777,8 +1914,7 @@ class SQLParser:
             )
 
         if scanner.search("SELECT"):
-            select_statement = cls.parse_select_statement(scanner,
-                                                          with_clause=node.ASTWithClause.empty(), sql_type=sql_type)
+            select_statement = cls._parse_select_statement(scanner, node.ASTWithClause.empty(), sql_type)
             return node.ASTInsertSelectStatement(
                 with_clause=with_clause,
                 insert_type=insert_type,
@@ -1795,26 +1931,34 @@ class SQLParser:
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSetStatement:
         """解析 SET 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_set_statement(scanner)
+
+    @classmethod
+    def _parse_set_statement(cls, scanner: TokenScanner) -> node.ASTSetStatement:
         scanner.match("SET")
-        config = cls.parse_config_string_expression(scanner, sql_type=sql_type)
+        config = cls._parse_config_string_expression(scanner)
         return node.ASTSetStatement(config=config)
 
     @classmethod
     def parse_create_table_statement(cls, scanner_or_string: ScannerOrString,
                                      sql_type: SQLType = SQLType.DEFAULT) -> AliasCreateTableStatement:
+        """解析 CREATE TABLE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_create_table_statement(scanner, sql_type)
+
+    @classmethod
+    def _parse_create_table_statement(cls, scanner: TokenScanner, sql_type: SQLType) -> AliasCreateTableStatement:
         # pylint: disable=R0912
         # pylint: disable=R0914
         # pylint: disable=R0915
-        """解析 CREATE TABLE 语句"""
         # 解析字段、索引括号前的部分
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         scanner.match("CREATE", "TABLE")
         if_not_exists = scanner.search_and_move("IF", "NOT", "EXISTS")
         table_name = cls._parse_table_name_expression(scanner)
 
         # CREATE TABLE ... AS ... 语句
         if scanner.search_and_move("AS"):
-            select_statement = cls.parse_select_statement(scanner, sql_type=sql_type)
+            select_statement = cls._parse_select_statement(scanner, None, sql_type)
             return node.ASTCreateTableAsStatement(
                 table_name=table_name,
                 select_statement=select_statement
@@ -1829,17 +1973,17 @@ class SQLParser:
         foreign_key: List[node.ASTForeignKeyExpression] = []
         for group_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             if group_scanner.search("PRIMARY", "KEY"):
-                primary_key = cls.parse_primary_index_expression(group_scanner, sql_type=sql_type)
+                primary_key = cls._parse_primary_index_expression(group_scanner)
             elif group_scanner.search("UNIQUE", "KEY"):
-                unique_key.append(cls.parse_unique_index_expression(group_scanner, sql_type=sql_type))
+                unique_key.append(cls._parse_unique_index_expression(group_scanner))
             elif group_scanner.search("KEY"):
-                key.append(cls.parse_normal_index_expression(group_scanner, sql_type=sql_type))
+                key.append(cls._parse_normal_index_expression(group_scanner))
             elif group_scanner.search("FULLTEXT", "KEY"):
-                fulltext_key.append(cls.parse_fulltext_expression(group_scanner, sql_type=sql_type))
+                fulltext_key.append(cls._parse_fulltext_expression(group_scanner))
             elif group_scanner.search("CONSTRAINT"):
-                foreign_key.append(cls.parse_foreign_key_expression(group_scanner, sql_type=sql_type))
+                foreign_key.append(cls._parse_foreign_key_expression(group_scanner))
             else:
-                columns.append(cls.parse_define_column_expression(group_scanner, sql_type=sql_type))
+                columns.append(cls._parse_define_column_expression(group_scanner, sql_type))
             group_scanner.close()
 
         # 解析表属性
@@ -1882,7 +2026,7 @@ class SQLParser:
                 states_persistent = scanner.pop_as_source()
             elif scanner.search_and_move("PARTITIONED", "BY"):
                 for group_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-                    partitioned_by.append(cls.parse_define_column_expression(group_scanner, sql_type=sql_type))
+                    partitioned_by.append(cls._parse_define_column_expression(group_scanner, sql_type))
                     group_scanner.close()
             elif scanner.search_and_move("ROW", "FORMAT", "SERDE"):
                 scanner.search_and_move("=")
@@ -1903,7 +2047,7 @@ class SQLParser:
                 location = scanner.pop_as_source()
             elif scanner.search_and_move("TBLPROPERTIES"):
                 for group_scanner in scanner.pop_as_children_scanner_list_split_by(","):
-                    tblproperties.append(cls.parse_config_string_expression(group_scanner, sql_type=sql_type))
+                    tblproperties.append(cls._parse_config_string_expression(group_scanner))
                     group_scanner.close()
             else:
                 raise SqlParseError(f"未知的 DDL 表属性: {scanner}")
@@ -1940,6 +2084,10 @@ class SQLParser:
                                    sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDropTableStatement:
         """解析 DROP TABLE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_drop_table_statement(scanner)
+
+    @classmethod
+    def _parse_drop_table_statement(cls, scanner: TokenScanner) -> node.ASTDropTableStatement:
         scanner.match("DROP", "TABLE")
         if_exists = scanner.search_and_move("IF", "EXISTS")
         table_name = cls._parse_table_name_expression(scanner)
@@ -1950,11 +2098,15 @@ class SQLParser:
                                       sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAnalyzeTableStatement:
         """解析 ANALYZE TABLE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_analyze_table_statement(scanner, sql_type)
+
+    @classmethod
+    def _parse_analyze_table_statement(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTAnalyzeTableStatement:
         scanner.match("ANALYZE", "TABLE")
         table_name = cls._parse_table_name_expression(scanner)
 
         if scanner.search("PARTITION"):
-            partition = cls.parse_partition_expression(scanner, sql_type=sql_type)
+            partition = cls._parse_partition_expression(scanner, False, sql_type)
         else:
             partition = None
 
@@ -1976,35 +2128,43 @@ class SQLParser:
                               sql_type: SQLType = SQLType.DEFAULT) -> node.AliasColumnOrIndex:
         """解析字段声明表达式或索引声明表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_column_or_index(scanner, sql_type)
+
+    @classmethod
+    def _parse_column_or_index(cls, scanner: TokenScanner, sql_type: SQLType) -> node.AliasColumnOrIndex:
         if scanner.search("PRIMARY", "KEY"):
-            return cls.parse_primary_index_expression(scanner, sql_type=sql_type)
+            return cls._parse_primary_index_expression(scanner)
         if scanner.search("UNIQUE", "KEY"):
-            return cls.parse_unique_index_expression(scanner, sql_type=sql_type)
+            return cls._parse_unique_index_expression(scanner)
         if scanner.search("KEY"):
-            return cls.parse_normal_index_expression(scanner, sql_type=sql_type)
+            return cls._parse_normal_index_expression(scanner)
         if scanner.search("FULLTEXT", "KEY"):
-            return cls.parse_fulltext_expression(scanner, sql_type=sql_type)
+            return cls._parse_fulltext_expression(scanner)
         if scanner.search("CONSTRAINT"):
-            return cls.parse_foreign_key_expression(scanner, sql_type=sql_type)
-        return cls.parse_define_column_expression(scanner, sql_type=sql_type)
+            return cls._parse_foreign_key_expression(scanner)
+        return cls._parse_define_column_expression(scanner, sql_type)
 
     @classmethod
     def parse_alter_expression(cls, scanner_or_string: ScannerOrString,
                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAlterExpressionBase:
-        # pylint: disable=R0911
         """解析 ALTER TABLE 的子句表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_alter_expression(scanner, sql_type)
+
+    @classmethod
+    def _parse_alter_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTAlterExpressionBase:
+        # pylint: disable=R0911
         if scanner.search_and_move("ADD"):
             return node.ASTAlterAddExpression(
-                expression=cls.parse_column_or_index(scanner, sql_type=sql_type)
+                expression=cls._parse_column_or_index(scanner, sql_type)
             )
         if scanner.search_and_move("MODIFY"):
             return node.ASTAlterModifyExpression(
-                expression=cls.parse_column_or_index(scanner, sql_type=sql_type)
+                expression=cls._parse_column_or_index(scanner, sql_type)
             )
         if scanner.search_and_move("CHANGE"):
             from_column_name = cls._unify_name(scanner.pop_as_source())
-            to_expression = cls.parse_column_or_index(scanner, sql_type=sql_type)
+            to_expression = cls._parse_column_or_index(scanner, sql_type)
             return node.ASTAlterChangeExpression(
                 from_column_name=from_column_name,
                 to_expression=to_expression
@@ -2024,12 +2184,12 @@ class SQLParser:
         if scanner.search_and_move("DROP", "PARTITION"):
             return node.ASTAlterDropPartitionExpression(
                 if_exists=False,
-                partition=cls.parse_partition_expression(scanner, already_match_partition=True, sql_type=sql_type)
+                partition=cls._parse_partition_expression(scanner, True, sql_type)
             )
         if scanner.search_and_move("DROP", "IF", "EXISTS", "PARTITION"):
             return node.ASTAlterDropPartitionExpression(
                 if_exists=True,
-                partition=cls.parse_partition_expression(scanner, already_match_partition=True, sql_type=sql_type)
+                partition=cls._parse_partition_expression(scanner, True, sql_type)
             )
         raise SqlParseError(f"未知的 ALTER TABLE 类型: {scanner}")
 
@@ -2038,11 +2198,15 @@ class SQLParser:
                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTAlterTableStatement:
         """解析 ALTER TABLE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_alter_table_statement(scanner, sql_type)
+
+    @classmethod
+    def _parse_alter_table_statement(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTAlterTableStatement:
         scanner.match("ALTER", "TABLE")
         table_name = cls._parse_table_name_expression(scanner)
-        expressions = [cls.parse_alter_expression(scanner, sql_type=sql_type)]
+        expressions = [cls._parse_alter_expression(scanner, sql_type)]
         while scanner.search_and_move(","):
-            expressions.append(cls.parse_alter_expression(scanner, sql_type=sql_type))
+            expressions.append(cls._parse_alter_expression(scanner, sql_type))
         return node.ASTAlterTableStatement(
             table_name=table_name,
             expressions=tuple(expressions)
@@ -2053,6 +2217,10 @@ class SQLParser:
                                           sql_type: SQLType = SQLType.DEFAULT) -> node.ASTMsckRepairTableStatement:
         """解析 MSCK REPAIR 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_msck_repair_table_statement(scanner)
+
+    @classmethod
+    def _parse_msck_repair_table_statement(cls, scanner: TokenScanner) -> node.ASTMsckRepairTableStatement:
         scanner.match("MSCK", "REPAIR", "TABLE")
         table_name = cls._parse_table_name_expression(scanner)
         return node.ASTMsckRepairTableStatement(
@@ -2064,6 +2232,10 @@ class SQLParser:
                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUseStatement:
         """解析 USE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_use_statement(scanner)
+
+    @classmethod
+    def _parse_use_statement(cls, scanner: TokenScanner) -> node.ASTUseStatement:
         scanner.match("USE")
         return node.ASTUseStatement(
             schema_name=scanner.pop_as_source()
@@ -2074,6 +2246,10 @@ class SQLParser:
                                        sql_type: SQLType = SQLType.DEFAULT) -> node.ASTTruncateTable:
         """解析 TRUNCATE TABLE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_truncate_table_statement(scanner)
+
+    @classmethod
+    def _parse_truncate_table_statement(cls, scanner: TokenScanner) -> node.ASTTruncateTable:
         scanner.match("TRUNCATE", "TABLE")
         table_name = cls._parse_table_name_expression(scanner)
         return node.ASTTruncateTable(
@@ -2085,6 +2261,10 @@ class SQLParser:
                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateSetColumn:
         """解析 UPDATE 语句中 SET 中的字段元素"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_update_set_column(scanner, sql_type)
+
+    @classmethod
+    def _parse_update_set_column(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTUpdateSetColumn:
         column_name = scanner.pop_as_source()
         scanner.match("=")
         column_value = cls._parse_logical_or_level_expression(scanner, sql_type)
@@ -2098,10 +2278,14 @@ class SQLParser:
                                 sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateSetClause:
         """解析 UPDATE 语句的 SET 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_update_set_clause(scanner, sql_type)
+
+    @classmethod
+    def _parse_update_set_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTUpdateSetClause:
         scanner.match("SET")
-        columns = [cls.parse_update_set_column(scanner)]
+        columns = [cls._parse_update_set_column(scanner, sql_type)]
         while scanner.search_and_move(","):
-            columns.append(cls.parse_update_set_column(scanner))
+            columns.append(cls._parse_update_set_column(scanner, sql_type))
         return node.ASTUpdateSetClause(
             columns=tuple(columns)
         )
@@ -2112,22 +2296,28 @@ class SQLParser:
                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTUpdateStatement:
         """解析 UPDATE 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_update_statement(scanner, with_clause, sql_type)
+
+    @classmethod
+    def _parse_update_statement(cls, scanner: TokenScanner,
+                                with_clause: Optional[node.ASTWithClause],
+                                sql_type: SQLType) -> node.ASTUpdateStatement:
         scanner.match("UPDATE")
         table_name = cls._parse_table_name_expression(scanner)
-        set_clause = cls.parse_update_set_clause(scanner)
+        set_clause = cls._parse_update_set_clause(scanner, sql_type)
 
         if scanner.search("WHERE"):
-            where_clause = cls.parse_where_clause(scanner)
+            where_clause = cls._parse_where_clause(scanner, sql_type)
         else:
             where_clause = None
 
         if scanner.search("ORDER", "BY"):
-            order_by_clause = cls.parse_order_by_clause(scanner)
+            order_by_clause = cls._parse_order_by_clause(scanner, sql_type)
         else:
             order_by_clause = None
 
         if scanner.search("LIMIT"):
-            limit_clause = cls.parse_limit_clause(scanner)
+            limit_clause = cls._parse_limit_clause(scanner)
         else:
             limit_clause = None
 
@@ -2145,11 +2335,15 @@ class SQLParser:
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTShowColumnsStatement:
         """解析 SHOW COLUMNS 语句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_show_columns_statement(scanner, sql_type)
+
+    @classmethod
+    def _parse_show_columns_statement(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTShowColumnsStatement:
         scanner.match("SHOW", "COLUMNS")
-        from_clause = cls.parse_from_clause(scanner, sql_type=sql_type)
+        from_clause = cls._parse_from_clause(scanner, sql_type)
 
         if scanner.search("WHERE"):
-            where_clause = cls.parse_where_clause(scanner)
+            where_clause = cls._parse_where_clause(scanner, sql_type)
         else:
             where_clause = None
 
@@ -2168,35 +2362,35 @@ class SQLParser:
         while not scanner.is_finish:
             # 解析 SET 语句
             if scanner.search("SET"):
-                statement_list.append(cls.parse_set_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_set_statement(scanner))
 
             # 解析 DROP TABLE 语句
             elif scanner.search("DROP", "TABLE"):
-                statement_list.append(cls.parse_drop_table_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_drop_table_statement(scanner))
 
             # 解析 CREATE TABLE 语句
             elif scanner.search("CREATE", "TABLE"):
-                statement_list.append(cls.parse_create_table_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_create_table_statement(scanner, sql_type))
 
             # 解析 ANALYZE TABLE 语句
             elif scanner.search("ANALYZE", "TABLE"):
-                statement_list.append(cls.parse_analyze_table_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_analyze_table_statement(scanner, sql_type))
 
             # 解析 ALTER TABLE 语句
             elif scanner.search("ALTER", "TABLE"):
-                statement_list.append(cls.parse_alter_table_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_alter_table_statement(scanner, sql_type))
 
             # 解析 MSCK REPAIR TABLE 语句
             elif scanner.search("MSCK", "REPAIR", "TABLE"):
-                statement_list.append(cls.parse_msck_repair_table_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_msck_repair_table_statement(scanner))
 
             # 解析 USE 语句
             elif scanner.search("USE"):
-                statement_list.append(cls.parse_use_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_use_statement(scanner))
 
             # 解析 TRUNCATE TABLE 语句
             elif scanner.search("TRUNCATE", "TABLE"):
-                statement_list.append(cls.parse_truncate_table_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_truncate_table_statement(scanner))
 
             # 解析 SHOW DATABASES 语句
             elif scanner.search_and_move("SHOW", "DATABASES"):
@@ -2208,26 +2402,23 @@ class SQLParser:
 
             # 解析 SHOW COLUMNS 语句
             elif scanner.search_and_move("SHOW", "COLUMNS"):
-                statement_list.append(cls.parse_show_columns_statement(scanner, sql_type=sql_type))
+                statement_list.append(cls._parse_show_columns_statement(scanner, sql_type))
 
             else:
                 # 解析可能包含 WITH 子句的语句类型
-                with_clause = cls.parse_with_clause(scanner, sql_type=sql_type)
+                with_clause = cls._parse_with_clause(scanner, sql_type)
 
                 # 解析 SELECT 语句
                 if scanner.search("SELECT"):
-                    statement_list.append(cls.parse_select_statement(scanner,
-                                                                     with_clause=with_clause, sql_type=sql_type))
+                    statement_list.append(cls._parse_select_statement(scanner, with_clause, sql_type))
 
                 # 解析 INSERT 语句
                 elif scanner.search("INSERT"):
-                    statement_list.append(cls.parse_insert_statement(scanner,
-                                                                     with_clause=with_clause, sql_type=sql_type))
+                    statement_list.append(cls._parse_insert_statement(scanner, with_clause, sql_type))
 
                 # 解析 UPDATE 语句
                 elif scanner.search("UPDATE"):
-                    statement_list.append(cls.parse_update_statement(scanner, with_clause=with_clause,
-                                                                     sql_type=sql_type))
+                    statement_list.append(cls._parse_update_statement(scanner, with_clause, sql_type))
 
                 else:
                     raise SqlParseError(f"未知语句类型: {scanner}")
