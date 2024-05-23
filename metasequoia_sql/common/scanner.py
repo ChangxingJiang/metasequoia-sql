@@ -80,26 +80,26 @@ class TokenScanner:
         - 如果匹配成功，则返回 True
         - 如果匹配失败，则返回 False
         """
+        if self._pos + len(tokens) > self._len:
+            return False
         for idx, token in enumerate(tokens):
-            refer = self._get_by_offset(idx)
-            if refer is None:
-                return False
-            if not refer.equals(token):
+            refer = self._elements[self._pos + idx]
+            if refer is None or not refer.equals(token):
                 return False
         return True
 
     def rich_search(self, *tokens: Union[str, AMTMark, Set[str]]) -> bool:
         """从当前配置开始匹配 tokens
 
-        TODO 待优化集合判断的性能
-
         集合中不支持 AMTMark 类型
 
         - 如果匹配成功，则返回 True
         - 如果匹配失败，则返回 False
         """
+        if self._pos + len(tokens) > self._len:
+            return False
         for idx, token in enumerate(tokens):
-            refer = self._get_by_offset(idx)
+            refer = self._elements[self._pos + idx]
             if refer is None:
                 return False
             if isinstance(token, (AMTMark, str)):
