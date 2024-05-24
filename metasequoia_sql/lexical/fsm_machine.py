@@ -12,7 +12,7 @@ from metasequoia_sql.errors import AMTParseError
 from metasequoia_sql.lexical.amt_node import AMTBase
 from metasequoia_sql.lexical.fsm_memory import FSMMemory
 from metasequoia_sql.lexical.fsm_operate import FSMOperate
-from metasequoia_sql.lexical.fsm_operation_map import END, DEFAULT, FSM_OPERATION_MAP
+from metasequoia_sql.lexical.fsm_operation_map import END, FSM_OPERATION_MAP, FSM_OPERATION_MAP_DEFAULT
 from metasequoia_sql.lexical.fsm_status import FSMStatus
 
 __all__ = ["FSMMachine"]
@@ -71,7 +71,7 @@ class FSMMachine:
         operate: FSMOperate = FSM_OPERATION_MAP.get((self.memory.status, ch))
 
         if operate is None:
-            operate = FSM_OPERATION_MAP[(self.memory.status, DEFAULT)]  # 如果没有则使用当前状态的默认处理规则
+            operate = FSM_OPERATION_MAP_DEFAULT[self.memory.status]  # 如果没有则使用当前状态的默认处理规则
 
         # 执行行为
         return operate.execute(self.memory, ch)

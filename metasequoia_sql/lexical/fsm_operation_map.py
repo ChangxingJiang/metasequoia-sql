@@ -291,9 +291,12 @@ FSM_OPERATION_MAP_SOURCE = {
 
 # 状态行为映射表（用于用时行为映射信息，输入参数必须是一个字符）
 FSM_OPERATION_MAP: Dict[Tuple[FSMStatus, str], FSMOperate] = {}
+FSM_OPERATION_MAP_DEFAULT: Dict[FSMStatus, FSMOperate] = {}
 for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
     for ch_or_set, fsm_operation in operation_map.items():
-        if isinstance(ch_or_set, str):
+        if ch_or_set is DEFAULT:
+            FSM_OPERATION_MAP_DEFAULT[status] = fsm_operation
+        elif isinstance(ch_or_set, str):
             FSM_OPERATION_MAP[(status, ch_or_set)] = fsm_operation
         elif isinstance(ch_or_set, frozenset):
             for ch in ch_or_set:
