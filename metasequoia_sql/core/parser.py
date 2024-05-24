@@ -311,7 +311,7 @@ class SQLParser:
     def _parse_table_name_expression(cls, scanner: TokenScanner) -> node.ASTTableNameExpression:
         if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
-            scanner.pop()
+            scanner.move()
             table_name = scanner.pop_as_source()
             return node.ASTTableNameExpression(
                 schema_name=cls._unify_name(schema_name),
@@ -341,7 +341,7 @@ class SQLParser:
     def _parse_function_name_expression(cls, scanner: TokenScanner) -> node.ASTFunctionNameExpression:
         if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
             schema_name = scanner.pop_as_source()
-            scanner.pop()
+            scanner.move()
             table_name = scanner.pop_as_source()
             return node.ASTFunctionNameExpression(
                 schema_name=cls._unify_name(schema_name),
@@ -422,8 +422,7 @@ class SQLParser:
             return node.ASTWildcardExpression()
         if scanner.search(AMTMark.NAME, ".", "*"):
             schema_name = scanner.pop_as_source()
-            scanner.pop()
-            scanner.pop()
+            scanner.move(2)
             return node.ASTWildcardExpression(table_name=schema_name)
         raise SqlParseError("无法解析为通配符表达式")
 

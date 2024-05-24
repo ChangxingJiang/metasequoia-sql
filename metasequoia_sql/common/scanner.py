@@ -59,12 +59,9 @@ class TokenScanner:
         self._pos += 1  # 移动指针
         return result
 
-    def _get_by_offset(self, idx: int) -> Optional[AMTBase]:
-        """获取当前指针位置 + idx 位置的元素，但不一定指针
-        """
-        if self._pos + idx >= self._len or self._pos + idx < 0:
-            return None
-        return self._elements[self._pos + idx]
+    def move(self, idx: int = 1) -> None:
+        """移动指针"""
+        self._pos += idx
 
     def close(self) -> None:
         """关闭扫描器，如果扫描器没有遍历完成则抛出异常"""
@@ -120,8 +117,7 @@ class TokenScanner:
         """
         if not self.search(*tokens):
             return False
-        for _ in range(len(tokens)):
-            self.pop()
+        self.move(len(tokens))
         return True
 
     def rich_search_and_move(self, *tokens: Union[str, AMTMark, Set[str]]) -> bool:
@@ -136,8 +132,7 @@ class TokenScanner:
         """
         if not self.rich_search(*tokens):
             return False
-        for _ in range(len(tokens)):
-            self.pop()
+        self.move(len(tokens))
         return True
 
     def match(self, *tokens: Union[str, AMTMark]) -> None:
