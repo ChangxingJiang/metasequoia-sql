@@ -89,6 +89,8 @@ class AMTBase(abc.ABC):
 class AMTSingle(AMTBase):
     """单元素节点"""
 
+    __slots__ = ["marks", "_source"]
+
     def __init__(self, source: str, marks: int = 0):
         super().__init__(marks)
         self._source = source
@@ -109,6 +111,8 @@ class AMTSingle(AMTBase):
 
 class AMTParenthesisBase(AMTBase):
     """插入语节点的基类"""
+
+    __slots__ = ["marks", "_tokens"]
 
     def __init__(self, tokens: List[AMTBase], marks: int = 0):
         super().__init__(marks)
