@@ -7,7 +7,7 @@ import enum
 __all__ = ["FSMStatus"]
 
 
-class FSMStatus(enum.Enum):
+class FSMStatus(enum.IntEnum):
     """词法分析的有限状态机的状态枚举类
 
     其中，FSMStatus.value 为枚举类的含义，用于在抛出异常时显示
