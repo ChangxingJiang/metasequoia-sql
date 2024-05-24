@@ -260,22 +260,23 @@ class SQLParser:
 
     @classmethod
     def _parse_column_name_expression(cls, scanner: TokenScanner) -> node.ASTColumnNameExpression:
-        if (scanner.search(AMTMark.NAME, ".", AMTMark.NAME) and
-                not scanner.search(AMTMark.NAME, ".", AMTMark.NAME, AMTMark.PARENTHESIS)):
-            table_name = scanner.pop_as_source()
-            scanner.match(".")
+        if not scanner.search(AMTMark.NAME):
+            raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+        first_name = scanner.pop_as_source()
+        if scanner.search_and_move("."):  # table.name 的形式
+            if not scanner.search(AMTMark.NAME):
+                raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+            table_name = first_name
             column_name = scanner.pop_as_source()
-            return node.ASTColumnNameExpression(
-                table_name=cls._unify_name(table_name),
-                column_name=cls._unify_name(column_name)
-            )
-        if (scanner.search(AMTMark.NAME)
-                and not scanner.search(AMTMark.NAME, ".")
-                and not scanner.search(AMTMark.NAME, AMTMark.PARENTHESIS)):
-            return node.ASTColumnNameExpression(
-                column_name=cls._unify_name(scanner.pop_as_source())
-            )
-        raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+        else:
+            table_name = None
+            column_name = first_name
+        if scanner.search(AMTMark.PARENTHESIS):
+            raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+        return node.ASTColumnNameExpression(
+            table_name=cls._unify_name(table_name),
+            column_name=cls._unify_name(column_name)
+        )
 
     @classmethod
     def parse_column_name_expression_with_index(cls, scanner_or_string: ScannerOrString,
