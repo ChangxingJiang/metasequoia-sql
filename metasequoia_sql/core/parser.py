@@ -937,7 +937,7 @@ class SQLParser:
     def _parse_keyword_condition_level_expression(cls, scanner: TokenScanner,
                                                   before_value: Optional[NodeKeywordConditionLevel],
                                                   sql_type: SQLType = SQLType.DEFAULT) -> NodeKeywordConditionLevel:
-        """
+        """解析关键字条件表达式
 
         Parameters
         ----------
@@ -963,7 +963,12 @@ class SQLParser:
             # 解析可能存在于关键字之间的 NOT
             is_not = scanner.rich_search_and_move(static.get_not_operator_set(sql_type))
 
-            if scanner.search_and_move("BETWEEN"):
+            if scanner.is_finish:
+                return before_value  # 如果已经匹配结果，则直接返回
+
+            next_ch = scanner.get_as_source().upper()
+            if next_ch == "BETWEEN":
+                scanner.move()
                 from_value = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
                 scanner.match("AND")
                 to_value = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
@@ -973,7 +978,8 @@ class SQLParser:
                     from_value=from_value,
                     to_value=to_value
                 )
-            elif scanner.search_and_move("IS"):
+            elif next_ch == "IS":
+                scanner.move()
                 is_not = is_not or scanner.search_and_move("NOT")
                 after_value = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
                 result_value = node.ASTIsExpression(
@@ -981,28 +987,32 @@ class SQLParser:
                     before_value=before_value,
                     after_value=after_value
                 )
-            elif scanner.search_and_move("IN"):
+            elif next_ch == "IN":
+                scanner.move()
                 after_value = cls._parse_in_parenthesis(scanner, sql_type=sql_type)
                 result_value = node.ASTInExpression(
                     is_not=is_not,
                     before_value=before_value,
                     after_value=after_value
                 )
-            elif scanner.search_and_move("LIKE"):
+            elif next_ch == "LIKE":
+                scanner.move()
                 after_value = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
                 result_value = node.ASTLikeExpression(
                     is_not=is_not,
                     before_value=before_value,
                     after_value=after_value
                 )
-            elif scanner.search_and_move("RLIKE"):
+            elif next_ch == "RLIKE":
+                scanner.move()
                 after_value = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
                 result_value = node.ASTRlikeExpression(
                     is_not=is_not,
                     before_value=before_value,
                     after_value=after_value
                 )
-            elif scanner.search_and_move("REGEXP"):
+            elif next_ch == "REGEXP":
+                scanner.move()
                 after_value = cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)
                 result_value = node.ASTRegexpExpression(
                     is_not=is_not,
