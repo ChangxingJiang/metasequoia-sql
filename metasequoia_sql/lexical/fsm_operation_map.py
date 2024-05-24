@@ -11,7 +11,7 @@ from metasequoia_sql.lexical.amt_node import AMTMark
 from metasequoia_sql.lexical.fsm_operate import FSMOperate
 from metasequoia_sql.lexical.fsm_status import FSMStatus
 
-__all__ = ["END", "DEFAULT", "FSM_OPERATION_MAP"]
+__all__ = ["END", "DEFAULT", "FSM_OPERATION_MAP", "FSM_OPERATION_MAP_DEFAULT"]
 
 END = "<end>"  # 结束标识符
 DEFAULT = "<default>"  # 默认标识符

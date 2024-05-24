@@ -5,7 +5,7 @@ TODO 增加各种元素在末尾的单元测试
 TODO 将过滤空格字符的逻辑添加到自动机参数中
 """
 
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from metasequoia_sql.common.basic import preproc_sql
 from metasequoia_sql.errors import AMTParseError
@@ -68,7 +68,7 @@ class FSMMachine:
     def handle(self, ch: str) -> bool:
         """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
         # 获取需要执行的行为
-        operate: FSMOperate = FSM_OPERATION_MAP.get((self.memory.status, ch))
+        operate: Optional[FSMOperate] = FSM_OPERATION_MAP.get((self.memory.status, ch))
 
         if operate is None:
             operate = FSM_OPERATION_MAP_DEFAULT[self.memory.status]  # 如果没有则使用当前状态的默认处理规则
