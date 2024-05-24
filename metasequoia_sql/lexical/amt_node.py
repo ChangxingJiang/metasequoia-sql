@@ -121,6 +121,23 @@ class AMTParenthesisBase(AMTBase):
     def source(self):
         return "(" + "".join(token.source for token in self._tokens) + ")"
 
+    def equals(self, other: Union[str, AMTMark]) -> Union[bool, int]:
+        """判断当前抽象词法树节点是否等价于 other
+
+        Parameters
+        ----------
+        other : Union[str, AMTMark]
+            字符串格式的源码，或 AMTMark 格式的标记
+
+        Returns
+        -------
+        Union[bool, int]
+            如果当前抽象词法树节点等价于 other，则返回真值，否则返回假值
+        """
+        if isinstance(other, AMTMark):
+            return other & self.marks  # 枚举类的类型标记
+        return False  # 插入语不尝试匹配源码值
+
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} children={self.children()}>"
 

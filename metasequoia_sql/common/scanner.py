@@ -76,6 +76,9 @@ class TokenScanner:
 
         - 如果匹配成功，则返回 True
         - 如果匹配失败，则返回 False
+
+        需要注意的是：
+        1. 插入语仅能用 ASTMark.PARENTHESIS 进行匹配，而不能使用源码进行匹配
         """
         if self._pos + len(tokens) > self._len:
             return False
@@ -88,10 +91,12 @@ class TokenScanner:
     def rich_search(self, *tokens: Union[str, AMTMark, Set[str]]) -> bool:
         """从当前配置开始匹配 tokens
 
-        集合中不支持 AMTMark 类型
-
         - 如果匹配成功，则返回 True
         - 如果匹配失败，则返回 False
+
+        需要注意的是：
+        1. 插入语仅能用 ASTMark.PARENTHESIS 进行匹配，而不能使用源码进行匹配
+        2. 集合类元素中不支持 AMTMark 类型
         """
         if self._pos + len(tokens) > self._len:
             return False
