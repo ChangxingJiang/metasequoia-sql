@@ -85,6 +85,18 @@ class AMTBase(abc.ABC):
             return other & self.marks  # 枚举类的类型标记
         return self.source.upper() == other.upper()  # 字符串格式文本
 
+    def has_mark(self, other: AMTMark) -> Union[bool, int]:
+        """判断当前 AMT 节点是否包含标记 mark"""
+        return self.marks & other
+
+    def source_equal(self, other: str) -> bool:
+        """判断当前 AMT 节点的源代码是否等于 token（适用于比较运算符）"""
+        return self.source == other
+
+    def source_equal_upper(self, other: str) -> bool:
+        """判断当前 AMT 节点的源代码的 **大写形式** 是否等于 token（适用于比较关键字）"""
+        return self.source.upper() == other
+
 
 class AMTSingle(AMTBase):
     """单元素节点"""

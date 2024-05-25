@@ -35,7 +35,17 @@ class TokenScanner:
         """返回当前扫描指针"""
         return self._pos
 
-    def get(self) -> Optional[AMTBase]:
+    def get_offset(self, offset: int = 0) -> AMTBase:
+        """【不移动指针】获取 self._pos（当前指针）+ offset 位置的元素，如果当前元素不存在，则抛出异常"""
+        return self._elements[self._pos + offset]
+
+    def get_offset_or_null(self, offset: int = 0) -> Optional[AMTBase]:
+        """【不移动指针】获取 self._pos（当前指针）+ offset 位置的元素，如果当前元素不存在，则返回 None"""
+        if self._pos + offset >= self._len:
+            return None
+        return self._elements[self._pos + offset]
+
+    def get_or_null(self) -> Optional[AMTBase]:
         """获取当前指针位置元素，但不移动指针
 
         - 如果指针已到达字符串末尾，则返回 None
@@ -157,7 +167,7 @@ class TokenScanner:
 
     def get_as_children_scanner(self) -> "TokenScanner":
         """不移动指针，并返回当前指针位置的插入语节点的子节点的扫描器"""
-        return TokenScanner(self.get().children())
+        return TokenScanner(self.get_or_null().children())
 
     def pop_as_children_scanner(self) -> "TokenScanner":
         """将指针向后移动 1 个元素，并返回当前指针位置的插入语节点的子节点的扫描器"""
