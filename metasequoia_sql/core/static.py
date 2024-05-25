@@ -257,8 +257,6 @@ def get_unary_operator_set(sql_type: SQLType):
     Set[str]
         指定 SQL 语言类型支持的一元运算符的集合
     """
-    if sql_type == SQLType.MYSQL:
-        return {"-", "+", "~", "!"}
     if sql_type == SQLType.HIVE:
         return {"-", "+", "~"}
     return {"-", "+", "~", "!"}

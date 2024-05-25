@@ -81,8 +81,8 @@ NodeLogicalAndLevel = Union[NodeLogicalNotLevel, node.ASTLogicalAndExpression]
 # 逻辑异或表达式层级
 NodeLogicalXorLevel = Union[NodeLogicalAndLevel, node.ASTLogicalXorExpression]
 
-# 逻辑或表达式层级
-NodeLogicalOrLevel = Union[NodeLogicalXorLevel, node.ASTLogicalOrExpression]
+# 逻辑或表达式层级（通用表达式）
+GeneralExpression = Union[NodeLogicalXorLevel, node.ASTLogicalOrExpression]
 
 
 class SQLParser:
@@ -514,7 +514,7 @@ class SQLParser:
     @classmethod
     def _parse_if_function_expression(cls, scanner: TokenScanner,
                                       sql_type: SQLType) -> node.ASTNormalFunctionExpression:
-        function_params: List[NodeLogicalOrLevel] = []
+        function_params: List[GeneralExpression] = []
         if not scanner.is_finish:
             cls._parse_logical_or_level_expression(scanner, sql_type=sql_type)
         while scanner.search_and_move_one_type_str(","):
@@ -555,7 +555,7 @@ class SQLParser:
                 and parenthesis_scanner.search_and_move_one_type_str_use_upper("DISTINCT")):
             is_distinct = True
 
-        function_params: List[NodeLogicalOrLevel] = []
+        function_params: List[GeneralExpression] = []
         if not parenthesis_scanner.is_finish:
             function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type))
         while parenthesis_scanner.search_and_move_one_type_str(","):
@@ -707,7 +707,7 @@ class SQLParser:
         return node.ASTSubValueExpression(values=tuple(values))
 
     @classmethod
-    def _parse_general_parenthesis(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalOrLevel:
+    def _parse_general_parenthesis(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         """解析一般表达式中的插入语"""
         # 处理插入语中是子查询的情况
         if scanner.get_as_children_scanner().search_one_type_set_use_upper({"SELECT", "WITH"}):
@@ -719,8 +719,8 @@ class SQLParser:
         return result
 
     @classmethod
-    def _parse_array_index_expression(cls, scanner: TokenScanner, before_expression: NodeLogicalOrLevel,
-                                      sql_type: SQLType) -> NodeLogicalOrLevel:
+    def _parse_array_index_expression(cls, scanner: TokenScanner, before_expression: GeneralExpression,
+                                      sql_type: SQLType) -> GeneralExpression:
         """解析下标表达式
 
         Parameters
@@ -743,7 +743,7 @@ class SQLParser:
 
     @classmethod
     def parse_element_level_expression(cls, scanner_or_string: ScannerOrString,
-                                       sql_type: SQLType = SQLType.DEFAULT) -> NodeLogicalOrLevel:
+                                       sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         # pylint: disable=R0911
         """解析元素表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
@@ -751,7 +751,7 @@ class SQLParser:
 
     @classmethod
     def _parse_element_level_expression(cls, scanner: TokenScanner, sql_type: SQLType
-                                        ) -> NodeLogicalOrLevel:
+                                        ) -> GeneralExpression:
         # pylint: disable=R0911
         """已进行性能优化，使用专有解析逻辑而非通用解析逻辑"""
         node_0 = scanner.get_offset()
@@ -790,15 +790,15 @@ class SQLParser:
 
     @classmethod
     def parse_unary_level_expression(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> NodeUnaryLevel:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析一元表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_unary_level_expression(scanner, sql_type=sql_type)
 
     @classmethod
     def _parse_unary_level_expression(cls, scanner: TokenScanner, sql_type: SQLType
-                                      ) -> NodeUnaryLevel:
-        if scanner.get_as_source_or_null() in static.get_unary_operator_set(sql_type):
+                                      ) -> GeneralExpression:
+        if scanner.search_one_type_set(static.get_unary_operator_set(sql_type)):
             unary_operator = cls._parse_compute_operator(scanner)
             return node.ASTUnaryExpression(
                 operator=unary_operator,
@@ -808,13 +808,13 @@ class SQLParser:
 
     @classmethod
     def parse_xor_level_expression(cls, scanner_or_string: ScannerOrString,
-                                   sql_type: SQLType = SQLType.DEFAULT) -> NodeXorLevel:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析异或表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_xor_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_xor_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeXorLevel:
+    def _parse_xor_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_unary_level_expression(scanner, sql_type)
         while scanner.search_and_move_one_type_str("^"):
             # 在当前匹配结果的基础上，不断尝试匹配异或号，从而支持多个相连的异或号
@@ -827,14 +827,14 @@ class SQLParser:
 
     @classmethod
     def parse_monomial_level_expression(cls, scanner_or_string: ScannerOrString,
-                                        sql_type: SQLType = SQLType.DEFAULT) -> NodeMonomialLevel:
+                                        sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析单项表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_monomial_level_expression(scanner, sql_type)
 
     @classmethod
     def _parse_monomial_level_expression(cls, scanner: TokenScanner, sql_type: SQLType
-                                         ) -> NodeMonomialLevel:
+                                         ) -> GeneralExpression:
         before_value = cls._parse_xor_level_expression(scanner, sql_type)
         while scanner.get_as_source_or_null() in {"*", "/", "%", "MOD", "DIV"}:
             # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
@@ -849,13 +849,13 @@ class SQLParser:
 
     @classmethod
     def parse_polynomial_level_expression(cls, scanner_or_string: ScannerOrString,
-                                          sql_type: SQLType = SQLType.DEFAULT) -> NodePolynomialLevel:
+                                          sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析多项式表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_polynomial_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_polynomial_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodePolynomialLevel:
+    def _parse_polynomial_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_monomial_level_expression(scanner, sql_type)
         while scanner.search_one_type_set({"+", "-"}):
             operator = cls._parse_compute_operator(scanner)
@@ -869,13 +869,13 @@ class SQLParser:
 
     @classmethod
     def parse_shift_level_expression(cls, scanner_or_string: ScannerOrString,
-                                     sql_type: SQLType = SQLType.DEFAULT) -> NodeShiftLevel:
+                                     sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析移位表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_shift_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_shift_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeShiftLevel:
+    def _parse_shift_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_polynomial_level_expression(scanner, sql_type)
         while scanner.get_as_source_or_null() in {"<<", ">>"}:
             operator = cls._parse_compute_operator(scanner)
@@ -889,13 +889,13 @@ class SQLParser:
 
     @classmethod
     def parse_bitwise_and_level_expression(cls, scanner_or_string: ScannerOrString,
-                                           sql_type: SQLType = SQLType.DEFAULT) -> NodeBitwiseAndLevel:
+                                           sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析按位与层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_bitwise_and_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_bitwise_and_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeBitwiseAndLevel:
+    def _parse_bitwise_and_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_shift_level_expression(scanner, sql_type)
         while scanner.search_and_move_one_type_str("&"):
             after_value = cls._parse_shift_level_expression(scanner, sql_type)
@@ -907,13 +907,13 @@ class SQLParser:
 
     @classmethod
     def parse_bitwise_or_level_expression(cls, scanner_or_string: ScannerOrString,
-                                          sql_type: SQLType = SQLType.DEFAULT) -> NodeBitwiseOrLevel:
+                                          sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析按位或层级表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_bitwise_or_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_bitwise_or_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeBitwiseOrLevel:
+    def _parse_bitwise_or_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_bitwise_and_level_expression(scanner, sql_type)
         while scanner.search_and_move_one_type_str("|"):
             after_value = cls._parse_bitwise_and_level_expression(scanner, sql_type)
@@ -925,7 +925,7 @@ class SQLParser:
 
     @classmethod
     def parse_keyword_condition_level_expression(cls, scanner_or_string: ScannerOrString,
-                                                 sql_type: SQLType = SQLType.DEFAULT) -> NodeKeywordConditionLevel:
+                                                 sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         # pylint: disable=R0911
         """解析关键字条件表达式（不包含前置 NOT，但包含中间的 NOT）
 
@@ -942,7 +942,7 @@ class SQLParser:
     @classmethod
     def _parse_keyword_condition_level_expression(cls, scanner: TokenScanner,
                                                   before_value: Optional[NodeKeywordConditionLevel],
-                                                  sql_type: SQLType = SQLType.DEFAULT) -> NodeKeywordConditionLevel:
+                                                  sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析关键字条件表达式
 
         Parameters
@@ -951,10 +951,6 @@ class SQLParser:
         before_value : Optional[NodeKeywordConditionLevel], default = None
             已经遍历的上一个关键字条件表达式，用于递归，在第一次时置为 None 即可
         sql_type
-
-        Returns
-        -------
-
         """
         # 首先尝试解析第一个关键字条件表达式
         if before_value is None and scanner.search_and_move_one_type_str_use_upper("EXISTS"):
@@ -1038,14 +1034,14 @@ class SQLParser:
 
     @classmethod
     def parse_operator_condition_level_expression(cls, scanner_or_string: ScannerOrString,
-                                                  sql_type: SQLType = SQLType.DEFAULT) -> NodeOperatorConditionLevel:
+                                                  sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析运算符条件表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_operator_condition_level_expression(scanner, sql_type=sql_type)
 
     @classmethod
     def _parse_operator_condition_level_expression(cls, scanner: TokenScanner,
-                                                   sql_type: SQLType) -> NodeOperatorConditionLevel:
+                                                   sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_keyword_condition_level_expression(scanner, None, sql_type=sql_type)
         while scanner.search_one_type_set(static.COMPARE_OPERATOR_SET):
             compare_operator = cls._parse_compare_operator(scanner)
@@ -1059,13 +1055,13 @@ class SQLParser:
 
     @classmethod
     def parse_logical_not_level_expression(cls, scanner_or_string: ScannerOrString,
-                                           sql_type: SQLType = SQLType.DEFAULT) -> NodeLogicalNotLevel:
+                                           sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析逻辑否表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
 
     @classmethod
-    def _parse_logical_not_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalNotLevel:
+    def _parse_logical_not_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         if scanner.search_and_move_one_type_set_use_upper(static.get_not_operator_set(sql_type)):
             return node.ASTLogicalNotExpression(
                 expression=cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
@@ -1074,13 +1070,13 @@ class SQLParser:
 
     @classmethod
     def parse_logical_and_level_expression(cls, scanner_or_string: ScannerOrString,
-                                           sql_type: SQLType = SQLType.DEFAULT) -> NodeLogicalAndLevel:
+                                           sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析逻辑与表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_logical_and_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_logical_and_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalAndLevel:
+    def _parse_logical_and_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
         while scanner.search_and_move_one_type_set_use_upper({"AND", "&&"}):
             after_value = cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
@@ -1092,13 +1088,13 @@ class SQLParser:
 
     @classmethod
     def parse_logical_xor_level_expression(cls, scanner_or_string: ScannerOrString,
-                                           sql_type: SQLType = SQLType.DEFAULT) -> NodeLogicalXorLevel:
+                                           sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析逻辑异或表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_logical_xor_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_logical_xor_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalXorLevel:
+    def _parse_logical_xor_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_logical_and_level_expression(scanner, sql_type=sql_type)
         while scanner.search_and_move_one_type_str_use_upper("XOR"):
             after_value = cls._parse_logical_and_level_expression(scanner, sql_type=sql_type)
@@ -1110,13 +1106,13 @@ class SQLParser:
 
     @classmethod
     def parse_logical_or_level_expression(cls, scanner_or_string: ScannerOrString,
-                                          sql_type: SQLType = SQLType.DEFAULT) -> NodeLogicalOrLevel:
+                                          sql_type: SQLType = SQLType.DEFAULT) -> GeneralExpression:
         """解析逻辑或表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_logical_or_level_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_logical_or_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalOrLevel:
+    def _parse_logical_or_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> GeneralExpression:
         before_value = cls._parse_logical_xor_level_expression(scanner, sql_type=sql_type)
         while scanner.search_and_move_one_type_set_use_upper({"OR", "||"}):
             after_value = cls._parse_logical_xor_level_expression(scanner, sql_type=sql_type)
