@@ -57,6 +57,8 @@ class TestCoreParser(unittest.TestCase):
                          "`schema`.function(`param`)")
         self.assertEqual(SQLParser.parse_function_expression("trim(`column_name`) AND").source(SQLType.MYSQL),
                          "trim(`column_name`)")
+        self.assertEqual(SQLParser.parse_function_expression("rand() AND").source(SQLType.MYSQL),
+                         "rand()")
 
     def test_window_expression(self):
         """测试判断、解析窗口表达式"""

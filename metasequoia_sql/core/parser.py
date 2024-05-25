@@ -520,14 +520,10 @@ class SQLParser:
     def _parse_if_function_expression(cls, scanner: TokenScanner,
                                       sql_type: SQLType) -> node.ASTNormalFunctionExpression:
         function_params: List[NodeLogicalOrLevel] = []
-        first_param = True
-        for param_scanner in scanner.split_by(","):
-            if first_param is True:
-                function_params.append(cls._parse_logical_or_level_expression(param_scanner, sql_type=sql_type))
-                first_param = False
-            else:
-                function_params.append(cls._parse_logical_or_level_expression(param_scanner, sql_type=sql_type))
-            param_scanner.close()
+        if not scanner.is_finish:
+            cls._parse_logical_or_level_expression(scanner, sql_type=sql_type)
+        while scanner.search_and_move(","):
+            function_params.append(cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
         return node.ASTNormalFunctionExpression(
             name=node.ASTFunctionNameExpression(function_name="IF"),
             params=tuple(function_params)
@@ -564,10 +560,10 @@ class SQLParser:
             is_distinct = True
 
         function_params: List[NodeLogicalOrLevel] = []
-        for param_scanner in parenthesis_scanner.split_by(","):
-            function_params.append(cls._parse_logical_or_level_expression(param_scanner, sql_type=sql_type))
-            if not param_scanner.is_finish:
-                raise SqlParseError(f"无法解析函数参数: {param_scanner}")
+        if not parenthesis_scanner.is_finish:
+            function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type=sql_type))
+        while parenthesis_scanner.search_and_move(","):
+            function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type=sql_type))
 
         parenthesis_scanner.close()
 
@@ -1383,14 +1379,15 @@ class SQLParser:
 
     @classmethod
     def parse_sort_by_clause(cls, scanner_or_string: ScannerOrString,
-                             sql_type: SQLType = SQLType.DEFAULT) -> node.ASTSortByClause:
+                             sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTSortByClause]:
         """解析 SORT BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_sort_by_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_sort_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTSortByClause:
-        scanner.match("SORT", "BY")
+    def _parse_sort_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTSortByClause]:
+        if not scanner.search_and_move("SORT", "BY"):
+            return None
         columns = [cls._parse_order_by_column(scanner, sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_order_by_column(scanner, sql_type))
@@ -1398,14 +1395,16 @@ class SQLParser:
 
     @classmethod
     def parse_distribute_by_clause(cls, scanner_or_string: ScannerOrString,
-                                   sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDistributeByClause:
+                                   sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTDistributeByClause]:
         """解析 DISTRIBUTE BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_distribute_by_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_distribute_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTDistributeByClause:
-        scanner.match("DISTRIBUTE", "BY")
+    def _parse_distribute_by_clause(cls, scanner: TokenScanner,
+                                    sql_type: SQLType) -> Optional[node.ASTDistributeByClause]:
+        if not scanner.search_and_move("DISTRIBUTE", "BY"):
+            return None
         columns = [cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type))
@@ -1413,14 +1412,15 @@ class SQLParser:
 
     @classmethod
     def parse_cluster_by_clause(cls, scanner_or_string: ScannerOrString,
-                                sql_type: SQLType = SQLType.DEFAULT) -> node.ASTClusterByClause:
+                                sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTClusterByClause]:
         """解析 CLUSTER BY 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_cluster_by_clause(scanner, sql_type)
 
     @classmethod
-    def _parse_cluster_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTClusterByClause:
-        scanner.match("CLUSTER", "BY")
+    def _parse_cluster_by_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTClusterByClause]:
+        if not scanner.search_and_move("CLUSTER", "BY"):
+            return None
         columns = [cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type)]
         while scanner.search_and_move(","):
             columns.append(cls._parse_bitwise_or_level_expression(scanner, True, sql_type=sql_type))
@@ -1428,15 +1428,15 @@ class SQLParser:
 
     @classmethod
     def parse_limit_clause(cls, scanner_or_string: ScannerOrString,
-                           sql_type: SQLType = SQLType.DEFAULT) -> node.ASTLimitClause:
+                           sql_type: SQLType = SQLType.DEFAULT) -> Optional[node.ASTLimitClause]:
         """解析 LIMIT 子句"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_limit_clause(scanner)
 
     @classmethod
-    def _parse_limit_clause(cls, scanner: TokenScanner) -> node.ASTLimitClause:
+    def _parse_limit_clause(cls, scanner: TokenScanner) -> Optional[node.ASTLimitClause]:
         if not scanner.search_and_move("LIMIT"):
-            raise SqlParseError("无法解析为 LIMIT 子句")
+            return None
         cnt_1 = cls._parse_literal_expression(scanner).as_int()
         if scanner.search_and_move(","):
             offset_int = cnt_1
@@ -1531,26 +1531,10 @@ class SQLParser:
         group_by_clause = cls._parse_group_by_clause(inner_scanner, sql_type)
         having_clause = cls._parse_having_clause(inner_scanner, sql_type)
         order_by_clause = cls._parse_order_by_clause(inner_scanner, sql_type)
-
-        if sql_type == SQLType.HIVE and inner_scanner.search("SORT", "BY"):
-            sort_by_clause = cls._parse_sort_by_clause(inner_scanner, sql_type)
-        else:
-            sort_by_clause = None
-
-        if sql_type == SQLType.HIVE and inner_scanner.search("DISTRIBUTE", "BY"):
-            distribute_by_clause = cls._parse_distribute_by_clause(inner_scanner, sql_type)
-        else:
-            distribute_by_clause = None
-
-        if sql_type == SQLType.HIVE and inner_scanner.search("CLUSTER", "BY"):
-            cluster_by_clause = cls._parse_cluster_by_clause(inner_scanner, sql_type)
-        else:
-            cluster_by_clause = None
-
-        if inner_scanner.search("LIMIT"):
-            limit_clause = cls._parse_limit_clause(inner_scanner)
-        else:
-            limit_clause = None
+        sort_by_clause = cls._parse_sort_by_clause(inner_scanner, sql_type)
+        distribute_by_clause = cls._parse_distribute_by_clause(inner_scanner, sql_type)
+        cluster_by_clause = cls._parse_cluster_by_clause(inner_scanner, sql_type)
+        limit_clause = cls._parse_limit_clause(inner_scanner)
 
         while parenthesis_stack:
             parenthesis_stack.pop().close()
@@ -2317,12 +2301,7 @@ class SQLParser:
         set_clause = cls._parse_update_set_clause(scanner, sql_type)
         where_clause = cls._parse_where_clause(scanner, sql_type)
         order_by_clause = cls._parse_order_by_clause(scanner, sql_type)
-
-        if scanner.search("LIMIT"):
-            limit_clause = cls._parse_limit_clause(scanner)
-        else:
-            limit_clause = None
-
+        limit_clause = cls._parse_limit_clause(scanner)
         return node.ASTUpdateStatement(
             with_clause=with_clause,
             table_name=table_name,
