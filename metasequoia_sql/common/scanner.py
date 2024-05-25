@@ -89,7 +89,7 @@ class TokenScanner:
             return False
         for idx, token in enumerate(tokens):
             refer = self._elements[self._pos + idx]
-            if refer is None or not refer.equals(token):
+            if not refer.equals(token):
                 return False
         return True
 
@@ -107,8 +107,6 @@ class TokenScanner:
             return False
         for idx, token in enumerate(tokens):
             refer = self._elements[self._pos + idx]
-            if refer is None:
-                return False
             if isinstance(token, (AMTMark, str)):
                 if not refer.equals(token):
                     return False
