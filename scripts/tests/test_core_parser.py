@@ -749,3 +749,6 @@ class TestCoreParser(unittest.TestCase):
                     "WITH ROLLUP")
         ast_node = SQLParser.parse_group_by_clause(demo_sql)
         self.assertTrue(ast_node.with_rollup)
+
+    def test_parse_join_on_expression(self):
+        """测试 test_parse_join_on_expression 方法"""

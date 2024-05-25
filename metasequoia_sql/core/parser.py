@@ -1112,8 +1112,7 @@ class SQLParser:
 
     @classmethod
     def _parse_join_on_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTJoinOnExpression:
-        if not scanner.search_and_move("ON"):
-            raise SqlParseError(f"无法解析为 ON 关联表达式: {scanner}")
+        scanner.match("ON")
         return node.ASTJoinOnExpression(condition=cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
 
     @classmethod
@@ -1125,8 +1124,6 @@ class SQLParser:
 
     @classmethod
     def _parse_join_using_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTJoinUsingExpression:
-        if not scanner.search("USING"):
-            raise SqlParseError(f"无法解析为 USING 关联表达式: {scanner}")
         return node.ASTJoinUsingExpression(using_function=cls._parse_function_expression(scanner, sql_type=sql_type))
 
     @classmethod
@@ -1139,9 +1136,9 @@ class SQLParser:
     @classmethod
     def _parse_join_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> AliasJoinExpression:
         if scanner.search("ON"):
-            return cls._parse_join_on_expression(scanner, sql_type=sql_type)
+            return cls._parse_join_on_expression(scanner, sql_type)
         if scanner.search("USING"):
-            return cls._parse_join_using_expression(scanner, sql_type=sql_type)
+            return cls._parse_join_using_expression(scanner,sql_type)
         raise SqlParseError(f"无法解析为关联表达式: {scanner}")
 
     @classmethod

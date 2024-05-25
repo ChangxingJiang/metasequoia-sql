@@ -4,7 +4,7 @@
 
 from typing import List, Union, Optional, Set
 
-from metasequoia_sql.errors import ScannerError
+from metasequoia_sql.errors import ScannerError, ScannerNotMatchError
 from metasequoia_sql.lexical import AMTBase, AMTMark
 
 __all__ = ["TokenScanner"]
@@ -141,9 +141,9 @@ class TokenScanner:
         - 如果匹配成功，则将指针移动到 tokens 后的下一个元素
         - 如果匹配失败，则抛出异常
         """
-        for word in tokens:
-            if not self.pop().equals(word):
-                raise ScannerError(f"没有解析到目标词语:目标词={tokens} - {self}")
+        for token in tokens:
+            if not self.pop().equals(token):
+                raise ScannerNotMatchError(token, tokens, self)
 
     def get_as_source_or_null(self) -> Optional[str]:
         """不移动指针，并返回当前元素的 source"""
@@ -177,6 +177,11 @@ class TokenScanner:
         if len(tokens) > 0:
             result.append(TokenScanner(tokens))
         return result
+
+    def get_recent_source(self, n_word: int = 10) -> str:
+        """获取当前位置之前的 1 个元素开始的 n_word 个词法树节点（如果不足 n_word 个则全部返回）"""
+        elements = self._elements[self._pos - 1: min(self._pos + n_word - 1, len(self._elements))]
+        return " ".join([element.source for element in elements])
 
     @property
     def is_finish(self) -> bool:
