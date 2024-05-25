@@ -430,10 +430,13 @@ class SQLParser:
 
     @classmethod
     def _parse_alias_expression(cls, scanner: TokenScanner) -> Optional[node.ASTAlisaExpression]:
-        if not scanner.search_one_type_str_use_upper("AS") and not scanner.search_one_type_mark(AMTMark.NAME):
-            return None  # 当前位置不是别名表达式
-        scanner.search_and_move_one_type_str_use_upper("AS")
-        return node.ASTAlisaExpression(name=cls._get_alias_name(scanner))
+        if scanner.search_and_move_one_type_str_use_upper("AS"):
+            return node.ASTAlisaExpression(name=cls._get_alias_name(scanner))
+        else:
+            if scanner.search_one_type_mark(AMTMark.NAME):
+                node.ASTAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
+            else:
+                return None
 
     @classmethod
     def parse_multi_alias_expression(cls, scanner_or_string: ScannerOrString,
@@ -1198,7 +1201,7 @@ class SQLParser:
 
     @classmethod
     def _parse_select_column(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTSelectColumn:
-        general_expression = cls._parse_logical_or_level_expression(scanner, sql_type=sql_type)
+        general_expression = cls._parse_logical_or_level_expression(scanner, sql_type)
         alias_expression = cls._parse_alias_expression(scanner)
         return node.ASTSelectColumn(value=general_expression, alias=alias_expression)
 
