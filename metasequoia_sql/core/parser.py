@@ -755,10 +755,10 @@ class SQLParser:
         # pylint: disable=R0911
         """已进行性能优化，使用专有解析逻辑而非通用解析逻辑"""
         node_0 = scanner.get_offset()
-        if node_0.has_mark(AMTMark.PARENTHESIS):  # 处理包含插入语的情况
-            return cls._parse_general_parenthesis(scanner, sql_type=sql_type)
         if node_0.has_mark(AMTMark.LITERAL):
             return cls._parse_literal_expression(scanner)
+        if node_0.has_mark(AMTMark.PARENTHESIS):  # 处理包含插入语的情况
+            return cls._parse_general_parenthesis(scanner, sql_type=sql_type)
         if node_0.source_equal_use_upper("CASE"):
             return cls._parse_case_expression(scanner, sql_type=sql_type)
         if node_0.source_equal("*"):
