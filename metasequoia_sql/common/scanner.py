@@ -93,13 +93,46 @@ class TokenScanner:
                 return False
         return True
 
-    def search_type_set(self, token: Set[str]) -> bool:
+    def search_one_type_mark(self, token: AMTMark):
+        """【不移动指针】判断当前抽象语法树节点是否包含 token 标签"""
+        if self._pos >= self._len:
+            return False
+        return self._elements[self._pos].has_mark(token)
+
+    def search_one_type_str(self, token: str):
+        """【不移动指针】判断当前抽象词法树节点源代码的是否与 token 相同"""
+        if self._pos >= self._len:
+            return False
+        return self._elements[self._pos].source_equal(token)
+
+    def search_one_type_str_use_upper(self, token: str):
+        """【不移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否与 token 相同"""
+        if self._pos >= self._len:
+            return False
+        return self._elements[self._pos].source_equal_use_upper(token)
+
+    def search_two_type_str_use_upper(self, token_1: str, token_2: str):
+        """【不移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否与 token 相同"""
+        if self._pos + 1 >= self._len:
+            return False
+        return (self._elements[self._pos].source_equal_use_upper(token_1)
+                and self._elements[self._pos + 1].source_equal_use_upper(token_2))
+
+    def search_three_type_str_use_upper(self, token_1: str, token_2: str, token_3: str):
+        """【不移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否与 token 相同"""
+        if self._pos + 2 >= self._len:
+            return False
+        return (self._elements[self._pos].source_equal_use_upper(token_1)
+                and self._elements[self._pos + 1].source_equal_use_upper(token_2)
+                and self._elements[self._pos + 2].source_equal_use_upper(token_3))
+
+    def search_one_type_set(self, token: Set[str]) -> bool:
         """【不移动指针】判断当前抽象词法树节点源代码的是否在 token 的字典之中"""
         if self._pos >= self._len:
             return False
         return self._elements[self._pos].source in token
 
-    def search_type_set_use_upper(self, token: Set[str]) -> bool:
+    def search_one_type_set_use_upper(self, token: Set[str]) -> bool:
         """【不移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否在 token 的字典之中"""
         if self._pos >= self._len:
             return False
@@ -116,20 +149,44 @@ class TokenScanner:
         self.move(len(tokens))
         return True
 
-    def search_and_move_type_set(self, token: Set[str]) -> bool:
-        """【移动指针】判断当前抽象词法树节点源代码的是否在 token 的字典之中，如果存在返回 True 并移动指针，否则返回 False 且不移动指针"""
-        if self._pos >= self._len:
-            return False
-        if not self._elements[self._pos].source in token:
+    def search_and_move_one_type_str(self, token: str):
+        """【移动指针】判断当前抽象词法树节点源代码是否与 token 相同，如相同返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if not self.search_one_type_str(token):
             return False
         self.move()
         return True
 
-    def search_and_move_type_set_use_upper(self, token: Set[str]) -> bool:
-        """【移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否在 token 的字典之中，如果存在返回 True 并移动指针，否则返回 False 且不移动指针"""
-        if self._pos >= self._len:
+    def search_and_move_one_type_str_use_upper(self, token: str):
+        """【移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否与 token 相同，如相同返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if not self.search_one_type_str_use_upper(token):
             return False
-        if not self._elements[self._pos].source.upper() in token:
+        self.move()
+        return True
+
+    def search_and_move_two_type_str_use_upper(self, token_1: str, token_2: str):
+        """【移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否与 token 相同，如相同返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if not self.search_two_type_str_use_upper(token_1, token_2):
+            return False
+        self.move(2)
+        return True
+
+    def search_and_move_three_type_str_use_upper(self, token_1: str, token_2: str, token_3: str):
+        """【移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否与 token 相同，如相同返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if not self.search_three_type_str_use_upper(token_1, token_2, token_3):
+            return False
+        self.move(3)
+        return True
+
+    def search_and_move_one_type_set(self, token: Set[str]) -> bool:
+        """【移动指针】判断当前抽象词法树节点源代码的是否在 token 的字典之中，如果存在返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if not self.search_one_type_set(token):
+            return False
+        self.move()
+        return True
+
+    def search_and_move_one_type_set_use_upper(self, token: Set[str]) -> bool:
+        """【移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否在 token 的字典之中，如果存在返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if not self.search_one_type_set_use_upper(token):
             return False
         self.move()
         return True
