@@ -196,12 +196,45 @@ class FSMOperateHandleCacheToEnd(FSMOperate):
         return False
 
 
+# 部分特殊词语到词法树标签的映射关系
+HANDLE_WORD_TO_MARK_HASH = {
+    "SELECT": AMTMark.NONE,
+    "FROM": AMTMark.NONE,
+    "LATERAL": AMTMark.NONE,
+    "VIEW": AMTMark.NONE,
+    "LEFT": AMTMark.NONE,
+    "RIGHT": AMTMark.NONE,
+    "INNER": AMTMark.NONE,
+    "OUTER": AMTMark.NONE,
+    "FULL": AMTMark.NONE,
+    "JOIN": AMTMark.NONE,
+    "ON": AMTMark.NONE,
+    "WHERE": AMTMark.NONE,
+    "GROUP": AMTMark.NONE,
+    "BY": AMTMark.NONE,
+    "HAVING": AMTMark.NONE,
+    "ORDER": AMTMark.NONE,
+    "LIMIT": AMTMark.NONE,
+    "UNION": AMTMark.NONE,
+    "EXCEPT": AMTMark.NONE,
+    "MINUS": AMTMark.NONE,
+    "INTERSECT": AMTMark.NONE,
+    "AND": AMTMark.NONE,
+    "NOT": AMTMark.NONE,
+    "OR": AMTMark.NONE,
+    "TRUE": AMTMark.LITERAL,
+    "FALSE": AMTMark.LITERAL,
+    "NULL": AMTMark.LITERAL
+}
+
+
 class FSMOperateHandleCacheWordToWait(FSMOperate):
     """【状态机操作】根据缓冲区中的字符构造词法树节点，并分析词法树节点中的标记（用于分析普通词语是否可能为名称或字面值），而后将状态置为 FSMStatus.WAIT"""
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache_reset_and_handle(idx)
+        source = memory.cache_get_and_reset(idx)
+        memory.stack[-1].append(AMTSingle(source, HANDLE_WORD_TO_MARK_HASH.get(source.upper(), AMTMark.NAME)))
         memory.status = FSMStatus.WAIT
         return False
 
@@ -211,7 +244,8 @@ class FSMOperateHandleCacheWordToEnd(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache_reset_and_handle(idx)
+        source = memory.cache_get_and_reset(idx)
+        memory.stack[-1].append(AMTSingle(source, HANDLE_WORD_TO_MARK_HASH.get(source.upper(), AMTMark.NAME)))
         memory.status = FSMStatus.END
         return False
 

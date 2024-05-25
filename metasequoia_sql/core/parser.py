@@ -434,7 +434,7 @@ class SQLParser:
             return node.ASTAlisaExpression(name=cls._get_alias_name(scanner))
         else:
             if scanner.search_one_type_mark(AMTMark.NAME):
-                node.ASTAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
+                return node.ASTAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
             else:
                 return None
 
