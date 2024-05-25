@@ -103,25 +103,25 @@ class FSMOperate(abc.ABC):
         return FSMOperateRaise()
 
     @abc.abstractmethod
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
 
 
 class FSMOperateMoveAndCleanCache(FSMOperate):
     """【状态机操作】向后移动指针，清空缓存区"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.clear()
+        memory.pos = idx + 1
         return True
 
 
 class FSMOperateMoveAndCleanCacheToWait(FSMOperate):
     """【状态机操作】向后移动指针，清空缓存区，并将状态改为 WAIT"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.clear()
+        memory.pos = idx + 1
         memory.status = FSMStatus.WAIT
         return True
 
@@ -129,9 +129,9 @@ class FSMOperateMoveAndCleanCacheToWait(FSMOperate):
 class FSMOperateCleanCacheToWait(FSMOperate):
     """【状态机操作】清空缓存区，并将状态改为 WAIT"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.clear()
+        memory.pos = idx
         memory.status = FSMStatus.WAIT
         return False
 
@@ -139,9 +139,9 @@ class FSMOperateCleanCacheToWait(FSMOperate):
 class FSMOperateCleanCacheToEnd(FSMOperate):
     """【状态机操作】清空缓存区，并将状态改为 END"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.clear()
+        memory.pos = idx
         memory.status = FSMStatus.END
         return False
 
@@ -152,9 +152,8 @@ class FSMOperateAddCache(FSMOperate):
     def __init__(self, status: FSMStatus):
         self.status = status  # 需要切换到状态机状态（仅抛出异常时不需要默认值）
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.append(ch)
         memory.status = self.status
         return True
 
@@ -165,7 +164,7 @@ class FSMOperateSetStatus(FSMOperate):
     def __init__(self, status: FSMStatus):
         self.status = status  # 需要切换到状态机状态（仅抛出异常时不需要默认值）
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
         memory.status = self.status
         return False
@@ -177,9 +176,9 @@ class FSMOperateHandleCacheToWait(FSMOperate):
     def __init__(self, marks: int):
         self.marks = marks
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(), self.marks))
+        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx), self.marks))
         memory.status = FSMStatus.WAIT
         return False
 
@@ -190,9 +189,9 @@ class FSMOperateHandleCacheToEnd(FSMOperate):
     def __init__(self, marks: int):
         self.marks = marks
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(), self.marks))
+        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx), self.marks))
         memory.status = FSMStatus.END
         return False
 
@@ -200,9 +199,9 @@ class FSMOperateHandleCacheToEnd(FSMOperate):
 class FSMOperateHandleCacheWordToWait(FSMOperate):
     """【状态机操作】根据缓冲区中的字符构造词法树节点，并分析词法树节点中的标记（用于分析普通词语是否可能为名称或字面值），而后将状态置为 FSMStatus.WAIT"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache_reset_and_handle()
+        memory.cache_reset_and_handle(idx)
         memory.status = FSMStatus.WAIT
         return False
 
@@ -210,9 +209,9 @@ class FSMOperateHandleCacheWordToWait(FSMOperate):
 class FSMOperateHandleCacheWordToEnd(FSMOperate):
     """【状态机操作】根据缓冲区中的字符构造词法树节点，并分析词法树节点中的标记（用于分析普通词语是否可能为名称或字面值），而后将状态置为 FSMStatus.END"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache_reset_and_handle()
+        memory.cache_reset_and_handle(idx)
         memory.status = FSMStatus.END
         return False
 
@@ -223,10 +222,9 @@ class FSMOperateAddAndHandleCacheToWait(FSMOperate):
     def __init__(self, marks: int):
         self.marks = marks
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.append(ch)
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(), self.marks))
+        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx + 1), self.marks))
         memory.status = FSMStatus.WAIT
         return True
 
@@ -237,18 +235,18 @@ class FSMOperateAddAndHandleCache(FSMOperate):
     def __init__(self, marks: int):
         self.marks = marks
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.cache.append(ch)
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(), self.marks))
+        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx + 1), self.marks))
         return True
 
 
 class FSMOperateStartParenthesis(FSMOperate):
     """【状态机操作】处理当前字符位置的开括号"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
+        memory.pos = idx + 1
         memory.stack.append([])
         return True
 
@@ -256,10 +254,11 @@ class FSMOperateStartParenthesis(FSMOperate):
 class FSMOperateEndParenthesis(FSMOperate):
     """【状态机操作】处理当前字符位置的闭括号"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
         if len(memory.stack) <= 1:
             raise AMTParseError("插入语结束标记数量大于开始标记数量")
+        memory.pos = idx + 1
         tokens = memory.stack.pop()
         memory.stack[-1].append(AMTParenthesis(tokens, AMTMark.PARENTHESIS))
         return True
@@ -268,8 +267,9 @@ class FSMOperateEndParenthesis(FSMOperate):
 class FSMOperateStartSlice(FSMOperate):
     """【状态机操作】处理当前字符位置的 [ 括号"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
+        memory.pos = idx + 1
         memory.stack.append([])
         return True
 
@@ -277,10 +277,11 @@ class FSMOperateStartSlice(FSMOperate):
 class FSMOperateEndSlice(FSMOperate):
     """【状态机操作】处理当前字符位置的 [ 括号"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
         if len(memory.stack) <= 1:
             raise AMTParseError("结束语结束标记数量大于开始标记数量")
+        memory.pos = idx + 1
         tokens = memory.stack.pop()
         memory.stack[-1].append(AMTSlice(tokens, AMTMark.ARRAY_INDEX))
         return True
@@ -289,7 +290,7 @@ class FSMOperateEndSlice(FSMOperate):
 class FSMOperateRaise(FSMOperate):
     """【状态机操作】抛出异常"""
 
-    def execute(self, memory: FSMMemory, ch: str):
+    def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
         if ch == END:
             raise AMTParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法结束符")

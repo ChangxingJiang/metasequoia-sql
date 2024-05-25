@@ -32,7 +32,6 @@ class FSMMachine:
         if operation_map is None:
             operation_map = FSM_OPERATION_MAP
         self.operation_map = operation_map
-        self.memory = FSMMemory()
 
     @classmethod
     def parse(cls, text: str) -> List[AMTBase]:
@@ -51,27 +50,29 @@ class FSMMachine:
         text = preproc_sql(text)
         fsm_machine = cls()
 
+        memory = FSMMemory(text)
+
         # 因为在 Python 中，遍历字符串的性能要远高于遍历下标后再用下标获取字符，所以优先使用遍历字符串的方法实现
-        for ch in text:
-            while not fsm_machine.handle(ch):
+        for i, ch in enumerate(text):
+            while not fsm_machine.handle(memory, i, ch):
                 pass  # 不断循环，直到处理方法返回需要移动指针为止
-        fsm_machine.handle(END)  # 处理结束标记
+        fsm_machine.handle(memory, len(text), END)  # 处理结束标记
 
-        if fsm_machine.memory.status != FSMStatus.END:
-            raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {fsm_machine.memory.status}")
+        if memory.status != FSMStatus.END:
+            raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {memory.status}")
 
-        if len(fsm_machine.memory.stack) > 1:
+        if len(memory.stack) > 1:
             raise AMTParseError("词法分析有限状态机，解析到的 `(` 数量大于 `)`")
 
-        return fsm_machine.memory.stack[0]
+        return memory.stack[0]
 
-    def handle(self, ch: str) -> bool:
+    def handle(self, memory: FSMMemory, idx: int, ch: str) -> bool:
         """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
         # 获取需要执行的行为
-        operate: Optional[FSMOperate] = FSM_OPERATION_MAP.get((self.memory.status, ch))
+        operate: Optional[FSMOperate] = FSM_OPERATION_MAP.get((memory.status, ch))
 
         if operate is None:
-            operate = FSM_OPERATION_MAP_DEFAULT[self.memory.status]  # 如果没有则使用当前状态的默认处理规则
+            operate = FSM_OPERATION_MAP_DEFAULT[memory.status]  # 如果没有则使用当前状态的默认处理规则
 
         # 执行行为
-        return operate.execute(self.memory, ch)
+        return operate.execute(memory, idx, ch)
