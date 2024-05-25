@@ -48,6 +48,8 @@ class AMTMark(enum.IntEnum):
 class AMTBase(abc.ABC):
     """抽象词法树（AMT）节点类的抽象基类"""
 
+    __slots__ = ["marks", "source", "children"]
+
     def __init__(self, marks: int = 0):
         """
 
@@ -57,16 +59,8 @@ class AMTBase(abc.ABC):
             状态压缩后的枚举值，从而将判断 AMTMark 是否在一个集合中的操作，变为一次按位与的计算
         """
         self.marks = marks
-
-    @property
-    @abc.abstractmethod
-    def source(self) -> str:
-        """返回当前节点的源代码"""
-
-    @abc.abstractmethod
-    def children(self) -> List["AMTBase"]:
-        """返回所有下游节点，若为叶子节点，则返回空列表"""
-        return []
+        self.source = None
+        self.children = []
 
     def equals(self, other: Union[str, AMTMark]) -> Union[bool, int]:
         """判断当前抽象词法树节点是否等价于 other
@@ -101,20 +95,9 @@ class AMTBase(abc.ABC):
 class AMTSingle(AMTBase):
     """单元素节点"""
 
-    __slots__ = ["marks", "_source"]
-
     def __init__(self, source: str, marks: int = 0):
         super().__init__(marks)
-        self._source = source
-
-    @property
-    def source(self) -> str:
-        """当前节点的源代码"""
-        return self._source
-
-    def children(self) -> List[AMTBase]:
-        """返回所有下游节点，若为叶子节点，则返回空列表"""
-        return []
+        self.source = source
 
     def __repr__(self) -> str:
         format_source = self.source.replace("\n", r"\n")
@@ -124,18 +107,10 @@ class AMTSingle(AMTBase):
 class AMTParenthesisBase(AMTBase):
     """插入语节点的基类"""
 
-    __slots__ = ["marks", "_tokens"]
-
     def __init__(self, tokens: List[AMTBase], marks: int = 0):
         super().__init__(marks)
-        self._tokens: List[AMTBase] = tokens
-
-    def children(self) -> List[AMTBase]:
-        return self._tokens
-
-    @property
-    def source(self):
-        return "(" + "".join(token.source for token in self._tokens) + ")"
+        self.source = "(" + "".join(token.source for token in self.children) + ")"
+        self.children: List[AMTBase] = tokens
 
     def equals(self, other: Union[str, AMTMark]) -> Union[bool, int]:
         """判断当前抽象词法树节点是否等价于 other
@@ -155,7 +130,7 @@ class AMTParenthesisBase(AMTBase):
         return False  # 插入语不尝试匹配源码值
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} children={self.children()}>"
+        return f"<{self.__class__.__name__} children={self.children}>"
 
 
 class AMTParenthesis(AMTParenthesisBase):
