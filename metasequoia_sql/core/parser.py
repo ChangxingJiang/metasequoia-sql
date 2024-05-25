@@ -296,64 +296,6 @@ class SQLParser:
         )
 
     @classmethod
-    def parse_column_name_expression_and_index(cls, scanner_or_string: ScannerOrString,
-                                               sql_type: SQLType = SQLType.DEFAULT
-                                               ) -> Union[node.ASTColumnNameExpression, node.ASTIndexExpression]:
-        """解析函数表达式，并解析函数表达式后可能包含的数组下标"""
-        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return cls._parse_column_name_expression_and_index(scanner, sql_type=sql_type)
-
-    @classmethod
-    def _parse_column_name_expression_and_index(cls, scanner: TokenScanner, sql_type: SQLType
-                                                ) -> Union[node.ASTColumnNameExpression, node.ASTIndexExpression]:
-        column_name_expression = cls._parse_column_name_expression(scanner)
-        if not scanner.search(AMTMark.ARRAY_INDEX):
-            return column_name_expression  # 如果没有数组下标则直接返回
-        # 解析数组下标
-        children_scanner = scanner.pop_as_children_scanner()
-        idx = cls._parse_bitwise_or_level_expression(children_scanner, sql_type)
-        children_scanner.close()
-        return node.ASTIndexExpression(
-            array=column_name_expression,
-            idx=idx
-        )
-
-    @classmethod
-    def _parse_column_name_expression_and_index_with_table(
-            cls, scanner: TokenScanner, sql_type: SQLType
-    ) -> Union[node.ASTColumnNameExpression, node.ASTIndexExpression]:
-        """解析确定包含表名的字段名表达式及数组下标表达式"""
-        column_name_expression = cls._parse_column_name_expression_with_table(scanner)
-        if not scanner.search(AMTMark.ARRAY_INDEX):
-            return column_name_expression  # 如果没有数组下标则直接返回
-        # 解析数组下标
-        children_scanner = scanner.pop_as_children_scanner()
-        idx = cls._parse_bitwise_or_level_expression(children_scanner, sql_type)
-        children_scanner.close()
-        return node.ASTIndexExpression(
-            array=column_name_expression,
-            idx=idx
-        )
-
-    @classmethod
-    def _parse_column_name_expression_and_index_without_table(
-            cls, scanner: TokenScanner, sql_type: SQLType
-    ) -> Union[node.ASTColumnNameExpression, node.ASTIndexExpression]:
-        """解析确定不包含表名的字段名表达式及数组下标表达式"""
-        column_name_expression = cls._parse_column_name_expression_without_table(scanner)
-        if not scanner.search(AMTMark.ARRAY_INDEX):
-            return column_name_expression  # 如果没有数组下标则直接返回
-        # 解析数组下标
-        children_scanner = scanner.pop_as_children_scanner()
-        idx = cls._parse_bitwise_or_level_expression(children_scanner, sql_type)
-        children_scanner.close()
-        return node.ASTIndexExpression(
-            array=column_name_expression,
-            idx=idx
-        )
-
-    @classmethod
-    @classmethod
     def parse_table_name_expression(cls, scanner_or_string: ScannerOrString,
                                     sql_type: SQLType = SQLType.DEFAULT) -> node.ASTTableNameExpression:
         """解析表名表达式"""
@@ -591,43 +533,44 @@ class SQLParser:
 
     @classmethod
     def _parse_function_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFunctionExpressionBase:
-        function_name = cls._parse_function_name_expression(scanner)
+        function_name_expression = cls._parse_function_name_expression(scanner)
+        function_name_upper = function_name_expression.function_name.upper()
 
-        if function_name.function_name.upper() == "CAST":
-            return cls._parse_cast_function_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
-        if function_name.function_name.upper() == "EXTRACT":
-            return cls._parse_extract_function_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
-        if function_name.function_name.upper() == "IF":
-            return cls._parse_if_function_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
+        if function_name_upper == "CAST":
+            return cls._parse_cast_function_expression(scanner.pop_as_children_scanner(), sql_type)
+        if function_name_upper == "EXTRACT":
+            return cls._parse_extract_function_expression(scanner.pop_as_children_scanner(), sql_type)
+        if function_name_upper == "IF":
+            return cls._parse_if_function_expression(scanner.pop_as_children_scanner(), sql_type)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
-        if function_name.function_name.upper() == "SUBSTRING":
+        if function_name_upper == "SUBSTRING":
             # 将 MySQL 和 PostgreSQL 中的 "SUBSTRING(str1 FROM 3 FOR 2)" 格式化为 "SUBSTRING(str1, 3, 2)"
             parenthesis_scanner = TokenScanner([
                 element if not element.equals("FROM") and not element.equals("FOR") else AMTSingle(",")
                 for element in parenthesis_scanner.elements])
 
         is_distinct = False
-        if (function_name.function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET
+        if (function_name_upper in name_set.AGGREGATION_FUNCTION_NAME_SET
                 and parenthesis_scanner.search_and_move("DISTINCT")):
             is_distinct = True
 
         function_params: List[NodeLogicalOrLevel] = []
         if not parenthesis_scanner.is_finish:
-            function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type=sql_type))
+            function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type))
         while parenthesis_scanner.search_and_move(","):
-            function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type=sql_type))
+            function_params.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type))
 
         parenthesis_scanner.close()
 
-        if (function_name.schema_name is None
-                and function_name.function_name.upper() in name_set.AGGREGATION_FUNCTION_NAME_SET):
+        if (function_name_expression.schema_name is None
+                and function_name_upper in name_set.AGGREGATION_FUNCTION_NAME_SET):
             return node.ASTAggregationFunction(
-                name=function_name,
+                name=function_name_expression,
                 params=tuple(function_params),
                 is_distinct=is_distinct)
         return node.ASTNormalFunctionExpression(
-            name=function_name,
+            name=function_name_expression,
             params=tuple(function_params)
         )
 
@@ -642,17 +585,8 @@ class SQLParser:
     @classmethod
     def _parse_function_expression_and_index(cls, scanner: TokenScanner, sql_type: SQLType
                                              ) -> Union[node.ASTFunctionExpressionBase, node.ASTIndexExpression]:
-        array_expression = cls._parse_function_expression(scanner, sql_type=sql_type)
-        if not scanner.search(AMTMark.ARRAY_INDEX):
-            return array_expression  # 如果没有数组下标则直接返回
-        # 解析数组下标
-        children_scanner = scanner.pop_as_children_scanner()
-        idx = cls._parse_bitwise_or_level_expression(children_scanner, sql_type)
-        children_scanner.close()
-        return node.ASTIndexExpression(
-            array=array_expression,
-            idx=idx
-        )
+        before_expression = cls._parse_function_expression(scanner, sql_type=sql_type)
+        return cls._parse_array_index_expression(scanner, before_expression, sql_type)
 
     @classmethod
     def _parse_in_parenthesis(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeElementLevel:
@@ -785,10 +719,33 @@ class SQLParser:
         return result
 
     @classmethod
+    def _parse_array_index_expression(cls, scanner: TokenScanner, before_expression: NodeLogicalOrLevel,
+                                      sql_type: SQLType) -> NodeLogicalOrLevel:
+        """解析下标表达式
+
+        Parameters
+        ----------
+        scanner : TokenScanner
+        before_expression : NodeLogicalOrLevel
+            下标表达式之前的表达式
+        sql_type : SQLType
+        """
+        if not scanner.search(AMTMark.ARRAY_INDEX):
+            return before_expression  # 如果没有下标则直接返回
+        # 解析数组下标
+        children_scanner = scanner.pop_as_children_scanner()
+        idx = cls._parse_bitwise_or_level_expression(children_scanner, sql_type)
+        children_scanner.close()
+        return node.ASTIndexExpression(
+            array=before_expression,
+            idx=idx
+        )
+
+    @classmethod
     def parse_element_level_expression(cls, scanner_or_string: ScannerOrString,
                                        sql_type: SQLType = SQLType.DEFAULT) -> NodeLogicalOrLevel:
         # pylint: disable=R0911
-        """解析元素表达式层级（因为可能包含插入语，所以返回值类型是一般表达式）"""
+        """解析元素表达式层级"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         return cls._parse_element_level_expression(scanner, sql_type=sql_type)
 
@@ -808,20 +765,19 @@ class SQLParser:
             return cls._parse_wildcard_expression(scanner)
 
         node_1 = scanner.get_offset_or_null(1)
-        if node_1 is None:
-            return cls._parse_column_name_expression_and_index_without_table(scanner, sql_type=sql_type)
-        elif node_1.has_mark(AMTMark.PARENTHESIS):
+        if node_1 is not None and node_1.has_mark(AMTMark.PARENTHESIS):
             node_2 = scanner.get_offset_or_null(2)
             if node_2 is None or not node_2.source_equal_upper("OVER"):
                 return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
             else:
                 return cls._parse_window_expression(scanner, sql_type=sql_type)
-        elif node_1.source_equal("."):
+        elif node_1 is not None and node_1.source_equal("."):
             node_2 = scanner.get_offset(2)
             if node_2.has_mark(AMTMark.NAME):
                 node_3 = scanner.get_offset_or_null(3)
                 if node_3 is None or not node_3.has_mark(AMTMark.PARENTHESIS):
-                    return cls._parse_column_name_expression_and_index_with_table(scanner, sql_type=sql_type)
+                    column_name_expression = cls._parse_column_name_expression_with_table(scanner)
+                    return cls._parse_array_index_expression(scanner, column_name_expression, sql_type)
                 else:
                     return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
             elif node_2.source_equal("*"):
@@ -829,7 +785,8 @@ class SQLParser:
             else:
                 raise SqlParseError(f"{node_1.source}. 之后不是名称或通配符")
         else:
-            return cls._parse_column_name_expression_and_index_without_table(scanner, sql_type=sql_type)
+            column_name_expression = cls._parse_column_name_expression_without_table(scanner)
+            return cls._parse_array_index_expression(scanner, column_name_expression, sql_type)
 
     @classmethod
     def parse_unary_level_expression(cls, scanner_or_string: ScannerOrString,
