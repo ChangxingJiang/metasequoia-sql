@@ -50,18 +50,6 @@ class AMTBase(abc.ABC):
 
     __slots__ = ["marks", "source", "children"]
 
-    def __init__(self, marks: int = 0):
-        """
-
-        Parameters
-        ----------
-        marks : int, default = 0
-            状态压缩后的枚举值，从而将判断 AMTMark 是否在一个集合中的操作，变为一次按位与的计算
-        """
-        self.marks = marks
-        self.source = None
-        self.children = []
-
     def equals(self, other: Union[str, AMTMark]) -> Union[bool, int]:
         """判断当前抽象词法树节点是否等价于 other
 
@@ -96,8 +84,9 @@ class AMTSingle(AMTBase):
     """单元素节点"""
 
     def __init__(self, source: str, marks: int = 0):
-        super().__init__(marks)
+        self.marks = marks
         self.source = source
+        self.children = []
 
     def __repr__(self) -> str:
         format_source = self.source.replace("\n", r"\n")
@@ -107,10 +96,10 @@ class AMTSingle(AMTBase):
 class AMTParenthesisBase(AMTBase):
     """插入语节点的基类"""
 
-    def __init__(self, tokens: List[AMTBase], marks: int = 0):
-        super().__init__(marks)
-        self.source = "(" + "".join(token.source for token in self.children) + ")"
-        self.children: List[AMTBase] = tokens
+    def __init__(self, children: List[AMTBase], marks: int = 0):
+        self.marks = marks
+        self.source = "(" + "".join(token.source for token in children) + ")"
+        self.children: List[AMTBase] = children
 
     def equals(self, other: Union[str, AMTMark]) -> Union[bool, int]:
         """判断当前抽象词法树节点是否等价于 other
