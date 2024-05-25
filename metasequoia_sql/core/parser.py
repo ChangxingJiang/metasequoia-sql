@@ -775,7 +775,7 @@ class SQLParser:
     @classmethod
     def _parse_unary_level_expression(cls, scanner: TokenScanner, sql_type: SQLType
                                       ) -> NodeUnaryLevel:
-        if scanner.get_as_source() in static.get_unary_operator_set(sql_type):
+        if scanner.get_as_source_or_null() in static.get_unary_operator_set(sql_type):
             unary_operator = cls._parse_compute_operator(scanner)
             return node.ASTUnaryExpression(
                 operator=unary_operator,
@@ -813,7 +813,7 @@ class SQLParser:
     def _parse_monomial_level_expression(cls, scanner: TokenScanner, sql_type: SQLType
                                          ) -> NodeMonomialLevel:
         before_value = cls._parse_xor_level_expression(scanner, sql_type)
-        while scanner.get_as_source() in {"*", "/", "%", "MOD", "DIV"}:
+        while scanner.get_as_source_or_null() in {"*", "/", "%", "MOD", "DIV"}:
             # 在当前匹配结果的基础上，不断尝试匹配乘号、除号和取模号，从而支持包含多个元素的乘积
             operator = cls._parse_compute_operator(scanner)
             after_value = cls._parse_xor_level_expression(scanner, sql_type)
@@ -854,7 +854,7 @@ class SQLParser:
     @classmethod
     def _parse_shift_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeShiftLevel:
         before_value = cls._parse_polynomial_level_expression(scanner, sql_type)
-        while scanner.get_as_source() in {"<<", ">>"}:
+        while scanner.get_as_source_or_null() in {"<<", ">>"}:
             operator = cls._parse_compute_operator(scanner)
             after_value = cls._parse_polynomial_level_expression(scanner, sql_type)
             before_value = node.ASTShiftExpression(
@@ -949,7 +949,7 @@ class SQLParser:
             if scanner.is_finish:
                 return before_value  # 如果已经匹配结果，则直接返回
 
-            next_ch = scanner.get_as_source().upper()
+            next_ch = scanner.get_as_source_or_null().upper()
             if next_ch == "BETWEEN":
                 scanner.move()
                 from_value = cls._parse_bitwise_or_level_expression(scanner, sql_type)
@@ -1007,7 +1007,7 @@ class SQLParser:
                 return before_value
 
         # 如果后续是连续的关键字条件表达式的关键字，则将当前关键字表达式作为下一个关键字表达式的 before_value 继续解析
-        if scanner.get_as_source() in {"NOT", "BETWEEN", "IS", "IN", "LIKE", "RLIKE", "REGEXP"}:
+        if scanner.get_as_source_or_null() in {"NOT", "BETWEEN", "IS", "IN", "LIKE", "RLIKE", "REGEXP"}:
             return cls._parse_keyword_condition_level_expression(scanner, result_value, sql_type=sql_type)
 
         # 如果后续不是关键字条件表达式的关键字，则直接返回当前的关键字条件表达式
