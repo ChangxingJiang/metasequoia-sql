@@ -41,20 +41,15 @@ class TokenScanner:
         - 如果指针已到达字符串末尾，则返回 None
         - 如果指针超出字符串长度，则抛出异常
         """
-        if self._pos > self._len:
-            raise ScannerError(f"要获取的指针大于等于字符串长度: len={self._len}, pos={self._pos}")
-        if self._pos == self._len:
+        if self._pos >= self._len:
             return None
         return self._elements[self._pos]
 
     def pop(self) -> AMTBase:
         """获取当前指针位置元素，并移动指针
 
-        - 如果要移动到的指针位置超出字符串长度，则抛出异常
+        - 如果要移动到的指针位置超出字符串长度，则抛出异常  TODO 在异常处理机制中提取并处理
         """
-        if self._pos >= self._len:
-            raise ScannerError(f"要移动到的指针下标大于字符串长度: len={self._len}, pos={self._pos + 1} {self}")
-
         result = self._elements[self._pos]
         self._pos += 1  # 移动指针
         return result
@@ -152,10 +147,9 @@ class TokenScanner:
 
     def get_as_source(self) -> Optional[str]:
         """不移动指针，并返回当前元素的 source"""
-        element = self.get()
-        if element is not None:
-            return self.get().source
-        return None
+        if self._pos >= self._len:
+            return None
+        return self._elements[self._pos].source
 
     def pop_as_source(self) -> str:
         """将指针向后移动 1 个元素，并返回当前元素的 source"""
