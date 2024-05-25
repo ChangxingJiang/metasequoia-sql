@@ -178,7 +178,9 @@ class FSMOperateHandleCacheToWait(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx), self.marks))
+        source = memory.text[memory.pos: idx]
+        memory.pos = idx
+        memory.stack[-1].append(AMTSingle(source, self.marks))
         memory.status = FSMStatus.WAIT
         return False
 
@@ -191,7 +193,9 @@ class FSMOperateHandleCacheToEnd(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx), self.marks))
+        source = memory.text[memory.pos: idx]
+        memory.pos = idx
+        memory.stack[-1].append(AMTSingle(source, self.marks))
         memory.status = FSMStatus.END
         return False
 
@@ -233,7 +237,8 @@ class FSMOperateHandleCacheWordToWait(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        source = memory.cache_get_and_reset(idx)
+        source = memory.text[memory.pos: idx]
+        memory.pos = idx
         memory.stack[-1].append(AMTSingle(source, HANDLE_WORD_TO_MARK_HASH.get(source.upper(), AMTMark.NAME)))
         memory.status = FSMStatus.WAIT
         return False
@@ -244,7 +249,8 @@ class FSMOperateHandleCacheWordToEnd(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        source = memory.cache_get_and_reset(idx)
+        source = memory.text[memory.pos: idx]
+        memory.pos = idx
         memory.stack[-1].append(AMTSingle(source, HANDLE_WORD_TO_MARK_HASH.get(source.upper(), AMTMark.NAME)))
         memory.status = FSMStatus.END
         return False
@@ -258,7 +264,9 @@ class FSMOperateAddAndHandleCacheToWait(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx + 1), self.marks))
+        source = memory.text[memory.pos: idx + 1]
+        memory.pos = idx + 1
+        memory.stack[-1].append(AMTSingle(source, self.marks))
         memory.status = FSMStatus.WAIT
         return True
 
@@ -271,7 +279,9 @@ class FSMOperateAddAndHandleCache(FSMOperate):
 
     def execute(self, memory: FSMMemory, idx: int, ch: str):
         """执行操作"""
-        memory.stack[-1].append(AMTSingle(memory.cache_get_and_reset(idx + 1), self.marks))
+        source = memory.text[memory.pos: idx + 1]
+        memory.pos = idx + 1
+        memory.stack[-1].append(AMTSingle(source, self.marks))
         return True
 
 
