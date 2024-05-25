@@ -93,29 +93,17 @@ class TokenScanner:
                 return False
         return True
 
-    def rich_search(self, *tokens: Union[str, AMTMark, Set[str]]) -> bool:
-        """从当前配置开始匹配 tokens
-
-        - 如果匹配成功，则返回 True
-        - 如果匹配失败，则返回 False
-
-        需要注意的是：
-        1. 插入语仅能用 ASTMark.PARENTHESIS 进行匹配，而不能使用源码进行匹配
-        2. 集合类元素中不支持 AMTMark 类型
-        """
-        if self._pos + len(tokens) > self._len:
+    def search_type_set(self, token: Set[str]) -> bool:
+        """【不移动指针】判断当前抽象词法树节点源代码的是否在 token 的字典之中"""
+        if self._pos >= self._len:
             return False
-        for idx, token in enumerate(tokens):
-            refer = self._elements[self._pos + idx]
-            if isinstance(token, (AMTMark, str)):
-                if not refer.equals(token):
-                    return False
-            elif isinstance(token, set):
-                if refer.source.upper() not in token:
-                    return False
-            else:
-                raise KeyError(f"不支持的参数类型: {token} (type={type(token)})")
-        return True
+        return self._elements[self._pos].source in token
+
+    def search_type_set_use_upper(self, token: Set[str]) -> bool:
+        """【不移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否在 token 的字典之中"""
+        if self._pos >= self._len:
+            return False
+        return self._elements[self._pos].source.upper() in token
 
     def search_and_move(self, *tokens: Union[str, AMTMark]) -> bool:
         """从当前配置开始匹配 tokens
@@ -128,19 +116,22 @@ class TokenScanner:
         self.move(len(tokens))
         return True
 
-    def rich_search_and_move(self, *tokens: Union[str, AMTMark, Set[str]]) -> bool:
-        """从当前配置开始匹配 tokens
-
-        当 token 为 str 类型或 AMTMark 类型时，判断当前元素是否与 token 一致；
-        当 token 为 set 类型时，判断当前元素是否在 set 集合中
-        集合中不支持 AMTMark 类型
-
-        - 如果匹配成功，则将指针移动到 tokens 后的下一个元素并返回 True
-        - 如果匹配失败，则不移动指针并返回 False
-        """
-        if not self.rich_search(*tokens):
+    def search_and_move_type_set(self, token: Set[str]) -> bool:
+        """【移动指针】判断当前抽象词法树节点源代码的是否在 token 的字典之中，如果存在返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if self._pos >= self._len:
             return False
-        self.move(len(tokens))
+        if not self._elements[self._pos].source in token:
+            return False
+        self.move()
+        return True
+
+    def search_and_move_type_set_use_upper(self, token: Set[str]) -> bool:
+        """【移动指针】判断当前抽象词法树节点源代码的 **大写形式** 是否在 token 的字典之中，如果存在返回 True 并移动指针，否则返回 False 且不移动指针"""
+        if self._pos >= self._len:
+            return False
+        if not self._elements[self._pos].source.upper() in token:
+            return False
+        self.move()
         return True
 
     def match(self, *tokens: Union[str, AMTMark]) -> None:

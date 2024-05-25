@@ -93,7 +93,7 @@ class AMTBase(abc.ABC):
         """判断当前 AMT 节点的源代码是否等于 token（适用于比较运算符）"""
         return self.source == other
 
-    def source_equal_upper(self, other: str) -> bool:
+    def source_equal_use_upper(self, other: str) -> bool:
         """判断当前 AMT 节点的源代码的 **大写形式** 是否等于 token（适用于比较关键字）"""
         return self.source.upper() == other
 

@@ -591,7 +591,7 @@ class SQLParser:
     @classmethod
     def _parse_in_parenthesis(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeElementLevel:
         """解析 IN 关键字后的插入语：插入语可能为子查询或值表达式"""
-        if scanner.get_as_children_scanner().rich_search({"SELECT", "WITH"}):
+        if scanner.get_as_children_scanner().search_type_set_use_upper({"SELECT", "WITH"}):
             return cls._parse_sub_query_expression(scanner, sql_type=sql_type)
         return cls._parse_sub_value_expression(scanner, sql_type=sql_type)
 
@@ -710,7 +710,7 @@ class SQLParser:
     def _parse_general_parenthesis(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalOrLevel:
         """解析一般表达式中的插入语"""
         # 处理插入语中是子查询的情况
-        if scanner.get_as_children_scanner().rich_search({"SELECT", "WITH"}):
+        if scanner.get_as_children_scanner().search_type_set_use_upper({"SELECT", "WITH"}):
             return cls._parse_sub_query_expression(scanner, sql_type=sql_type)
         # 处理插入语中是一般表达式的情况：如果有嵌套的插入语，那么会自动压缩为一层
         parenthesis_scanner = scanner.pop_as_children_scanner()
@@ -759,7 +759,7 @@ class SQLParser:
             return cls._parse_general_parenthesis(scanner, sql_type=sql_type)
         if node_0.has_mark(AMTMark.LITERAL):
             return cls._parse_literal_expression(scanner)
-        if node_0.source_equal_upper("CASE"):
+        if node_0.source_equal_use_upper("CASE"):
             return cls._parse_case_expression(scanner, sql_type=sql_type)
         if node_0.source_equal("*"):
             return cls._parse_wildcard_expression(scanner)
@@ -767,7 +767,7 @@ class SQLParser:
         node_1 = scanner.get_offset_or_null(1)
         if node_1 is not None and node_1.has_mark(AMTMark.PARENTHESIS):
             node_2 = scanner.get_offset_or_null(2)
-            if node_2 is None or not node_2.source_equal_upper("OVER"):
+            if node_2 is None or not node_2.source_equal_use_upper("OVER"):
                 return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
             else:
                 return cls._parse_window_expression(scanner, sql_type=sql_type)
@@ -857,7 +857,7 @@ class SQLParser:
     @classmethod
     def _parse_polynomial_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodePolynomialLevel:
         before_value = cls._parse_monomial_level_expression(scanner, sql_type)
-        while scanner.rich_search({"+", "-"}):
+        while scanner.search_type_set({"+", "-"}):
             operator = cls._parse_compute_operator(scanner)
             after_value = cls._parse_monomial_level_expression(scanner, sql_type)
             before_value = node.ASTPolynomialExpression(
@@ -967,7 +967,7 @@ class SQLParser:
                 before_value = cls._parse_bitwise_or_level_expression(scanner, sql_type)
 
             # 解析可能存在于关键字之间的 NOT
-            is_not = scanner.rich_search_and_move(static.get_not_operator_set(sql_type))
+            is_not = scanner.search_and_move_type_set_use_upper(static.get_not_operator_set(sql_type))
 
             if scanner.is_finish:
                 return before_value  # 如果已经匹配结果，则直接返回
@@ -1047,7 +1047,7 @@ class SQLParser:
     def _parse_operator_condition_level_expression(cls, scanner: TokenScanner,
                                                    sql_type: SQLType) -> NodeOperatorConditionLevel:
         before_value = cls._parse_keyword_condition_level_expression(scanner, None, sql_type=sql_type)
-        while scanner.rich_search(static.COMPARE_OPERATOR_SET):
+        while scanner.search_type_set(static.COMPARE_OPERATOR_SET):
             compare_operator = cls._parse_compare_operator(scanner)
             after_value = cls._parse_keyword_condition_level_expression(scanner, None, sql_type=sql_type)
             before_value = node.ASTOperatorConditionExpression(
@@ -1066,7 +1066,7 @@ class SQLParser:
 
     @classmethod
     def _parse_logical_not_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalNotLevel:
-        if scanner.rich_search_and_move(static.get_not_operator_set(sql_type)):
+        if scanner.search_and_move_type_set_use_upper(static.get_not_operator_set(sql_type)):
             return node.ASTLogicalNotExpression(
                 expression=cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
             )
@@ -1082,7 +1082,7 @@ class SQLParser:
     @classmethod
     def _parse_logical_and_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalAndLevel:
         before_value = cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
-        while scanner.rich_search_and_move({"AND", "&&"}):
+        while scanner.search_and_move_type_set_use_upper({"AND", "&&"}):
             after_value = cls._parse_logical_not_level_expression(scanner, sql_type=sql_type)
             before_value = node.ASTLogicalAndExpression(
                 before_value=before_value,
@@ -1118,7 +1118,7 @@ class SQLParser:
     @classmethod
     def _parse_logical_or_level_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> NodeLogicalOrLevel:
         before_value = cls._parse_logical_xor_level_expression(scanner, sql_type=sql_type)
-        while scanner.rich_search_and_move({"OR", "||"}):
+        while scanner.search_and_move_type_set_use_upper({"OR", "||"}):
             after_value = cls._parse_logical_xor_level_expression(scanner, sql_type=sql_type)
             before_value = node.ASTLogicalOrExpression(
                 before_value=before_value,
@@ -1173,7 +1173,7 @@ class SQLParser:
 
     @classmethod
     def _parse_table_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> AliasTableExpression:
-        if scanner.get_as_children_scanner().rich_search({"SELECT", "WITH"}):
+        if scanner.get_as_children_scanner().search_type_set_use_upper({"SELECT", "WITH"}):
             return cls._parse_sub_query_expression(scanner, sql_type=sql_type)
         if scanner.search(AMTMark.PARENTHESIS):  # 额外的插入语（因为只有一个元素，所以直接递归解析即可）
             return cls._parse_table_expression(scanner.pop_as_children_scanner(), sql_type=sql_type)
@@ -1263,7 +1263,7 @@ class SQLParser:
     def _parse_join_clause(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTJoinClause:
         join_type = cls._parse_join_type(scanner)
         table_expression = cls._parse_from_table(scanner, sql_type=sql_type)
-        if scanner.rich_search({"ON", "USING"}):
+        if scanner.search_type_set_use_upper({"ON", "USING"}):
             join_rule = cls._parse_join_expression(scanner, sql_type=sql_type)
         else:
             join_rule = None
@@ -1530,7 +1530,7 @@ class SQLParser:
         while scanner.search("LATERAL", "VIEW"):
             lateral_view_clauses.append(cls._parse_lateral_view_clause(inner_scanner, sql_type))
         join_clause = []
-        while scanner.rich_search({"JOIN", "INNER", "LEFT", "RIGHT", "FULL", "CROSS"}):
+        while scanner.search_type_set_use_upper({"JOIN", "INNER", "LEFT", "RIGHT", "FULL", "CROSS"}):
             join_clause.append(cls._parse_join_clause(inner_scanner, sql_type))
         where_clause = cls._parse_where_clause(inner_scanner, sql_type)
         group_by_clause = cls._parse_group_by_clause(inner_scanner, sql_type)
@@ -1576,7 +1576,7 @@ class SQLParser:
         if with_clause is None:
             with_clause = cls._parse_with_clause(scanner, sql_type)
         result = [cls._parse_single_select_statement(scanner, with_clause, sql_type)]
-        while scanner.rich_search({"UNION", "EXCEPT", "INTERSECT", "MINUS"}):
+        while scanner.search_type_set_use_upper({"UNION", "EXCEPT", "INTERSECT", "MINUS"}):
             result.append(cls._parse_union_type(scanner))
             result.append(cls._parse_single_select_statement(scanner, with_clause, sql_type))
         if len(result) == 1:
@@ -1641,7 +1641,7 @@ class SQLParser:
         is_non_dynamic_partition = False  # 是否有非动态分区
         for partition_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             before_value = cls._parse_bitwise_or_level_expression(partition_scanner, sql_type)
-            if partition_scanner.rich_search(static.COMPARE_OPERATOR_SET):  # 非动态分区
+            if partition_scanner.search_type_set(static.COMPARE_OPERATOR_SET):  # 非动态分区
                 is_non_dynamic_partition = True
                 operator = cls._parse_compare_operator(partition_scanner)
                 after_value = cls._parse_bitwise_or_level_expression(partition_scanner, sql_type)
