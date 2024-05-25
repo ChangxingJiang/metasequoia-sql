@@ -495,9 +495,10 @@ class SQLParser:
         if scanner.search(AMTMark.PARENTHESIS):
             parenthesis_scanner = scanner.pop_as_children_scanner()
             cast_params: Optional[List[int] | Tuple[int, ...]] = []
-            for param_scanner in parenthesis_scanner.split_by(","):
-                cast_params.append(int(param_scanner.pop_as_source()))
-                param_scanner.close()
+            if not parenthesis_scanner.is_finish:
+                cast_params.append(int(parenthesis_scanner.pop_as_source()))
+            while parenthesis_scanner.search_and_move(","):
+                cast_params.append(int(parenthesis_scanner.pop_as_source()))
             cast_params = tuple(cast_params)
         else:
             cast_params = None

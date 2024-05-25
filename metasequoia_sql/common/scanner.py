@@ -169,22 +169,6 @@ class TokenScanner:
         """将指针向后移动 1 个元素，并返回当前指针位置的插入语节点的子节点的扫描器"""
         return TokenScanner(self.pop().children())
 
-    def split_by(self, source: str) -> List["TokenScanner"]:
-        """将指针移动到末尾，并将后续元素拆分为使用 source 分隔的扫描器列表"""
-        result = []
-        tokens = []
-        while not self.is_finish:
-            token: AMTBase = self.pop()
-            if token.equals(source):
-                if len(tokens) > 0:
-                    result.append(TokenScanner(tokens))
-                    tokens = []
-            else:
-                tokens.append(token)
-        if len(tokens) > 0:
-            result.append(TokenScanner(tokens))
-        return result
-
     def pop_as_children_scanner_list_split_by(self, source: str) -> List["TokenScanner"]:
         """将指针向后移动一个元素，并返回当前指针位置的插入语结点的子节点使用 source 分隔的扫描器列表"""
         result = []

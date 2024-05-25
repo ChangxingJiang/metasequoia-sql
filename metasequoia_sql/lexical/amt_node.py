@@ -100,7 +100,7 @@ class AMTSingle(AMTBase):
         """当前节点的源代码"""
         return self._source
 
-    def children(self) -> List["AMTBase"]:
+    def children(self) -> List[AMTBase]:
         """返回所有下游节点，若为叶子节点，则返回空列表"""
         return []
 
@@ -118,7 +118,7 @@ class AMTParenthesisBase(AMTBase):
         super().__init__(marks)
         self._tokens: List[AMTBase] = tokens
 
-    def children(self) -> List["AMTBase"]:
+    def children(self) -> List[AMTBase]:
         return self._tokens
 
     @property
