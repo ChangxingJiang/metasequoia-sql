@@ -446,15 +446,16 @@ class SQLParser:
                                           ) -> node.ASTExtractFunctionExpression:
         """解析 EXTRACT 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return cls._parse_extract_function_expression(scanner, sql_type=sql_type)
+        return cls._parse_extract_function_expression(scanner, sql_type)
 
     @classmethod
     def _parse_extract_function_expression(cls, scanner: TokenScanner, sql_type: SQLType
                                            ) -> node.ASTExtractFunctionExpression:
-        extract_name = cls._parse_compute_expression(scanner, sql_type)
-        scanner.match("FROM")
-        column_expression = cls._parse_compute_expression(scanner, sql_type)
-        scanner.close()  # TODO 需要将拆分也移动到函数中
+        inner_scanner = scanner.pop_as_children_scanner()
+        extract_name = cls._parse_compute_expression(inner_scanner, sql_type)
+        inner_scanner.match("FROM")
+        column_expression = cls._parse_compute_expression(inner_scanner, sql_type)
+        inner_scanner.close()
         return node.ASTExtractFunctionExpression(
             extract_name=extract_name,
             column_expression=column_expression
@@ -466,16 +467,17 @@ class SQLParser:
                                        ) -> node.ASTCastFunctionExpression:
         """解析 CAST 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return cls._parse_cast_function_expression(scanner, sql_type=sql_type)
+        return cls._parse_cast_function_expression(scanner, sql_type)
 
     @classmethod
     def _parse_cast_function_expression(cls, scanner: TokenScanner, sql_type: SQLType):
-        column_expression = cls._parse_compute_expression(scanner, sql_type)
-        scanner.match("AS")
-        signed = scanner.search_and_move_one_type_str_use_upper("SIGNED")
-        cast_type = cls._parse_cast_data_type(scanner)
-        if scanner.search_one_type_mark(AMTMark.PARENTHESIS):
-            parenthesis_scanner = scanner.pop_as_children_scanner()
+        inner_scanner = scanner.pop_as_children_scanner()
+        column_expression = cls._parse_compute_expression(inner_scanner, sql_type)
+        inner_scanner.match("AS")
+        signed = inner_scanner.search_and_move_one_type_str_use_upper("SIGNED")
+        cast_type = cls._parse_cast_data_type(inner_scanner)
+        if inner_scanner.search_one_type_mark(AMTMark.PARENTHESIS):
+            parenthesis_scanner = inner_scanner.pop_as_children_scanner()
             cast_params: Optional[List[int] | Tuple[int, ...]] = []
             if not parenthesis_scanner.is_finish:
                 cast_params.append(int(parenthesis_scanner.pop_as_source()))
@@ -484,7 +486,7 @@ class SQLParser:
             cast_params = tuple(cast_params)
         else:
             cast_params = None
-        scanner.close()  # TODO 需要将拆分也移动到函数中
+        inner_scanner.close()
         cast_data_type = node.ASTCastDataType(signed=signed, type=cast_type, params=cast_params)
         return node.ASTCastFunctionExpression(
             column_expression=column_expression,
@@ -497,16 +499,18 @@ class SQLParser:
                                      ) -> node.ASTNormalFunctionExpression:
         """解析 IF 函数表达式"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
-        return cls._parse_if_function_expression(scanner, sql_type=sql_type)
+        return cls._parse_if_function_expression(scanner, sql_type)
 
     @classmethod
     def _parse_if_function_expression(cls, scanner: TokenScanner,
                                       sql_type: SQLType) -> node.ASTNormalFunctionExpression:
+        inner_scanner = scanner.pop_as_children_scanner()
         function_params: List[GeneralExpression] = []
-        if not scanner.is_finish:
-            cls._parse_logical_or_level_expression(scanner, sql_type=sql_type)
-        while scanner.search_and_move_one_type_str(","):
-            function_params.append(cls._parse_logical_or_level_expression(scanner, sql_type=sql_type))
+        if not inner_scanner.is_finish:
+            cls._parse_logical_or_level_expression(inner_scanner, sql_type=sql_type)
+        while inner_scanner.search_and_move_one_type_str(","):
+            function_params.append(cls._parse_logical_or_level_expression(inner_scanner, sql_type=sql_type))
+        inner_scanner.close()
         return node.ASTNormalFunctionExpression(
             name=node.ASTFunctionNameExpression(function_name="IF"),
             params=tuple(function_params)
@@ -525,11 +529,11 @@ class SQLParser:
         function_name_upper = function_name_expression.function_name.upper()
 
         if function_name_upper == "CAST":
-            return cls._parse_cast_function_expression(scanner.pop_as_children_scanner(), sql_type)
+            return cls._parse_cast_function_expression(scanner, sql_type)
         if function_name_upper == "EXTRACT":
-            return cls._parse_extract_function_expression(scanner.pop_as_children_scanner(), sql_type)
+            return cls._parse_extract_function_expression(scanner, sql_type)
         if function_name_upper == "IF":
-            return cls._parse_if_function_expression(scanner.pop_as_children_scanner(), sql_type)
+            return cls._parse_if_function_expression(scanner, sql_type)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if function_name_upper == "SUBSTRING":

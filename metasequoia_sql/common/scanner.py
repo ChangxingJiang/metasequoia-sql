@@ -58,7 +58,7 @@ class TokenScanner:
     def pop(self) -> AMTBase:
         """获取当前指针位置元素，并移动指针
 
-        - 如果要移动到的指针位置超出字符串长度，则抛出异常  TODO 在异常处理机制中提取并处理
+        - 如果要移动到的指针位置超出字符串长度，则抛出异常
         """
         result = self._elements[self._pos]
         self._pos += 1  # 移动指针
@@ -69,7 +69,7 @@ class TokenScanner:
         self._pos += idx
 
     def close(self) -> None:
-        """关闭扫描器，如果扫描器没有遍历完成则抛出异常"""
+        """在扫描器对象使用结束后，会检查扫描器是否已遍历完成，如果没有遍历完成则抛出异常"""
         if not self.is_finish:
             raise ScannerError(f"关闭了没有遍历完成的扫描器 {self}")
 
