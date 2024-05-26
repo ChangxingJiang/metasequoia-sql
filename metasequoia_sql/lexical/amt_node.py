@@ -9,7 +9,7 @@
 
 import abc
 import enum
-from typing import List, Union
+from typing import List, Union, Set
 
 __all__ = ["AMTBase", "AMTMark", "AMTSingle", "AMTParenthesis", "AMTSlice"]
 
@@ -78,6 +78,10 @@ class AMTBase(abc.ABC):
     def source_equal_use_upper(self, other: str) -> bool:
         """判断当前 AMT 节点的源代码的 **大写形式** 是否等于 token（适用于比较关键字）"""
         return self.source.upper() == other
+
+    def source_in_set_use_upper(self, other: Set[str]) -> bool:
+        """判断当前 AMT 节点的源代码的 **大写形式** 是否等于 token（适用于比较关键字）"""
+        return self.source.upper() in other
 
 
 class AMTSingle(AMTBase):

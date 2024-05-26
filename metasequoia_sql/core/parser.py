@@ -550,8 +550,7 @@ class SQLParser:
         if function_name_upper == "SUBSTRING":
             # 将 MySQL 和 PostgreSQL 中的 "SUBSTRING(str1 FROM 3 FOR 2)" 格式化为 "SUBSTRING(str1, 3, 2)"
             parenthesis_scanner = TokenScanner([
-                element if not element.source_equal_use_upper("FROM")
-                           and not element.source_equal_use_upper("FOR") else AMTSingle(",")
+                element if not element.source_in_set_use_upper({"FROM", "FOR"}) else AMTSingle(",")
                 for element in parenthesis_scanner.elements])
 
         is_distinct = False
