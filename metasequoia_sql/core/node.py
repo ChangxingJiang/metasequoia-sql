@@ -38,7 +38,8 @@ __all__ = [
     "ASTExpressionBase",  # 一般表达式的抽象基类
 
     # ------------------------------ 抽象语法树（AST）节点的枚举类元素节点 ------------------------------
-    "ASTEnumBase",  # 抽象语法树枚举类型的基类
+    "ASTEnumListBase",  # 抽象语法树枚举类型的基类（枚举值为字符串列表）
+    "ASTEnumElementBase",  # 抽象语法树枚举类型的基类（枚举值为字符串）
     "ASTInsertType",  # 插入类型
     "ASTJoinType",  # 关联类型
     "ASTOrderType",  # 排序类型
@@ -55,6 +56,7 @@ __all__ = [
     "ASTMultiAlisaExpression",  # 多个别名节点（用于在 LATERAL VIEW 子句中配合返回多个字段使用）
 
     # ------------------------------ 抽象语法树（AST）节点的一般表达式节点 ------------------------------
+    # 运算表达式中的单元素表达式
     "ASTBinaryExpressionBase",  # 二元表达式的抽象基类
     "ASTColumnNameExpression",  # 【元素表达式层级】列名表达式节点
     "ASTLiteralExpression",  # 【元素表达式层级】字面值表达式节点
@@ -75,12 +77,11 @@ __all__ = [
     "ASTSubValueExpression",  # 【元素表达式层级】插入语表达式：值表达式
     "ASTIndexExpression",  # 【下标表达式层级】下标表达式
     "ASTUnaryExpression",  # 【一元表达式层级】一元表达式
-    "ASTXorExpression",  # 【异或表达式层级】异或表达式
-    "ASTMonomialExpression",  # 【单项表达式层级】单项表达式
-    "ASTPolynomialExpression",  # 【多项表达式层级】多项表达式
-    "ASTShiftExpression",  # 【移位表达式层级】移位表达式
-    "ASTBitwiseAndExpression",  # 【按位与表达式层级】按位与表达式
-    "ASTBitwiseOrExpression",  # 【按位或表达式层级】按位或表达式
+
+    # 运算表达式中的组合表达式
+    "ASTComputeExpression",  # 使用计算运算符的二元表达式：包含异或表达式、单项表达式、多项表达式、移位表达式、按位与表达式和按位或表达式
+
+    # 条件表达式中的元素表达式
     "ASTOperatorExpressionBase",  # 【关键字条件表达式层级】通过运算符或关键字比较运算符前后两个表达式的抽象类
     "ASTIsExpression",  # 【关键字条件表达式层级】使用 IS 的布尔值表达式
     "ASTInExpression",  # 【关键字条件表达式层级】使用 IN 的布尔值表达式
@@ -89,6 +90,8 @@ __all__ = [
     "ASTBetweenExpression",  # 【关键字条件表达式层级】使用 BETWEEN 的布尔值表达式
     "ASTRlikeExpression",  # 【关键字条件表达式层级】使用 RLIKE 的布尔值表达式
     "ASTRegexpExpression",  # 【关键字条件表达式层级】使用 REGEXP 的布尔值表达式
+
+    # 条件表达式中的组合表达式
     "ASTOperatorConditionExpression",  # 【运算符条件表达式层级】运算符条件表达式
     "ASTLogicalNotExpression",  # 【逻辑否表达式层级】逻辑否表达式
     "ASTLogicalAndExpression",  # 【逻辑与表达式层级】逻辑与表达式
@@ -223,8 +226,8 @@ class ASTExpressionBase(ASTBase, abc.ABC):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTEnumBase(ASTBase):
-    """抽象语法树枚举类型的基类"""
+class ASTEnumListBase(ASTBase):
+    """抽象语法树枚举类型的基类（枚举类值为列表）"""
 
     enum: Any = dataclasses.field(kw_only=True)
 
@@ -234,42 +237,53 @@ class ASTEnumBase(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTInsertType(ASTEnumBase):
+class ASTEnumElementBase(ASTBase):
+    """抽象语法树枚举类型的基类（枚举类值为元素）"""
+
+    enum: Any = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return self.enum.value
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTInsertType(ASTEnumListBase):
     """插入类型"""
 
     enum: static.EnumInsertType = dataclasses.field(kw_only=True)  # 插入类型的枚举类
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTJoinType(ASTEnumBase):
+class ASTJoinType(ASTEnumListBase):
     """关联类型"""
 
     enum: static.EnumJoinType = dataclasses.field(kw_only=True)  # 关联类型的枚举类
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTOrderType(ASTEnumBase):
+class ASTOrderType(ASTEnumListBase):
     """排序类型"""
 
     enum: static.EnumOrderType = dataclasses.field(kw_only=True)  # 排序类型的枚举类
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTUnionType(ASTEnumBase):
+class ASTUnionType(ASTEnumListBase):
     """组合类型"""
 
     enum: static.EnumUnionType = dataclasses.field(kw_only=True)  # 组合类型的枚举类
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTCompareOperator(ASTEnumBase):
+class ASTCompareOperator(ASTEnumListBase):
     """比较运算符"""
 
     enum: static.EnumCompareOperator = dataclasses.field(kw_only=True)  # 比较运算符的枚举类
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTComputeOperator(ASTEnumBase):
+class ASTComputeOperator(ASTEnumElementBase):
     """计算运算符"""
 
     enum: static.EnumComputeOperator = dataclasses.field(kw_only=True)  # 计算运算符的枚举类
@@ -284,7 +298,7 @@ class ASTComputeOperator(ASTEnumBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTLogicalOperator(ASTEnumBase):
+class ASTLogicalOperator(ASTEnumListBase):
     """逻辑运算符"""
 
     enum: static.EnumLogicalOperator = dataclasses.field(kw_only=True)  # 逻辑运算符的枚举类
@@ -710,48 +724,10 @@ class ASTUnaryExpression(ASTExpressionBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTXorExpression(ASTBinaryExpressionBase):
-    """【异或表达式层级】异或表达式"""
-
-    operator = ASTComputeOperator(enum=static.EnumComputeOperator.BITWISE_XOR)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTMonomialExpression(ASTBinaryExpressionBase):
-    """【单项表达式层级】单项表达式
-
-    包含第二层级表达式以及乘号（`*`）、除号（`/`）和取模（`%`）符号。
-    """
+class ASTComputeExpression(ASTBinaryExpressionBase):
+    """运算表达式"""
 
     operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTPolynomialExpression(ASTBinaryExpressionBase):
-    """多项表达式"""
-
-    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTShiftExpression(ASTBinaryExpressionBase):
-    """移位表达式"""
-
-    operator: ASTComputeOperator = dataclasses.field(kw_only=True)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBitwiseAndExpression(ASTBinaryExpressionBase):
-    """按位与表达式"""
-
-    operator = ASTComputeOperator(enum=static.EnumComputeOperator.BITWISE_AND)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTBitwiseOrExpression(ASTBinaryExpressionBase):
-    """按位或表达式"""
-
-    operator = ASTComputeOperator(enum=static.EnumComputeOperator.BITWISE_OR)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

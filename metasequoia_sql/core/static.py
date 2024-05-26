@@ -5,7 +5,7 @@
 """
 
 import enum
-from typing import Set
+from typing import Set, Tuple
 
 from metasequoia_sql.core.sql_type import SQLType
 
@@ -142,20 +142,30 @@ class EnumWindowRowType(enum.Enum):
 
 class EnumComputeOperator(enum.Enum):
     """计算运算符的枚举类"""
-    PLUS = ["+"]  # 加法运算符
-    SUBTRACT = ["-"]  # 减法运算符
-    MULTIPLE = ["*"]  # 乘法运算符
-    DIVIDE = ["/"]  # 除法运算符
-    DIVIDE_2 = ["DIV"]  # 除法运算符
-    MOD = ["%"]  # 取模运算符
-    MOD_2 = ["MOD"]  # 取模运算符
-    BITWISE_AND = ["&"]  # 按位与
-    BITWISE_OR = ["|"]  # 按位或
-    BITWISE_XOR = ["^"]  # 按位异或
-    BITWISE_INVERSION = ["~"]  # 按位取反
-    LOGICAL_INVERSION = ["!"]  # 逻辑取反
-    SHIFT_LEFT = ["<<"]  # 左移位
-    SHIRT_RIGHT = [">>"]  # 右移位
+    BITWISE_INVERSION = "~"  # 按位取反
+    LOGICAL_INVERSION = "!"  # 逻辑取反
+    BITWISE_XOR = "^"  # 按位异或
+    MULTIPLE = "*"  # 乘法运算符
+    DIVIDE = "/"  # 除法运算符
+    MOD = "%"  # 取模运算符
+    PLUS = "+"  # 加法运算符
+    SUBTRACT = "-"  # 减法运算符
+    SHIFT_LEFT = "<<"  # 左移位
+    SHIRT_RIGHT = ">>"  # 右移位
+    BITWISE_AND = "&"  # 按位与
+    BITWISE_OR = "|"  # 按位或
+
+    def __init__(self, value: Tuple[str]):
+        # 计算枚举值
+        self.level = {
+            "~": 2, "!": 2,
+            "^": 3,
+            "*": 4, "/": 4, "%": 4,
+            "+": 5, "-": 5,
+            "<<": 6, ">>": 6,
+            "&": 7,
+            "|": 8,
+        }[value]
 
 
 # 计算运算符字符串到枚举类的映射关系
