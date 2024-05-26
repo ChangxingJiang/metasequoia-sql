@@ -289,16 +289,23 @@ class SQLParser:
 
     @classmethod
     def _parse_table_name_expression(cls, scanner: TokenScanner) -> node.ASTTableNameExpression:
-        if scanner.search(AMTMark.NAME, ".", AMTMark.NAME):
-            schema_name = scanner.pop_as_source()
-            scanner.move()
-            table_name = scanner.pop_as_source()
+        node_0 = scanner.pop()
+        if not node_0.has_mark(AMTMark.NAME):
+            raise SqlParseError(f"无法解析为表名表达式: {scanner}")
+
+        if scanner.search_and_move_one_type_str("."):
+            # 解析包含 schema 的表名
+            node_2 = scanner.pop()
+            if not node_0.has_mark(AMTMark.NAME):
+                raise SqlParseError(f"无法解析为表名表达式: {scanner}")
             return node.ASTTableNameExpression(
-                schema_name=cls._unify_name(schema_name),
-                table_name=cls._unify_name(table_name)
+                schema_name=cls._unify_name(node_0.source),
+                table_name=cls._unify_name(node_2.source)
             )
-        if scanner.search_one_type_mark(AMTMark.NAME):
-            name_source = scanner.pop_as_source()
+
+        else:
+            # 解析没有 schema 或 `schema.table` 格式的表名
+            name_source = node_0.source
             if name_source.count(".") == 1:
                 schema_name, table_name = name_source.strip("`").split(".")
             else:
@@ -307,7 +314,6 @@ class SQLParser:
                 schema_name=cls._unify_name(schema_name),
                 table_name=cls._unify_name(table_name)
             )
-        raise SqlParseError(f"无法解析为表名表达式: {scanner}")
 
     @classmethod
     def parse_function_name_expression(cls, scanner_or_string: ScannerOrString,
@@ -405,6 +411,19 @@ class SQLParser:
             scanner.move(2)
             return node.ASTWildcardExpression(table_name=schema_name)
         raise SqlParseError("无法解析为通配符表达式")
+
+    @classmethod
+    def _parse_wildcard_expression_with_table(cls, scanner: TokenScanner) -> node.ASTWildcardExpression:
+        """直接解析为包含 schema 的通配符格式"""
+        schema_name = scanner.pop_as_source()
+        scanner.move(2)
+        return node.ASTWildcardExpression(table_name=schema_name)
+
+    @classmethod
+    def _parse_wildcard_expression_without_table(cls, scanner: TokenScanner) -> node.ASTWildcardExpression:
+        """直接解析为包含 schema 的通配符格式"""
+        scanner.move()
+        return node.ASTWildcardExpression()
 
     @classmethod
     def parse_alias_expression(cls, scanner_or_string: ScannerOrString,
@@ -754,7 +773,7 @@ class SQLParser:
         if node_0.source_equal_use_upper("CASE"):
             return cls._parse_case_expression(scanner, sql_type=sql_type)
         if node_0.source_equal("*"):
-            return cls._parse_wildcard_expression(scanner)
+            return cls._parse_wildcard_expression_without_table(scanner)
 
         node_1 = scanner.get_offset_or_null(1)
         if node_1 is not None and node_1.has_mark(AMTMark.PARENTHESIS):
@@ -773,7 +792,7 @@ class SQLParser:
                 else:
                     return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
             elif node_2.source_equal("*"):
-                return cls._parse_wildcard_expression(scanner)
+                return cls._parse_wildcard_expression_with_table(scanner)
             else:
                 raise SqlParseError(f"{node_1.source}. 之后不是名称或通配符")
         else:
