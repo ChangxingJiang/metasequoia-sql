@@ -38,9 +38,9 @@ class FSMOperate(abc.ABC):
         return FSMOperateCleanCacheToEnd()
 
     @staticmethod
-    def do_nothing_to(status: FSMStatus):
+    def do_nothing_to_end():
         """实例化 SET_STATUS 类型的行为"""
-        return FSMOperateSetStatus(status=status)
+        return FSMOperateSetStatus()
 
     @staticmethod
     def add_cache_to(status: FSMStatus):
@@ -145,7 +145,7 @@ class FSMOperateCleanCacheToEnd(FSMOperate):
         """执行操作"""
         memory.pos_start = memory.pos_now
         memory.status = FSMStatus.END
-        return False
+        return True
 
 
 class FSMOperateAddCache(FSMOperate):
@@ -164,13 +164,10 @@ class FSMOperateAddCache(FSMOperate):
 class FSMOperateSetStatus(FSMOperate):
     """【状态机操作】仅设置当前状态"""
 
-    def __init__(self, status: FSMStatus):
-        self.status = status  # 需要切换到状态机状态（仅抛出异常时不需要默认值）
-
     def execute(self, memory: FSMMemory, ch: str):
         """执行操作"""
-        memory.status = self.status
-        return False
+        memory.status = FSMStatus.END
+        return True
 
 
 class FSMOperateHandleCacheToWait(FSMOperate):
@@ -200,7 +197,7 @@ class FSMOperateHandleCacheToEnd(FSMOperate):
         memory.pos_start = memory.pos_now
         memory.stack[-1].append(AMTSingle(source, self.marks))
         memory.status = FSMStatus.END
-        return False
+        return True
 
 
 # 部分特殊词语到词法树标签的映射关系
@@ -256,7 +253,7 @@ class FSMOperateHandleCacheWordToEnd(FSMOperate):
         memory.pos_start = memory.pos_now
         memory.stack[-1].append(AMTSingle(source, HANDLE_WORD_TO_MARK_HASH.get(source.upper(), AMTMark.NAME)))
         memory.status = FSMStatus.END
-        return False
+        return True
 
 
 class FSMOperateAddAndHandleCacheToWait(FSMOperate):

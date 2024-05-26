@@ -52,9 +52,9 @@ class FSMMachine:
         fsm_machine = FSMMachine()  # 初始化自动机的执行器
 
         for ch in text:
-            while not fsm_machine.handle(memory, ch):
-                pass  # 不断循环，直到处理方法返回需要移动指针为止
-        fsm_machine.handle(memory, END)  # 处理结束标记
+            if not fsm_machine.handle(memory, ch):
+                fsm_machine.handle(memory, ch)  # 如果第一次操作不会移动指针，那么第二次操作一定会移动
+        fsm_machine.handle(memory, END)  # 处理结束标记：处理结束标记后不需要考虑指针是否移动
 
         if memory.status != FSMStatus.END:
             raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {memory.status}")
@@ -72,5 +72,5 @@ class FSMMachine:
         if operate is None:
             operate = FSM_OPERATION_MAP_DEFAULT[memory.status]  # 如果没有则使用当前状态的默认处理规则
 
-        # 执行行为
+        # 执行处理方法：
         return operate.execute(memory, ch)

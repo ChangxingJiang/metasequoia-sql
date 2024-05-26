@@ -47,7 +47,7 @@ FSM_OPERATION_MAP_SOURCE = {
         ")": FSMOperate.end_parenthesis(),
         "[": FSMOperate.start_slice(),
         "]": FSMOperate.end_slice(),
-        END: FSMOperate.do_nothing_to(FSMStatus.END),
+        END: FSMOperate.do_nothing_to_end(),
         DEFAULT: FSMOperate.add_cache_to(FSMStatus.IN_WORD)
     },
 
