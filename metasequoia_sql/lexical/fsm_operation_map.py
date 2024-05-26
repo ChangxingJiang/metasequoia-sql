@@ -293,6 +293,7 @@ FSM_OPERATION_MAP_SOURCE = {
 FSM_OPERATION_MAP: Dict[Tuple[FSMStatus, str], FSMOperate] = {}
 FSM_OPERATION_MAP_DEFAULT: Dict[FSMStatus, FSMOperate] = {}
 for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
+    # 遍历并添加定义的字符到行为映射表中
     for ch_or_set, fsm_operation in operation_map.items():
         if ch_or_set is DEFAULT:
             FSM_OPERATION_MAP_DEFAULT[status] = fsm_operation
@@ -303,3 +304,9 @@ for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
                 FSM_OPERATION_MAP[(status, ch)] = fsm_operation
         else:
             raise AMTParseError("非法的行为映射表设置表")
+
+    # 将 ASCII 编码 20 - 7E 之间的字符添加到行为映射表中（从而令第一次查询的命中率提高，避免第二次查询）
+    for dec in range(32, 127):
+        ch = chr(dec)
+        if (status, ch) not in FSM_OPERATION_MAP:
+            FSM_OPERATION_MAP[(status, ch)] = FSM_OPERATION_MAP_DEFAULT[status]
