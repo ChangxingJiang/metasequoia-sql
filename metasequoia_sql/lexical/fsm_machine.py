@@ -33,8 +33,8 @@ class FSMMachine:
             operation_map = FSM_OPERATION_MAP
         self.operation_map = operation_map
 
-    @classmethod
-    def parse(cls, text: str) -> List[AMTBase]:
+    @staticmethod
+    def parse(text: str) -> List[AMTBase]:
         """使用词法分析的有限状态机将 SQL 源代码解析为 AMT 抽象词法树
 
         Parameters
@@ -48,15 +48,13 @@ class FSMMachine:
             首层抽象词法树节点的列表
         """
         text = preproc_sql(text)
-        fsm_machine = cls()
+        memory = FSMMemory(text)  # 初始化自动机的缓存器
+        fsm_machine = FSMMachine()  # 初始化自动机的执行器
 
-        memory = FSMMemory(text)
-
-        # 因为在 Python 中，遍历字符串的性能要远高于遍历下标后再用下标获取字符，所以优先使用遍历字符串的方法实现
-        for i, ch in enumerate(text):
-            while not fsm_machine.handle(memory, i, ch):
+        for ch in text:
+            while not fsm_machine.handle(memory, ch):
                 pass  # 不断循环，直到处理方法返回需要移动指针为止
-        fsm_machine.handle(memory, len(text), END)  # 处理结束标记
+        fsm_machine.handle(memory, END)  # 处理结束标记
 
         if memory.status != FSMStatus.END:
             raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {memory.status}")
@@ -66,7 +64,7 @@ class FSMMachine:
 
         return memory.stack[0]
 
-    def handle(self, memory: FSMMemory, idx: int, ch: str) -> bool:
+    def handle(self, memory: FSMMemory, ch: str) -> bool:
         """处理一个字符；如果指针需要移动则返回 True，否则返回 False"""
         # 获取需要执行的行为
         operate: Optional[FSMOperate] = FSM_OPERATION_MAP.get((memory.status, ch))
@@ -75,4 +73,4 @@ class FSMMachine:
             operate = FSM_OPERATION_MAP_DEFAULT[memory.status]  # 如果没有则使用当前状态的默认处理规则
 
         # 执行行为
-        return operate.execute(memory, idx, ch)
+        return operate.execute(memory, ch)

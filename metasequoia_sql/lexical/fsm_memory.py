@@ -16,6 +16,7 @@ class FSMMemory:
     """词法分析优先状态机的结构体"""
 
     text: str = dataclasses.field(init=True)  # 源代码字符串
-    pos: int = dataclasses.field(init=False, default=0)  # 当前词语的开始位置
+    pos_start: int = dataclasses.field(init=False, default=0)  # 当前词语的开始位置
+    pos_now: int = dataclasses.field(init=False, default=0)  # 当前位置
     stack: List[List[AMTBase]] = dataclasses.field(init=False, default_factory=lambda: [[]])  # 当前已解析的节点树：多层栈，每一层栈为一层插入语
     status: Union[FSMStatus, object] = dataclasses.field(init=False, default=FSMStatus.WAIT)  # 自动机状态
