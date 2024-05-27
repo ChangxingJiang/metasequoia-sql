@@ -779,7 +779,7 @@ class SQLParser:
             if node_2 is None or not node_2.source_equal_use_upper("OVER"):
                 return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
             return cls._parse_window_expression(scanner, sql_type=sql_type)
-        elif node_1 is not None and node_1.source_equal("."):
+        if node_1 is not None and node_1.source_equal("."):
             node_2 = scanner.get_offset(2)
             if node_2.has_mark(AMTMark.NAME):
                 node_3 = scanner.get_offset_or_null(3)
@@ -790,9 +790,8 @@ class SQLParser:
             if node_2.source_equal("*"):
                 return cls._parse_wildcard_expression_with_table(scanner)
             raise SqlParseError(f"{node_1.source}. 之后不是名称或通配符")
-        else:
-            column_name_expression = cls._parse_column_name_expression_without_table(scanner)
-            return cls._parse_array_index_expression(scanner, column_name_expression, sql_type)
+        column_name_expression = cls._parse_column_name_expression_without_table(scanner)
+        return cls._parse_array_index_expression(scanner, column_name_expression, sql_type)
 
     @classmethod
     def parse_unary_level_expression(cls, scanner_or_string: ScannerOrString,
