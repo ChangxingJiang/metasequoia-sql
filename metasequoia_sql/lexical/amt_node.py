@@ -46,6 +46,7 @@ class AMTMark(enum.IntEnum):
 
 
 class AMTBase(abc.ABC):
+    # pylint: disable=E1101
     """抽象词法树（AMT）节点类的抽象基类"""
 
     __slots__ = ["marks", "source", "children"]

@@ -11,6 +11,7 @@ __all__ = ["TokenScanner"]
 
 
 class TokenScanner:
+    # pylint: disable=R0904
     """抽象词法树节点扫描器"""
 
     def __init__(self, elements: List[AMTBase]):

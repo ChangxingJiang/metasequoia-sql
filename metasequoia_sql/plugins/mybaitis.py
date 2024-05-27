@@ -24,24 +24,23 @@ class FSMMachineMyBatis(FSMMachine):
     """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
     def handle(self, memory: FSMMemory, ch: str) -> bool:
+        # pylint: disable=R0911
         """处理单个变化"""
         if memory.status == FSMStatus.WAIT and ch == "#":
             return FSMOperate.add_cache_to(FSMStatus.CUSTOM_1).execute(memory, ch)
         if memory.status == FSMStatus.CUSTOM_1:  # 在 # 之后
             if ch == "{":
                 return FSMOperate.add_cache_to(FSMStatus.CUSTOM_2).execute(memory, ch)
-            elif ch == "<END>":
+            if ch == "<END>":
                 return FSMOperate.handle_cache_to_end(marks=AMTMark.NAME | AMTMark.COMMENT).execute(memory, ch)
-            else:
-                return FSMOperate.add_cache_to(FSMStatus.IN_EXPLAIN_1).execute(memory, ch)
+            return FSMOperate.add_cache_to(FSMStatus.IN_EXPLAIN_1).execute(memory, ch)
         if memory.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
             if ch == "}":
                 return FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NAME | AMTMark.CUSTOM_1
                                                                ).execute(memory, ch)
-            elif ch == "<END>":
+            if ch == "<END>":
                 return FSMOperate.handle_cache_to_end(marks=AMTMark.NAME | AMTMark.COMMENT).execute(memory, ch)
-            else:
-                return FSMOperate.add_cache_to(FSMStatus.CUSTOM_2).execute(memory, ch)
+            return FSMOperate.add_cache_to(FSMStatus.CUSTOM_2).execute(memory, ch)
         return super().handle(memory, ch)
 
 

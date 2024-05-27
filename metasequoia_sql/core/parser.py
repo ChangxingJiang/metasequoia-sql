@@ -303,17 +303,16 @@ class SQLParser:
                 table_name=cls._unify_name(node_2.source)
             )
 
+        # 解析没有 schema 或 `schema.table` 格式的表名
+        name_source = node_0.source
+        if name_source.count(".") == 1:
+            schema_name, table_name = name_source.strip("`").split(".")
         else:
-            # 解析没有 schema 或 `schema.table` 格式的表名
-            name_source = node_0.source
-            if name_source.count(".") == 1:
-                schema_name, table_name = name_source.strip("`").split(".")
-            else:
-                schema_name, table_name = None, name_source
-            return node.ASTTableNameExpression(
-                schema_name=cls._unify_name(schema_name),
-                table_name=cls._unify_name(table_name)
-            )
+            schema_name, table_name = None, name_source
+        return node.ASTTableNameExpression(
+            schema_name=cls._unify_name(schema_name),
+            table_name=cls._unify_name(table_name)
+        )
 
     @classmethod
     def parse_function_name_expression(cls, scanner_or_string: ScannerOrString,
@@ -436,11 +435,9 @@ class SQLParser:
     def _parse_alias_expression(cls, scanner: TokenScanner) -> Optional[node.ASTAlisaExpression]:
         if scanner.search_and_move_one_type_str_use_upper("AS"):
             return node.ASTAlisaExpression(name=cls._get_alias_name(scanner))
-        else:
-            if scanner.search_one_type_mark(AMTMark.NAME):
-                return node.ASTAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
-            else:
-                return None
+        if scanner.search_one_type_mark(AMTMark.NAME):
+            return node.ASTAlisaExpression(name=cls._unify_name(scanner.pop_as_source()))
+        return None
 
     @classmethod
     def parse_multi_alias_expression(cls, scanner_or_string: ScannerOrString,
@@ -764,6 +761,7 @@ class SQLParser:
     def _parse_element_level_expression(cls, scanner: TokenScanner, sql_type: SQLType
                                         ) -> GeneralExpression:
         # pylint: disable=R0911
+        # pylint: disable=R0912
         """已进行性能优化，使用专有解析逻辑而非通用解析逻辑"""
         node_0 = scanner.get_offset()
         if node_0.has_mark(AMTMark.LITERAL):
@@ -780,8 +778,7 @@ class SQLParser:
             node_2 = scanner.get_offset_or_null(2)
             if node_2 is None or not node_2.source_equal_use_upper("OVER"):
                 return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
-            else:
-                return cls._parse_window_expression(scanner, sql_type=sql_type)
+            return cls._parse_window_expression(scanner, sql_type=sql_type)
         elif node_1 is not None and node_1.source_equal("."):
             node_2 = scanner.get_offset(2)
             if node_2.has_mark(AMTMark.NAME):
@@ -789,12 +786,10 @@ class SQLParser:
                 if node_3 is None or not node_3.has_mark(AMTMark.PARENTHESIS):
                     column_name_expression = cls._parse_column_name_expression_with_table(scanner)
                     return cls._parse_array_index_expression(scanner, column_name_expression, sql_type)
-                else:
-                    return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
-            elif node_2.source_equal("*"):
+                return cls._parse_function_expression_and_index(scanner, sql_type=sql_type)
+            if node_2.source_equal("*"):
                 return cls._parse_wildcard_expression_with_table(scanner)
-            else:
-                raise SqlParseError(f"{node_1.source}. 之后不是名称或通配符")
+            raise SqlParseError(f"{node_1.source}. 之后不是名称或通配符")
         else:
             column_name_expression = cls._parse_column_name_expression_without_table(scanner)
             return cls._parse_array_index_expression(scanner, column_name_expression, sql_type)
