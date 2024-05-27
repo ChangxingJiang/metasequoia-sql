@@ -1,11 +1,11 @@
 """
 静态方法
 
-TODO 待将 SQL 默认语法添加到文档中
+针对 MySQL 和 Hive 在 ! 计算优先级的冲突，在默认场景（SQLType.DEFAULT）中，我们使用 MySQL 中 ! 的优先级。
 """
 
 import enum
-from typing import Set
+from typing import Set, Tuple
 
 from metasequoia_sql.core.sql_type import SQLType
 
@@ -142,20 +142,30 @@ class EnumWindowRowType(enum.Enum):
 
 class EnumComputeOperator(enum.Enum):
     """计算运算符的枚举类"""
-    PLUS = ["+"]  # 加法运算符
-    SUBTRACT = ["-"]  # 减法运算符
-    MULTIPLE = ["*"]  # 乘法运算符
-    DIVIDE = ["/"]  # 除法运算符
-    DIVIDE_2 = ["DIV"]  # 除法运算符
-    MOD = ["%"]  # 取模运算符
-    MOD_2 = ["MOD"]  # 取模运算符
-    BITWISE_AND = ["&"]  # 按位与
-    BITWISE_OR = ["|"]  # 按位或
-    BITWISE_XOR = ["^"]  # 按位异或
-    BITWISE_INVERSION = ["~"]  # 按位取反
-    LOGICAL_INVERSION = ["!"]  # 逻辑取反
-    SHIFT_LEFT = ["<<"]  # 左移位
-    SHIRT_RIGHT = [">>"]  # 右移位
+    BITWISE_INVERSION = "~"  # 按位取反
+    LOGICAL_INVERSION = "!"  # 逻辑取反
+    BITWISE_XOR = "^"  # 按位异或
+    MULTIPLE = "*"  # 乘法运算符
+    DIVIDE = "/"  # 除法运算符
+    MOD = "%"  # 取模运算符
+    PLUS = "+"  # 加法运算符
+    SUBTRACT = "-"  # 减法运算符
+    SHIFT_LEFT = "<<"  # 左移位
+    SHIRT_RIGHT = ">>"  # 右移位
+    BITWISE_AND = "&"  # 按位与
+    BITWISE_OR = "|"  # 按位或
+
+    def __init__(self, value: Tuple[str]):
+        # 计算枚举值
+        self.level = {
+            "~": 2, "!": 2,
+            "^": 3,
+            "*": 4, "/": 4, "%": 4,
+            "+": 5, "-": 5,
+            "<<": 6, ">>": 6,
+            "&": 7,
+            "|": 8,
+        }[value]
 
 
 # 计算运算符字符串到枚举类的映射关系
@@ -257,8 +267,6 @@ def get_unary_operator_set(sql_type: SQLType):
     Set[str]
         指定 SQL 语言类型支持的一元运算符的集合
     """
-    if sql_type == SQLType.MYSQL:
-        return {"-", "+", "~", "!"}
     if sql_type == SQLType.HIVE:
         return {"-", "+", "~"}
     return {"-", "+", "~", "!"}

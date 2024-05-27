@@ -40,6 +40,10 @@ def check_hashable(cls: type, visited: typing.Optional[typing.Set[type]] = None)
     if isinstance(cls, str):
         return check_hashable(getattr(node, cls), visited=visited)
 
+    # 空值处理
+    if cls.__name__ == "NoneType":
+        return True
+
     # 处理类型标注
     if cls.__name__ == "Optional" and cls.__dict__.get("__origin__") == typing.Union:  # typing.Optional
         return check_hashable(cls.__dict__["__args__"][0], visited=visited)
