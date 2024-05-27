@@ -17,44 +17,32 @@ from metasequoia_sql import SQLType, ASTBase
 from metasequoia_sql.analyzer import AnalyzerRecursionASTToListBase, CurrentUsedQuoteColumn
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, ASTSingleSelectStatement
-from metasequoia_sql.errors import AMTParseError
-from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTSingle, AMTMark
+from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTMark, FSMMemory, FSMOperate
 
 
 class FSMMachineMyBatis(FSMMachine):
     """继承并重写支持 MaBatis 语法的状态机处理方法"""
 
-    def handle(self, ch: str) -> bool:
+    def handle(self, memory: FSMMemory, ch: str) -> bool:
         """处理单个变化"""
-        if self.status == FSMStatus.WAIT and ch == "#":
-            self.cache.append(ch)
-            self.status = FSMStatus.CUSTOM_1
-            return True
-        if self.status == FSMStatus.CUSTOM_1:  # 在 # 之后
+        if memory.status == FSMStatus.WAIT and ch == "#":
+            return FSMOperate.add_cache_to(FSMStatus.CUSTOM_1).execute(memory, ch)
+        if memory.status == FSMStatus.CUSTOM_1:  # 在 # 之后
             if ch == "{":
-                self.cache.append(ch)
-                self.status = FSMStatus.CUSTOM_2
-                need_move = True
+                return FSMOperate.add_cache_to(FSMStatus.CUSTOM_2).execute(memory, ch)
             elif ch == "<END>":
-                self.stack[-1].append(AMTSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.COMMENT}))
-                need_move = False
+                return FSMOperate.handle_cache_to_end(marks=AMTMark.NAME | AMTMark.COMMENT).execute(memory, ch)
             else:
-                self.cache.append(ch)
-                self.status = FSMStatus.IN_EXPLAIN_1
-                need_move = True
-            return need_move
-        if self.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
+                return FSMOperate.add_cache_to(FSMStatus.IN_EXPLAIN_1).execute(memory, ch)
+        if memory.status == FSMStatus.CUSTOM_2:  # MyBatis 匹配状态
             if ch == "}":
-                self.cache.append(ch)
-                self.stack[-1].append(AMTSingle(self.cache_get_and_reset(), {AMTMark.NAME, AMTMark.CUSTOM_1}))
-                self.status = FSMStatus.WAIT
+                return FSMOperate.add_and_handle_cache_to_wait(marks=AMTMark.NAME | AMTMark.CUSTOM_1
+                                                               ).execute(memory, ch)
             elif ch == "<END>":
-                raise AMTParseError(f"当前状态={self.status} 出现结束标记符")
+                return FSMOperate.handle_cache_to_end(marks=AMTMark.NAME | AMTMark.COMMENT).execute(memory, ch)
             else:
-                self.cache.append(ch)
-                self.status = FSMStatus.CUSTOM_2
-            return True
-        return super().handle(ch)
+                return FSMOperate.add_cache_to(FSMStatus.CUSTOM_2).execute(memory, ch)
+        return super().handle(memory, ch)
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
@@ -77,14 +65,13 @@ class SQLParserMyBatis(SQLParser):
 
     @classmethod
     def parse_unary_level_expression(cls, scanner_or_string: Union[TokenScanner, str],
-                                     maybe_window: bool,
                                      sql_type: SQLType = SQLType.DEFAULT
                                      ) -> ASTBase:
         """重写一般表达式元素解析逻辑"""
         scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
         if scanner.search(AMTMark.CUSTOM_1):
             return SQLMyBatisExpression(mybatis_source=scanner.pop_as_source())
-        return super()._parse_unary_level_expression(scanner, maybe_window, sql_type=sql_type)
+        return super()._parse_unary_level_expression(scanner, sql_type)
 
 
 class GetAllMybatisParams(AnalyzerRecursionASTToListBase):

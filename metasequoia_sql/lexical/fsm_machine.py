@@ -30,8 +30,8 @@ class FSMMachine:
             operation_map = FSM_OPERATION_MAP
         self.operation_map = operation_map
 
-    @staticmethod
-    def parse(text: str) -> List[AMTBase]:
+    @classmethod
+    def parse(cls, text: str) -> List[AMTBase]:
         """使用词法分析的有限状态机将 SQL 源代码解析为 AMT 抽象词法树
 
         Parameters
@@ -46,7 +46,7 @@ class FSMMachine:
         """
         text = preproc_sql(text)
         memory = FSMMemory(text)  # 初始化自动机的缓存器
-        fsm_machine = FSMMachine()  # 初始化自动机的执行器
+        fsm_machine = cls()  # 初始化自动机的执行器
 
         for ch in text:
             if not fsm_machine.handle(memory, ch):
