@@ -1348,8 +1348,15 @@ class ASTColumnTypeExpression(ASTBase):
     params: Optional[Tuple[ASTExpressionBase, ...]] = dataclasses.field(kw_only=True, default=None)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        if self.params is None or sql_type == SQLType.HIVE:
+        """返回语法节点的 SQL 源码
+        
+        TODO：后续计划将类型的处理，移动到翻译器中，而不是放置在 Node 节点中，因为这并不是一个适用于所有应用场景的功能，可能会引发特殊的 Bug
+        """
+        # 如果没有参数，则不添加参数
+        if self.params is None:
+            return self.name
+        # 如果为 Hive 中没有参数的类型，也不添加参数
+        if sql_type == SQLType.HIVE and self.name.upper() not in {"DECIMAL", "VARCHAR", "CHAR"}:
             return self.name
         # MySQL 标准导出逗号间没有空格
         type_params = "(" + ",".join([param.source(sql_type) for param in self.params]) + ")"
