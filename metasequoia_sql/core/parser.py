@@ -2241,6 +2241,27 @@ class SQLParser:
         )
 
     @classmethod
+    def parse_delete_statement(cls, scanner_or_string: ScannerOrString,
+                               sql_type: SQLType = SQLType.DEFAULT) -> node.ASTDeleteStatement:
+        """解析 UPDATE 语句"""
+        scanner = cls._unify_input_scanner(scanner_or_string, sql_type=sql_type)
+        return cls._parse_delete_statement(scanner, sql_type)
+
+    @classmethod
+    def _parse_delete_statement(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTDeleteStatement:
+        scanner.match("DELETE", "FROM")
+        table_name = cls._parse_table_name_expression(scanner)
+        where_clause = cls._parse_where_clause(scanner, sql_type)
+        order_by_clause = cls._parse_order_by_clause(scanner, sql_type)
+        limit_clause = cls._parse_limit_clause(scanner)
+        return node.ASTDeleteStatement(
+            table_name=table_name,
+            where_clause=where_clause,
+            order_by_clause=order_by_clause,
+            limit_clause=limit_clause
+        )
+
+    @classmethod
     def parse_show_columns_statement(cls, scanner_or_string: ScannerOrString,
                                      sql_type: SQLType = SQLType.DEFAULT) -> node.ASTShowColumnsStatement:
         """解析 SHOW COLUMNS 语句"""
@@ -2268,6 +2289,10 @@ class SQLParser:
             # 解析 SET 语句
             if scanner.search_one_type_str_use_upper("SET"):
                 statement_list.append(cls._parse_set_statement(scanner))
+
+            # 解析 DELETE 语句
+            elif scanner.search_two_type_str_use_upper("DELETE", "FROM"):
+                statement_list.append(cls._parse_delete_statement(scanner, sql_type))
 
             # 解析 DROP TABLE 语句
             elif scanner.search_two_type_str_use_upper("DROP", "TABLE"):

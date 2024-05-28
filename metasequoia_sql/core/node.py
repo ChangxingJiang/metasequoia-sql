@@ -178,6 +178,9 @@ __all__ = [
     "ASTUpdateSetClause",  # UPDATE 语句中的 SET 子句
     "ASTUpdateStatement",  # UPDATE 语句
 
+    # ------------------------------ 抽象语法树（AST）节点的 DELETE 语句节点 ------------------------------
+    "ASTDeleteStatement",  # DELETE 语句
+
     # ------------------------------ 抽象语法树（AST）节点的 SHOW 语句节点 ------------------------------
     "ASTShowDatabasesStatement",  # SHOW DATABASES 语句
     "ASTShowTablesStatement",  # SHOW TABLES 语句
@@ -1856,6 +1859,27 @@ class ASTUpdateStatement(ASTStatementHasWithClauseBase):
         """返回语法节点的 SQL 源码"""
         with_clause_str = self.with_clause.source(sql_type) + "\n\n" if not self.with_clause.is_empty() else ""
         result = f"{with_clause_str}UPDATE {self.table_name.source(sql_type)} {self.set_clause.source(sql_type)}"
+        if self.where_clause is not None:
+            result += f" {self.where_clause.source(sql_type)}"
+        if self.order_by_clause is not None:
+            result += f" {self.order_by_clause.source(sql_type)}"
+        if self.limit_clause is not None:
+            result += f" {self.limit_clause.source(sql_type)}"
+        return result
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTDeleteStatement(ASTStatementBase):
+    """DELETE 语句"""
+
+    table_name: ASTTableNameExpression = dataclasses.field(kw_only=True)
+    where_clause: Optional[ASTWhereClause] = dataclasses.field(kw_only=True)
+    order_by_clause: Optional[ASTOrderByClause] = dataclasses.field(kw_only=True)
+    limit_clause: Optional[ASTLimitClause] = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        result = f"DELETE FROM {self.table_name.source(sql_type)} "
         if self.where_clause is not None:
             result += f" {self.where_clause.source(sql_type)}"
         if self.order_by_clause is not None:
