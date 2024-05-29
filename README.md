@@ -1,6 +1,6 @@
 # metasequoia-sql
 
-metasequoia-sql 是一款注重性能的 SQL 语法的解析和分析器，适用于 SQL 的格式化、执行和分析场景。具有如下 3 个主要特性：
+metasequoia-sql 是一款注重性能的 SQL 语法的解析和分析器，适用于 SQL 的格式化、执行和分析场景，致力于打造性能最高的 Python 版 SQL 解析器。具有如下 3 个主要特性：
 
 - 词法解析器与语法解析器相互独立，支持插件开发
 - 使用单一状态机实现词法解析，避免大量正则表达式的复杂逻辑
@@ -32,7 +32,8 @@ for node in amt_tree:
     print(node)
 ```
 
-对于有括号的 SQL 语句，会将括号生成一个 `AMTParenthesis` 类型节点，该节点包含一个 `PARENTHESIS` 标记，括号中的词法节点会被添加到括号节点的 `children` 属性中（demo_102）。
+对于有括号的 SQL 语句，会将括号生成一个 `AMTParenthesis` 类型节点，该节点包含一个 `PARENTHESIS`
+标记，括号中的词法节点会被添加到括号节点的 `children` 属性中（demo_102）。
 
 ```python
 from metasequoia_sql import FSMMachine
@@ -78,7 +79,8 @@ print(expression)
 
 通过基于语法解析器的数据血缘分析工具，可以实现对 SQL 语句的分析。例如：
 
-分析 INSERT 语句的数据血缘。数据血缘分析需要依赖元数据，所以需要根据你的数据源继承 `CreateTableStatementGetter` 类并提供给数据血缘分析器（demo_301）：
+分析 INSERT 语句的数据血缘。数据血缘分析需要依赖元数据，所以需要根据你的数据源继承 `CreateTableStatementGetter`
+类并提供给数据血缘分析器（demo_301）：
 
 ```python
 from metasequoia_sql import *
@@ -110,6 +112,17 @@ for statement in statements:
 ### 工具样例：SQL on OTS（暂未发布）
 
 通过基于语法解析器的工具，可以实现一些实现 SQL 执行的工具。
+
+## 性能比较
+
+- 测试样本：4482 个脚本，共 19880057 字节（18.96 MB）的 SQL 语句。
+- 测试 Python环境：Python 3.10
+- 测试 CPU：Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+
+|                 | 解析时间     | 平均解析速度       |
+|-----------------|----------|--------------|
+| metasequoia-sql | 65.28 秒  | 297.4 KB / s |
+| sqlglot         | 182.74 秒 | 106.2 KB / s |
 
 ## 基本特性
 
