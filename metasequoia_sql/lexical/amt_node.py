@@ -84,6 +84,14 @@ class AMTBase(abc.ABC):
         """判断当前 AMT 节点的源代码的 **大写形式** 是否等于 token（适用于比较关键字）"""
         return self.source.upper() in other
 
+    def _get_mark_name_list(self) -> List[str]:
+        """获取状态压缩的 Mark 对应的标签名称列表"""
+        result = []
+        for mark in AMTMark:
+            if self.marks & mark.value:
+                result.append(mark.name)
+        return result
+
 
 class AMTSingle(AMTBase):
     """单元素节点"""
@@ -94,8 +102,9 @@ class AMTSingle(AMTBase):
         self.children = []
 
     def __repr__(self) -> str:
-        format_source = self.source.replace("\n", r"\n")
-        return f"<{self.__class__.__name__} source={format_source}>"
+        source_str = self.source.replace("\n", r"\n")
+        mark_str = "|".join(self._get_mark_name_list())
+        return f"<{self.__class__.__name__} source=\"{source_str}\" marks={mark_str}>"
 
 
 class AMTParenthesisBase(AMTBase):
@@ -124,7 +133,8 @@ class AMTParenthesisBase(AMTBase):
         return False  # 插入语不尝试匹配源码值
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} children={self.children}>"
+        mark_str = "|".join(self._get_mark_name_list())
+        return f"<{self.__class__.__name__} children={self.children} marks={mark_str}>"
 
 
 class AMTParenthesis(AMTParenthesisBase):
