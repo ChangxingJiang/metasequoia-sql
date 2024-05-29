@@ -14,7 +14,7 @@ import dataclasses
 from typing import Union, List
 
 from metasequoia_sql import SQLType, ASTBase
-from metasequoia_sql.analyzer import AnalyzerRecursionASTToListBase, CurrentUsedQuoteColumn
+from metasequoia_sql.analyzer import AnalyzerRecursionASTToListBase
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.core import SQLParser, ASTSingleSelectStatement
 from metasequoia_sql.lexical import FSMMachine, FSMStatus, AMTMark, FSMMemory, FSMOperate
