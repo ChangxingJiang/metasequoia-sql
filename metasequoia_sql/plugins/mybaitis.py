@@ -108,22 +108,3 @@ class GetMybatisParamInGroupByClause(AnalyzerRecursionASTToListBase):
         if isinstance(node, ASTSingleSelectStatement):
             return cls.handle(node.group_by_clause)
         return cls.default_handle_node(node)
-
-
-if __name__ == "__main__":
-    def test_main():
-        """测试主逻辑"""
-        test_sql = "SELECT shohin_mei FROM Shohin WHERE #{hanbai_tanka} > 500 GROUP BY #{tanka};"
-
-        statements = SQLParserMyBatis.parse_statements(test_sql)
-        for statement in statements:
-            if isinstance(statement, ASTSingleSelectStatement):
-                print(statement)
-                print(statement.source(SQLType.MYSQL))
-                print(CurrentUsedQuoteColumn.handle(statement))
-                print(GetAllMybatisParams().handle(statement))
-                print(GetMybatisParamInWhereClause().handle(statement))
-                print(GetMybatisParamInGroupByClause().handle(statement))
-
-
-    test_main()
