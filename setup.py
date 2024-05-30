@@ -7,8 +7,8 @@ with open("README.md", "r", encoding="UTF-8") as file:
 
 setup(
     name="metasequoia-sql",
-    version="0.5.0",
-    description="SQL语法解析器，包含词法树解析、语法树解析和语法树分析功能。",
+    version="0.6.0",
+    description="metasequoia-sql 是一款注重性能的 SQL 语法的解析和分析器，适用于 SQL 的格式化、执行和分析场景，致力于打造性能最高的 Python 版 SQL 解析器。",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="changxing",
