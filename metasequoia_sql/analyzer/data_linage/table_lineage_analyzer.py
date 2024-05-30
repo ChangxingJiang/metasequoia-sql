@@ -74,7 +74,9 @@ class TableLineageAnalyzer:
 
     def _analyze_with_clauses(self, table_lineage_storage: TableLineageStorage, with_clause: core.ASTWithClause):
         """处理 WITH 语句中临时表的数据血缘"""
-        for table_name, with_select_statement in with_clause.tables:
+        for with_table in with_clause.tables:
+            table_name = with_table.name
+            with_select_statement = with_table.statement
             table_lineage = self.get_select_table_lineage(with_select_statement, table_lineage_storage)
             table_lineage_storage.add_with_table(table_name=table_name, table_lineage=table_lineage)
 
