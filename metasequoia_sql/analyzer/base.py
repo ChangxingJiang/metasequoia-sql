@@ -4,6 +4,7 @@
 
 import abc
 import dataclasses
+from typing import Set, Optional
 
 from metasequoia_sql.common.basic import check_param_type
 from metasequoia_sql.core.node import ASTBase, ASTSelectStatement, ASTSingleSelectStatement, ASTUnionSelectStatement
@@ -48,14 +49,25 @@ class AnalyzerRecursionASTToListBase(abc.ABC):
         """入口函数"""
 
     @classmethod
-    def default_handle_node(cls, obj: object) -> list:
-        """默认的处理规则（递归聚合包含元素的结果）"""
+    def default_handle_node(cls, obj: object, ignore_fields: Optional[Set[str]] = None) -> list:
+        """默认的处理规则（递归聚合包含元素的结果）
+
+        Parameters
+        ----------
+        obj : object
+            分析对象
+        ignore_fields : Optional[Set[str]], default = None
+            忽略的 AST 节点属性名称
+        """
         if obj is None:
             return []
+        if ignore_fields is None:
+            ignore_fields = set()
         if isinstance(obj, ASTBase):
             collector = []
             for field in dataclasses.fields(obj):
-                collector.extend(cls.handle(getattr(obj, field.name)))
+                if field not in ignore_fields:
+                    collector.extend(cls.handle(getattr(obj, field.name)))
             return collector
         if isinstance(obj, (list, set, tuple)):
             collector = []

@@ -9,6 +9,7 @@ from metasequoia_sql.analyzer.base import AnalyzerRecursionASTToListBase, Analyz
 from metasequoia_sql.analyzer.node import StandardTable
 
 __all__ = ["AllUsedQuoteTables",
+           "AllUsedQuoteTablesIgnoreWithClause",
            "AllFromClauseUsedQuoteColumn",
            "AllJoinClauseUsedQuoteColumn"]
 
@@ -22,6 +23,17 @@ class AllUsedQuoteTables(AnalyzerRecursionASTToListBase):
         if isinstance(node, core.ASTTableNameExpression):
             return [StandardTable(schema_name=node.schema_name, table_name=node.table_name)]
         return cls.default_handle_node(node)
+
+
+class AllUsedQuoteTablesIgnoreWithClause(AnalyzerRecursionASTToListBase):
+    """"获取所有层级（递归分析子查询）中，直接使用的表名（仅包含原始表名），并忽略 WITH 子句中的表名"""
+
+    @classmethod
+    def handle(cls, node: Union[core.ASTBase, tuple]) -> List[StandardTable]:
+        """自定义的处理规则"""
+        if isinstance(node, core.ASTTableNameExpression):
+            return [StandardTable(schema_name=node.schema_name, table_name=node.table_name)]
+        return cls.default_handle_node(node, ignore_fields={"with_clause"})
 
 
 class AllFromClauseUsedQuoteColumn(AnalyzerSelectASTToListBase):
