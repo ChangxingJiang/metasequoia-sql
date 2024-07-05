@@ -460,7 +460,7 @@ class ASTLiteralExpression(ASTExpressionBase):
             return float(self.value)
         if is_null_literal(self.value):
             return None
-        raise KeyError(f"未知的字面值元素类型: {self.value}")
+        return self.value.strip("'")  # 字符串类型
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
