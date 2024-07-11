@@ -1499,15 +1499,17 @@ class ASTForeignKeyExpression(ASTBase):
     slave_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
     master_table_name: str = dataclasses.field(kw_only=True)
     master_columns: Tuple[str, ...] = dataclasses.field(kw_only=True)
-    on_delete_cascade: bool = dataclasses.field(kw_only=True)
+    on_delete: Optional[str] = dataclasses.field(kw_only=True)
+    on_update: Optional[str] = dataclasses.field(kw_only=True)
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         slave_columns_str = ", ".join([f"{column}" for column in self.slave_columns])
         master_columns_str = ", ".join([f"{column}" for column in self.master_columns])
-        on_delete_cascade_str = " ON DELETE CASCADE" if self.on_delete_cascade else ""
+        on_delete_str = f" ON DELETE {self.on_delete}" if self.on_delete is not None else ""
+        on_update_str = f" ON UPDATE {self.on_delete}" if self.on_update is not None else ""
         return (f"CONSTRAINT {self.constraint_name} FOREIGN KEY ({slave_columns_str}) "
-                f"REFERENCES {self.master_table_name} ({master_columns_str}){on_delete_cascade_str}")
+                f"REFERENCES {self.master_table_name} ({master_columns_str}){on_delete_str}{on_update_str}")
 
 
 AliasColumnOrIndex = Union[ASTDefineColumnExpression, ASTIndexExpressionBase, ASTForeignKeyExpression]  # DDL 的字段或索引类型
