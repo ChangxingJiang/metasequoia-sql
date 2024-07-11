@@ -1587,6 +1587,7 @@ class SQLParser:
 
     @classmethod
     def _parse_foreign_key_expression(cls, scanner: TokenScanner) -> node.ASTForeignKeyExpression:
+        """解析外键表达式"""
         scanner.match("CONSTRAINT")
         constraint_name = scanner.pop_as_source()
         scanner.match("FOREIGN", "KEY")
@@ -1600,14 +1601,33 @@ class SQLParser:
         for column_scanner in scanner.pop_as_children_scanner_list_split_by(","):
             master_columns.append(column_scanner.pop_as_source())
             column_scanner.close()
-        on_delete_cascade = scanner.search_and_move_three_type_str_use_upper("ON", "DELETE", "CASCADE")
+        on_delete = None
+        on_update = None
+        if scanner.search_and_move_two_type_str_use_upper("ON", "DELETE"):
+            on_delete = cls._parse_foreign_key_action(scanner=scanner)
+        if scanner.search_and_move_two_type_str_use_upper("ON", "UPDATE"):
+            on_update = cls._parse_foreign_key_action(scanner=scanner)
         return node.ASTForeignKeyExpression(
             constraint_name=constraint_name,
             slave_columns=tuple(slave_columns),
             master_table_name=master_table_name,
             master_columns=tuple(master_columns),
-            on_delete_cascade=on_delete_cascade
+            on_delete=on_delete,
+            on_update=on_update
         )
+
+    @classmethod
+    def _parse_foreign_key_action(cls, scanner: TokenScanner) -> str:
+        """解析外键表达式中的 ACTION 表达式"""
+        if scanner.search_and_move_two_type_str_use_upper("NO", "ACTION"):
+            return "NO ACTION"
+        if scanner.search_and_move_two_type_str_use_upper("SET", "NULL"):
+            return "SET NULL"
+        if scanner.search_and_move_one_type_str_use_upper("CASCADE"):
+            return "CASCADE"
+        if scanner.search_and_move_one_type_str_use_upper("RESTRICT"):
+            return "RESTRICT"
+        raise SqlParseError(f"无法解析的外键 ACTION: {scanner}")
 
     @classmethod
     def parse_index_column(cls, scanner_or_string: ScannerOrString,
