@@ -134,6 +134,7 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的 CREATE TABLE 语句节点 ------------------------------
     "ASTConfigStringExpression",  # 配置值为字符串的配置表达式
     "ASTColumnTypeExpression",  # 字段类型表达式
+    "ASTGeneratedColumn",  # 字段定义表达式中的计算字段
     "ASTDefineColumnExpression",  # 字段定义表达式
     "ASTIndexColumn",  # 索引声明表达式元素：索引声明表达式中的字段
     "ASTIndexExpressionBase",  # 索引声明表达式（抽象类）
@@ -1367,6 +1368,18 @@ class ASTColumnTypeExpression(ASTBase):
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTGeneratedColumn(ASTBase):
+    """计算字段"""
+
+    expression: ASTExpressionBase = dataclasses.field(kw_only=True)
+    save_mode: static.EnumGenerateColumnSaveMode = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"GENERATED ALWAYS AS ({self.expression.source(sql_type)}) {self.save_mode.name}"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTDefineColumnExpression(ASTBase):
     # pylint: disable=R0902 忽略对象属性过多的问题
     """声明字段表达式"""
@@ -1377,6 +1390,7 @@ class ASTDefineColumnExpression(ASTBase):
     is_zerofill: bool = dataclasses.field(kw_only=True, default=False)
     character_set: Optional[str] = dataclasses.field(kw_only=True, default=None)
     collate: Optional[str] = dataclasses.field(kw_only=True, default=None)
+    generated_always_as: Optional[ASTGeneratedColumn] = dataclasses.field(kw_only=True, default=None)
     is_allow_null: bool = dataclasses.field(kw_only=True, default=False)
     is_not_null: bool = dataclasses.field(kw_only=True, default=False)
     is_auto_increment: bool = dataclasses.field(kw_only=True, default=False)
@@ -1399,6 +1413,8 @@ class ASTDefineColumnExpression(ASTBase):
             res += f" CHARACTER SET {self.character_set}"
         if self.collate is not None and sql_type == SQLType.MYSQL:
             res += f" COLLATE {self.collate}"
+        if self.generated_always_as is not None and sql_type == SQLType.MYSQL:
+            res += f" {self.generated_always_as.source(sql_type)}"
         if self.is_allow_null is True and sql_type == SQLType.MYSQL:
             res += " NULL"
         if self.is_not_null is True and sql_type == SQLType.MYSQL:

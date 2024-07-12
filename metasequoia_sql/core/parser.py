@@ -1743,8 +1743,24 @@ class SQLParser:
         return cls._parse_define_column_expression(scanner, sql_type)
 
     @classmethod
+    def _parse_generated_column(cls, scanner:TokenScanner, sql_type: SQLType) -> Optional[node.ASTGeneratedColumn]:
+        """解析字段定义表达式中的计算字段"""
+        if scanner.search_and_move_three_type_str_use_upper("GENERATED", "ALWAYS", "AS"):
+            children_scanner = scanner.pop_as_children_scanner()
+            compute_expression = cls._parse_compute_expression(children_scanner, sql_type)  # 解析
+            children_scanner.close()
+            save_mode = static.GENERATE_COLUMN_SAVE_MODE_HASH.get(scanner.pop_as_source())
+            return node.ASTGeneratedColumn(
+                expression=compute_expression,
+                save_mode=save_mode
+            )
+        return None
+
+    @classmethod
     def _parse_define_column_expression(cls, scanner: TokenScanner, sql_type: SQLType
                                         ) -> node.ASTDefineColumnExpression:
+        # pylint: disable=R0912
+        # pylint: disable=R0914
         # 解析顺序固定的信息
         column_name = scanner.pop_as_source()
         column_type = cls._parse_column_type_expression(scanner, sql_type)
@@ -1755,6 +1771,7 @@ class SQLParser:
         is_zerofill: bool = False
         character_set: Optional[str] = None
         collate: Optional[str] = None
+        generated_always_as: Optional[node.ASTGeneratedColumn] = None
         is_allow_null: bool = False
         is_not_null: bool = False
         is_auto_increment: bool = False
@@ -1781,6 +1798,8 @@ class SQLParser:
                 is_unsigned = True
             elif scanner.search_and_move_one_type_str_use_upper("ZEROFILL"):
                 is_zerofill = True
+            elif scanner.search_one_type_str_use_upper("GENERATED"):  # GENERATED ALWAYS AS
+                generated_always_as = cls._parse_generated_column(scanner, sql_type)
             else:
                 raise SqlParseError(f"无法解析的 DDL 字段表达式的字段属性: {scanner}")
 
@@ -1793,6 +1812,7 @@ class SQLParser:
             is_zerofill=is_zerofill,
             character_set=character_set,
             collate=collate,
+            generated_always_as=generated_always_as,
             is_allow_null=is_allow_null,
             is_not_null=is_not_null,
             is_auto_increment=is_auto_increment,
