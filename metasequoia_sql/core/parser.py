@@ -1754,12 +1754,13 @@ class SQLParser:
                 expression=compute_expression,
                 save_mode=save_mode
             )
-        else:
-            return None
+        return None
 
     @classmethod
     def _parse_define_column_expression(cls, scanner: TokenScanner, sql_type: SQLType
                                         ) -> node.ASTDefineColumnExpression:
+        # pylint: disable=R0912
+        # pylint: disable=R0914
         # 解析顺序固定的信息
         column_name = scanner.pop_as_source()
         column_type = cls._parse_column_type_expression(scanner, sql_type)
