@@ -251,6 +251,22 @@ LOGICAL_OPERATOR_HASH = {
 }
 
 
+# ---------------------------------------- 计算字段存储类型 ----------------------------------------
+
+class EnumGenerateColumnSaveMode(enum.Enum):
+    """计算字段存储类型的枚举类"""
+
+    VIRTUAL = "VIRTUAL"
+    STORED = "STORED"
+
+
+# 计算字段存储类型的映射关系
+GENERATE_COLUMN_SAVE_MODE_HASH = {
+    "VIRTUAL": EnumGenerateColumnSaveMode.VIRTUAL,
+    "STORED": EnumGenerateColumnSaveMode.STORED
+}
+
+
 # ---------------------------------------- 一元运算符 ----------------------------------------
 
 
