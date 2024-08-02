@@ -1,5 +1,8 @@
 # metasequoia-sql
 
+[![pypi Version](https://img.shields.io/pypi/v/metasequoia-sql.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/metasequoia-sql/)
+[![Downloads](https://static.pepy.tech/personalized-badge/metasequoia-sql?period=total&units=none&left_color=grey&right_color=orange&left_text=Pip%20Downloads)](https://pepy.tech/project/metasequoia-sql)
+
 metasequoia-sql 是一款注重性能的 SQL 语法的解析和分析器，适用于 SQL 的格式化、执行和分析场景，致力于打造性能最高的 Python 版 SQL 解析器。具有如下 3 个主要特性：
 
 - 词法解析器与语法解析器相互独立，支持插件开发
