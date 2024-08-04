@@ -21,9 +21,6 @@ __all__ = [
 class SqlParseError(Exception):
     """SQL解析失败的异常"""
 
-    def __init__(self, reason: str):
-        self.reason = reason
-
 
 class LexicalParseError(SqlParseError):
     """词法解析异常"""
