@@ -28,7 +28,7 @@ from typing import Optional, Tuple, Union, Dict, Any
 from metasequoia_sql.common.basic import is_int_literal, is_bool_literal, is_float_literal, is_null_literal
 from metasequoia_sql.core import static
 from metasequoia_sql.core.sql_type import SQLType
-from metasequoia_sql.errors import SqlParseError, UnSupportSqlTypeError
+from metasequoia_sql.errors import SqlParseError, NotSupportError
 
 __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的抽象类 ------------------------------
@@ -297,7 +297,7 @@ class ASTComputeOperator(ASTEnumElementBase):
         """返回语法节点的 SQL 源码"""
         if (self.enum == static.EnumComputeOperator.MOD
                 and sql_type not in {SQLType.DEFAULT, SQLType.MYSQL, SQLType.SQL_SERVER, SQLType.HIVE}):
-            raise UnSupportSqlTypeError(f"{sql_type} 不支持使用 % 运算符")
+            raise NotSupportError(f"{sql_type} 不支持使用 % 运算符")
         return super(ASTComputeOperator, self).source(sql_type)
 
 
@@ -708,7 +708,7 @@ class ASTIndexExpression(ASTExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         if sql_type != SQLType.HIVE:
-            raise UnSupportSqlTypeError(f"数组下标不支持SQL类型:{sql_type}")
+            raise NotSupportError(f"数组下标不支持SQL类型:{sql_type}")
         return f"{self.array.source(sql_type)}"
 
 
@@ -1722,7 +1722,7 @@ class ASTAnalyzeTableStatement(ASTStatementBase):
                     f"COMPUTE STATISTICS{for_columns_str}{cache_metadata_str}{noscan_str}")
         if sql_type == SQLType.MYSQL:
             return f"ANALYZE TABLE {self.table_name.source(sql_type)}"
-        raise UnSupportSqlTypeError(f"ANALYZE TABLE 语句不支持数据类型: {sql_type}")
+        raise NotSupportError(f"ANALYZE TABLE 语句不支持数据类型: {sql_type}")
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
