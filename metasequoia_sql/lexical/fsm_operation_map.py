@@ -6,7 +6,7 @@ from typing import Dict, Tuple
 
 from metasequoia_sql.common import char_set
 from metasequoia_sql.config import LEXICAL_IGNORE_SPACE, LEXICAL_IGNORE_LINEBREAK, LEXICAL_IGNORE_COMMENT
-from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.errors import LexicalParseError
 from metasequoia_sql.lexical.amt_node import AMTMark
 from metasequoia_sql.lexical.fsm_operate import FSMOperate
 from metasequoia_sql.lexical.fsm_status import FSMStatus
@@ -303,7 +303,7 @@ for status, operation_map in FSM_OPERATION_MAP_SOURCE.items():
             for ch in ch_or_set:
                 FSM_OPERATION_MAP[(status, ch)] = fsm_operation
         else:
-            raise AMTParseError("非法的行为映射表设置表")
+            raise LexicalParseError("非法的行为映射表设置表")
 
     # 将 ASCII 编码 20 - 7E 之间的字符添加到行为映射表中（从而令第一次查询的命中率提高，避免第二次查询）
     for dec in range(32, 127):

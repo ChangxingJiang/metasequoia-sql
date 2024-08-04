@@ -4,7 +4,7 @@
 
 from typing import List, Union, Optional, Set
 
-from metasequoia_sql.errors import ScannerError, ScannerNotMatchError
+from metasequoia_sql.errors import SqlParseError
 from metasequoia_sql.lexical import AMTBase, AMTMark
 
 __all__ = ["TokenScanner"]
@@ -72,7 +72,7 @@ class TokenScanner:
     def close(self) -> None:
         """在扫描器对象使用结束后，会检查扫描器是否已遍历完成，如果没有遍历完成则抛出异常"""
         if not self.is_finish:
-            raise ScannerError(f"关闭了没有遍历完成的扫描器 {self}")
+            raise SqlParseError(f"在 SQL 语句或插入语末尾包含预料之外的 token：{self}")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} tokens={self._elements[self._pos:]}, pos={self._pos}>"
@@ -200,7 +200,7 @@ class TokenScanner:
         """
         for token in tokens:
             if not self.pop().equals(token):
-                raise ScannerNotMatchError(token, tokens, self)
+                raise SqlParseError(f"尝试解析 {token} 失败，计划解析短语为 {tokens}：{self}")
 
     def get_as_source_or_null(self) -> Optional[str]:
         """不移动指针，并返回当前元素的 source"""
