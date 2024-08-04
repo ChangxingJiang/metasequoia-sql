@@ -5,7 +5,7 @@
 from typing import List, Dict, Optional
 
 from metasequoia_sql.common.basic import preproc_sql
-from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.errors import LexicalParseError
 from metasequoia_sql.lexical.amt_node import AMTBase
 from metasequoia_sql.lexical.fsm_memory import FSMMemory
 from metasequoia_sql.lexical.fsm_operate import FSMOperate
@@ -54,10 +54,10 @@ class FSMMachine:
         fsm_machine.handle(memory, END)  # 处理结束标记：处理结束标记后不需要考虑指针是否移动
 
         if memory.status != FSMStatus.END:
-            raise AMTParseError(f"词法分析有限状态机，结束时状态异常: {memory.status}")
+            raise LexicalParseError(f"词法分析有限状态机，结束时状态异常: {memory.status}")
 
         if len(memory.stack) > 1:
-            raise AMTParseError("词法分析有限状态机，解析到的 `(` 数量大于 `)`")
+            raise LexicalParseError("词法分析有限状态机，解析到的 `(` 数量大于 `)`")
 
         return memory.stack[0]
 

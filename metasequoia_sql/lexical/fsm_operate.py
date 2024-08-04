@@ -4,7 +4,7 @@
 
 import abc
 
-from metasequoia_sql.errors import AMTParseError
+from metasequoia_sql.errors import LexicalParseError
 from metasequoia_sql.lexical.amt_node import AMTMark, AMTSingle, AMTParenthesis, AMTSlice
 from metasequoia_sql.lexical.fsm_memory import FSMMemory
 from metasequoia_sql.lexical.fsm_status import FSMStatus
@@ -304,7 +304,7 @@ class FSMOperateEndParenthesis(FSMOperate):
     def execute(self, memory: FSMMemory, ch: str):
         """执行操作"""
         if len(memory.stack) <= 1:
-            raise AMTParseError("插入语结束标记数量大于开始标记数量")
+            raise LexicalParseError("插入语结束标记数量大于开始标记数量")
         memory.pos_now += 1
         memory.pos_start = memory.pos_now
         tokens = memory.stack.pop()
@@ -329,7 +329,7 @@ class FSMOperateEndSlice(FSMOperate):
     def execute(self, memory: FSMMemory, ch: str):
         """执行操作"""
         if len(memory.stack) <= 1:
-            raise AMTParseError("结束语结束标记数量大于开始标记数量")
+            raise LexicalParseError("结束语结束标记数量大于开始标记数量")
         memory.pos_now += 1
         memory.pos_start = memory.pos_now
         tokens = memory.stack.pop()
@@ -343,5 +343,5 @@ class FSMOperateRaise(FSMOperate):
     def execute(self, memory: FSMMemory, ch: str):
         """执行操作"""
         if ch == END:
-            raise AMTParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法结束符")
-        raise AMTParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法字符: {ch}")
+            raise LexicalParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法结束符")
+        raise LexicalParseError(f"当前状态={memory.status.name}({memory.status.value}) 出现非法字符: {ch}")

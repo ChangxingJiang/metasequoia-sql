@@ -2,8 +2,17 @@
 在 metasequoia_sql 中年可能抛出的异常
 """
 
-__all__ = ["SqlParseError", "AMTParseError", "UnSupportSqlTypeError", "ScannerError", "AnalyzerError",
-           "ScannerNotMatchError"]
+__all__ = [
+    # SQL 解析器异常
+    "SqlParseError",
+    "LexicalParseError",
+    "UnSupportSqlTypeError",
+    "ScannerError",
+    "ScannerNotMatchError",
+
+    # SQL 分析器异常
+    "AnalyzerError",
+]
 
 
 class SqlParseError(Exception):
@@ -13,18 +22,15 @@ class SqlParseError(Exception):
         self.reason = reason
 
 
-class AMTParseError(SqlParseError):
-    """抽象词法树 AMT 解析失败"""
+class LexicalParseError(SqlParseError):
+    """词法解析异常"""
 
 
-class UnSupportSqlTypeError(Exception):
-    """数据源不支持的语法异常"""
-
-    def __init__(self, reason: str):
-        self.reason = reason
+class UnSupportSqlTypeError(SqlParseError):
+    """不支持的数据源异常"""
 
 
-class ScannerError(Exception):
+class ScannerError(SqlParseError):
     """文本扫描异常"""
 
 
