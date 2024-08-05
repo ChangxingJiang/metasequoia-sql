@@ -23,12 +23,12 @@
 
 import abc
 import dataclasses
-from typing import Optional, Tuple, Union, Dict, Any
+from typing import Any, Dict, Optional, Tuple, Union
 
-from metasequoia_sql.common.basic import is_int_literal, is_bool_literal, is_float_literal, is_null_literal
+from metasequoia_sql.common.basic import is_bool_literal, is_float_literal, is_int_literal, is_null_literal
 from metasequoia_sql.core import static
 from metasequoia_sql.core.sql_type import SQLType
-from metasequoia_sql.errors import SqlParseError, NotSupportError
+from metasequoia_sql.errors import NotSupportError, SqlParseError
 
 __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的抽象类 ------------------------------
@@ -157,6 +157,7 @@ __all__ = [
 
     # ------------------------------ 抽象语法树（AST）节点的 ALTER TABLE 语句节点 ------------------------------
     "ASTAlterExpressionBase",  # ALTER TABLE 语句的子句表达式的抽象基类
+    "ASTAlterAddPartitionExpression",  # ALTER TABLE 语句的 ADD PARTITION 子句
     "ASTAlterAddExpression",  # ALTER TABLE 语句的 ADD 子句
     "ASTAlterModifyExpression",  # ALTER TABLE 语句的 MODIFY 子句
     "ASTAlterChangeExpression",  # ALTER TABLE 语句的 CHANGE 子句
@@ -1728,6 +1729,19 @@ class ASTAnalyzeTableStatement(ASTStatementBase):
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTAlterExpressionBase(ASTBase, abc.ABC):
     """ALTER TABLE 更新语句的抽象基类"""
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTAlterAddPartitionExpression(ASTAlterExpressionBase):
+    """ALTER TABLE 语句的 ADD PARTITION 子句"""
+
+    if_not_exists: bool = dataclasses.field(kw_only=True)
+    partition: ASTPartitionExpression = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        if_exists_str = " IF NOT EXISTS" if self.if_not_exists else ""
+        return f"DROP{if_exists_str} {self.partition.source(sql_type)}"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

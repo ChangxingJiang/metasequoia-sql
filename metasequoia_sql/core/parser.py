@@ -7,7 +7,7 @@ SQL 语法解析器
 如需替换词法解析器，重写 build_token_scanner 方法即可。
 """
 
-from typing import Optional, Tuple, List, Union
+from typing import List, Optional, Tuple, Union
 
 from metasequoia_sql.common import TokenScanner
 from metasequoia_sql.common import name_set
@@ -1743,7 +1743,7 @@ class SQLParser:
         return cls._parse_define_column_expression(scanner, sql_type)
 
     @classmethod
-    def _parse_generated_column(cls, scanner:TokenScanner, sql_type: SQLType) -> Optional[node.ASTGeneratedColumn]:
+    def _parse_generated_column(cls, scanner: TokenScanner, sql_type: SQLType) -> Optional[node.ASTGeneratedColumn]:
         """解析字段定义表达式中的计算字段"""
         if scanner.search_and_move_three_type_str_use_upper("GENERATED", "ALWAYS", "AS"):
             children_scanner = scanner.pop_as_children_scanner()
@@ -2117,7 +2117,17 @@ class SQLParser:
     @classmethod
     def _parse_alter_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTAlterExpressionBase:
         # pylint: disable=R0911
-        if scanner.search_and_move_one_type_str_use_upper("ADD"):
+        if scanner.search_and_move_two_type_str_use_upper("ADD", "PARTITION"):
+            return node.ASTAlterAddPartitionExpression(
+                if_not_exists=False,
+                partition=cls._parse_partition_expression(scanner, True, sql_type)
+            )
+        if scanner.search_and_move("ADD", "IF", "NOT", "EXISTS", "PARTITION"):
+            return node.ASTAlterAddPartitionExpression(
+                if_not_exists=True,
+                partition=cls._parse_partition_expression(scanner, True, sql_type)
+            )
+        if scanner.search_and_move_one_type_str_use_upper("ADD"):  # TODO 待拆分
             return node.ASTAlterAddExpression(
                 expression=cls._parse_column_or_index(scanner, sql_type)
             )
