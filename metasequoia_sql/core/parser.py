@@ -2117,6 +2117,7 @@ class SQLParser:
     @classmethod
     def _parse_alter_expression(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTAlterExpressionBase:
         # pylint: disable=R0911
+        # pylint: disable=W0511
         if scanner.search_and_move_two_type_str_use_upper("ADD", "PARTITION"):
             return node.ASTAlterAddPartitionExpression(
                 if_not_exists=False,
