@@ -194,6 +194,9 @@ __all__ = [
     "ASTFuncUser",  # USER() 函数
     "ASTFuncOneExpr",  # 只有一个 expr 类型参数的函数
     "ASTFuncDate",  # DATE() 函数
+    "ASTFuncDay",  # DAY() 函数
+
+    "AliasColumnOrIndex",  # TODO 待移走
 ]
 
 
@@ -554,6 +557,15 @@ class ASTFuncDate(ASTFuncOneExpr):
 
     语法：
     DATE(expr)
+    """
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFuncDay(ASTFuncOneExpr):
+    """【MySQL】Day 函数（day of month）
+
+    语法：
+    DAY(expr)
     """
 
 
@@ -1425,7 +1437,7 @@ class ASTColumnTypeExpression(ASTBase):
 
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码
-        
+
         TODO：后续计划将类型的处理，移动到翻译器中，而不是放置在 Node 节点中，因为这并不是一个适用于所有应用场景的功能，可能会引发特殊的 Bug
         """
         # 如果没有参数，则不添加参数

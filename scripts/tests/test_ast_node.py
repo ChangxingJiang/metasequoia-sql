@@ -99,7 +99,7 @@ class TestObjectsHashable(unittest.TestCase):
     def test_node_is_dataclasses(self):
         """检查抽象语法树节点是否为 dataclasses 对象"""
 
-        for class_name in node.__all__:
+        for class_name in node.__dict__:
             # 跳过不是抽象语法树的节点
             if not class_name.startswith("AST"):
                 continue
@@ -115,7 +115,7 @@ class TestObjectsHashable(unittest.TestCase):
             self.assertTrue(dataclasses.is_dataclass(ast_class), f"抽象语法树节点 {class_name} 不是 dataclasses 对象")
 
     def test_node_is_hashable(self):
-        for class_name in node.__all__:
+        for class_name in node.__dict__:
             # 跳过不是抽象语法树的节点
             if not class_name.startswith("AST"):
                 continue

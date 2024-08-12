@@ -637,7 +637,6 @@ class SQLParser:
             name=node.ASTFunctionNameExpression(function_name="user"),
         )
 
-
     @classmethod
     def _parse_func_date(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFuncDate:
         """解析 USER() 函数"""
@@ -648,7 +647,6 @@ class SQLParser:
             name=node.ASTFunctionNameExpression(function_name="date"),
             expr=expr
         )
-
 
     @classmethod
     def parse_function_expression_and_index(cls, scanner_or_string: ScannerOrString,
