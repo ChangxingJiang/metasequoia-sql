@@ -35,3 +35,12 @@ class TestFunction(unittest.TestCase):
     def test_func_hour(self):
         """测试 hour() 函数"""
         SQLParser.parse_function_expression("""HOUR('2024-08-12 13:28:05')""")
+
+    def test_func_insert(self):
+        """测试 insert() 函数"""
+        SQLParser.parse_function_expression("""INSERT('aaa', 2, 0, 'b')""")
+
+    def test_func_interval(self):
+        """测试 insert() 函数"""
+        SQLParser.parse_function_expression("""INTERVAL(field, 1, 2, 3)""")
+        SQLParser.parse_function_expression("""INTERVAL(field, 1)""")

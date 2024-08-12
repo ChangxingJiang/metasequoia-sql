@@ -561,6 +561,28 @@ class SQLParser:
             expr = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
             parenthesis_scanner.close()
             return node.FUNC_HASH_ONE_EXPR[function_name_upper].create_by(expr=expr)
+        if function_name_upper == "INSERT":
+            parenthesis_scanner = scanner.pop_as_children_scanner()
+            expr_1 = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+            parenthesis_scanner.search_and_move_one_type_str(",")
+            expr_2 = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+            parenthesis_scanner.search_and_move_one_type_str(",")
+            expr_3 = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+            parenthesis_scanner.search_and_move_one_type_str(",")
+            expr_4 = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+            parenthesis_scanner.close()
+            return node.ASTFuncInsert.create_by(expr_1=expr_1, expr_2=expr_2, expr_3=expr_3, expr_4=expr_4)
+        if function_name_upper == "INTERVAL":
+            parenthesis_scanner = scanner.pop_as_children_scanner()
+            expr_1 = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+            parenthesis_scanner.search_and_move_one_type_str(",")
+            expr_2 = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+            expr_list = []
+            while parenthesis_scanner.search_and_move_one_type_str(","):
+                expr_list.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type))
+            if not expr_list:
+                expr_list = None
+            return node.ASTFuncInterval.create_by(expr_1=expr_1, expr_2=expr_2, expr_list=expr_list)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if function_name_upper == "SUBSTRING":
