@@ -550,6 +550,8 @@ class SQLParser:
             return cls._parse_extract_function_expression(scanner, sql_type)
         if function_name_upper == "IF":
             return cls._parse_if_function_expression(scanner, sql_type)
+        if function_name_upper == "CHAR":
+            return cls._parse_func_char(scanner, sql_type)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if function_name_upper == "SUBSTRING":
@@ -580,6 +582,30 @@ class SQLParser:
         return node.ASTNormalFunctionExpression(
             name=function_name_expression,
             params=tuple(function_params)
+        )
+
+    @classmethod
+    def _parse_func_char(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFuncChar:
+        """解析 char() 函数"""
+        # 获取函数参数部分的迭代器
+        parenthesis_scanner = scanner.pop_as_children_scanner()
+
+        # 解析表达式列表
+        expr_list: List[GeneralExpression] = []
+        if not parenthesis_scanner.is_finish:
+            expr_list.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type))
+        while parenthesis_scanner.search_and_move_one_type_str(","):
+            expr_list.append(cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type))
+
+        # 解析字符集名称
+        charset_name: Optional[str] = None
+        if scanner.search_one_type_str_use_upper("USING"):
+            charset_name = scanner.pop_as_source()
+
+        return node.ASTFuncChar(
+            name=node.ASTFunctionNameExpression(function_name="char"),
+            expr_list=tuple(expr_list),
+            charset_name=charset_name
         )
 
     @classmethod

@@ -62,6 +62,7 @@ __all__ = [
     "ASTLiteralExpression",  # 【元素表达式层级】字面值表达式节点
     "ASTWildcardExpression",  # 【元素表达式层级】通配符表达式节点
     "ASTFunctionExpressionBase",  # 【元素表达式层级】函数表达式：函数表达式的抽象类
+    "ASTFuncChar",  # 【元素表达式层级】char() 函数
     "ASTNormalFunctionExpression",  # 【元素表达式层级】函数表达式：普通函数表达式
     "ASTAggregationFunction",  # 【元素表达式层级】函数表达式：聚集函数表达式
     "ASTCastFunctionExpression",  # 【元素表达式层级】函数表达式：CAST 函数表达式
@@ -481,6 +482,26 @@ class ASTFunctionExpressionBase(ASTExpressionBase, abc.ABC):
     """函数表达式的抽象基类"""
 
     name: ASTFunctionNameExpression = dataclasses.field(kw_only=True)
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFuncChar(ASTFunctionExpressionBase):
+    """【MySQL】char 函数
+
+    原型：
+    char(expr_list)
+    char(expr_list USING charset_name)
+    """
+
+    expr_list: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)  # 参数值的列表
+    charset_name: Optional[str] = dataclasses.field(kw_only=True)  # 字符集
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        expr_list_str = ", ".join(expr.source(sql_type) for expr in self.expr_list)
+        if self.charset_name is not None:
+            return f"char({expr_list_str} USING {self.charset_name})"
+        return f"char({expr_list_str})"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
