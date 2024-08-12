@@ -21,5 +21,9 @@ class TestFunction(unittest.TestCase):
         SQLParser.parse_function_expression("""CURRENT_USER()""")
 
     def test_func_user(self):
-        """测试 current_user() 函数"""
+        """测试 user() 函数"""
         SQLParser.parse_function_expression("""USER()""")
+
+    def test_func_date(self):
+        """测试 date() 函数"""
+        SQLParser.parse_function_expression("""DATE('2024-08-12 13:28:05')""")

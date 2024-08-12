@@ -556,6 +556,8 @@ class SQLParser:
             return cls._parse_func_current_user(scanner)
         if function_name_upper == "USER":
             return cls._parse_func_user(scanner)
+        if function_name_upper == "DATE":
+            return cls._parse_func_date(scanner, sql_type)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if function_name_upper == "SUBSTRING":
@@ -633,6 +635,18 @@ class SQLParser:
         parenthesis_scanner.close()
         return node.ASTFuncUser(
             name=node.ASTFunctionNameExpression(function_name="user"),
+        )
+
+
+    @classmethod
+    def _parse_func_date(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFuncDate:
+        """解析 USER() 函数"""
+        parenthesis_scanner = scanner.pop_as_children_scanner()
+        expr = cls._parse_logical_or_level_expression(parenthesis_scanner, sql_type)
+        parenthesis_scanner.close()
+        return node.ASTFuncDate(
+            name=node.ASTFunctionNameExpression(function_name="date"),
+            expr=expr
         )
 
 

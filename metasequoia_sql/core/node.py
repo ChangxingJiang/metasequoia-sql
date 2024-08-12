@@ -192,6 +192,8 @@ __all__ = [
     "ASTFuncChar",  # CHAR() 函数
     "ASTFuncCurrentUser",  # CURRENT_USER() 函数
     "ASTFuncUser",  # USER() 函数
+    "ASTFuncOneExpr",  # 只有一个 expr 类型参数的函数
+    "ASTFuncDate",  # DATE() 函数
 ]
 
 
@@ -533,6 +535,26 @@ class ASTFuncUser(ASTFunctionExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return "USER()"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFuncOneExpr(ASTFunctionExpressionBase):
+    """只有一个 expr 类型参数的函数"""
+
+    expr: ASTExpressionBase = dataclasses.field(kw_only=True)
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return f"{self.name.source(sql_type)}({self.expr.source(sql_type)})"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFuncDate(ASTFuncOneExpr):
+    """【MySQL】Date 函数
+
+    语法：
+    DATE(expr)
+    """
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
