@@ -19,3 +19,7 @@ class TestFunction(unittest.TestCase):
         """测试 current_user() 函数"""
         SQLParser.parse_function_expression("""CURRENT_USER""")
         SQLParser.parse_function_expression("""CURRENT_USER()""")
+
+    def test_func_user(self):
+        """测试 current_user() 函数"""
+        SQLParser.parse_function_expression("""USER()""")

@@ -191,6 +191,7 @@ __all__ = [
     # ------------------------------ MySQL 关键字函数 ------------------------------
     "ASTFuncChar",  # CHAR() 函数
     "ASTFuncCurrentUser",  # CURRENT_USER() 函数
+    "ASTFuncUser",  # USER() 函数
 ]
 
 
@@ -519,6 +520,19 @@ class ASTFuncCurrentUser(ASTFunctionExpressionBase):
     def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
         """返回语法节点的 SQL 源码"""
         return "CURRENT_USER()"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFuncUser(ASTFunctionExpressionBase):
+    """【MySQL】USER 函数
+
+    原型：
+    USER()
+    """
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return "USER()"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

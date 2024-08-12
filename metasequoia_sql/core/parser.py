@@ -554,6 +554,8 @@ class SQLParser:
             return cls._parse_func_char(scanner, sql_type)
         if function_name_upper == "CURRENT_USER":
             return cls._parse_func_current_user(scanner)
+        if function_name_upper == "USER":
+            return cls._parse_func_user(scanner)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if function_name_upper == "SUBSTRING":
@@ -623,6 +625,16 @@ class SQLParser:
         return node.ASTFuncCurrentUser(
             name=node.ASTFunctionNameExpression(function_name="current_user"),
         )
+
+    @classmethod
+    def _parse_func_user(cls, scanner: TokenScanner) -> node.ASTFuncUser:
+        """解析 USER() 函数"""
+        parenthesis_scanner = scanner.pop_as_children_scanner()
+        parenthesis_scanner.close()
+        return node.ASTFuncUser(
+            name=node.ASTFunctionNameExpression(function_name="user"),
+        )
+
 
     @classmethod
     def parse_function_expression_and_index(cls, scanner_or_string: ScannerOrString,
