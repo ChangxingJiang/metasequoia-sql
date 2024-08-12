@@ -552,6 +552,8 @@ class SQLParser:
             return cls._parse_if_function_expression(scanner, sql_type)
         if function_name_upper == "CHAR":
             return cls._parse_func_char(scanner, sql_type)
+        if function_name_upper == "CURRENT_USER":
+            return cls._parse_func_current_user(scanner)
 
         parenthesis_scanner = scanner.pop_as_children_scanner()
         if function_name_upper == "SUBSTRING":
@@ -586,7 +588,7 @@ class SQLParser:
 
     @classmethod
     def _parse_func_char(cls, scanner: TokenScanner, sql_type: SQLType) -> node.ASTFuncChar:
-        """解析 char() 函数"""
+        """解析 CHAR() 函数"""
         # 获取函数参数部分的迭代器
         parenthesis_scanner = scanner.pop_as_children_scanner()
 
@@ -599,13 +601,27 @@ class SQLParser:
 
         # 解析字符集名称
         charset_name: Optional[str] = None
-        if scanner.search_one_type_str_use_upper("USING"):
-            charset_name = scanner.pop_as_source()
+        if parenthesis_scanner.search_and_move_one_type_str("USING"):
+            charset_name = parenthesis_scanner.pop_as_source()
+
+        # 关闭迭代器，确保其中元素已迭代完成
+        parenthesis_scanner.close()
 
         return node.ASTFuncChar(
             name=node.ASTFunctionNameExpression(function_name="char"),
             expr_list=tuple(expr_list),
             charset_name=charset_name
+        )
+
+    @classmethod
+    def _parse_func_current_user(cls, scanner: TokenScanner) -> node.ASTFuncCurrentUser:
+        """解析 CURRENT_USER() 函数"""
+        if scanner.search_one_type_mark(AMTMark.PARENTHESIS):
+            parenthesis_scanner = scanner.pop_as_children_scanner()
+            parenthesis_scanner.close()
+
+        return node.ASTFuncCurrentUser(
+            name=node.ASTFunctionNameExpression(function_name="current_user"),
         )
 
     @classmethod

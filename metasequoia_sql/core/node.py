@@ -62,7 +62,6 @@ __all__ = [
     "ASTLiteralExpression",  # 【元素表达式层级】字面值表达式节点
     "ASTWildcardExpression",  # 【元素表达式层级】通配符表达式节点
     "ASTFunctionExpressionBase",  # 【元素表达式层级】函数表达式：函数表达式的抽象类
-    "ASTFuncChar",  # 【元素表达式层级】char() 函数
     "ASTNormalFunctionExpression",  # 【元素表达式层级】函数表达式：普通函数表达式
     "ASTAggregationFunction",  # 【元素表达式层级】函数表达式：聚集函数表达式
     "ASTCastFunctionExpression",  # 【元素表达式层级】函数表达式：CAST 函数表达式
@@ -187,7 +186,11 @@ __all__ = [
     # ------------------------------ 抽象语法树（AST）节点的 SHOW 语句节点 ------------------------------
     "ASTShowDatabasesStatement",  # SHOW DATABASES 语句
     "ASTShowTablesStatement",  # SHOW TABLES 语句
-    "ASTShowColumnsStatement"  # SHOW COLUMNS 语句
+    "ASTShowColumnsStatement",  # SHOW COLUMNS 语句
+
+    # ------------------------------ MySQL 关键字函数 ------------------------------
+    "ASTFuncChar",  # CHAR() 函数
+    "ASTFuncCurrentUser",  # CURRENT_USER() 函数
 ]
 
 
@@ -486,11 +489,11 @@ class ASTFunctionExpressionBase(ASTExpressionBase, abc.ABC):
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class ASTFuncChar(ASTFunctionExpressionBase):
-    """【MySQL】char 函数
+    """【MySQL】CHAR 函数
 
     原型：
-    char(expr_list)
-    char(expr_list USING charset_name)
+    CHAR(expr_list)
+    CHAR(expr_list USING charset_name)
     """
 
     expr_list: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)  # 参数值的列表
@@ -502,6 +505,20 @@ class ASTFuncChar(ASTFunctionExpressionBase):
         if self.charset_name is not None:
             return f"char({expr_list_str} USING {self.charset_name})"
         return f"char({expr_list_str})"
+
+
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
+class ASTFuncCurrentUser(ASTFunctionExpressionBase):
+    """【MySQL】CURRENT_USER 函数
+
+    原型：
+    CURRENT_USER()
+    CURRENT_USER
+    """
+
+    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
+        """返回语法节点的 SQL 源码"""
+        return "CURRENT_USER()"
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)
