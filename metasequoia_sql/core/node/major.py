@@ -188,14 +188,6 @@ __all__ = [
     "ASTShowTablesStatement",  # SHOW TABLES 语句
     "ASTShowColumnsStatement",  # SHOW COLUMNS 语句
 
-    # ------------------------------ MySQL 关键字函数 ------------------------------
-    "ASTFuncChar",  # CHAR() 函数
-    "ASTFuncCurrentUser",  # CURRENT_USER() 函数
-    "ASTFuncUser",  # USER() 函数
-    "ASTFuncOneExpr",  # 只有一个 expr 类型参数的函数
-    "ASTFuncDate",  # DATE() 函数
-    "ASTFuncDay",  # DAY() 函数
-
     "AliasColumnOrIndex",  # TODO 待移走
 ]
 
@@ -491,82 +483,6 @@ class ASTFunctionExpressionBase(ASTExpressionBase, abc.ABC):
     """函数表达式的抽象基类"""
 
     name: ASTFunctionNameExpression = dataclasses.field(kw_only=True)
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFuncChar(ASTFunctionExpressionBase):
-    """【MySQL】CHAR 函数
-
-    原型：
-    CHAR(expr_list)
-    CHAR(expr_list USING charset_name)
-    """
-
-    expr_list: Tuple[ASTExpressionBase, ...] = dataclasses.field(kw_only=True)  # 参数值的列表
-    charset_name: Optional[str] = dataclasses.field(kw_only=True)  # 字符集
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        expr_list_str = ", ".join(expr.source(sql_type) for expr in self.expr_list)
-        if self.charset_name is not None:
-            return f"char({expr_list_str} USING {self.charset_name})"
-        return f"char({expr_list_str})"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFuncCurrentUser(ASTFunctionExpressionBase):
-    """【MySQL】CURRENT_USER 函数
-
-    原型：
-    CURRENT_USER()
-    CURRENT_USER
-    """
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return "CURRENT_USER()"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFuncUser(ASTFunctionExpressionBase):
-    """【MySQL】USER 函数
-
-    原型：
-    USER()
-    """
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return "USER()"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFuncOneExpr(ASTFunctionExpressionBase):
-    """只有一个 expr 类型参数的函数"""
-
-    expr: ASTExpressionBase = dataclasses.field(kw_only=True)
-
-    def source(self, sql_type: SQLType = SQLType.DEFAULT) -> str:
-        """返回语法节点的 SQL 源码"""
-        return f"{self.name.source(sql_type)}({self.expr.source(sql_type)})"
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFuncDate(ASTFuncOneExpr):
-    """【MySQL】Date 函数
-
-    语法：
-    DATE(expr)
-    """
-
-
-@dataclasses.dataclass(slots=True, frozen=True, eq=True)
-class ASTFuncDay(ASTFuncOneExpr):
-    """【MySQL】Day 函数（day of month）
-
-    语法：
-    DAY(expr)
-    """
 
 
 @dataclasses.dataclass(slots=True, frozen=True, eq=True)

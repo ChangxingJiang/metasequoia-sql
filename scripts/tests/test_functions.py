@@ -27,3 +27,11 @@ class TestFunction(unittest.TestCase):
     def test_func_date(self):
         """测试 date() 函数"""
         SQLParser.parse_function_expression("""DATE('2024-08-12 13:28:05')""")
+
+    def test_func_day(self):
+        """测试 day() 函数"""
+        SQLParser.parse_function_expression("""DAY('2024-08-12 13:28:05')""")
+
+    def test_func_hour(self):
+        """测试 hour() 函数"""
+        SQLParser.parse_function_expression("""HOUR('2024-08-12 13:28:05')""")
