@@ -7,7 +7,8 @@ from typing import Optional
 from metasequoia_parser.common import Terminal
 from metasequoia_parser.lexical import LexicalFSM
 
-from metasequoia_sql_new.lexical.lex_constants import LEX_SKIP_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_BIN_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_START_STATE_MAP
 from metasequoia_sql_new.lexical.lex_states import LexStates
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
@@ -21,6 +22,7 @@ class LexFSM(LexicalFSM):
     """SQL 词法解析器"""
 
     def __init__(self, text: str):
+        text += "\x00"
         super().__init__(text)
         self.length = len(text)
 
@@ -36,15 +38,6 @@ class LexFSM(LexicalFSM):
             if terminal := LEX_ACTION_MAP[self.state](self) is not None:
                 return terminal
 
-    def skip(self) -> None:
-        """"""
-        while self.idx < self.length and self.text[self.idx] in LEX_SKIP_CHARSET:
-            self.idx += 1
-
-    def start_token(self) -> None:
-        """开始当前 Token"""
-        self.start_idx = self.idx
-
 
 def lex_start_action(fsm: LexFSM) -> None:
     """处理 LEX_START 状态的逻辑，指向空白字符后的第 1 个有效字符"""
@@ -54,7 +47,7 @@ def lex_start_action(fsm: LexFSM) -> None:
         if fsm.idx == fsm.length:
             fsm.state = LexStates.LEX_EOF
         ch = fsm.text[fsm.idx]
-    fsm.start_token()
+    fsm.start_idx = fsm.idx
     fsm.state = LEX_START_STATE_MAP[ch]
 
 
@@ -126,6 +119,22 @@ def lex_lt_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.OPERATOR_LT, value="<")
 
 
+def lex_gt_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_GT 状态的逻辑，指向符号后的下一个字符
+
+    尝试解析元素：`>>`、`>=`、`>`
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch == ">":
+        fsm.idx += 2
+        return Terminal(symbol_id=TType.OPERATOR_GT_GT, value=">>")
+    if ch == "=":
+        fsm.idx += 2
+        return Terminal(symbol_id=TType.OPERATOR_GT_EQ, value=">=")
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_GT, value=">")
+
+
 def lex_ques_action(fsm: LexFSM) -> Terminal:
     """处理 LEX_QUES 状态的逻辑，指向 "?" 后的下一个字符 TODO 待增加预编译模式的检查"""
     fsm.idx += 1
@@ -142,6 +151,72 @@ def lex_star_action(fsm: LexFSM) -> Terminal:
     """处理 LEX_STAR 状态的逻辑，指向 "*" 后的下一个字符"""
     fsm.idx += 1
     return Terminal(symbol_id=TType.OPERATOR_STAR, value="*")
+
+
+def lex_slash_action(fsm: LexFSM) -> Optional[Terminal]:
+    """处理 LEX_SLASH 状态的逻辑，指向符号后的下一个字符
+
+    尝试匹配元素：`/*`、`/`
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "*":
+        fsm.idx += 2
+        fsm.state = LexStates.LEX_LONG_COMMENT
+        return None
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_BANG, value="!")
+
+
+def lex_bang_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_BANG 状态的逻辑，指向符号后的下一个字符
+
+    尝试匹配元素：`!=`、`!`
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "=":
+        fsm.idx += 2
+        return Terminal(symbol_id=TType.OPERATOR_BANG_EQ, value="!=")
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_BANG, value="!")
+
+
+def lex_amp_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_AMP 状态的逻辑，指向符号后的下一个字符
+
+    尝试匹配元素：`&&`、`&`
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "&":
+        fsm.idx += 2
+        return Terminal(symbol_id=TType.OPERATOR_AMP_AMP, value="&&")
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_AMP, value="&")
+
+
+def lex_bar_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_BAR 状态的逻辑，指向符号后的下一个字符
+
+    尝试匹配元素：`||`、`|`
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "|":
+        fsm.idx += 2
+        return Terminal(symbol_id=TType.OPERATOR_BAR_BAR, value="||")
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_BAR, value="|")
+
+
+def lex_colon_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_COLON 状态的逻辑，指向符号后的下一个字符
+
+    尝试匹配元素：`:=`、`:`
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "=":
+        fsm.idx += 2
+        return Terminal(symbol_id=TType.OPERATOR_COLON_EQ, value=":=")
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_COLON, value=":")
 
 
 def lex_lparen_action(fsm: LexFSM) -> Terminal:
@@ -174,6 +249,56 @@ def lex_rbrace_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.OPERATOR_RBRACE, value="}")
 
 
+def lex_ident_or_hex_action(fsm: LexFSM) -> None:
+    """处理 LEX_IDENT_OR_HEX 状态的逻辑，指向 x' 或 x 后的下一个字符"""
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "'":
+        fsm.idx += 2
+        fsm.state = LexStates.LEX_HEX_NUMBER
+        return None
+    fsm.idx += 1
+    fsm.state = LexStates.LEX_IDENT
+    return None
+
+
+def lex_hex_number_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_HEX_NUMBER 状态的逻辑，指向当前元素之后的第 1 个字符"""
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    while ch in LEX_HEX_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    if ch != "'":
+        return Terminal(symbol_id=TType.SYSTEM_ABORT, value=None)
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.LITERAL_HEX_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx - 1])
+
+
+def lex_ident_or_bin_action(fsm: LexFSM) -> None:
+    """处理 LEX_IDENT_OR_BIN 状态的逻辑，指向 b' 或 b 后的下一个字符"""
+    ch = fsm.text[fsm.idx + 1]
+    if ch == "'":
+        fsm.idx += 2
+        fsm.state = LexStates.LEX_BIN_NUMBER
+        return None
+    fsm.idx += 1
+    fsm.state = LexStates.LEX_IDENT
+    return None
+
+
+def lex_bin_number_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_BIN_NUMBER 状态的逻辑，指向当前元素之后的第 1 个字符"""
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    while ch in LEX_BIN_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    if ch != "'":
+        return Terminal(symbol_id=TType.SYSTEM_ABORT, value=None)
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.LITERAL_BIN_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx - 1])
+
+
 # 处理各种状态的映射关系
 LEX_ACTION_MAP = {
     LexStates.LEX_START: lex_start_action,
@@ -187,24 +312,24 @@ LEX_ACTION_MAP = {
     LexStates.LEX_PERCENT: lex_percent_action,
     LexStates.LEX_SUB: lex_sub_action,
     LexStates.LEX_LT: lex_lt_action,
-    LexStates.LEX_GT: None,
+    LexStates.LEX_GT: lex_gt_action,
     LexStates.LEX_QUES: lex_ques_action,
     LexStates.LEX_EQ: lex_eq_action,
     LexStates.LEX_STAR: lex_star_action,
-    LexStates.LEX_SLASH: None,
-    LexStates.LEX_BANG: None,
-    LexStates.LEX_AMP: None,
-    LexStates.LEX_BAR: None,
-    LexStates.LEX_COLON: None,
+    LexStates.LEX_SLASH: lex_slash_action,
+    LexStates.LEX_BANG: lex_bang_action,
+    LexStates.LEX_AMP: lex_amp_action,
+    LexStates.LEX_BAR: lex_bar_action,
+    LexStates.LEX_COLON: lex_colon_action,
     LexStates.LEX_LPAREN: lex_lparen_action,
     LexStates.LEX_RPAREN: lex_rparen_action,
     LexStates.LEX_COMMA: lex_comma_action,
     LexStates.LEX_LBRACE: lex_lbrace_action,
     LexStates.LEX_RBRACE: lex_rbrace_action,
-    LexStates.LEX_IDENT_OR_HEX: None,
-    LexStates.LEX_HEX_NUMBER: None,
-    LexStates.LEX_IDENT_OR_BIN: None,
-    LexStates.LEX_BIN_NUMBER: None,
+    LexStates.LEX_IDENT_OR_HEX: lex_ident_or_hex_action,
+    LexStates.LEX_HEX_NUMBER: lex_hex_number_action,
+    LexStates.LEX_IDENT_OR_BIN: lex_ident_or_bin_action,
+    LexStates.LEX_BIN_NUMBER: lex_bin_number_action,
     LexStates.LEX_IDENT: None,
     LexStates.LEX_DELIMITER: None,
     LexStates.LEX_STRING: None,

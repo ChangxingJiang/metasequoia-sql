@@ -7,6 +7,8 @@ from metasequoia_sql_new.lexical.lex_states import LexStates
 __all__ = [
     "LEX_SKIP_CHARSET",
     "LEX_START_STATE_MAP",
+    "LEX_BIN_CHARSET",
+    "LEX_HEX_CHARSET",
 ]
 
 # 空白字符，包括空格、水平制表符、换行符
@@ -142,3 +144,14 @@ LEX_START_STATE_MAP = {
     "~": LexStates.LEX_TILDE,
     "\x7F": LexStates.LEX_ERROR,  # DEL (delete) 删除
 }
+
+# 二进制字符集
+LEX_BIN_CHARSET = {"0", "1"}
+
+# 十进制字符集
+LEX_OCT_CHARSET = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+
+# 十六进制字符集
+LEX_HEX_CHARSET = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                   "a", "b", "c", "d", "e", "f",
+                   "A", "B", "C", "D", "E", "F"}
