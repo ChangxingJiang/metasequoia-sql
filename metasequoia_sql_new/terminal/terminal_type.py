@@ -59,9 +59,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     LITERAL_HEX_NUM = enum.auto()  # 十六进制字面值（仅包含十六进制数部分）
     LITERAL_DECIMAL_NUM = enum.auto()  # 不包含 e 或 E 的小数字面值
     LITERAL_FLOAT_NUM = enum.auto()  # 包含 e 或 E 的浮点数字面值
-    LITERAL_NUM = enum.auto()  # 整数字面值
-    LITERAL_LONG_NUM = enum.auto()  # 长整数字面值
-    LITERAL_ULONGLONG_NUM = enum.auto()  # 无符号长整数字面值
+    LITERAL_INT = enum.auto()  # 整数字面值（在 Python 中不再区分 3 种整型）
     LITERAL_NCHAR_STRING = enum.auto()  # unicode 字符串字面值
     LITERAL_TEXT_STRING = enum.auto()  # 字符串字面值
     LITERAL_UNDERSCORE_CHARSET = enum.auto()  # 下划线开头的字符集名称

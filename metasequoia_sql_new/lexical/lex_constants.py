@@ -7,8 +7,12 @@ from metasequoia_sql_new.lexical.lex_states import LexStates
 __all__ = [
     "LEX_SKIP_CHARSET",
     "LEX_START_STATE_MAP",
+    "LEX_IDENT_MAP",
     "LEX_BIN_CHARSET",
     "LEX_HEX_CHARSET",
+    "LEX_E_CHARSET",
+    "LEX_BIN_MARK_CHARSET",
+    "LEX_HEX_MARK_CHARSET",
 ]
 
 # 空白字符，包括空格、水平制表符、换行符
@@ -144,6 +148,22 @@ LEX_START_STATE_MAP = {
     "~": LexStates.LEX_TILDE,
     "\x7F": LexStates.LEX_ERROR,  # DEL (delete) 删除
 }
+
+# 判断字符是否为 IDENT 的一部分
+LEX_IDENT_MAP = {
+    ch: state in {LexStates.LEX_IDENT, LexStates.LEX_IDENT_OR_BIN, LexStates.LEX_IDENT_OR_HEX,
+                  LexStates.LEX_IDENT_OR_NCHAR, LexStates.LEX_ZERO, LexStates.LEX_NUMBER}
+    for ch, state in LEX_START_STATE_MAP.items()
+}
+
+# 二进制标识符字符集
+LEX_BIN_MARK_CHARSET = {"b", "B"}
+
+# 十六进制标识符字符集
+LEX_HEX_MARK_CHARSET = {"x", "X"}
+
+# 指数字符集
+LEX_E_CHARSET = {"e", "E"}
 
 # 二进制字符集
 LEX_BIN_CHARSET = {"0", "1"}
