@@ -9,11 +9,12 @@ from metasequoia_parser.lexical import LexicalFSM
 
 from metasequoia_sql_new.lexical.lex_constants import LEX_BIN_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_BIN_MARK_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_E_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_MARK_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_IDENT_MAP
+from metasequoia_sql_new.lexical.lex_constants import LEX_PLUS_MINUS_SIGN_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_START_STATE_MAP
-from metasequoia_sql_new.lexical.lex_constants import LEX_E_CHARSET
 from metasequoia_sql_new.lexical.lex_states import LexStates
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
@@ -303,7 +304,7 @@ def lex_bin_number_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.LITERAL_BIN_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx - 1])
 
 
-def lex_zero(fsm: LexFSM) -> Optional[Terminal]:
+def lex_zero_action(fsm: LexFSM) -> Optional[Terminal]:
     """处理 LEX_ZERO 状态的逻辑
 
     1. 如果返回 Token 则指向元素之后的第 1 个字符
@@ -337,7 +338,7 @@ def lex_zero(fsm: LexFSM) -> Optional[Terminal]:
     return None
 
 
-def lex_number(fsm: LexFSM) -> Optional[Terminal]:
+def lex_number_action(fsm: LexFSM) -> Optional[Terminal]:
     """处理 LEX_NUMBER 状态的逻辑
 
     1. 如果将状态置为 LEX_NUMBER_E，则指向 'e' 字符
@@ -359,7 +360,64 @@ def lex_number(fsm: LexFSM) -> Optional[Terminal]:
     if LEX_IDENT_MAP.get(ch, True) is True:
         fsm.state = LexStates.LEX_IDENT
         return None
-    return Terminal(symbol_id=TType.LITERAL_INT, value=fsm.text[fsm.start_idx: fsm.idx])
+    return Terminal(symbol_id=TType.LITERAL_INT_NUM, value=fsm.text[fsm.start_idx: fsm.idx])
+
+
+def lex_number_dot_action(fsm: LexFSM) -> Optional[Terminal]:
+    """处理 LEX_NUMBER_DOT 状态的逻辑
+
+    1. 如果将状态置为 LEX_NUMBER_E，则指向 'e' 字符
+    2. 如果将状态置为 LEX_IDENT，则指向数字后的第 1 个字符
+    3. 如果返回 Token 则指向元素之后的第 1 个字符
+    """
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    while ch.isdigit():
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    if ch in LEX_E_CHARSET:
+        fsm.state = LexStates.LEX_NUMBER_E
+        return None
+    if LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.state = LexStates.LEX_IDENT
+        return None
+    return Terminal(symbol_id=TType.LITERAL_DECIMAL_NUM, value=fsm.text[fsm.start_idx: fsm.idx])
+
+
+def lex_number_e_action(fsm: LexFSM) -> Optional[Terminal]:
+    """处理 LEX_NUMBER_E 状态的逻辑
+
+    1. 如果将状态置为 LEX_IDENT，则指向数字后的第 1 个字符
+    2. 如果返回 Token 则指向元素之后的第 1 个字符
+    """
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    if ch in LEX_PLUS_MINUS_SIGN_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    if not ch.isdigit():
+        return Terminal(symbol_id=TType.SYSTEM_ABORT, value=None)
+    while ch.isdigit():
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    if LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.state = LexStates.LEX_IDENT
+        return None
+    return Terminal(symbol_id=TType.LITERAL_FLOAT_NUM, value=fsm.text[fsm.start_idx: fsm.idx])
+
+
+def lex_dot_action(fsm: LexFSM) -> None:
+    """处理 LEX_DOT 状态的逻辑
+
+    1. 如果将状态置为 LEX_NUMBER_DOT，则指向 '.' 字符
+    2. 如果将状态置为 LEX_IDENT_SEP_START，则指向 '.' 字符 TODO 这里与 MySQL 不同，后续需要兼容
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch.isdigit():
+        fsm.state = LexStates.LEX_NUMBER_DOT
+        return None
+    fsm.state = LexStates.LEX_IDENT_SEP_START
+    return None
 
 
 # 处理各种状态的映射关系
@@ -400,11 +458,11 @@ LEX_ACTION_MAP = {
     LexStates.LEX_IDENT_OR_NCHAR: None,
     LexStates.LEX_IDENT_SEP_START: None,
     LexStates.LEX_IDENT_START: None,
-    LexStates.LEX_ZERO: lex_zero,
-    LexStates.LEX_NUMBER: lex_number,
-    LexStates.LEX_NUMBER_DOT: None,
-    LexStates.LEX_NUMBER_E: None,
-    LexStates.LEX_DOT: None,
+    LexStates.LEX_ZERO: lex_zero_action,
+    LexStates.LEX_NUMBER: lex_number_action,
+    LexStates.LEX_NUMBER_DOT: lex_number_dot_action,
+    LexStates.LEX_NUMBER_E: lex_number_e_action,
+    LexStates.LEX_DOT: lex_dot_action,
     LexStates.LEX_COMMENT: None,
     LexStates.LEX_LONG_COMMENT: None,
     LexStates.LEX_DOLLAR: None,

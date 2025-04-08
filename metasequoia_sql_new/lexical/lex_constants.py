@@ -2,6 +2,8 @@
 词法解析器常量集
 """
 
+from typing import Set
+
 from metasequoia_sql_new.lexical.lex_states import LexStates
 
 __all__ = [
@@ -13,6 +15,7 @@ __all__ = [
     "LEX_E_CHARSET",
     "LEX_BIN_MARK_CHARSET",
     "LEX_HEX_MARK_CHARSET",
+    "LEX_PLUS_MINUS_SIGN_CHARSET",
 ]
 
 # 空白字符，包括空格、水平制表符、换行符
@@ -157,21 +160,24 @@ LEX_IDENT_MAP = {
 }
 
 # 二进制标识符字符集
-LEX_BIN_MARK_CHARSET = {"b", "B"}
+LEX_BIN_MARK_CHARSET: Set[str] = {"b", "B"}
 
 # 十六进制标识符字符集
-LEX_HEX_MARK_CHARSET = {"x", "X"}
+LEX_HEX_MARK_CHARSET: Set[str] = {"x", "X"}
 
 # 指数字符集
-LEX_E_CHARSET = {"e", "E"}
+LEX_E_CHARSET: Set[str] = {"e", "E"}
 
 # 二进制字符集
-LEX_BIN_CHARSET = {"0", "1"}
+LEX_BIN_CHARSET: Set[str] = {"0", "1"}
 
 # 十进制字符集
-LEX_OCT_CHARSET = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+LEX_OCT_CHARSET: Set[str] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
 
 # 十六进制字符集
-LEX_HEX_CHARSET = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-                   "a", "b", "c", "d", "e", "f",
-                   "A", "B", "C", "D", "E", "F"}
+LEX_HEX_CHARSET: Set[str] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+                             "a", "b", "c", "d", "e", "f",
+                             "A", "B", "C", "D", "E", "F"}
+
+# 正负号字符集
+LEX_PLUS_MINUS_SIGN_CHARSET: Set[str] = {"+", "-"}
