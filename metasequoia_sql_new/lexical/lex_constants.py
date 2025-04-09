@@ -2,6 +2,7 @@
 词法解析器常量集
 """
 
+from typing import Dict
 from typing import Set
 
 from metasequoia_sql_new.lexical.lex_states import LexStates
@@ -16,6 +17,8 @@ __all__ = [
     "LEX_BIN_MARK_CHARSET",
     "LEX_HEX_MARK_CHARSET",
     "LEX_PLUS_MINUS_SIGN_CHARSET",
+    "LEX_ESCAPE_HASH",
+    "LEX_IGNORE_ESCAPE_CHARSET",
 ]
 
 # 空白字符，包括空格、水平制表符、换行符
@@ -181,3 +184,15 @@ LEX_HEX_CHARSET: Set[str] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
 
 # 正负号字符集
 LEX_PLUS_MINUS_SIGN_CHARSET: Set[str] = {"+", "-"}
+
+# 可以被转移符转移的字符集
+LEX_ESCAPE_HASH: Dict[str, str] = {
+    "n": "\n",
+    "t": "\t",
+    "r": "\r",
+    "b": "\b",
+    "0": "\x00"
+}
+
+# 可以保留之前的转义符的字符集
+LEX_IGNORE_ESCAPE_CHARSET: Set[str] = {"_", "%"}

@@ -9,10 +9,12 @@ from metasequoia_parser.lexical import LexicalFSM
 
 from metasequoia_sql_new.lexical.lex_constants import LEX_BIN_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_BIN_MARK_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_ESCAPE_HASH
 from metasequoia_sql_new.lexical.lex_constants import LEX_E_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_MARK_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_IDENT_MAP
+from metasequoia_sql_new.lexical.lex_constants import LEX_IGNORE_ESCAPE_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_PLUS_MINUS_SIGN_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_START_STATE_MAP
 from metasequoia_sql_new.lexical.lex_states import LexStates
@@ -42,6 +44,45 @@ class LexFSM(LexicalFSM):
         while True:
             if terminal := LEX_ACTION_MAP[self.state](self) is not None:
                 return terminal
+
+
+def _find_end_mark(fsm: LexFSM, mark: str) -> str:
+    """寻找对应的闭引号字符（mark），返回构造的字符串
+
+    指针位置：
+    1. 在开始时，指针指向开括号的下 1 个字符
+    1. 如果遍历到输入流的末尾，则将指针指向末尾字符
+    2. 如果遍历到闭括号字符，则将指针指向括号后的下一个字符
+
+    其他处理逻辑：
+    1. 将字符串中转义的 \n、\t、\r、\b、\0 恢复为原始字符
+    2. 将转义符转移的闭引号字符恢复为原始字符
+    3. 将连续两个转移的闭引号字符恢复为原始字符
+    """
+    result = []
+    ch = fsm.text[fsm.idx]
+    while ch != "\x00":
+        if ch == "\\":
+            ch = fsm.text[fsm.idx + 1]
+            fsm.idx += 2
+            if escaped := LEX_ESCAPE_HASH.get(ch):
+                result.append(escaped)  # 处理转义符 \n、\t、\r、\b、\0
+            elif ch in LEX_IGNORE_ESCAPE_CHARSET:
+                result.append("\\")
+                result.append(ch)
+            else:
+                result.append(ch)
+        elif ch == mark:
+            if fsm.text[fsm.idx + 1] == mark:
+                fsm.idx += 2
+                result.append(mark)
+            else:
+                return "".join(result)
+        else:
+            fsm.idx += 1
+            result.append(ch)
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx + 1]
 
 
 def lex_start_action(fsm: LexFSM) -> None:
@@ -304,6 +345,28 @@ def lex_bin_number_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.LITERAL_BIN_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx - 1])
 
 
+def lex_string_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_STRING 状态的逻辑，指向当前元素之后的第 1 个字符"""
+    mark = fsm.text[fsm.idx]
+    fsm.idx += 1
+    value = _find_end_mark(fsm, mark)
+    return Terminal(symbol_id=TType.LITERAL_TEXT_STRING, value=value)
+
+
+def lex_ident_or_nchar_action(fsm: LexFSM) -> Optional[Terminal]:
+    """处理 LEX_IDENT_OR_NCHAR 状态的逻辑
+
+    1. 如果将状态置为 LEX_IDENT，则指向 IDENT 中的第 1 个字符
+    """
+    ch = fsm.text[fsm.idx + 1]
+    if ch != "'":
+        fsm.state = LexStates.LEX_IDENT
+        return None
+    fsm.idx += 2
+    value = _find_end_mark(fsm, "'")
+    return Terminal(symbol_id=TType.LITERAL_NCHAR_STRING, value=value)
+
+
 def lex_zero_action(fsm: LexFSM) -> Optional[Terminal]:
     """处理 LEX_ZERO 状态的逻辑
 
@@ -453,8 +516,8 @@ LEX_ACTION_MAP = {
     LexStates.LEX_BIN_NUMBER: lex_bin_number_action,
     LexStates.LEX_IDENT: None,
     LexStates.LEX_DELIMITER: None,
-    LexStates.LEX_STRING: None,
-    LexStates.LEX_STRING_OR_DELIMITER: None,
+    LexStates.LEX_STRING: lex_string_action,
+    LexStates.LEX_STRING_OR_DELIMITER: lex_ident_or_nchar_action,
     LexStates.LEX_IDENT_OR_NCHAR: None,
     LexStates.LEX_IDENT_SEP_START: None,
     LexStates.LEX_IDENT_START: None,
