@@ -19,6 +19,8 @@ __all__ = [
     "LEX_PLUS_MINUS_SIGN_CHARSET",
     "LEX_ESCAPE_HASH",
     "LEX_IGNORE_ESCAPE_CHARSET",
+    "LEX_SPACE_CHARSET",
+    "LEX_LINE_BREAK_CHARSET",
 ]
 
 # 空白字符，包括空格、水平制表符、换行符
@@ -196,3 +198,9 @@ LEX_ESCAPE_HASH: Dict[str, str] = {
 
 # 可以保留之前的转义符的字符集
 LEX_IGNORE_ESCAPE_CHARSET: Set[str] = {"_", "%"}
+
+# 空白字符的字符集
+LEX_SPACE_CHARSET: Set[str] = {"\t", "\n", " "}
+
+# 换行符或结束符的字符集
+LEX_LINE_BREAK_CHARSET: Set[str] = {"\n", "\x00"}

@@ -40,6 +40,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     OPERATOR_COMMA = enum.auto()  # OPERATOR : ,
     OPERATOR_LBRACE = enum.auto()  # OPERATOR : {
     OPERATOR_RBRACE = enum.auto()  # OPERATOR : }
+    OPERATOR_DOT = enum.auto()  # OPERATOR : .
 
     # 多字节运算符
     OPERATOR_AMP_AMP = enum.auto()  # OPERATOR : &&

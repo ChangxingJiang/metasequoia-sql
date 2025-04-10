@@ -15,9 +15,12 @@ from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_MARK_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_IDENT_MAP
 from metasequoia_sql_new.lexical.lex_constants import LEX_IGNORE_ESCAPE_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_LINE_BREAK_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_PLUS_MINUS_SIGN_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_SPACE_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_START_STATE_MAP
 from metasequoia_sql_new.lexical.lex_states import LexStates
+from metasequoia_sql_new.terminal import KEYWORD_TO_TERMINAL_MAP
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
@@ -125,6 +128,8 @@ def lex_sub_action(fsm: LexFSM) -> Optional[Terminal]:
     """处理 LEX_SUB 状态的逻辑，指向符号后的下一个字符
 
     尝试解析元素：`--`、`->`、`->>`、`-`
+
+    如果将状态置为 LEX_COMMENT，则指向 `--` 符号后的下一个字符
     """
     ch = fsm.text[fsm.idx + 1]  # "-" 之后的下一个字符
     if ch == "-":
@@ -345,6 +350,35 @@ def lex_bin_number_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.LITERAL_BIN_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx - 1])
 
 
+def lex_ident_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_IDENT 状态的逻辑，指向当前元素之后的第 1 个字符"""
+    # 不断匹配数字、字母和多字节字符直至遇到其他字符
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    while LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+    # 获取当前标识符 or 关键字
+    ident_or_keyword = fsm.text[fsm.start_idx: fsm.idx]
+
+    # 跳过后续空格
+    while ch in LEX_SPACE_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+    # 判断下一个字符是否为 . 且之后也是标识符
+    if ch == "." and LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.state = LexStates.LEX_IDENT_SEP_START
+        return Terminal(symbol_id=TType.IDENT, value=ident_or_keyword)
+
+    # 判断当前语法元素是否为关键字
+    if keyword_type := KEYWORD_TO_TERMINAL_MAP.get(ident_or_keyword.lower()):
+        return Terminal(symbol_id=keyword_type, value=ident_or_keyword)
+
+    return Terminal(symbol_id=TType.IDENT, value=ident_or_keyword)
+
+
 def lex_string_action(fsm: LexFSM) -> Terminal:
     """处理 LEX_STRING 状态的逻辑，指向当前元素之后的第 1 个字符"""
     mark = fsm.text[fsm.idx]
@@ -365,6 +399,41 @@ def lex_ident_or_nchar_action(fsm: LexFSM) -> Optional[Terminal]:
     fsm.idx += 2
     value = _find_end_mark(fsm, "'")
     return Terminal(symbol_id=TType.LITERAL_NCHAR_STRING, value=value)
+
+
+def lex_ident_sep_start_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_IDENT_SEP_START 状态的逻辑，指向当前元素后的第 1 个字符"""
+    assert fsm.text[fsm.idx] == "."
+    fsm.idx += 1
+    if LEX_IDENT_MAP.get(fsm.text[fsm.idx], True) is True:
+        fsm.state = LexStates.LEX_IDENT_START
+    else:
+        fsm.state = LexStates.LEX_START
+    return Terminal(symbol_id=TType.OPERATOR_DOT, value=".")
+
+
+def lex_ident_start_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_IDENT_START 状态的逻辑，指向当前元素后的第 1 个字符"""
+    # 不断匹配数字、字母和多字节字符直至遇到其他字符
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    while LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+    # 获取当前标识符 or 关键字
+    ident = fsm.text[fsm.start_idx: fsm.idx]
+
+    # 跳过后续空格
+    while ch in LEX_SPACE_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+    # 判断下一个字符是否为 . 且之后也是标识符
+    if ch == "." and LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.state = LexStates.LEX_IDENT_SEP_START
+
+    return Terminal(symbol_id=TType.IDENT, value=ident)
 
 
 def lex_zero_action(fsm: LexFSM) -> Optional[Terminal]:
@@ -483,6 +552,16 @@ def lex_dot_action(fsm: LexFSM) -> None:
     return None
 
 
+def lex_comment_action(fsm: LexFSM) -> None:
+    """处理 LEX_COMMENT 状态的逻辑，指向当前语法元素后的下 1 个字符"""
+    ch = fsm.text[fsm.idx]
+    while ch not in LEX_LINE_BREAK_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    fsm.state = LexStates.LEX_START
+    return None
+
+
 # 处理各种状态的映射关系
 LEX_ACTION_MAP = {
     LexStates.LEX_START: lex_start_action,
@@ -514,19 +593,19 @@ LEX_ACTION_MAP = {
     LexStates.LEX_HEX_NUMBER: lex_hex_number_action,
     LexStates.LEX_IDENT_OR_BIN: lex_ident_or_bin_action,
     LexStates.LEX_BIN_NUMBER: lex_bin_number_action,
-    LexStates.LEX_IDENT: None,
+    LexStates.LEX_IDENT: lex_ident_action,
     LexStates.LEX_DELIMITER: None,
     LexStates.LEX_STRING: lex_string_action,
     LexStates.LEX_STRING_OR_DELIMITER: lex_ident_or_nchar_action,
-    LexStates.LEX_IDENT_OR_NCHAR: None,
-    LexStates.LEX_IDENT_SEP_START: None,
-    LexStates.LEX_IDENT_START: None,
+    LexStates.LEX_IDENT_OR_NCHAR: lex_ident_or_nchar_action,
+    LexStates.LEX_IDENT_SEP_START: lex_ident_sep_start_action,
+    LexStates.LEX_IDENT_START: lex_ident_start_action,
     LexStates.LEX_ZERO: lex_zero_action,
     LexStates.LEX_NUMBER: lex_number_action,
     LexStates.LEX_NUMBER_DOT: lex_number_dot_action,
     LexStates.LEX_NUMBER_E: lex_number_e_action,
     LexStates.LEX_DOT: lex_dot_action,
-    LexStates.LEX_COMMENT: None,
+    LexStates.LEX_COMMENT: lex_comment_action,
     LexStates.LEX_LONG_COMMENT: None,
     LexStates.LEX_DOLLAR: None,
     LexStates.LEX_SEMICOLON: None,
