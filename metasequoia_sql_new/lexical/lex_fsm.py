@@ -13,10 +13,12 @@ from metasequoia_sql_new.lexical.lex_constants import LEX_ESCAPE_HASH
 from metasequoia_sql_new.lexical.lex_constants import LEX_E_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_HEX_MARK_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_HOSTNAME_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_IDENT_MAP
 from metasequoia_sql_new.lexical.lex_constants import LEX_IGNORE_ESCAPE_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_LINE_BREAK_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_PLUS_MINUS_SIGN_CHARSET
+from metasequoia_sql_new.lexical.lex_constants import LEX_QUOTE_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_SPACE_CHARSET
 from metasequoia_sql_new.lexical.lex_constants import LEX_START_STATE_MAP
 from metasequoia_sql_new.lexical.lex_states import LexStates
@@ -98,6 +100,16 @@ def lex_start_action(fsm: LexFSM) -> None:
         ch = fsm.text[fsm.idx]
     fsm.start_idx = fsm.idx
     fsm.state = LEX_START_STATE_MAP[ch]
+
+
+def lex_eof_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_EOF 状态的逻辑，不移动指针"""
+    return Terminal(symbol_id=TType.SYSTEM_END_OF_INPUT, value=None)
+
+
+def lex_error_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_ERROR 状态的逻辑，不移动指针"""
+    return Terminal(symbol_id=TType.SYSTEM_ABORT, value=None)
 
 
 def lex_plus_action(fsm: LexFSM) -> Terminal:
@@ -379,12 +391,26 @@ def lex_ident_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.IDENT, value=ident_or_keyword)
 
 
+def lex_delimiter_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_DELIMITER 状态的逻辑，指向当前元素之后的第 1 个字符"""
+    mark = fsm.text[fsm.idx]
+    fsm.idx += 1
+    value = _find_end_mark(fsm, mark)
+    return Terminal(symbol_id=TType.IDENT_QUOTED, value=value)
+
+
 def lex_string_action(fsm: LexFSM) -> Terminal:
     """处理 LEX_STRING 状态的逻辑，指向当前元素之后的第 1 个字符"""
     mark = fsm.text[fsm.idx]
     fsm.idx += 1
     value = _find_end_mark(fsm, mark)
     return Terminal(symbol_id=TType.LITERAL_TEXT_STRING, value=value)
+
+
+def lex_string_or_delimiter_action(fsm: LexFSM) -> None:
+    """处理 LEX_STRING_OR_DELIMITER 状态的逻辑，指向元素之后的第 1 个字符 TODO 待增加作为反引号的模式"""
+    fsm.state = LexStates.LEX_STRING
+    return None
 
 
 def lex_ident_or_nchar_action(fsm: LexFSM) -> Optional[Terminal]:
@@ -562,13 +588,85 @@ def lex_comment_action(fsm: LexFSM) -> None:
     return None
 
 
+def lex_long_comment_action(fsm: LexFSM) -> None:
+    """处理 LEX_LONG_COMMENT 状态的逻辑，指向当前语法元素后的下 1 个字符"""
+    ch = fsm.text[fsm.idx]
+    while ch != "\x00":
+        if ch == "*" and fsm.text[fsm.idx + 1] == "/":
+            fsm.idx += 2
+            fsm.state = LexStates.LEX_START
+            return None
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+
+def lex_dollar_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_DOLLAR 状态的逻辑，指向 "$" 后的下一个字符"""
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_DOLLAR, value="$")
+
+
+def lex_semicolon_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_SEMICOLON 状态的逻辑，指向 ";" 后的下一个字符"""
+    fsm.idx += 1
+    return Terminal(symbol_id=TType.OPERATOR_SEMICOLON, value=";")
+
+
+def lex_at_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_AT 状态的逻辑，指向 @ 之后的下一个字符"""
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    if ch == "@":
+        fsm.state = LexStates.LEX_AT_AT
+    elif ch in LEX_QUOTE_CHARSET:
+        fsm.state = LexStates.LEX_AT_END
+    return Terminal(symbol_id=TType.OPERATOR_AT, value="@")
+
+
+def lex_at_at_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_AT_AT 状态的逻辑，指向第 2 个 @ 之后的下 1 个字符"""
+    fsm.idx += 1
+    ch = fsm.text[fsm.idx]
+    if ch == "`":
+        fsm.state = LexStates.LEX_AT_AT_END
+    return Terminal(symbol_id=TType.OPERATOR_AT, value="@")
+
+
+def lex_at_at_end_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_AT_AT_END 状态的逻辑，指向元素之后的下一个字符"""
+    # 不断匹配数字、字母和多字节字符直至遇到其他字符
+    ch = fsm.text[fsm.idx]
+    while LEX_IDENT_MAP.get(ch, True) is True:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+    if ch == ".":
+        fsm.state = LexStates.LEX_IDENT_SEP_START
+
+    # 获取当前标识符 or 关键字
+    ident_or_keyword = fsm.text[fsm.start_idx: fsm.idx]
+
+    # 判断当前语法元素是否为关键字
+    if keyword_type := KEYWORD_TO_TERMINAL_MAP.get(ident_or_keyword.lower()):
+        return Terminal(symbol_id=keyword_type, value=ident_or_keyword)
+
+    return Terminal(symbol_id=TType.IDENT, value=ident_or_keyword)
+
+
+def lex_at_end_action(fsm: LexFSM) -> Terminal:
+    """处理 LEX_AT_END 状态的逻辑，指向元素之后的第 1 个字符"""
+    ch = fsm.text[fsm.idx]
+    while ch in LEX_HOSTNAME_CHARSET:
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+    return Terminal(symbol_id=TType.LEX_HOSTNAME, value=fsm.text[fsm.start_idx: fsm.idx])
+
+
 # 处理各种状态的映射关系
 LEX_ACTION_MAP = {
     LexStates.LEX_START: lex_start_action,
-    LexStates.LEX_EOF: None,
-    LexStates.LEX_END: None,
-    LexStates.LEX_CHAR: None,
-    LexStates.LEX_ERROR: None,
+    LexStates.LEX_EOF: lex_eof_action,
+    LexStates.LEX_ERROR: lex_error_action,
     LexStates.LEX_PLUS: lex_plus_action,
     LexStates.LEX_CARET: lex_caret_action,
     LexStates.LEX_TILDE: lex_tilde_action,
@@ -594,9 +692,9 @@ LEX_ACTION_MAP = {
     LexStates.LEX_IDENT_OR_BIN: lex_ident_or_bin_action,
     LexStates.LEX_BIN_NUMBER: lex_bin_number_action,
     LexStates.LEX_IDENT: lex_ident_action,
-    LexStates.LEX_DELIMITER: None,
+    LexStates.LEX_DELIMITER: lex_delimiter_action,
     LexStates.LEX_STRING: lex_string_action,
-    LexStates.LEX_STRING_OR_DELIMITER: lex_ident_or_nchar_action,
+    LexStates.LEX_STRING_OR_DELIMITER: lex_string_or_delimiter_action,
     LexStates.LEX_IDENT_OR_NCHAR: lex_ident_or_nchar_action,
     LexStates.LEX_IDENT_SEP_START: lex_ident_sep_start_action,
     LexStates.LEX_IDENT_START: lex_ident_start_action,
@@ -606,11 +704,11 @@ LEX_ACTION_MAP = {
     LexStates.LEX_NUMBER_E: lex_number_e_action,
     LexStates.LEX_DOT: lex_dot_action,
     LexStates.LEX_COMMENT: lex_comment_action,
-    LexStates.LEX_LONG_COMMENT: None,
-    LexStates.LEX_DOLLAR: None,
-    LexStates.LEX_SEMICOLON: None,
-    LexStates.LEX_AT: None,
-    LexStates.LEX_AT_AT: None,
-    LexStates.LEX_AT_AT_END: None,
-    LexStates.LEX_AT_END: None,
+    LexStates.LEX_LONG_COMMENT: lex_long_comment_action,
+    LexStates.LEX_DOLLAR: lex_dollar_action,
+    LexStates.LEX_SEMICOLON: lex_semicolon_action,
+    LexStates.LEX_AT: lex_at_action,
+    LexStates.LEX_AT_AT: lex_at_at_action,
+    LexStates.LEX_AT_AT_END: lex_at_at_end_action,
+    LexStates.LEX_AT_END: lex_at_end_action,
 }

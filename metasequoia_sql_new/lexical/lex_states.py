@@ -16,9 +16,7 @@ class LexStates(enum.IntEnum):
 
     # 开始和结束状态
     LEX_START = enum.auto()  # 初始状态
-    LEX_EOF = enum.auto()  # \x00
-    LEX_END = enum.auto()  # 完成状态
-    LEX_CHAR = enum.auto()  # 其他字符
+    LEX_EOF = enum.auto()  # \x00（结束字符）
     LEX_SKIP = enum.auto()  # 跳过当前字符：这个状态不会保留到字符处理结束
     LEX_ERROR = enum.auto()  # 异常字符：这个状态仅出现在初始状态转移规则的哈希表中，表示异常
 

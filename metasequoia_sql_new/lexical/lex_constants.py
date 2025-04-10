@@ -21,6 +21,8 @@ __all__ = [
     "LEX_IGNORE_ESCAPE_CHARSET",
     "LEX_SPACE_CHARSET",
     "LEX_LINE_BREAK_CHARSET",
+    "LEX_QUOTE_CHARSET",
+    "LEX_HOSTNAME_CHARSET",
 ]
 
 # 空白字符，包括空格、水平制表符、换行符
@@ -204,3 +206,16 @@ LEX_SPACE_CHARSET: Set[str] = {"\t", "\n", " "}
 
 # 换行符或结束符的字符集
 LEX_LINE_BREAK_CHARSET: Set[str] = {"\n", "\x00"}
+
+# 引号的字符集
+LEX_QUOTE_CHARSET: Set[str] = {"'", "\"", "`"}
+
+# HOSTNAME 的字符集
+LEX_HOSTNAME_CHARSET: Set[str] = {
+    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w",
+    "x", "y", "z",
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
+    "X", "Y", "Z",
+    "_", "$", "."
+}
