@@ -1,0 +1,1 @@
+from metasequoia_sql_test.common.lexical_base import parse_one_token

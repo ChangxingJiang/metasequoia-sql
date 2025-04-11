@@ -47,7 +47,7 @@ class LexFSM(LexicalFSM):
         """解析并生成一个终结符"""
         self.state = LexStates.LEX_START
         while True:
-            if terminal := LEX_ACTION_MAP[self.state](self) is not None:
+            if terminal := LEX_ACTION_MAP[self.state](self):
                 return terminal
 
 
