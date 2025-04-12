@@ -73,7 +73,6 @@ class LexStates(enum.IntEnum):
     LEX_LONG_COMMENT = enum.auto()  # /*
 
     # 其他元素
-    LEX_DOLLAR = enum.auto()  # $
     LEX_SEMICOLON = enum.auto()  # ;
     LEX_AT = enum.auto()  # @
     LEX_AT_AT = enum.auto()  # @@

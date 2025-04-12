@@ -149,7 +149,7 @@ def lex_sub_action(fsm: LexFSM) -> Optional[Terminal]:
         fsm.state = LexStates.LEX_COMMENT
         return None
     if ch == ">":
-        ch = fsm.text[fsm.idx + 1]  # "->" 之后的下一个字符
+        ch = fsm.text[fsm.idx + 2]  # "->" 之后的下一个字符
         if ch == ">":
             fsm.idx += 3
             return Terminal(symbol_id=TType.OPERATOR_SUB_GT_GT, value="->>")
@@ -227,7 +227,7 @@ def lex_slash_action(fsm: LexFSM) -> Optional[Terminal]:
         fsm.state = LexStates.LEX_LONG_COMMENT
         return None
     fsm.idx += 1
-    return Terminal(symbol_id=TType.OPERATOR_BANG, value="!")
+    return Terminal(symbol_id=TType.OPERATOR_SLASH, value="/")
 
 
 def lex_bang_action(fsm: LexFSM) -> Terminal:
@@ -600,12 +600,6 @@ def lex_long_comment_action(fsm: LexFSM) -> None:
         ch = fsm.text[fsm.idx]
 
 
-def lex_dollar_action(fsm: LexFSM) -> Terminal:
-    """处理 LEX_DOLLAR 状态的逻辑，指向 "$" 后的下一个字符"""
-    fsm.idx += 1
-    return Terminal(symbol_id=TType.OPERATOR_DOLLAR, value="$")
-
-
 def lex_semicolon_action(fsm: LexFSM) -> Terminal:
     """处理 LEX_SEMICOLON 状态的逻辑，指向 ";" 后的下一个字符"""
     fsm.idx += 1
@@ -705,7 +699,6 @@ LEX_ACTION_MAP = {
     LexStates.LEX_DOT: lex_dot_action,
     LexStates.LEX_COMMENT: lex_comment_action,
     LexStates.LEX_LONG_COMMENT: lex_long_comment_action,
-    LexStates.LEX_DOLLAR: lex_dollar_action,
     LexStates.LEX_SEMICOLON: lex_semicolon_action,
     LexStates.LEX_AT: lex_at_action,
     LexStates.LEX_AT_AT: lex_at_at_action,

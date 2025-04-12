@@ -27,7 +27,6 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     OPERATOR_SUB = enum.auto()  # OPERATOR : -
     OPERATOR_LT = enum.auto()  # OPERATOR : <
     OPERATOR_GT = enum.auto()  # OPERATOR : >
-    OPERATOR_QUES = enum.auto()  # OPERATOR : ?
     OPERATOR_EQ = enum.auto()  # OPERATOR : =
     OPERATOR_STAR = enum.auto()  # OPERATOR : *
     OPERATOR_SLASH = enum.auto()  # OPERATOR : /
