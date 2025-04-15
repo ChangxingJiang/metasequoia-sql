@@ -10,4 +10,4 @@ def parse_one_token(text: str) -> Terminal:
 
 
 if __name__ == "__main__":
-    print(parse_one_token("+ 3"))
+    print(parse_one_token("3EFG"))

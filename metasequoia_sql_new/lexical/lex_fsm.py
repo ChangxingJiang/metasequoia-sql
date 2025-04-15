@@ -93,13 +93,13 @@ def _find_end_mark(fsm: LexFSM, mark: str) -> str:
 def lex_start_action(fsm: LexFSM) -> None:
     """处理 LEX_START 状态的逻辑，指向空白字符后的第 1 个有效字符"""
     ch = fsm.text[fsm.idx]
-    while LEX_START_STATE_MAP[ch] == LexStates.LEX_SKIP:
+    while ch in LEX_SPACE_CHARSET:
         fsm.idx += 1
         if fsm.idx == fsm.length:
             fsm.state = LexStates.LEX_EOF
         ch = fsm.text[fsm.idx]
     fsm.start_idx = fsm.idx
-    fsm.state = LEX_START_STATE_MAP[ch]
+    fsm.state = LEX_START_STATE_MAP.get(ch, LexStates.LEX_IDENT)
 
 
 def lex_eof_action(fsm: LexFSM) -> Terminal:
@@ -313,13 +313,16 @@ def lex_rbrace_action(fsm: LexFSM) -> Terminal:
 
 
 def lex_ident_or_hex_action(fsm: LexFSM) -> None:
-    """处理 LEX_IDENT_OR_HEX 状态的逻辑，指向 x' 或 x 后的下一个字符"""
+    """处理 LEX_IDENT_OR_HEX 状态的逻辑
+
+    1. 如果将状态置为 LEX_HEX_NUMBER，则指向 x' 之后的下一个字符
+    2. 如果将状态置为 LEX_IDENT，则仍然指向 x
+    """
     ch = fsm.text[fsm.idx + 1]
     if ch == "'":
         fsm.idx += 2
         fsm.state = LexStates.LEX_HEX_NUMBER
         return None
-    fsm.idx += 1
     fsm.state = LexStates.LEX_IDENT
     return None
 
@@ -338,13 +341,16 @@ def lex_hex_number_action(fsm: LexFSM) -> Terminal:
 
 
 def lex_ident_or_bin_action(fsm: LexFSM) -> None:
-    """处理 LEX_IDENT_OR_BIN 状态的逻辑，指向 b' 或 b 后的下一个字符"""
+    """处理 LEX_IDENT_OR_BIN 状态的逻辑
+
+    1. 如果将状态置为 LEX_BIN_NUMBER，则指向 b' 之后的下一个字符
+    2. 如果将状态置为 LEX_IDENT，则仍然指向 b
+    """
     ch = fsm.text[fsm.idx + 1]
     if ch == "'":
         fsm.idx += 2
         fsm.state = LexStates.LEX_BIN_NUMBER
         return None
-    fsm.idx += 1
     fsm.state = LexStates.LEX_IDENT
     return None
 

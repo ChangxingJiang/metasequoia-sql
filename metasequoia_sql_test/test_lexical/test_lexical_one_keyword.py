@@ -8,7 +8,7 @@ from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType as TType
 from metasequoia_sql_test.common import parse_one_token
 
 
-class TestLexicalOneOperator(unittest.TestCase):
+class TestLexicalOneKeyword(unittest.TestCase):
     """测试解析单个关键字类型的 Token"""
 
     def test_keyword_accessible(self):
