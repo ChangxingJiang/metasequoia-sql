@@ -152,6 +152,7 @@ LEX_START_STATE_MAP = {
     "w": LexStates.LEX_IDENT,
     "x": LexStates.LEX_IDENT_OR_HEX,
     "y": LexStates.LEX_IDENT,
+    "z": LexStates.LEX_IDENT,
     "{": LexStates.LEX_LBRACE,
     "|": LexStates.LEX_BAR,
     "}": LexStates.LEX_RBRACE,
