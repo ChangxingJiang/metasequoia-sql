@@ -1,5 +1,5 @@
 """
-测试解析 1 个运算符类型 Token
+测试解析单个运算符类型的 Token
 """
 
 import unittest
@@ -8,7 +8,7 @@ from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType as TType
 from metasequoia_sql_test.common import parse_one_token
 
 
-class TestLexicalOneTokenOperator(unittest.TestCase):
+class TestLexicalOneOperator(unittest.TestCase):
     """测试解析单个运算符类型的 Token"""
 
     def test_operator_plus(self):

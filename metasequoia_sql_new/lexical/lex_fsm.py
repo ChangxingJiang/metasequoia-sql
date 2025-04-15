@@ -47,6 +47,7 @@ class LexFSM(LexicalFSM):
         """解析并生成一个终结符"""
         self.state = LexStates.LEX_START
         while True:
+            # print("state:", self.state.name)
             if terminal := LEX_ACTION_MAP[self.state](self):
                 return terminal
 
@@ -84,10 +85,9 @@ def _find_end_mark(fsm: LexFSM, mark: str) -> str:
             else:
                 return "".join(result)
         else:
-            fsm.idx += 1
             result.append(ch)
-        fsm.idx += 1
-        ch = fsm.text[fsm.idx + 1]
+            fsm.idx += 1
+        ch = fsm.text[fsm.idx]
 
 
 def lex_start_action(fsm: LexFSM) -> None:
@@ -476,7 +476,7 @@ def lex_zero_action(fsm: LexFSM) -> Optional[Terminal]:
         while ch in LEX_BIN_CHARSET:
             fsm.idx += 1
             ch = fsm.text[fsm.idx]
-        if LEX_IDENT_MAP.get(ch, True) is True and fsm.idx - fsm.start_idx > 2:
+        if LEX_IDENT_MAP.get(ch, True) is False and fsm.idx - fsm.start_idx > 2:
             return Terminal(symbol_id=TType.LITERAL_BIN_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx])
         fsm.idx -= 1  # 如果是 0x 则需要将指针向前移动 1 个字符
         fsm.state = LexStates.LEX_IDENT
@@ -487,7 +487,7 @@ def lex_zero_action(fsm: LexFSM) -> Optional[Terminal]:
         while ch in LEX_HEX_CHARSET:
             fsm.idx += 1
             ch = fsm.text[fsm.idx]
-        if LEX_IDENT_MAP.get(ch, True) is True and fsm.idx - fsm.start_idx > 2:
+        if LEX_IDENT_MAP.get(ch, True) is False and fsm.idx - fsm.start_idx > 2:
             return Terminal(symbol_id=TType.LITERAL_HEX_NUM, value=fsm.text[fsm.start_idx + 2: fsm.idx])
         fsm.idx -= 1
         fsm.state = LexStates.LEX_IDENT
