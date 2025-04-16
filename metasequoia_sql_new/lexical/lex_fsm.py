@@ -39,15 +39,17 @@ class LexFSM(LexicalFSM):
         self.length = len(text)
 
         self.state: LexStates = LexStates.LEX_START  # 当前自动机状态
+        self.next_state: LexStates = LexStates.LEX_START  # 下一个 Token 的自动机状态
         self.idx: int = 0  # 当前下标
 
         self.start_idx: int = 0  # 当前终结符的开始下标
 
     def lex(self) -> Terminal:
         """解析并生成一个终结符"""
-        self.state = LexStates.LEX_START
+        self.start_idx = self.idx  # 重置当前词语下标
+        self.state = self.next_state
+        self.next_state = LexStates.LEX_START
         while True:
-            # print("state:", self.state.name)
             if terminal := LEX_ACTION_MAP[self.state](self):
                 return terminal
 
@@ -83,6 +85,7 @@ def _find_end_mark(fsm: LexFSM, mark: str) -> str:
                 fsm.idx += 2
                 result.append(mark)
             else:
+                fsm.idx += 1
                 return "".join(result)
         else:
             result.append(ch)
@@ -387,7 +390,7 @@ def lex_ident_action(fsm: LexFSM) -> Terminal:
 
     # 判断下一个字符是否为 . 且之后也是标识符
     if ch == "." and LEX_IDENT_MAP.get(ch, True) is True:
-        fsm.state = LexStates.LEX_IDENT_SEP_START
+        fsm.next_state = LexStates.LEX_IDENT_SEP_START
         return Terminal(symbol_id=TType.IDENT, value=ident_or_keyword)
 
     # 判断当前语法元素是否为关键字
@@ -434,13 +437,14 @@ def lex_ident_or_nchar_action(fsm: LexFSM) -> Optional[Terminal]:
 
 
 def lex_ident_sep_start_action(fsm: LexFSM) -> Terminal:
-    """处理 LEX_IDENT_SEP_START 状态的逻辑，指向当前元素后的第 1 个字符"""
+    """处理 LEX_IDENT_SEP_START 状态的逻辑，指向字符 . 之后的第 1 个字符"""
     assert fsm.text[fsm.idx] == "."
     fsm.idx += 1
+    print("位置:", fsm.text[fsm.idx])
     if LEX_IDENT_MAP.get(fsm.text[fsm.idx], True) is True:
-        fsm.state = LexStates.LEX_IDENT_START
+        fsm.next_state = LexStates.LEX_IDENT_START
     else:
-        fsm.state = LexStates.LEX_START
+        fsm.next_state = LexStates.LEX_START
     return Terminal(symbol_id=TType.OPERATOR_DOT, value=".")
 
 
@@ -463,7 +467,7 @@ def lex_ident_start_action(fsm: LexFSM) -> Terminal:
 
     # 判断下一个字符是否为 . 且之后也是标识符
     if ch == "." and LEX_IDENT_MAP.get(ch, True) is True:
-        fsm.state = LexStates.LEX_IDENT_SEP_START
+        fsm.next_state = LexStates.LEX_IDENT_SEP_START
 
     return Terminal(symbol_id=TType.IDENT, value=ident)
 
@@ -617,9 +621,9 @@ def lex_at_action(fsm: LexFSM) -> Terminal:
     fsm.idx += 1
     ch = fsm.text[fsm.idx]
     if ch == "@":
-        fsm.state = LexStates.LEX_AT_AT
+        fsm.next_state = LexStates.LEX_AT_AT
     elif ch in LEX_QUOTE_CHARSET:
-        fsm.state = LexStates.LEX_AT_END
+        fsm.next_state = LexStates.LEX_AT_END
     return Terminal(symbol_id=TType.OPERATOR_AT, value="@")
 
 
@@ -628,7 +632,7 @@ def lex_at_at_action(fsm: LexFSM) -> Terminal:
     fsm.idx += 1
     ch = fsm.text[fsm.idx]
     if ch == "`":
-        fsm.state = LexStates.LEX_AT_AT_END
+        fsm.next_state = LexStates.LEX_AT_AT_END
     return Terminal(symbol_id=TType.OPERATOR_AT, value="@")
 
 
@@ -641,7 +645,7 @@ def lex_at_at_end_action(fsm: LexFSM) -> Terminal:
         ch = fsm.text[fsm.idx]
 
     if ch == ".":
-        fsm.state = LexStates.LEX_IDENT_SEP_START
+        fsm.next_state = LexStates.LEX_IDENT_SEP_START
 
     # 获取当前标识符 or 关键字
     ident_or_keyword = fsm.text[fsm.start_idx: fsm.idx]

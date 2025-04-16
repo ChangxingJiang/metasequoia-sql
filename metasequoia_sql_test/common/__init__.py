@@ -1,1 +1,3 @@
 from metasequoia_sql_test.common.lexical_base import parse_one_token
+from metasequoia_sql_test.common.lexical_base import parse_two_token
+from metasequoia_sql_test.common.lexical_base import parse_three_token
