@@ -3,22 +3,32 @@
 
 ident:
         IDENT
-      | IDENT_QUOTED
+      | IDENT_QUOTED;
+
+ident_2:
+        ident '.' ident;
+
+ident_3:
+        ident '.' ident '.' ident;
+
+simple_ident:
+        ident
+      | ident_2
+      | ident_3;
+
+simple_ident_list:
+        simple_ident_list ',' simple_ident
+      | simple_ident;
 """
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_new import ast
+from metasequoia_sql_grammar.group_ident import GROUP_IDENT
+from metasequoia_sql_grammar.group_ident import GROUP_IDENT_2D
+from metasequoia_sql_grammar.group_ident import GROUP_IDENT_3D
+from metasequoia_sql_grammar.group_ident import GROUP_SIMPLE_IDENT
+from metasequoia_sql_grammar.group_ident import GROUP_SIMPLE_IDENT_LIST
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
-
-# 标识符
-GROUP_IDENT = ms_parser.create_group(
-    name="ident",
-    rules=[
-        ms_parser.create_rule(symbols=[TType.IDENT], action=lambda x: ast.Ident(x[0])),
-        ms_parser.create_rule(symbols=[TType.IDENT_QUOTED], action=lambda x: ast.Ident(x[0])),
-    ]
-)
 
 
 def build_grammar():
@@ -27,7 +37,7 @@ def build_grammar():
             ms_parser.create_group(
                 name="entry",
                 rules=[
-                    ms_parser.create_rule(symbols=["ident"]),
+                    ms_parser.create_rule(symbols=["simple_ident_list"]),
                 ]
             )
         ],
@@ -36,6 +46,10 @@ def build_grammar():
         sr_priority=[],
     )
     grammar_builder.group_append(GROUP_IDENT)
+    grammar_builder.group_append(GROUP_IDENT_2D)
+    grammar_builder.group_append(GROUP_IDENT_3D)
+    grammar_builder.group_append(GROUP_SIMPLE_IDENT)
+    grammar_builder.group_append(GROUP_SIMPLE_IDENT_LIST)
     return grammar_builder.build()
 
 

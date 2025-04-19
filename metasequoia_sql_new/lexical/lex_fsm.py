@@ -440,7 +440,7 @@ def lex_ident_sep_start_action(fsm: LexFSM) -> Terminal:
     """处理 LEX_IDENT_SEP_START 状态的逻辑，指向字符 . 之后的第 1 个字符"""
     assert fsm.text[fsm.idx] == "."
     fsm.idx += 1
-    print("位置:", fsm.text[fsm.idx])
+    # print("位置:", fsm.text[fsm.idx])
     if LEX_IDENT_MAP.get(fsm.text[fsm.idx], True) is True:
         fsm.next_state = LexStates.LEX_IDENT_START
     else:
