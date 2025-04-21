@@ -1,11 +1,39 @@
 """
 标识符的语义组
+
+ident:
+        IDENT
+      | IDENT_QUOTED;
+
+ident_2:
+        ident '.' ident;
+
+ident_3:
+        ident '.' ident '.' ident;
+
+simple_ident:
+        ident
+      | ident_2
+      | ident_3;
+
+simple_ident_list:
+        simple_ident_list ',' simple_ident
+      | simple_ident;
 """
 
 import metasequoia_parser as ms_parser
 
 from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
+
+__all__ = [
+    "GROUP_IDENT",
+    "GROUP_IDENT_2D",
+    "GROUP_IDENT_3D",
+    "GROUP_SIMPLE_IDENT",
+    "GROUP_SIMPLE_IDENT_LIST"
+    "GROUP_SIMPLE_IDENT_LIST"
+]
 
 GROUP_IDENT = ms_parser.create_group(
     name="ident",

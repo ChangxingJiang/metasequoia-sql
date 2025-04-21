@@ -1,24 +1,7 @@
 """
 语义组：标识符
 
-ident:
-        IDENT
-      | IDENT_QUOTED;
 
-ident_2:
-        ident '.' ident;
-
-ident_3:
-        ident '.' ident '.' ident;
-
-simple_ident:
-        ident
-      | ident_2
-      | ident_3;
-
-simple_ident_list:
-        simple_ident_list ',' simple_ident
-      | simple_ident;
 """
 
 import metasequoia_parser as ms_parser
@@ -28,7 +11,44 @@ from metasequoia_sql_grammar.group_ident import GROUP_IDENT_2D
 from metasequoia_sql_grammar.group_ident import GROUP_IDENT_3D
 from metasequoia_sql_grammar.group_ident import GROUP_SIMPLE_IDENT
 from metasequoia_sql_grammar.group_ident import GROUP_SIMPLE_IDENT_LIST
+from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
+
+GROUP_TEXT_LITERAL = ms_parser.create_group(
+    name="text_literal",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_TEXT_STRING],
+            action=lambda x: ast.TextLiteral(value=x[0])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_NCHAR_STRING],
+            action=lambda x: ast.TextLiteral(value=x[0])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_UNDERSCORE_CHARSET],
+            action=lambda x: ast.TextLiteral(value=x[0])
+        ),
+    ]
+)
+
+GROUP_NUM_LITERAL = ms_parser.create_group(
+    name="num_literal",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_NUM],
+            action=lambda x: ast.Ident(x[0])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_NCHAR_STRING],
+            action=lambda x: ast.Ident(x[0])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_UNDERSCORE_CHARSET],
+            action=lambda x: ast.Ident(x[0])
+        ),
+    ]
+)
 
 
 def build_grammar():

@@ -1,6 +1,7 @@
 """
 标识符类型节点
 """
+
 import typing
 from typing import List
 
