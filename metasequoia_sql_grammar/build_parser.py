@@ -5,50 +5,19 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql_grammar.group_ident import GROUP_IDENT
 from metasequoia_sql_grammar.group_ident import GROUP_IDENT_2D
 from metasequoia_sql_grammar.group_ident import GROUP_IDENT_3D
 from metasequoia_sql_grammar.group_ident import GROUP_SIMPLE_IDENT
 from metasequoia_sql_grammar.group_ident import GROUP_SIMPLE_IDENT_LIST
-from metasequoia_sql_new import ast
+from metasequoia_sql_grammar.group_literal import GROUP_INT_LITERAL
+from metasequoia_sql_grammar.group_literal import GROUP_LITERAL
+from metasequoia_sql_grammar.group_literal import GROUP_LITERAL_OR_NULL
+from metasequoia_sql_grammar.group_literal import GROUP_NULL_LITERAL
+from metasequoia_sql_grammar.group_literal import GROUP_NUM_LITERAL
+from metasequoia_sql_grammar.group_literal import GROUP_TEMPORAL_LITERAL
+from metasequoia_sql_grammar.group_literal import GROUP_TEXT_LITERAL
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
-
-GROUP_TEXT_LITERAL = ms_parser.create_group(
-    name="text_literal",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.LITERAL_TEXT_STRING],
-            action=lambda x: ast.TextLiteral(value=x[0])
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.LITERAL_NCHAR_STRING],
-            action=lambda x: ast.TextLiteral(value=x[0])
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.LITERAL_UNDERSCORE_CHARSET],
-            action=lambda x: ast.TextLiteral(value=x[0])
-        ),
-    ]
-)
-
-GROUP_NUM_LITERAL = ms_parser.create_group(
-    name="num_literal",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.LITERAL_NUM],
-            action=lambda x: ast.Ident(x[0])
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.LITERAL_NCHAR_STRING],
-            action=lambda x: ast.Ident(x[0])
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.LITERAL_UNDERSCORE_CHARSET],
-            action=lambda x: ast.Ident(x[0])
-        ),
-    ]
-)
 
 
 def build_grammar():
@@ -58,6 +27,7 @@ def build_grammar():
                 name="entry",
                 rules=[
                     ms_parser.create_rule(symbols=["simple_ident_list"]),
+                    ms_parser.create_rule(symbols=["literal_or_null"]),
                 ]
             )
         ],
@@ -65,11 +35,23 @@ def build_grammar():
         start="entry",
         sr_priority=[],
     )
+
+    # 标识符
     grammar_builder.group_append(GROUP_IDENT)
     grammar_builder.group_append(GROUP_IDENT_2D)
     grammar_builder.group_append(GROUP_IDENT_3D)
     grammar_builder.group_append(GROUP_SIMPLE_IDENT)
     grammar_builder.group_append(GROUP_SIMPLE_IDENT_LIST)
+
+    # 字面值
+    grammar_builder.group_append(GROUP_TEXT_LITERAL)
+    grammar_builder.group_append(GROUP_INT_LITERAL)
+    grammar_builder.group_append(GROUP_NUM_LITERAL)
+    grammar_builder.group_append(GROUP_TEMPORAL_LITERAL)
+    grammar_builder.group_append(GROUP_LITERAL)
+    grammar_builder.group_append(GROUP_NULL_LITERAL)
+    grammar_builder.group_append(GROUP_LITERAL_OR_NULL)
+
     return grammar_builder.build()
 
 

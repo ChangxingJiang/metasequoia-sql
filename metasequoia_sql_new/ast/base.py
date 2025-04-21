@@ -23,6 +23,8 @@ class Node(abc.ABC):
         result = []
         for attr_name in self.attr_list():
             result.append(f"{attr_name}={repr(getattr(self, attr_name))}")
+        if not result:
+            return f"<{self.__class__.__name__}>"
         result_str = ", ".join(result)
         return f"<{self.__class__.__name__} {result_str}>"
 
