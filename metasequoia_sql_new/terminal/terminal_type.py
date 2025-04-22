@@ -81,6 +81,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_ACTION = enum.auto()  # keyword : SQL-2003-N
     KEYWORD_ACTIVE = enum.auto()  # keyword : MYSQL (MySQL 8.0)
     KEYWORD_ADD = enum.auto()  # reserved keyword : SQL-2003-R
+    KEYWORD_ADDDATE = enum.auto()  # word : MYSQL-FUNC
     KEYWORD_ADMIN = enum.auto()  # keyword : SQL-2003-N (MySQL 8.0)
     KEYWORD_AFTER = enum.auto()  # keyword : SQL-2003-N
     KEYWORD_AGAINST = enum.auto()  # keyword
@@ -721,6 +722,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_SQL_TSI_YEAR = enum.auto()  # keyword
     KEYWORD_SRID = enum.auto()  # keyword : MYSQL (MySQL 8.0)
     KEYWORD_SSL = enum.auto()  # reserved keyword
+    KEYWORD_ST_COLLECT = enum.auto()  # word (MySQL 8.0)
     KEYWORD_STACKED = enum.auto()  # keyword : SQL-2003-N
     KEYWORD_START = enum.auto()  # keyword : SQL-2003-R
     KEYWORD_STARTING = enum.auto()  # reserved keyword
@@ -739,6 +741,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_SUBJECT = enum.auto()  # keyword
     KEYWORD_SUBPARTITION = enum.auto()  # keyword
     KEYWORD_SUBPARTITIONS = enum.auto()  # keyword
+    KEYWORD_SUBDATE = enum.auto()  # word
     KEYWORD_SUPER = enum.auto()  # keyword
     KEYWORD_SUSPEND = enum.auto()  # keyword
     KEYWORD_SWAPS = enum.auto()  # keyword
@@ -839,14 +842,12 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_WITH_ROLLUP = enum.auto()  # INTERNAL
 
     # 非关键字函数
-    WORD_ADDDATE = enum.auto()  # MYSQL-FUNC
     WORD_CURDATE = enum.auto()  # MYSQL-FUNC
     WORD_CURTIME = enum.auto()  # MYSQL-FUNC
     WORD_DATE_ADD_INTERVAL = enum.auto()  # MYSQL-FUNC
     WORD_DATE_SUB_INTERVAL = enum.auto()  # MYSQL-FUNC
     WORD_EXTRACT = enum.auto()  # SQL-2003-N
     WORD_NOW = enum.auto()
-    WORD_SUBDATE = enum.auto()
     WORD_SYSDATE = enum.auto()
     WORD_BIT_AND = enum.auto()  # MYSQL-FUNC
     WORD_BIT_OR = enum.auto()  # MYSQL-FUNC
@@ -865,4 +866,3 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     WORD_SUBSTRING = enum.auto()  # SQL-2003-N
     WORD_TRIM = enum.auto()  # SQL-2003-N
     WORD_CAST = enum.auto()  # SQL-2003-R
-    WORD_ST_COLLECT = enum.auto()  # (MySQL 8.0)

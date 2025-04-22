@@ -53,7 +53,7 @@ __all__ = [
 ]
 
 # 字符串字面值
-# 对应 MySQL 语义组：text_literal
+# 对应 MySQL 语义组：TEXT_STRING_sys
 GROUP_TEXT_LITERAL = ms_parser.create_group(
     name="text_literal",
     rules=[

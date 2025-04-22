@@ -32,9 +32,10 @@ __all__ = [
     "GROUP_IDENT_3D",
     "GROUP_SIMPLE_IDENT",
     "GROUP_SIMPLE_IDENT_LIST"
-    "GROUP_SIMPLE_IDENT_LIST"
 ]
 
+# 单个标识符
+# 对应 MySQL 语义组：IDENT_sys
 GROUP_IDENT = ms_parser.create_group(
     name="ident",
     rules=[
@@ -49,6 +50,8 @@ GROUP_IDENT = ms_parser.create_group(
     ]
 )
 
+# 两个标识符
+# 对应 MySQL 语义组：simple_ident_q（部分）
 GROUP_IDENT_2D = ms_parser.create_group(
     name="ident_2",
     rules=[
@@ -59,6 +62,8 @@ GROUP_IDENT_2D = ms_parser.create_group(
     ]
 )
 
+# 三个标识符
+# 对应 MySQL 语义组：simple_ident_q（部分）
 GROUP_IDENT_3D = ms_parser.create_group(
     name="ident_3",
     rules=[
