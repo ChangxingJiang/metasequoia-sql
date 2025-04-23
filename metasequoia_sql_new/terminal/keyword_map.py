@@ -771,14 +771,14 @@ KEYWORD_TO_TERMINAL_MAP = {
     "zone": SqlTerminalType.KEYWORD_ZONE,
     "with_rollup": SqlTerminalType.KEYWORD_WITH_ROLLUP,
 
-    "adddate": SqlTerminalType.WORD_ADDDATE,
+    "adddate": SqlTerminalType.KEYWORD_ADDDATE,
     "curdate": SqlTerminalType.WORD_CURDATE,
     "curtime": SqlTerminalType.WORD_CURTIME,
     "date_add_interval": SqlTerminalType.WORD_DATE_ADD_INTERVAL,
     "date_sub_interval": SqlTerminalType.WORD_DATE_SUB_INTERVAL,
     "extract": SqlTerminalType.WORD_EXTRACT,
     "now": SqlTerminalType.WORD_NOW,
-    "subdate": SqlTerminalType.WORD_SUBDATE,
+    "subdate": SqlTerminalType.KEYWORD_SUBDATE,
     "sysdate": SqlTerminalType.WORD_SYSDATE,
     "bit_and": SqlTerminalType.WORD_BIT_AND,
     "bit_or": SqlTerminalType.WORD_BIT_OR,
@@ -797,5 +797,5 @@ KEYWORD_TO_TERMINAL_MAP = {
     "substring": SqlTerminalType.WORD_SUBSTRING,
     "trim": SqlTerminalType.WORD_TRIM,
     "cast": SqlTerminalType.WORD_CAST,
-    "st_collect": SqlTerminalType.WORD_ST_COLLECT,
+    "st_collect": SqlTerminalType.KEYWORD_ST_COLLECT,
 }

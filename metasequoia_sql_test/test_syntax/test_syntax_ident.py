@@ -11,6 +11,9 @@ if __name__ == "__main__":
     print(parse(LexFSM("hello1.`hello2`")))
     print(parse(LexFSM("hello1.hello2.hello3")))
     print(parse(LexFSM("hello1.hello2.hello3,hi1")))
+    print(parse(LexFSM("ST_COLLECT")))
+    print(parse(LexFSM("ADDDATE")))
+    print(parse(LexFSM("SUPER")))
 
     # 字面值
     print(parse(LexFSM("1234")))
@@ -23,3 +26,8 @@ if __name__ == "__main__":
     print(parse(LexFSM("false")))
     print(parse(LexFSM("1.3")))
     print(parse(LexFSM("1.3e-6")))
+    print(parse(LexFSM("'ab' 'cd'")))
+    print(parse(LexFSM("-3")))
+    print(parse(LexFSM("+3")))
+    print(parse(LexFSM("-3.5")))
+    print(parse(LexFSM("+3.5")))

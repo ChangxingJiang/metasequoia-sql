@@ -1,33 +1,3 @@
-/*
-   Copyright (c) 2000, 2023, Oracle and/or its affiliates.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License, version 2.0,
-   as published by the Free Software Foundation.
-
-   This program is also distributed with certain software (including
-   but not limited to OpenSSL) that is licensed under separate terms,
-   as designated in a particular file or component or in included license
-   documentation.  The authors of MySQL hereby grant you an additional
-   permission to link the program and your derivative works with the
-   separately licensed software that they have included with MySQL.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the《ident_or_text
-   GNU General Public License, version 2.0, for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
-
-/* sql_yacc.yy */
-
-/**
-  @defgroup Parser Parser
-  @{
-*/
-
 %{
 /*
 Note: YYTHD is passed as an argument to yyparse(), and subsequently to yylex().
@@ -1505,14 +1475,12 @@ void warn_on_deprecated_user_defined_collation(
         IDENT IDENT_QUOTED TEXT_STRING DECIMAL_NUM FLOAT_NUM NUM LONG_NUM HEX_NUM
         LEX_HOSTNAME ULONGLONG_NUM select_alias ident opt_ident ident_or_text
         role_ident role_ident_or_text
-        IDENT_sys TEXT_STRING_sys TEXT_STRING_literal DOLLAR_QUOTED_STRING_SYM
+        IDENT_sys   DOLLAR_QUOTED_STRING_SYM
         NCHAR_STRING
-        BIN_NUM TEXT_STRING_filesystem ident_or_empty
-        TEXT_STRING_sys_nonewline TEXT_STRING_password TEXT_STRING_hash
-        TEXT_STRING_validated
-        filter_wild_db_table_string
+        BIN_NUM  ident_or_empty
+          TEXT_STRING_hash
         opt_constraint_name
-        ts_datafile lg_undofile /*lg_redofile*/ opt_logfile_group_name opt_ts_datafile_name
+        ts_datafile lg_undofile opt_logfile_group_name opt_ts_datafile_name
         opt_describe_column
         opt_datadir_ssl default_encryption
         lvalue_ident
@@ -1600,7 +1568,7 @@ void warn_on_deprecated_user_defined_collation(
 %type <locked_row_action> locked_row_action opt_locked_row_action
 
 %type <item>
-        literal insert_column temporal_literal
+         insert_column
         simple_ident expr opt_expr opt_else
         set_function_specification sum_expr
         in_sum_expr grouping_operation
@@ -1610,7 +1578,7 @@ void warn_on_deprecated_user_defined_collation(
         table_wild simple_expr udf_expr
         expr_or_default set_expr_or_default
         geometry_function
-        signed_literal now_or_signed_literal
+         now_or_signed_literal
         simple_ident_nospvar simple_ident_q
         field_or_var limit_option
         function_call_keyword
@@ -1629,9 +1597,6 @@ void warn_on_deprecated_user_defined_collation(
         opt_having_clause
         opt_qualify_clause
         opt_simple_limit
-        null_as_literal
-        literal_or_null
-        signed_literal_or_null
         stable_integer
         param_or_var
         in_expression_user_variable_assignment
@@ -1639,9 +1604,6 @@ void warn_on_deprecated_user_defined_collation(
         install_set_rvalue
 
 %type <item_string> window_name opt_existing_window_name
-
-%type <item_num> NUM_literal
-        int64_literal
 
 %type <item_list>
         when_list
@@ -1706,14 +1668,6 @@ void warn_on_deprecated_user_defined_collation(
         handler_rkey_function
 
 %type <cast_type> cast_type opt_returning_type
-
-%type <lexer.keyword> ident_keyword label_keyword role_keyword
-        lvalue_keyword
-        ident_keywords_unambiguous
-        ident_keywords_ambiguous_1_roles_and_labels
-        ident_keywords_ambiguous_2_labels
-        ident_keywords_ambiguous_3_roles
-        ident_keywords_ambiguous_4_system_variables
 
 %type <lex_user> user_ident_or_text user create_user alter_user user_func role
 
@@ -12603,21 +12557,6 @@ opt_derived_column_list:
           }
         ;
 
-simple_ident_list:
-          ident
-          {
-            $$.init(YYTHD->mem_root);
-            if ($$.push_back(to_lex_cstring($1)))
-              MYSQL_YYABORT; /* purecov: inspected */
-          }
-        | simple_ident_list ',' ident
-          {
-            $$= $1;
-            if ($$.push_back(to_lex_cstring($3)))
-              MYSQL_YYABORT;  /* purecov: inspected */
-          }
-        ;
-
 opt_window_clause:
           %empty
           {
@@ -14926,54 +14865,6 @@ opt_load_memory:
 
 /* Common definitions */
 
-text_literal:
-          TEXT_STRING
-          {
-            $$= NEW_PTN PTI_text_literal_text_string(@$,
-                YYTHD->m_parser_state->m_lip.text_string_is_7bit(), $1);
-          }
-        | NCHAR_STRING
-          {
-            $$= NEW_PTN PTI_text_literal_nchar_string(@$,
-                YYTHD->m_parser_state->m_lip.text_string_is_7bit(), $1);
-            warn_about_deprecated_national(YYTHD);
-          }
-        | UNDERSCORE_CHARSET TEXT_STRING
-          {
-            $$= NEW_PTN PTI_text_literal_underscore_charset(@$,
-                YYTHD->m_parser_state->m_lip.text_string_is_7bit(), $1, $2);
-          }
-        | text_literal TEXT_STRING_literal
-          {
-            $$= NEW_PTN PTI_text_literal_concat(@$,
-                YYTHD->m_parser_state->m_lip.text_string_is_7bit(), $1, $2);
-          }
-        ;
-
-text_string:
-          TEXT_STRING_literal
-          {
-            $$= NEW_PTN String($1.str, $1.length,
-                               YYTHD->variables.collation_connection);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | HEX_NUM
-          {
-            LEX_CSTRING s= Item_hex_string::make_hex_str($1.str, $1.length);
-            $$= NEW_PTN String(s.str, s.length, &my_charset_bin);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | BIN_NUM
-          {
-            LEX_CSTRING s= Item_bin_string::make_bin_str($1.str, $1.length);
-            $$= NEW_PTN String(s.str, s.length, &my_charset_bin);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        ;
-
 param_marker:
           PARAM_MARKER
           {
@@ -14990,111 +14881,6 @@ param_marker:
                 lex->param_list.push_back(i))
               MYSQL_YYABORT;
             $$= i;
-          }
-        ;
-
-signed_literal:
-          literal
-        | '+' NUM_literal { $$= $2; }
-        | '-' NUM_literal
-          {
-            if ($2 == nullptr)
-              MYSQL_YYABORT; // OOM
-            $2->max_length++;
-            $$= $2->neg();
-          }
-        ;
-
-signed_literal_or_null:
-          signed_literal
-        | null_as_literal
-        ;
-
-null_as_literal:
-          NULL_SYM
-          {
-            Lex_input_stream *lip= YYLIP;
-            /*
-              For the digest computation, in this context only,
-              NULL is considered a literal, hence reduced to '?'
-              REDUCE:
-                TOK_GENERIC_VALUE := NULL_SYM
-            */
-            lip->reduce_digest_token(TOK_GENERIC_VALUE, NULL_SYM);
-            $$= NEW_PTN Item_null(@$);
-          }
-        ;
-
-literal:
-          text_literal { $$= $1; }
-        | NUM_literal  { $$= $1; }
-        | temporal_literal
-        | FALSE_SYM
-          {
-            $$= NEW_PTN Item_func_false(@$);
-          }
-        | TRUE_SYM
-          {
-            $$= NEW_PTN Item_func_true(@$);
-          }
-        | HEX_NUM
-          {
-            $$= NEW_PTN Item_hex_string(@$, $1);
-          }
-        | BIN_NUM
-          {
-            $$= NEW_PTN Item_bin_string(@$, $1);
-          }
-        | UNDERSCORE_CHARSET HEX_NUM
-          {
-            $$= NEW_PTN PTI_literal_underscore_charset_hex_num(@$, $1, $2);
-          }
-        | UNDERSCORE_CHARSET BIN_NUM
-          {
-            $$= NEW_PTN PTI_literal_underscore_charset_bin_num(@$, $1, $2);
-          }
-        ;
-
-literal_or_null:
-          literal
-        | null_as_literal
-        ;
-
-NUM_literal:
-          int64_literal
-        | DECIMAL_NUM
-          {
-            $$= NEW_PTN Item_decimal(@$, $1.str, $1.length, YYCSCL);
-          }
-        | FLOAT_NUM
-          {
-            $$= NEW_PTN Item_float(@$, $1.str, $1.length);
-          }
-        ;
-
-/*
-  int64_literal if for unsigned exact integer literals in a range of
-  [0 .. 2^64-1].
-*/
-int64_literal:
-          NUM           { $$ = NEW_PTN Item_int(@$, $1); }
-        | LONG_NUM      { $$ = NEW_PTN Item_int(@$, $1); }
-        | ULONGLONG_NUM { $$ = NEW_PTN Item_uint(@$, $1.str, $1.length); }
-        ;
-
-
-temporal_literal:
-        DATE_SYM TEXT_STRING
-          {
-            $$= NEW_PTN PTI_temporal_literal(@$, $2, MYSQL_TYPE_DATE, YYCSCL);
-          }
-        | TIME_SYM TEXT_STRING
-          {
-            $$= NEW_PTN PTI_temporal_literal(@$, $2, MYSQL_TYPE_TIME, YYCSCL);
-          }
-        | TIMESTAMP_SYM TEXT_STRING
-          {
-            $$= NEW_PTN PTI_temporal_literal(@$, $2, MYSQL_TYPE_DATETIME, YYCSCL);
           }
         ;
 
@@ -15137,52 +14923,6 @@ grouping_expr:
           expr
           {
             $$= NEW_PTN PT_order_expr(@$, $1, ORDER_NOT_RELEVANT);
-          }
-        ;
-
-simple_ident:
-          ident
-          {
-            $$= NEW_PTN PTI_simple_ident_ident(@$, to_lex_cstring($1));
-          }
-        | simple_ident_q
-        ;
-
-simple_ident_nospvar:
-          ident
-          {
-            $$= NEW_PTN PTI_simple_ident_nospvar_ident(@$, $1);
-          }
-        | simple_ident_q
-        ;
-
-simple_ident_q:
-          ident '.' ident
-          {
-            $$= NEW_PTN PTI_simple_ident_q_2d(@$, $1.str, $3.str);
-          }
-        | ident '.' ident '.' ident
-          {
-            if (check_and_convert_db_name(&$1, false) != Ident_name_check::OK)
-              MYSQL_YYABORT;
-            $$= NEW_PTN PTI_simple_ident_q_3d(@$, $1.str, $3.str, $5.str);
-          }
-        ;
-
-table_ident:
-          ident
-          {
-            $$= NEW_PTN Table_ident(to_lex_cstring($1));
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | ident '.' ident
-          {
-            auto schema_name = YYCLIENT_NO_SCHEMA ? LEX_CSTRING{}
-                                                  : to_lex_cstring($1.str);
-            $$= NEW_PTN Table_ident(schema_name, to_lex_cstring($3));
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
           }
         ;
 
@@ -15234,152 +14974,11 @@ IDENT_sys:
           }
         ;
 
-TEXT_STRING_sys_nonewline:
-          TEXT_STRING_sys
-          {
-            if (!strcont($1.str, "\n"))
-              $$= $1;
-            else
-            {
-              my_error(ER_WRONG_VALUE, MYF(0), "argument contains not-allowed LF", $1.str);
-              MYSQL_YYABORT;
-            }
-          }
-        ;
-
-filter_wild_db_table_string:
-          TEXT_STRING_sys_nonewline
-          {
-            if (strcont($1.str, "."))
-              $$= $1;
-            else
-            {
-              my_error(ER_INVALID_RPL_WILD_TABLE_FILTER_PATTERN, MYF(0));
-              MYSQL_YYABORT;
-            }
-          }
-        ;
-
-TEXT_STRING_sys:
-          TEXT_STRING
-          {
-            THD *thd= YYTHD;
-
-            if (thd->charset_is_system_charset)
-              $$= $1;
-            else
-            {
-              if (thd->convert_string(&$$, system_charset_info,
-                                  $1.str, $1.length, thd->charset()))
-                MYSQL_YYABORT;
-            }
-          }
-        ;
-
-TEXT_STRING_literal:
-          TEXT_STRING
-          {
-            THD *thd= YYTHD;
-
-            if (thd->charset_is_collation_connection)
-              $$= $1;
-            else
-            {
-              if (thd->convert_string(&$$, thd->variables.collation_connection,
-                                  $1.str, $1.length, thd->charset()))
-                MYSQL_YYABORT;
-            }
-          }
-        ;
-
-TEXT_STRING_filesystem:
-          TEXT_STRING
-          {
-            THD *thd= YYTHD;
-
-            if (thd->charset_is_character_set_filesystem)
-              $$= $1;
-            else
-            {
-              if (thd->convert_string(&$$,
-                                      thd->variables.character_set_filesystem,
-                                      $1.str, $1.length, thd->charset()))
-                MYSQL_YYABORT;
-            }
-          }
-        ;
-
-TEXT_STRING_password:
-          TEXT_STRING
-        ;
-
 TEXT_STRING_hash:
           TEXT_STRING_sys
         | HEX_NUM
           {
             $$= to_lex_string(Item_hex_string::make_hex_str($1.str, $1.length));
-          }
-        ;
-
-TEXT_STRING_validated:
-          TEXT_STRING
-          {
-            THD *thd= YYTHD;
-
-            if (thd->charset_is_system_charset)
-              $$= $1;
-            else
-            {
-              if (thd->convert_string(&$$, system_charset_info,
-                                  $1.str, $1.length, thd->charset(), true))
-                MYSQL_YYABORT;
-            }
-          }
-        ;
-
-ident:
-          IDENT_sys    { $$=$1; }
-        | ident_keyword
-          {
-            THD *thd= YYTHD;
-            $$.str= thd->strmake($1.str, $1.length);
-            if ($$.str == nullptr)
-              MYSQL_YYABORT;
-            $$.length= $1.length;
-          }
-        ;
-
-role_ident:
-          IDENT_sys
-        | role_keyword
-          {
-            $$.str= YYTHD->strmake($1.str, $1.length);
-            if ($$.str == nullptr)
-              MYSQL_YYABORT;
-            $$.length= $1.length;
-          }
-        ;
-
-label_ident:
-          IDENT_sys    { $$=to_lex_cstring($1); }
-        | label_keyword
-          {
-            THD *thd= YYTHD;
-            $$.str= thd->strmake($1.str, $1.length);
-            if ($$.str == nullptr)
-              MYSQL_YYABORT;
-            $$.length= $1.length;
-          }
-        ;
-
-lvalue_ident:
-          IDENT_sys
-        | lvalue_keyword
-          {
-            $$.str= YYTHD->strmake($1.str, $1.length);
-            if ($$.str == nullptr)
-              MYSQL_YYABORT;
-            $$.length= $1.length;
           }
         ;
 
@@ -15445,75 +15044,6 @@ schema:
             if (check_and_convert_db_name(&$$, false) != Ident_name_check::OK)
               MYSQL_YYABORT;
           }
-        ;
-
-/*
-  Non-reserved keywords are allowed as unquoted identifiers in general.
-
-  OTOH, in a few particular cases statement-specific rules are used
-  instead of `ident_keyword` to avoid grammar ambiguities:
-
-    * `label_keyword` for SP label names
-    * `role_keyword` for role names
-    * `lvalue_keyword` for variable prefixes and names in left sides of
-                       assignments in SET statements
-
-  Normally, new non-reserved words should be added to the
-  the rule `ident_keywords_unambiguous`. If they cause grammar conflicts, try
-  one of `ident_keywords_ambiguous_...` rules instead.
-*/
-ident_keyword:
-          ident_keywords_unambiguous
-        | ident_keywords_ambiguous_1_roles_and_labels
-        | ident_keywords_ambiguous_2_labels
-        | ident_keywords_ambiguous_3_roles
-        | ident_keywords_ambiguous_4_system_variables
-        ;
-
-/*
-  Keywords that we allow for labels in SPs in the unquoted form.
-  Any keyword that is allowed to begin a statement or routine characteristics
-  must be in `ident_keywords_ambiguous_2_labels` above, otherwise
-  we get (harmful) shift/reduce conflicts.
-
-  Not allowed:
-
-    ident_keywords_ambiguous_1_roles_and_labels
-    ident_keywords_ambiguous_2_labels
-*/
-label_keyword:
-          ident_keywords_unambiguous
-        | ident_keywords_ambiguous_3_roles
-        | ident_keywords_ambiguous_4_system_variables
-        ;
-
-/*
-  Non-reserved keywords that we allow for unquoted role names:
-
-  Not allowed:
-
-    ident_keywords_ambiguous_1_roles_and_labels
-    ident_keywords_ambiguous_3_roles
-*/
-role_keyword:
-          ident_keywords_unambiguous
-        | ident_keywords_ambiguous_2_labels
-        | ident_keywords_ambiguous_4_system_variables
-        ;
-
-/*
-  Non-reserved words allowed for unquoted unprefixed variable names and
-  unquoted variable prefixes in the left side of assignments in SET statements:
-
-  Not allowed:
-
-    ident_keywords_ambiguous_4_system_variables
-*/
-lvalue_keyword:
-          ident_keywords_unambiguous
-        | ident_keywords_ambiguous_1_roles_and_labels
-        | ident_keywords_ambiguous_2_labels
-        | ident_keywords_ambiguous_3_roles
         ;
 
 /*
@@ -18110,7 +17640,3 @@ json_attribute:
             }
             $$ = to_lex_cstring($1);
           }
-
-/**
-  @} (end of group Parser)
-*/

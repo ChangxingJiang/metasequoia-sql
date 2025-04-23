@@ -1,7 +1,7 @@
 """
 字面值类型节点
 """
-
+import abc
 import decimal
 import enum
 import typing
@@ -49,7 +49,15 @@ class BinStringLiteral(StringLiteral):
     """二进制字符串字面值"""
 
 
-class IntLiteral(Expression):
+class NumberLiteral(Expression):
+    """数值字面值（包括整数、小数、浮点数）"""
+
+    @abc.abstractmethod
+    def neg(self) -> "NumberLiteral":
+        """计算当前数值字面值的值置为相反数，并返回当前数值字面值"""
+
+
+class IntLiteral(NumberLiteral):
     """整数字面值"""
 
     def __init__(self, value: str):
@@ -62,8 +70,12 @@ class IntLiteral(Expression):
     def value(self) -> int:
         return self._value
 
+    def neg(self) -> "IntLiteral":
+        self._value *= -1
+        return self
 
-class DecimalLiteral(Expression):
+
+class DecimalLiteral(NumberLiteral):
     """小数字面值"""
 
     def __init__(self, value: str):
@@ -76,8 +88,12 @@ class DecimalLiteral(Expression):
     def value(self) -> decimal.Decimal:
         return self._value
 
+    def neg(self) -> "DecimalLiteral":
+        self._value *= -1
+        return self
 
-class FloatLiteral(Expression):
+
+class FloatLiteral(NumberLiteral):
     """浮点数字面值"""
 
     def __init__(self, value: str):
@@ -89,6 +105,10 @@ class FloatLiteral(Expression):
     @property
     def value(self) -> float:
         return self._value
+
+    def neg(self) -> "FloatLiteral":
+        self._value *= -1
+        return self
 
 
 class TemporalLiteral(Expression):
