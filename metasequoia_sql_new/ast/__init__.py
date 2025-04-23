@@ -1,3 +1,5 @@
+from metasequoia_sql_new.ast.function import FuncBitNot
+from metasequoia_sql_new.ast.function import FuncNegative
 from metasequoia_sql_new.ast.ident import Ident
 from metasequoia_sql_new.ast.ident import Ident2D
 from metasequoia_sql_new.ast.ident import Ident3D

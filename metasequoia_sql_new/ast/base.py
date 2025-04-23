@@ -8,6 +8,8 @@ import typing
 __all__ = [
     "Node",
     "Expression",
+    "UnaryExpression",
+    "BinaryExpression",
     "Statement",
 ]
 
@@ -33,6 +35,39 @@ class Node(abc.ABC):
 
 class Expression(Node, abc.ABC):
     """抽象语法树节点的抽象类：表达式"""
+
+
+class UnaryExpression(Expression, abc.ABC):
+    """抽象语法树节点的抽象类：一元表达式"""
+
+    def __init__(self, operand: Expression):
+        self._operand = operand
+
+    def attr_list(self) -> typing.List[str]:
+        return ["operand"]
+
+    @property
+    def operand(self) -> Expression:
+        return self._operand
+
+
+class BinaryExpression(Expression, abc.ABC):
+    """抽象语法树节点的抽象类：二元表达式"""
+
+    def __init__(self, left_operand: Expression, right_operand: Expression):
+        self._left_operand = left_operand
+        self._right_operand = right_operand
+
+    def attr_list(self) -> typing.List[str]:
+        return ["left_operand", "right_operand"]
+
+    @property
+    def left_operand(self) -> Expression:
+        return self._left_operand
+
+    @property
+    def right_operand(self) -> Expression:
+        return self._right_operand
 
 
 class Statement(Node, abc.ABC):

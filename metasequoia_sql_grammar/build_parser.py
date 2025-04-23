@@ -5,6 +5,7 @@
 """
 
 import metasequoia_parser as ms_parser
+from metasequoia_sql_grammar.expr_general import GENERAL_SIMPLE_EXPR
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_2
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_3
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_SYS
@@ -29,11 +30,11 @@ from metasequoia_sql_grammar.literal_general import GENERAL_LITERAL_OR_NULL
 from metasequoia_sql_grammar.literal_general import GENERAL_NULL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_NUM_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL
+from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL_OR_NULL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEMPORAL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL_SYS
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_STRING
-from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL_OR_NULL
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 
@@ -44,9 +45,8 @@ def build_grammar():
                 name="entry",
                 rules=[
                     ms_parser.create_rule(symbols=["simple_ident_list"]),
-                    ms_parser.create_rule(symbols=["literal_or_null"]),
                     ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["signed_literal"]),
+                    ms_parser.create_rule(symbols=["simple_expr"]),
                 ]
             )
         ],
@@ -87,6 +87,9 @@ def build_grammar():
     grammar_builder.group_append(GENERAL_TEXT_STRING)
     grammar_builder.group_append(GENERAL_SIGNED_LITERAL)
     grammar_builder.group_append(GENERAL_SIGNED_LITERAL_OR_NULL)
+
+    # 表达式
+    grammar_builder.group_append(GENERAL_SIMPLE_EXPR)
 
     return grammar_builder.build()
 
