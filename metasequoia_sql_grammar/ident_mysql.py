@@ -13,6 +13,10 @@ __all__ = [
     "MYSQL_IDENT_KEYWORDS_AMBIGUOUS_2_LABELS",
     "MYSQL_IDENT_KEYWORDS_AMBIGUOUS_3_ROLES",
     "MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES",
+    "MYSQL_IDENT_KEYWORD",
+    "MYSQL_LABEL_KEYWORD",
+    "MYSQL_ROLE_KEYWORD",
+    "MYSQL_LVALUE_KEYWORD",
 ]
 
 # [MySQL | Terminal Set] 非保留关键字，可以在任何位置用作未见引号的标识符，而不会引入语法冲突
@@ -571,7 +575,7 @@ MYSQL_TERMINAL_SET_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES = {
 }
 
 # [MySQL | Grammar Group] 非保留关键字，不能用作 SET 语句中赋值操作左侧的变量名以及变量前缀
-# 对应 MySQL 语义组：mysql_ident_keywords_ambiguous_4_system_variables
+# 对应 MySQL 语义组：ident_keywords_ambiguous_4_system_variables
 MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES = ms_parser.create_group(
     name="mysql_ident_keywords_ambiguous_4_system_variables",
     rules=[
@@ -580,5 +584,82 @@ MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES = ms_parser.create_group(
             action=lambda x: ast.Ident(x[0])
         )
         for terminal_type in MYSQL_TERMINAL_SET_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES
+    ]
+)
+
+# [MySQL | Grammar Group] 非保留关键字，在一般场景下可以直接使用
+# 对应 MySQL 语义组：ident_keyword
+MYSQL_IDENT_KEYWORD = ms_parser.create_group(
+    name="mysql_ident_keyword",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_unambiguous"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_1_roles_and_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_2_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_3_roles"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_4_system_variables"]
+        )
+    ]
+)
+
+# [MySQL | Grammar Group] 非保留关键字，可以用作存储过程标签名称（label name）
+# 对应 MySQL 语义组：label_keyword
+MYSQL_LABEL_KEYWORD = ms_parser.create_group(
+    name="mysql_label_keyword",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_unambiguous"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_3_roles"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_4_system_variables"]
+        )
+    ]
+)
+
+# [MySQL | Grammar Group] 非保留关键字，可以用作角色名称（role name）
+# 对应 MySQL 语义组：role_keyword
+MYSQL_ROLE_KEYWORD = ms_parser.create_group(
+    name="mysql_role_keyword",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_unambiguous"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_2_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_4_system_variables"]
+        )
+    ]
+)
+
+# [MySQL | Grammar Group] 非保留关键字，可以作为 SET 语句中赋值操作左侧的变量名以及变量前缀
+# 对应 MySQL 语义组：lvalue_keyword
+MYSQL_LVALUE_KEYWORD = ms_parser.create_group(
+    name="mysql_lvalue_keyword",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_unambiguous"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_1_roles_and_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_2_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["mysql_ident_keywords_ambiguous_3_roles"]
+        )
     ]
 )
