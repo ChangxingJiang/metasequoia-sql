@@ -224,32 +224,32 @@ GENERAL_EXPR = ms_parser.create_group(
             sr_priority_as=TType.KEYWORD_NOT
         ),
         ms_parser.create_rule(
-            symbols=["expr", TType.KEYWORD_IS, TType.KEYWORD_TRUE],
+            symbols=["bool_expr", TType.KEYWORD_IS, TType.KEYWORD_TRUE],
             action=lambda x: ast.FuncIsTrue(operand=x[0]),
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["expr", TType.KEYWORD_IS, TType.KEYWORD_NOT, TType.KEYWORD_TRUE],
+            symbols=["bool_expr", TType.KEYWORD_IS, TType.KEYWORD_NOT, TType.KEYWORD_TRUE],
             action=lambda x: ast.FuncIsNotTrue(operand=x[0]),
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["expr", TType.KEYWORD_IS, TType.KEYWORD_FALSE],
+            symbols=["bool_expr", TType.KEYWORD_IS, TType.KEYWORD_FALSE],
             action=lambda x: ast.FuncIsFalse(operand=x[0]),
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["expr", TType.KEYWORD_IS, TType.KEYWORD_NOT, TType.KEYWORD_FALSE],
+            symbols=["bool_expr", TType.KEYWORD_IS, TType.KEYWORD_NOT, TType.KEYWORD_FALSE],
             action=lambda x: ast.FuncIsNotFalse(operand=x[0]),
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["expr", TType.KEYWORD_IS, TType.KEYWORD_UNKNOWN],
+            symbols=["bool_expr", TType.KEYWORD_IS, TType.KEYWORD_UNKNOWN],
             action=lambda x: ast.FuncIsUnknown(operand=x[0]),
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["expr", TType.KEYWORD_IS, TType.KEYWORD_NOT, TType.KEYWORD_UNKNOWN],
+            symbols=["bool_expr", TType.KEYWORD_IS, TType.KEYWORD_NOT, TType.KEYWORD_UNKNOWN],
             action=lambda x: ast.FuncIsNotUnknown(operand=x[0]),
             sr_priority_as=TType.KEYWORD_IS
         ),

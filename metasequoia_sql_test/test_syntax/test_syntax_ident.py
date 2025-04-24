@@ -48,3 +48,5 @@ if __name__ == "__main__":
     print(parse(LexFSM("name1 AND name2")))
     print(parse(LexFSM("NOT name2")))
     print(parse(LexFSM("name1 IS TRUE")))
+
+
