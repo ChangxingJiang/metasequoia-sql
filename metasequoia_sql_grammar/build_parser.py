@@ -5,6 +5,13 @@
 """
 
 import metasequoia_parser as ms_parser
+
+from metasequoia_sql_grammar.basic_general import GENERAL_OPERATOR_COMPARE
+from metasequoia_sql_grammar.basic_general import GENERAL_OPT_OF
+from metasequoia_sql_grammar.expr_general import GENERAL_BIT_EXPR
+from metasequoia_sql_grammar.expr_general import GENERAL_BOOL_EXPR
+from metasequoia_sql_grammar.expr_general import GENERAL_EXPR
+from metasequoia_sql_grammar.expr_general import GENERAL_PREDICATE
 from metasequoia_sql_grammar.expr_general import GENERAL_SIMPLE_EXPR
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_2
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_3
@@ -46,14 +53,140 @@ def build_grammar():
                 rules=[
                     ms_parser.create_rule(symbols=["simple_ident_list"]),
                     ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["simple_expr"]),
+                    ms_parser.create_rule(symbols=["expr"]),
                 ]
             )
         ],
         terminal_type_enum=TType,
         start="entry",
-        sr_priority=[],
+        sr_priority=[
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_INTO],
+                combine_type=ms_parser.COMBINE_RIGHT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.EMPTY_FROM_CLAUSE],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_LPAREN, TType.OPERATOR_RPAREN],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.SUBQUERY_AS_EXPR],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_INTERVAL],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_BINARY, TType.KEYWORD_COLLATE],
+                combine_type=ms_parser.COMBINE_RIGHT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_NOT, TType.KEYWORD_NOT2],
+                combine_type=ms_parser.COMBINE_RIGHT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.NEG, TType.OPERATOR_TILDE],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_BAR_BAR],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_CARET],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_STAR, TType.OPERATOR_SLASH, TType.OPERATOR_PERCENT, TType.KEYWORD_DIV,
+                         TType.KEYWORD_MOD],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_SUB, TType.OPERATOR_PLUS],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_LT_LT, TType.OPERATOR_GT_GT],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_AMP],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_BAR],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_EQ, TType.OPERATOR_LT_EQ_GT, TType.OPERATOR_GT_EQ, TType.OPERATOR_GT,
+                         TType.OPERATOR_LT_EQ, TType.OPERATOR_LT, TType.OPERATOR_BANG_EQ, TType.KEYWORD_IS,
+                         TType.KEYWORD_LIKE, TType.KEYWORD_REGEXP, TType.KEYWORD_IN],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_BETWEEN, TType.KEYWORD_CASE, TType.KEYWORD_WHEN, TType.KEYWORD_THEN,
+                         TType.KEYWORD_ELSE],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_AND, TType.OPERATOR_AMP_AMP],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_XOR],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_OR],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.OPERATOR_COLON_EQ],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_JOIN, TType.KEYWORD_INNER, TType.STRAIGHT_JOIN, TType.KEYWORD_NATURAL,
+                         TType.KEYWORD_LEFT, TType.KEYWORD_RIGHT, TType.KEYWORD_ON, TType.KEYWORD_USING],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.CONDITIONLESS_JOIN],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_INTERSECT],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_UNION, TType.KEYWORD_EXCEPT],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_UNIQUE, TType.KEYWORD_KEY],
+                combine_type=ms_parser.COMBINE_RIGHT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_USED_AS_KEYWORD],
+                combine_type=ms_parser.COMBINE_LEFT
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.LITERAL_TEXT_STRING],
+                combine_type=ms_parser.COMBINE_NONASSOC
+            ),
+            ms_parser.create_sr_priority(
+                symbols=[TType.KEYWORD_USED_AS_IDENT],
+                combine_type=ms_parser.COMBINE_LEFT
+            )
+        ]
     )
+
+    # 基础元素
+    grammar_builder.group_append(GENERAL_OPT_OF)
+    grammar_builder.group_append(GENERAL_OPERATOR_COMPARE)
 
     # 标识符
     grammar_builder.group_append(GENERAL_IDENT_SYS)
@@ -90,6 +223,10 @@ def build_grammar():
 
     # 表达式
     grammar_builder.group_append(GENERAL_SIMPLE_EXPR)
+    grammar_builder.group_append(GENERAL_BIT_EXPR)
+    grammar_builder.group_append(GENERAL_PREDICATE)
+    grammar_builder.group_append(GENERAL_BOOL_EXPR)
+    grammar_builder.group_append(GENERAL_EXPR)
 
     return grammar_builder.build()
 

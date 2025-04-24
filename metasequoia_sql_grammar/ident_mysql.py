@@ -458,6 +458,16 @@ MYSQL_TERMINAL_SET_KEYWORDS_UNAMBIGUOUS = {
     TType.KEYWORD_ZONE
 }
 
+# [MySQL | Terminal Set] 需要使用 KEYWORD_USED_AS_IDENT 优先级的终结符类型的结合
+MYSQL_TERMINAL_SET_KEYWORD_USED_AS_IDENT = {
+    TType.KEYWORD_BIT,
+    TType.KEYWORD_DATE,
+    TType.KEYWORD_NAMES,
+    TType.KEYWORD_PASSWORD,
+    TType.KEYWORD_TIMESTAMP,
+    TType.KEYWORD_TIME,
+}
+
 # [MySQL | Grammar Group] 非保留关键字，可以在任何位置用作未见引号的标识符，而不会引入语法冲突
 # 对应 MySQL 语义组：ident_keywords_unambiguous
 MYSQL_IDENT_KEYWORDS_UNAMBIGUOUS = ms_parser.create_group(
@@ -465,7 +475,10 @@ MYSQL_IDENT_KEYWORDS_UNAMBIGUOUS = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[terminal_type],
-            action=lambda x: ast.Ident(x[0])
+            action=lambda x: ast.Ident(x[0]),
+            sr_priority_as=(TType.KEYWORD_USED_AS_IDENT
+                            if terminal_type in MYSQL_TERMINAL_SET_KEYWORD_USED_AS_IDENT
+                            else None)
         )
         for terminal_type in MYSQL_TERMINAL_SET_KEYWORDS_UNAMBIGUOUS
     ]

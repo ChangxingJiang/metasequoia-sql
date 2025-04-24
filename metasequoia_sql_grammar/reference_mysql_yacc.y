@@ -9909,11 +9909,6 @@ predicate:
         | bit_expr %prec SET_VAR
         ;
 
-opt_of:
-          OF_SYM
-        | %empty
-        ;
-
 bit_expr:
           bit_expr '|' bit_expr %prec '|'
           {

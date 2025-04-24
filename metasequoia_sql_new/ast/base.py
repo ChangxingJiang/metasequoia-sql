@@ -10,6 +10,7 @@ __all__ = [
     "Expression",
     "UnaryExpression",
     "BinaryExpression",
+    "TernaryExpression",
     "Statement",
 ]
 
@@ -40,21 +41,21 @@ class Expression(Node, abc.ABC):
 class UnaryExpression(Expression, abc.ABC):
     """抽象语法树节点的抽象类：一元表达式"""
 
-    def __init__(self, operand: Expression):
+    def __init__(self, operand: typing.Optional[Expression]):
         self._operand = operand
 
     def attr_list(self) -> typing.List[str]:
         return ["operand"]
 
     @property
-    def operand(self) -> Expression:
+    def operand(self) -> typing.Optional[Expression]:
         return self._operand
 
 
 class BinaryExpression(Expression, abc.ABC):
     """抽象语法树节点的抽象类：二元表达式"""
 
-    def __init__(self, left_operand: Expression, right_operand: Expression):
+    def __init__(self, left_operand: typing.Optional[Expression], right_operand: typing.Optional[Expression]):
         self._left_operand = left_operand
         self._right_operand = right_operand
 
@@ -62,12 +63,39 @@ class BinaryExpression(Expression, abc.ABC):
         return ["left_operand", "right_operand"]
 
     @property
-    def left_operand(self) -> Expression:
+    def left_operand(self) -> typing.Optional[Expression]:
         return self._left_operand
 
     @property
-    def right_operand(self) -> Expression:
+    def right_operand(self) -> typing.Optional[Expression]:
         return self._right_operand
+
+
+class TernaryExpression(Expression, abc.ABC):
+    """抽象语法树节点的抽象类：三元表达式"""
+
+    def __init__(self,
+                 first_operand: typing.Optional[Expression],
+                 second_operand: typing.Optional[Expression],
+                 third_operand: typing.Optional[Expression]):
+        self._first_operand = first_operand
+        self._second_operand = second_operand
+        self._third_operand = third_operand
+
+    def attr_list(self) -> typing.List[str]:
+        return ["first_operand", "second_operand", "third_operand"]
+
+    @property
+    def first_operand(self) -> typing.Optional[Expression]:
+        return self._first_operand
+
+    @property
+    def second_operand(self) -> typing.Optional[Expression]:
+        return self._second_operand
+
+    @property
+    def third_operand(self) -> typing.Optional[Expression]:
+        return self._third_operand
 
 
 class Statement(Node, abc.ABC):

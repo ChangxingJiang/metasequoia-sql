@@ -19,6 +19,15 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     SYSTEM_END_OF_INPUT = 0  # INTERNAL : 词法解析器解析结束
     SYSTEM_ABORT = enum.auto()  # INTERNAL : 词法解析器解析异常
 
+    # 优先级标记符号
+    KEYWORD_USED_AS_IDENT = enum.auto()
+    KEYWORD_USED_AS_KEYWORD = enum.auto()
+    CONDITIONLESS_JOIN = enum.auto()
+    STRAIGHT_JOIN = enum.auto()
+    NEG = enum.auto()
+    SUBQUERY_AS_EXPR = enum.auto()
+    EMPTY_FROM_CLAUSE = enum.auto()
+
     # 单字节运算符
     OPERATOR_PLUS = enum.auto()  # OPERATOR : +
     OPERATOR_CARET = enum.auto()  # OPERATOR : ^
