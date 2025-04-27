@@ -9,8 +9,6 @@ from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType as TType
 
 __all__ = [
     "GENERAL_GROUP_BY_LIST",
-    "GENERAL_ORDER_DIRECTION",
-    "GENERAL_OPT_ORDER_DIRECTION",
     "GENERAL_ORDER_EXPR",
     "GENERAL_ORDER_BY_LIST",
     "GENERAL_OPT_ORDER_BY_CLAUSE",
@@ -28,37 +26,6 @@ GENERAL_GROUP_BY_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["expr"],
             action=lambda x: ast.GroupByList(column_list=[x[0]])
-        )
-    ]
-)
-
-# 排序方向的 ASC 或 DESC 关键字
-# 对应 MySQL 语义组：ordering_direction
-GENERAL_ORDER_DIRECTION = ms_parser.create_group(
-    name="order_direction",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ASC],
-            action=lambda x: ast.EnumOrderDirection.ASC
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_DESC],
-            action=lambda x: ast.EnumOrderDirection.DESC
-        )
-    ]
-)
-
-# 可选的排序方向的 ASC 或 DESC 关键字
-# 对应 MySQL 语义组：opt_ordering_direction
-GENERAL_OPT_ORDER_DIRECTION = ms_parser.create_group(
-    name="opt_order_direction",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["order_direction"]
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda x: ast.EnumOrderDirection.DEFAULT
         )
     ]
 )

@@ -6,8 +6,14 @@
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_grammar.basic_general import GENERAL_OPERATOR_COMPARE
 from metasequoia_sql_grammar.basic_general import GENERAL_OPT_OF
+from metasequoia_sql_grammar.dql_general import GENERAL_GROUP_BY_LIST
+from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_BY_CLAUSE
+from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_BY_LIST
+from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_EXPR
+from metasequoia_sql_grammar.enum_general import GENERAL_OPERATOR_COMPARE
+from metasequoia_sql_grammar.enum_general import GENERAL_OPT_ORDER_DIRECTION
+from metasequoia_sql_grammar.enum_general import GENERAL_ORDER_DIRECTION
 from metasequoia_sql_grammar.expr_general import GENERAL_BINARY_EXPR
 from metasequoia_sql_grammar.expr_general import GENERAL_BOOL_EXPR
 from metasequoia_sql_grammar.expr_general import GENERAL_EXPR
@@ -42,13 +48,7 @@ from metasequoia_sql_grammar.literal_general import GENERAL_TEMPORAL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL_SYS
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_STRING
-from metasequoia_sql_grammar.dql_general import GENERAL_GROUP_BY_LIST
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
-from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_DIRECTION
-from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_DIRECTION
-from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_EXPR
-from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_BY_LIST
-from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_BY_CLAUSE
 
 
 def build_grammar():

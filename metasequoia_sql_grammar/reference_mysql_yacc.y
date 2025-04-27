@@ -9376,12 +9376,6 @@ opt_window_frame_exclusion:
           }
         ;
 
-window_frame_units:
-          ROWS_SYM    { $$= WFU_ROWS; }
-        | RANGE_SYM   { $$= WFU_RANGE; }
-        | GROUPS_SYM  { $$= WFU_GROUPS; }
-        ;
-
 grouping_operation:
           GROUPING_SYM '(' expr_list ')'
           {
