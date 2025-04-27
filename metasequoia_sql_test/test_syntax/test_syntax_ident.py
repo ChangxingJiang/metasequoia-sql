@@ -51,5 +51,6 @@ if __name__ == "__main__":
 
     # DQL 语句
     # print(parse(LexFSM("name1, name2 + 3")))  # GROUP BY 子句
-    print(parse(LexFSM("name1, name2 + 3 DESC")))  # ORDER BY 子句
-    print(parse(LexFSM("name1 ASC, name2 + 3 DESC")))  # ORDER BY 子句
+    print(parse(LexFSM("ORDER BY name1, name2 + 3 DESC")))  # ORDER BY 子句
+    print(parse(LexFSM("ORDER BY name1 ASC, name2 + 3 DESC")))  # ORDER BY 子句
+    print(parse(LexFSM("")))  # ORDER BY 子句

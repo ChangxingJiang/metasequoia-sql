@@ -2,7 +2,7 @@ from metasequoia_sql_new.ast.basic import EnumOperatorCompare
 from metasequoia_sql_new.ast.basic import EnumOrderDirection
 from metasequoia_sql_new.ast.basic import EnumWindowBorderType
 from metasequoia_sql_new.ast.dql import GroupByList
-from metasequoia_sql_new.ast.dql import OrderByList
+from metasequoia_sql_new.ast.dql import OrderByClause
 from metasequoia_sql_new.ast.dql import OrderExpression
 from metasequoia_sql_new.ast.function import FuncAnd
 from metasequoia_sql_new.ast.function import FuncBetween

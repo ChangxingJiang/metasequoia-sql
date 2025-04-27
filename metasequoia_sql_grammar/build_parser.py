@@ -48,6 +48,7 @@ from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_DIRECTION
 from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_DIRECTION
 from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_EXPR
 from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_BY_LIST
+from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_BY_CLAUSE
 
 
 def build_grammar():
@@ -58,7 +59,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["order_by_list"]),
+                    ms_parser.create_rule(symbols=["opt_order_by_clause"]),
                 ]
             )
         ],
@@ -239,6 +240,7 @@ def build_grammar():
     grammar_builder.group_append(GENERAL_OPT_ORDER_DIRECTION)
     grammar_builder.group_append(GENERAL_ORDER_EXPR)
     grammar_builder.group_append(GENERAL_ORDER_BY_LIST)
+    grammar_builder.group_append(GENERAL_OPT_ORDER_BY_CLAUSE)
 
     return grammar_builder.build()
 

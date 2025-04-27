@@ -10964,18 +10964,6 @@ opt_partition_clause:
           }
         ;
 
-opt_window_order_by_clause:
-          %empty
-          {
-            $$= nullptr;
-          }
-        | ORDER_SYM BY order_list
-          {
-            $$= $3;
-            if ($$ != nullptr) $$->m_pos = @$;
-          }
-        ;
-
 opt_window_frame_clause:
           %empty
           {
@@ -11124,11 +11112,6 @@ opt_gconcat_separator:
               MYSQL_YYABORT;
           }
         | SEPARATOR_SYM text_string { $$ = $2; }
-        ;
-
-opt_gorder_clause:
-          %empty                    { $$= nullptr; }
-        | ORDER_SYM BY gorder_list  { $$= $3; }
         ;
 
 in_sum_expr:
@@ -12107,18 +12090,6 @@ alter_order_item:
           simple_ident_nospvar opt_ordering_direction
           {
             $$= NEW_PTN PT_order_expr(@$, $1, $2);
-          }
-        ;
-
-opt_order_clause:
-          %empty { $$= nullptr; }
-        | order_clause
-        ;
-
-order_clause:
-          ORDER_SYM BY order_list
-          {
-            $$= NEW_PTN PT_order(@$, $3);
           }
         ;
 
