@@ -8,10 +8,10 @@ import metasequoia_parser as ms_parser
 
 from metasequoia_sql_grammar.basic_general import GENERAL_OPERATOR_COMPARE
 from metasequoia_sql_grammar.basic_general import GENERAL_OPT_OF
-from metasequoia_sql_grammar.expr_general import GENERAL_BIT_EXPR
+from metasequoia_sql_grammar.expr_general import GENERAL_BINARY_EXPR
 from metasequoia_sql_grammar.expr_general import GENERAL_BOOL_EXPR
 from metasequoia_sql_grammar.expr_general import GENERAL_EXPR
-from metasequoia_sql_grammar.expr_general import GENERAL_PREDICATE
+from metasequoia_sql_grammar.expr_general import GENERAL_PREDICATE_EXPR
 from metasequoia_sql_grammar.expr_general import GENERAL_SIMPLE_EXPR
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_2
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_3
@@ -223,8 +223,8 @@ def build_grammar():
 
     # 表达式
     grammar_builder.group_append(GENERAL_SIMPLE_EXPR)
-    grammar_builder.group_append(GENERAL_BIT_EXPR)
-    grammar_builder.group_append(GENERAL_PREDICATE)
+    grammar_builder.group_append(GENERAL_BINARY_EXPR)
+    grammar_builder.group_append(GENERAL_PREDICATE_EXPR)
     grammar_builder.group_append(GENERAL_BOOL_EXPR)
     grammar_builder.group_append(GENERAL_EXPR)
 

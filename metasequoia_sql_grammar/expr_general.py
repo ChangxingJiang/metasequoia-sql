@@ -9,8 +9,8 @@ from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
     "GENERAL_SIMPLE_EXPR",
-    "GENERAL_BIT_EXPR",
-    "GENERAL_PREDICATE",
+    "GENERAL_BINARY_EXPR",
+    "GENERAL_PREDICATE_EXPR",
     "GENERAL_BOOL_EXPR",
     "GENERAL_EXPR",
 ]
@@ -44,68 +44,68 @@ GENERAL_SIMPLE_EXPR = ms_parser.create_group(
     ]
 )
 
-# 位表达式 TODO 未完成
+# 二元表达式 TODO 未完成
 # 对应 MySQL 语义组：bit_expr
-GENERAL_BIT_EXPR = ms_parser.create_group(
-    name="bit_expr",
+GENERAL_BINARY_EXPR = ms_parser.create_group(
+    name="binary_expr",
     rules=[
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_BAR, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_BAR, "binary_expr"],
             action=lambda x: ast.FuncBitOr(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_BAR
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_AMP, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_AMP, "binary_expr"],
             action=lambda x: ast.FuncBitOr(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_AMP
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_LT_LT, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_LT_LT, "binary_expr"],
             action=lambda x: ast.FuncShiftLeft(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_LT_LT
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_GT_GT, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_GT_GT, "binary_expr"],
             action=lambda x: ast.FuncShiftRight(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_GT_GT
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_PLUS, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_PLUS, "binary_expr"],
             action=lambda x: ast.FuncPlus(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_PLUS
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_SUB, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_SUB, "binary_expr"],
             action=lambda x: ast.FuncMinus(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_SUB
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_STAR, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_STAR, "binary_expr"],
             action=lambda x: ast.FuncMul(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_STAR
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_SLASH, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_SLASH, "binary_expr"],
             action=lambda x: ast.FuncDiv(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_SLASH
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_PERCENT, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_PERCENT, "binary_expr"],
             action=lambda x: ast.FuncMod(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_PERCENT
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_DIV, "bit_expr"],
+            symbols=["binary_expr", TType.KEYWORD_DIV, "binary_expr"],
             action=lambda x: ast.FuncDivInt(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.KEYWORD_DIV
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_MOD, "bit_expr"],
+            symbols=["binary_expr", TType.KEYWORD_MOD, "binary_expr"],
             action=lambda x: ast.FuncMod(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.KEYWORD_MOD
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.OPERATOR_CARET, "bit_expr"],
+            symbols=["binary_expr", TType.OPERATOR_CARET, "binary_expr"],
             action=lambda x: ast.FuncBitXor(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_CARET
         ),
@@ -118,55 +118,56 @@ GENERAL_BIT_EXPR = ms_parser.create_group(
 
 # 谓语表达式 TODO 未完成
 # 对应 MySQL 语义组：predicate
-GENERAL_PREDICATE = ms_parser.create_group(
-    name="predicate",
+GENERAL_PREDICATE_EXPR = ms_parser.create_group(
+    name="predicate_expr",
     rules=[
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_MEMBER, "opt_of", TType.OPERATOR_LPAREN, "simple_expr",
+            symbols=["binary_expr", TType.KEYWORD_MEMBER, "opt_of", TType.OPERATOR_LPAREN, "simple_expr",
                      TType.OPERATOR_RPAREN],
             action=lambda x: ast.FuncMemberOf(left_operand=x[0], right_operand=x[4])
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_BETWEEN, "bit_expr", TType.KEYWORD_AND, "predicate"],
+            symbols=["binary_expr", TType.KEYWORD_BETWEEN, "binary_expr", TType.KEYWORD_AND, "predicate_expr"],
             action=lambda x: ast.FuncBetween(first_operand=x[0], second_operand=x[2], third_operand=x[4])
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_NOT, TType.KEYWORD_BETWEEN, "bit_expr", TType.KEYWORD_AND, "predicate"],
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_BETWEEN, "binary_expr", TType.KEYWORD_AND,
+                     "predicate_expr"],
             action=lambda x: ast.FuncNotBetween(first_operand=x[0], second_operand=x[3], third_operand=x[5])
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_SOUNDS, TType.KEYWORD_LIKE, "bit_expr"],
+            symbols=["binary_expr", TType.KEYWORD_SOUNDS, TType.KEYWORD_LIKE, "binary_expr"],
             action=lambda x: ast.FuncSoundsLike(left_operand=x[0], right_operand=x[3])
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_LIKE, "simple_expr"],
+            symbols=["binary_expr", TType.KEYWORD_LIKE, "simple_expr"],
             action=lambda x: ast.FuncLike(first_operand=x[0], second_operand=x[2], third_operand=None)
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_LIKE, "simple_expr", TType.KEYWORD_ESCAPE, "simple_expr"],
+            symbols=["binary_expr", TType.KEYWORD_LIKE, "simple_expr", TType.KEYWORD_ESCAPE, "simple_expr"],
             action=lambda x: ast.FuncLike(first_operand=x[0], second_operand=x[2], third_operand=x[4]),
             sr_priority_as=TType.KEYWORD_LIKE
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_NOT, TType.KEYWORD_LIKE, "simple_expr"],
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_LIKE, "simple_expr"],
             action=lambda x: ast.FuncNotLike(first_operand=x[0], second_operand=x[3], third_operand=None)
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_NOT, TType.KEYWORD_LIKE, "simple_expr", TType.KEYWORD_ESCAPE,
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_LIKE, "simple_expr", TType.KEYWORD_ESCAPE,
                      "simple_expr"],
             action=lambda x: ast.FuncNotLike(first_operand=x[0], second_operand=x[3], third_operand=x[5]),
             sr_priority_as=TType.KEYWORD_LIKE
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_REGEXP, "bit_expr"],
+            symbols=["binary_expr", TType.KEYWORD_REGEXP, "binary_expr"],
             action=lambda x: ast.FuncRegexp(left_operand=x[0], right_operand=x[1])
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr", TType.KEYWORD_NOT, TType.KEYWORD_REGEXP, "bit_expr"],
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_REGEXP, "binary_expr"],
             action=lambda x: ast.FuncNotRegexp(left_operand=x[0], right_operand=x[2])
         ),
         ms_parser.create_rule(
-            symbols=["bit_expr"],
+            symbols=["binary_expr"],
             sr_priority_as=TType.OPERATOR_COLON_EQ
         )
     ]
@@ -188,11 +189,11 @@ GENERAL_BOOL_EXPR = ms_parser.create_group(
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["bool_expr", "operator_compare", "predicate"],
+            symbols=["bool_expr", "operator_compare", "predicate_expr"],
             action=lambda x: ast.FuncCompare(left_operand=x[0], right_operand=x[2], operator=x[1])
         ),
         ms_parser.create_rule(
-            symbols=["predicate"],
+            symbols=["predicate_expr"],
             sr_priority_as=TType.OPERATOR_COLON_EQ
         )
     ]
