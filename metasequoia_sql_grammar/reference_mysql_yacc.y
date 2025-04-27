@@ -1238,7 +1238,6 @@
         opt_cache_key_list
 
 %type <order_expr> order_expr alter_order_item
-        grouping_expr
 
 %type <order_list> order_list group_list gorder_list opt_gorder_clause
       alter_order_list opt_partition_clause opt_window_order_by_clause
@@ -11132,24 +11131,6 @@ opt_gorder_clause:
         | ORDER_SYM BY gorder_list  { $$= $3; }
         ;
 
-gorder_list:
-          gorder_list ',' order_expr
-          {
-            $1->push_back($3);
-            $$= $1;
-            // This will override earlier list, until
-            // we get the whole location.
-            $$->m_pos = @$;
-          }
-        | order_expr
-          {
-            $$= NEW_PTN PT_gorder_list(@$);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-            $$->push_back($1);
-          }
-        ;
-
 in_sum_expr:
           opt_all expr
           {
@@ -12090,23 +12071,6 @@ opt_group_clause:
           }
         ;
 
-group_list:
-          group_list ',' grouping_expr
-          {
-            $1->push_back($3);
-            $$= $1;
-            $$->m_pos = @$;
-          }
-        | grouping_expr
-          {
-            $$= NEW_PTN PT_order_list(@$);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-            $$->push_back($1);
-          }
-        ;
-
-
 olap_opt:
           %empty { $$= UNSPECIFIED_OLAP_TYPE; }
         | WITH_ROLLUP_SYM { $$= ROLLUP_TYPE; }
@@ -12156,32 +12120,6 @@ order_clause:
           {
             $$= NEW_PTN PT_order(@$, $3);
           }
-        ;
-
-order_list:
-          order_list ',' order_expr
-          {
-            $1->push_back($3);
-            $$= $1;
-            $$->m_pos = @$;
-          }
-        | order_expr
-          {
-            $$= NEW_PTN PT_order_list(@$);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-            $$->push_back($1);
-          }
-        ;
-
-opt_ordering_direction:
-          %empty { $$= ORDER_NOT_RELEVANT; }
-        | ordering_direction
-        ;
-
-ordering_direction:
-          ASC         { $$= ORDER_ASC; }
-        | DESC        { $$= ORDER_DESC; }
         ;
 
 opt_limit_clause:
@@ -14384,20 +14322,6 @@ table_wild:
               MYSQL_YYABORT;
             auto schema_name = YYCLIENT_NO_SCHEMA ? nullptr : $1.str;
             $$ = NEW_PTN Item_asterisk(@$, schema_name, $3.str);
-          }
-        ;
-
-order_expr:
-          expr opt_ordering_direction
-          {
-            $$= NEW_PTN PT_order_expr(@$, $1, $2);
-          }
-        ;
-
-grouping_expr:
-          expr
-          {
-            $$= NEW_PTN PT_order_expr(@$, $1, ORDER_NOT_RELEVANT);
           }
         ;
 

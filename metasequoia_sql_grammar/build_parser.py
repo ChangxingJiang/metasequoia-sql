@@ -42,7 +42,12 @@ from metasequoia_sql_grammar.literal_general import GENERAL_TEMPORAL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL_SYS
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_STRING
+from metasequoia_sql_grammar.dql_general import GENERAL_GROUP_BY_LIST
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
+from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_DIRECTION
+from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_DIRECTION
+from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_EXPR
+from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_BY_LIST
 
 
 def build_grammar():
@@ -51,9 +56,9 @@ def build_grammar():
             ms_parser.create_group(
                 name="entry",
                 rules=[
-                    ms_parser.create_rule(symbols=["simple_ident_list"]),
-                    ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["expr"]),
+                    # ms_parser.create_rule(symbols=["simple_ident_list"]),
+                    # ms_parser.create_rule(symbols=["text_literal"]),
+                    ms_parser.create_rule(symbols=["order_by_list"]),
                 ]
             )
         ],
@@ -227,6 +232,13 @@ def build_grammar():
     grammar_builder.group_append(GENERAL_PREDICATE_EXPR)
     grammar_builder.group_append(GENERAL_BOOL_EXPR)
     grammar_builder.group_append(GENERAL_EXPR)
+
+    # DQL 语句
+    grammar_builder.group_append(GENERAL_GROUP_BY_LIST)
+    grammar_builder.group_append(GENERAL_ORDER_DIRECTION)
+    grammar_builder.group_append(GENERAL_OPT_ORDER_DIRECTION)
+    grammar_builder.group_append(GENERAL_ORDER_EXPR)
+    grammar_builder.group_append(GENERAL_ORDER_BY_LIST)
 
     return grammar_builder.build()
 

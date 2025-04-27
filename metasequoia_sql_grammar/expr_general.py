@@ -200,7 +200,7 @@ GENERAL_BOOL_EXPR = ms_parser.create_group(
 )
 
 # 一般表达式 TODO 待完成
-# 对应 MySQL 语义组：expr
+# 对应 MySQL 语义组：expr、grouping_expr
 GENERAL_EXPR = ms_parser.create_group(
     name="expr",
     rules=[
