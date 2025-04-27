@@ -53,6 +53,7 @@ __all__ = [
     "GENERAL_TEXT_STRING",
     "GENERAL_SIGNED_LITERAL",
     "GENERAL_SIGNED_LITERAL_OR_NULL",
+    "GENERAL_PARAM_MARKER",
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
@@ -264,6 +265,18 @@ GENERAL_SIGNED_LITERAL_OR_NULL = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["null_literal"]
+        )
+    ]
+)
+
+# 参数占位符
+# 对应 MySQL 语义组：param_marker
+GENERAL_PARAM_MARKER = ms_parser.create_group(
+    name="param_marker",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.PARAM_MARKER],
+            action=lambda: ast.Param()
         )
     ]
 )

@@ -48,6 +48,7 @@ from metasequoia_sql_grammar.literal_general import GENERAL_TEMPORAL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL_SYS
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_STRING
+from metasequoia_sql_grammar.literal_general import GENERAL_PARAM_MARKER
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 
@@ -226,6 +227,7 @@ def build_grammar():
     grammar_builder.group_append(GENERAL_TEXT_STRING)
     grammar_builder.group_append(GENERAL_SIGNED_LITERAL)
     grammar_builder.group_append(GENERAL_SIGNED_LITERAL_OR_NULL)
+    grammar_builder.group_append(GENERAL_PARAM_MARKER)
 
     # 表达式
     grammar_builder.group_append(GENERAL_SIMPLE_EXPR)

@@ -9354,28 +9354,6 @@ window_frame_bound:
           }
         ;
 
-opt_window_frame_exclusion:
-          %empty
-          {
-            $$= nullptr;
-          }
-        | EXCLUDE_SYM CURRENT_SYM ROW_SYM
-          {
-            $$= NEW_PTN PT_exclusion(@$, WFX_CURRENT_ROW);
-          }
-        | EXCLUDE_SYM GROUP_SYM
-          {
-            $$= NEW_PTN PT_exclusion(@$, WFX_GROUP);
-          }
-        | EXCLUDE_SYM TIES_SYM
-          {
-            $$= NEW_PTN PT_exclusion(@$, WFX_TIES);
-          }
-        | EXCLUDE_SYM NO_SYM OTHERS_SYM
-          { $$= NEW_PTN PT_exclusion(@$, WFX_NO_OTHERS);
-          }
-        ;
-
 grouping_operation:
           GROUPING_SYM '(' expr_list ')'
           {
@@ -12551,27 +12529,6 @@ opt_load_parallel:
 opt_load_memory:
           %empty                    { $$ = 0; }
         | MEMORY_SYM EQ size_number { $$ = $3; }
-        ;
-
-/* Common definitions */
-
-param_marker:
-          PARAM_MARKER
-          {
-            auto *i= NEW_PTN Item_param(@$, YYMEM_ROOT,
-                                        (uint) (@1.raw.start - YYLIP->get_buf()));
-            if (i == nullptr)
-              MYSQL_YYABORT;
-            auto *lex= Lex;
-            /*
-              If we are not re-parsing a CTE definition, this is a
-              real parameter, so add it to param_list.
-            */
-            if (!lex->reparse_common_table_expr_at &&
-                lex->param_list.push_back(i))
-              MYSQL_YYABORT;
-            $$= i;
-          }
         ;
 
 opt_interval:

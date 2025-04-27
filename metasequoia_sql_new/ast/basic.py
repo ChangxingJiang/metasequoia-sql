@@ -8,6 +8,7 @@ __all__ = [
     "EnumOperatorCompare",
     "EnumOrderDirection",
     "EnumWindowBorderType",
+    "EnumWindowExclusionType",
 ]
 
 
@@ -37,3 +38,13 @@ class EnumWindowBorderType(enum.IntEnum):
     ROWS = enum.auto()  # 基于物理行来定义窗口的边界
     RANGE = enum.auto()  # 基于值的范围来定义窗口的边界
     GROUPS = enum.auto()  # 基于分组键的值来定义窗口的边界
+
+
+class EnumWindowExclusionType(enum.IntEnum):
+    """窗口排除的类型"""
+
+    CURRENT_ROW = enum.auto()  # 排除当前行
+    GROUP = enum.auto()  # 排除当前行及与当前行具有相同排序值的行
+    TIES = enum.auto()  # 排除与当前行具有相同排序值的行，但会保留当前行
+    NO_OTHERS = enum.auto()  # 默认行为，不排除任何行
+    NULL = enum.auto()

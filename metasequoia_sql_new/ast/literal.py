@@ -19,6 +19,7 @@ __all__ = [
     "FalseLiteral",
     "TrueLiteral",
     "NullLiteral",
+    "Param",
 ]
 
 
@@ -173,6 +174,13 @@ class TrueLiteral(Expression):
 
 class NullLiteral(Expression):
     """空值字面值"""
+
+    def attr_list(self) -> typing.List[str]:
+        return []
+
+
+class Param(Expression):
+    """参数占位符"""
 
     def attr_list(self) -> typing.List[str]:
         return []

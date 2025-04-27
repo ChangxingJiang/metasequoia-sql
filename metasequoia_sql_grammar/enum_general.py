@@ -12,6 +12,7 @@ __all__ = [
     "GENERAL_ORDER_DIRECTION",
     "GENERAL_OPT_ORDER_DIRECTION",
     "GENERAL_WINDOW_BORDER_TYPE",
+    "GENERAL_OPT_WINDOW_EXCLUDE",
 ]
 
 # 比较运算符
@@ -21,31 +22,31 @@ GENERAL_OPERATOR_COMPARE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_EQ],
-            action=lambda _: ast.EnumOperatorCompare.EQ
+            action=lambda: ast.EnumOperatorCompare.EQ
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LT_EQ_GT],
-            action=lambda _: ast.EnumOperatorCompare.EQUAL
+            action=lambda: ast.EnumOperatorCompare.EQUAL
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_GT_EQ],
-            action=lambda _: ast.EnumOperatorCompare.GE
+            action=lambda: ast.EnumOperatorCompare.GE
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_GT],
-            action=lambda _: ast.EnumOperatorCompare.GT
+            action=lambda: ast.EnumOperatorCompare.GT
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LT_EQ],
-            action=lambda _: ast.EnumOperatorCompare.LE
+            action=lambda: ast.EnumOperatorCompare.LE
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LT],
-            action=lambda _: ast.EnumOperatorCompare.LT
+            action=lambda: ast.EnumOperatorCompare.LT
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_BANG_EQ],
-            action=lambda _: ast.EnumOperatorCompare.NE
+            action=lambda: ast.EnumOperatorCompare.NE
         ),
     ]
 )
@@ -57,11 +58,11 @@ GENERAL_ORDER_DIRECTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ASC],
-            action=lambda x: ast.EnumOrderDirection.ASC
+            action=lambda: ast.EnumOrderDirection.ASC
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DESC],
-            action=lambda x: ast.EnumOrderDirection.DESC
+            action=lambda: ast.EnumOrderDirection.DESC
         )
     ]
 )
@@ -76,7 +77,7 @@ GENERAL_OPT_ORDER_DIRECTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[],
-            action=lambda x: ast.EnumOrderDirection.DEFAULT
+            action=lambda: ast.EnumOrderDirection.DEFAULT
         )
     ]
 )
@@ -88,16 +89,43 @@ GENERAL_WINDOW_BORDER_TYPE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ROWS],
-            action=lambda x: ast.EnumWindowBorderType.ROWS
+            action=lambda: ast.EnumWindowBorderType.ROWS
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_RANGE],
-            action=lambda x: ast.EnumWindowBorderType.RANGE
+            action=lambda: ast.EnumWindowBorderType.RANGE
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_GROUPS],
-            action=lambda x: ast.EnumWindowBorderType.GROUPS
+            action=lambda: ast.EnumWindowBorderType.GROUPS
         )
     ]
 )
 
+# 窗口函数中可选的 EXCLUDE 子句
+# 对应 MySQL 语义组：opt_window_frame_exclusion
+GENERAL_OPT_WINDOW_EXCLUDE = ms_parser.create_group(
+    name="opt_window_exclude",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_CURRENT, TType.KEYWORD_ROW],
+            action=lambda: ast.EnumWindowExclusionType.CURRENT_ROW
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_GROUP],
+            action=lambda: ast.EnumWindowExclusionType.GROUP
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_TIES],
+            action=lambda: ast.EnumWindowExclusionType.TIES
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_NO, TType.KEYWORD_OTHERS],
+            action=lambda: ast.EnumWindowExclusionType.NO_OTHERS
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda: ast.EnumWindowExclusionType.NULL
+        )
+    ]
+)
