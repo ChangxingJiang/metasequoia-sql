@@ -11,8 +11,6 @@ __all__ = [
     "GENERAL_OPERATOR_COMPARE",
     "GENERAL_ORDER_DIRECTION",
     "GENERAL_OPT_ORDER_DIRECTION",
-    "GENERAL_WINDOW_BORDER_TYPE",
-    "GENERAL_OPT_WINDOW_EXCLUDE",
 ]
 
 # 比较运算符
@@ -22,31 +20,31 @@ GENERAL_OPERATOR_COMPARE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_EQ],
-            action=lambda: ast.EnumOperatorCompare.EQ
+            action=lambda _: ast.EnumOperatorCompare.EQ
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LT_EQ_GT],
-            action=lambda: ast.EnumOperatorCompare.EQUAL
+            action=lambda _: ast.EnumOperatorCompare.EQUAL
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_GT_EQ],
-            action=lambda: ast.EnumOperatorCompare.GE
+            action=lambda _: ast.EnumOperatorCompare.GE
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_GT],
-            action=lambda: ast.EnumOperatorCompare.GT
+            action=lambda _: ast.EnumOperatorCompare.GT
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LT_EQ],
-            action=lambda: ast.EnumOperatorCompare.LE
+            action=lambda _: ast.EnumOperatorCompare.LE
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LT],
-            action=lambda: ast.EnumOperatorCompare.LT
+            action=lambda _: ast.EnumOperatorCompare.LT
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_BANG_EQ],
-            action=lambda: ast.EnumOperatorCompare.NE
+            action=lambda _: ast.EnumOperatorCompare.NE
         ),
     ]
 )
@@ -58,11 +56,11 @@ GENERAL_ORDER_DIRECTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ASC],
-            action=lambda: ast.EnumOrderDirection.ASC
+            action=lambda _: ast.EnumOrderDirection.ASC
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DESC],
-            action=lambda: ast.EnumOrderDirection.DESC
+            action=lambda _: ast.EnumOrderDirection.DESC
         )
     ]
 )
@@ -77,55 +75,7 @@ GENERAL_OPT_ORDER_DIRECTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[],
-            action=lambda: ast.EnumOrderDirection.DEFAULT
-        )
-    ]
-)
-
-# 窗口的边界类型
-# 对应 MySQL 语义组：window_frame_units
-GENERAL_WINDOW_BORDER_TYPE = ms_parser.create_group(
-    name="window_border_type",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ROWS],
-            action=lambda: ast.EnumWindowBorderType.ROWS
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_RANGE],
-            action=lambda: ast.EnumWindowBorderType.RANGE
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_GROUPS],
-            action=lambda: ast.EnumWindowBorderType.GROUPS
-        )
-    ]
-)
-
-# 窗口函数中可选的 EXCLUDE 子句
-# 对应 MySQL 语义组：opt_window_frame_exclusion
-GENERAL_OPT_WINDOW_EXCLUDE = ms_parser.create_group(
-    name="opt_window_exclude",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_CURRENT, TType.KEYWORD_ROW],
-            action=lambda: ast.EnumWindowExclusionType.CURRENT_ROW
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_GROUP],
-            action=lambda: ast.EnumWindowExclusionType.GROUP
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_TIES],
-            action=lambda: ast.EnumWindowExclusionType.TIES
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_EXCLUDE, TType.KEYWORD_NO, TType.KEYWORD_OTHERS],
-            action=lambda: ast.EnumWindowExclusionType.NO_OTHERS
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda: ast.EnumWindowExclusionType.NULL
+            action=lambda _: ast.EnumOrderDirection.DEFAULT
         )
     ]
 )

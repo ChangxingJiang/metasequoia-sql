@@ -276,7 +276,7 @@ GENERAL_PARAM_MARKER = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.PARAM_MARKER],
-            action=lambda: ast.Param()
+            action=lambda _: ast.Param()
         )
     ]
 )

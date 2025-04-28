@@ -10,28 +10,9 @@ from metasequoia_sql_new.ast.base import Node
 from metasequoia_sql_new.ast.basic import EnumOrderDirection
 
 __all__ = [
-    "GroupByList",
     "OrderExpression",
     "OrderByClause",
 ]
-
-
-class GroupByList(Node):
-    """分组字段列表（用于 GROUP BY 子句和 PARTITION BY 子句）"""
-
-    def __init__(self, column_list: List[Expression]):
-        self._column_list = column_list
-
-    def attr_list(self) -> typing.List[str]:
-        return ["column_list"]
-
-    @property
-    def column_list(self) -> List[Expression]:
-        return self._column_list
-
-    def append(self, column: Expression) -> "GroupByList":
-        self._column_list.append(column)
-        return self
 
 
 class OrderExpression(Node):

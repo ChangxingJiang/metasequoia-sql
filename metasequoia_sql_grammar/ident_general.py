@@ -31,7 +31,8 @@ __all__ = [
     "GENERAL_IDENT_2",
     "GENERAL_IDENT_3",
     "GENERAL_SIMPLE_IDENT",
-    "GENERAL_SIMPLE_IDENT_LIST"
+    "GENERAL_SIMPLE_IDENT_LIST",
+    "OPT_IDENT",
 ]
 
 # 不是保留字或非保留关键字的标识符
@@ -104,5 +105,17 @@ GENERAL_SIMPLE_IDENT_LIST = ms_parser.create_group(
             symbols=["simple_ident"],
             action=ms_parser.template.action.LIST_INIT_0
         )
+    ]
+)
+
+# 可选的单个标识符
+# 对应 MySQL 语义组：opt_existing_window_name
+OPT_IDENT = ms_parser.create_group(
+    name="opt_ident",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident"]
+        ),
+        ms_parser.template.group.EMPTY_NULL
     ]
 )

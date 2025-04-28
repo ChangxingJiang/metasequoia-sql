@@ -24,6 +24,7 @@ from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_3
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_SYS
 from metasequoia_sql_grammar.ident_general import GENERAL_SIMPLE_IDENT
 from metasequoia_sql_grammar.ident_general import GENERAL_SIMPLE_IDENT_LIST
+from metasequoia_sql_grammar.ident_general import OPT_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORD
 from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_AMBIGUOUS_1_ROLES_AND_LABELS
@@ -42,13 +43,25 @@ from metasequoia_sql_grammar.literal_general import GENERAL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_LITERAL_OR_NULL
 from metasequoia_sql_grammar.literal_general import GENERAL_NULL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_NUM_LITERAL
+from metasequoia_sql_grammar.literal_general import GENERAL_PARAM_MARKER
 from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL_OR_NULL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEMPORAL_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL_SYS
 from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_STRING
-from metasequoia_sql_grammar.literal_general import GENERAL_PARAM_MARKER
+from metasequoia_sql_grammar.time_unit import INTERVAL_TIME_UNIT
+from metasequoia_sql_grammar.time_unit import TIME_UNIT
+from metasequoia_sql_grammar.window_clause import OPT_PARTITION_CLAUSE
+from metasequoia_sql_grammar.window_clause import OPT_WINDOWING_CLAUSE
+from metasequoia_sql_grammar.window_clause import OPT_WINDOW_EXCLUDE
+from metasequoia_sql_grammar.window_clause import OPT_WINDOW_FRAME_CLAUSE
+from metasequoia_sql_grammar.window_clause import WINDOWING_CLAUSE
+from metasequoia_sql_grammar.window_clause import WINDOW_BORDER_TYPE
+from metasequoia_sql_grammar.window_clause import WINDOW_FRAME_BOUND
+from metasequoia_sql_grammar.window_clause import WINDOW_FRAME_EXTENT
+from metasequoia_sql_grammar.window_clause import WINDOW_FRAME_START
+from metasequoia_sql_grammar.window_clause import WINDOW_NAME_OR_SPEC
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 
@@ -60,7 +73,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["opt_order_by_clause"]),
+                    ms_parser.create_rule(symbols=["opt_windowing_clause"]),
                 ]
             )
         ],
@@ -191,6 +204,22 @@ def build_grammar():
         ]
     )
 
+    # 时间单位类型
+    grammar_builder.group_append(INTERVAL_TIME_UNIT)
+    grammar_builder.group_append(TIME_UNIT)
+
+    # 窗口子句
+    grammar_builder.group_append(WINDOW_BORDER_TYPE)
+    grammar_builder.group_append(OPT_WINDOW_EXCLUDE)
+    grammar_builder.group_append(WINDOW_FRAME_START)
+    grammar_builder.group_append(WINDOW_FRAME_BOUND)
+    grammar_builder.group_append(WINDOW_FRAME_EXTENT)
+    grammar_builder.group_append(OPT_WINDOW_FRAME_CLAUSE)
+    grammar_builder.group_append(OPT_PARTITION_CLAUSE)
+    grammar_builder.group_append(WINDOW_NAME_OR_SPEC)
+    grammar_builder.group_append(WINDOWING_CLAUSE)
+    grammar_builder.group_append(OPT_WINDOWING_CLAUSE)
+
     # 基础元素
     grammar_builder.group_append(GENERAL_OPT_OF)
     grammar_builder.group_append(GENERAL_OPERATOR_COMPARE)
@@ -214,6 +243,7 @@ def build_grammar():
     grammar_builder.group_append(GENERAL_IDENT_3)
     grammar_builder.group_append(GENERAL_SIMPLE_IDENT)
     grammar_builder.group_append(GENERAL_SIMPLE_IDENT_LIST)
+    grammar_builder.group_append(OPT_IDENT)
 
     # 字面值
     grammar_builder.group_append(GENERAL_TEXT_LITERAL_SYS)

@@ -11,6 +11,7 @@ __all__ = [
     "UnaryExpression",
     "BinaryExpression",
     "TernaryExpression",
+    "ExpressionList",
     "Statement",
 ]
 
@@ -96,6 +97,24 @@ class TernaryExpression(Expression, abc.ABC):
     @property
     def third_operand(self) -> typing.Optional[Expression]:
         return self._third_operand
+
+
+class ExpressionList(Node):
+    """逗号分隔的表达式列表"""
+
+    def __init__(self, expression_list: typing.List[Expression]):
+        self._expression_list = expression_list
+
+    def attr_list(self) -> typing.List[str]:
+        return ["expression_list"]
+
+    @property
+    def expression_list(self) -> typing.List[Expression]:
+        return self._expression_list
+
+    def append(self, expression: Expression) -> "ExpressionList":
+        self._expression_list.append(expression)
+        return self
 
 
 class Statement(Node, abc.ABC):

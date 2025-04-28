@@ -51,6 +51,15 @@ if __name__ == "__main__":
 
     # DQL 语句
     # print(parse(LexFSM("name1, name2 + 3")))  # GROUP BY 子句
-    print(parse(LexFSM("ORDER BY name1, name2 + 3 DESC")))  # ORDER BY 子句
-    print(parse(LexFSM("ORDER BY name1 ASC, name2 + 3 DESC")))  # ORDER BY 子句
-    print(parse(LexFSM("")))  # ORDER BY 子句
+    # print(parse(LexFSM("ORDER BY name1, name2 + 3 DESC")))  # ORDER BY 子句
+    # print(parse(LexFSM("ORDER BY name1 ASC, name2 + 3 DESC")))  # ORDER BY 子句
+    # print(parse(LexFSM("")))  # ORDER BY 子句
+
+    # 窗口子句
+    # print(parse(LexFSM("1 PRECEDING")))
+    # print(parse(LexFSM("INTERVAL name + 1 YEAR PRECEDING")))
+    # print(parse(LexFSM("CURRENT ROW")))
+    # print(parse(LexFSM("UNBOUNDED PRECEDING")))
+    print(parse(LexFSM("OVER window_name")))
+    print(parse(LexFSM("OVER (window_name PARTITION BY field1, field2 ORDER BY field3, field4 DESC)")))
+    print(parse(LexFSM("OVER (window_name PARTITION BY field1 ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)")))

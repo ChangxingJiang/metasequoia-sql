@@ -682,7 +682,7 @@ MYSQL_VARIABLE_KEYWORD = ms_parser.create_group(
 )
 
 # [MySQL | Grammar Group] 一般场景下的标识符
-# 对应 MySQL 语义组：ident、table_ident（部分）
+# 对应 MySQL 语义组：ident、table_ident（部分）、window_name
 MYSQL_IDENT = ms_parser.create_group(
     name="ident",
     rules=[

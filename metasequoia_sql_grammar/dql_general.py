@@ -25,7 +25,7 @@ GENERAL_GROUP_BY_LIST = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["expr"],
-            action=lambda x: ast.GroupByList(column_list=[x[0]])
+            action=lambda x: ast.ExpressionList(expression_list=[x[0]])
         )
     ]
 )
