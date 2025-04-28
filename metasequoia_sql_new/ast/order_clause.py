@@ -1,5 +1,5 @@
 """
-DQL 语句节点
+ORDER BY 语句节点
 """
 
 import typing
@@ -11,7 +11,7 @@ from metasequoia_sql_new.ast.basic import EnumOrderDirection
 
 __all__ = [
     "OrderExpression",
-    "OrderByClause",
+    "OrderClause",
 ]
 
 
@@ -34,7 +34,7 @@ class OrderExpression(Node):
         return self._direction
 
 
-class OrderByClause(Node):
+class OrderClause(Node):
     """ORDER BY 子句（排序表达式的列表）"""
 
     def __init__(self, column_list: List[OrderExpression]):
@@ -47,6 +47,6 @@ class OrderByClause(Node):
     def column_list(self) -> List[OrderExpression]:
         return self._column_list
 
-    def append(self, column: OrderExpression) -> "OrderByClause":
+    def append(self, column: OrderExpression) -> "OrderClause":
         self._column_list.append(column)
         return self

@@ -8,7 +8,7 @@ import typing
 from metasequoia_sql_new.ast.base import Expression
 from metasequoia_sql_new.ast.base import ExpressionList
 from metasequoia_sql_new.ast.base import Node
-from metasequoia_sql_new.ast.dql import OrderByClause
+from metasequoia_sql_new.ast.order_clause import OrderClause
 from metasequoia_sql_new.ast.time_unit import TimeUnitEnum
 
 __all__ = [
@@ -197,7 +197,7 @@ class Window(Node):
     def __init__(self,
                  name: typing.Optional[Expression],
                  partition_clause: typing.Optional[ExpressionList],
-                 order_clause: typing.Optional[OrderByClause],
+                 order_clause: typing.Optional[OrderClause],
                  frame_clause: typing.Optional[WindowFrame]):
         self._name = name
         self._partition_clause = partition_clause
@@ -225,7 +225,7 @@ class Window(Node):
         return self._partition_clause
 
     @property
-    def order_clause(self) -> typing.Optional[OrderByClause]:
+    def order_clause(self) -> typing.Optional[OrderClause]:
         return self._order_clause
 
     @property

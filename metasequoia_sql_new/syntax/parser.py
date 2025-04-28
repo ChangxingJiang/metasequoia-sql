@@ -9510,7 +9510,7 @@ def action_reduce_697_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 
 def action_reduce_698_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
-    symbol_value = ast.OrderByClause(column_list=[symbol_stack[-1]])
+    symbol_value = ast.OrderClause(column_list=[symbol_stack[-1]])
     next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 898)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态

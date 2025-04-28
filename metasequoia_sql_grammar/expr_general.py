@@ -14,7 +14,44 @@ __all__ = [
     "BOOL_EXPR",
     "EXPR",
     "EXPR_LIST",
+    "GENERAL_OPERATOR_COMPARE",
 ]
+
+# 比较运算符
+# 对应 MySQL 语义组：comp_op
+GENERAL_OPERATOR_COMPARE = ms_parser.create_group(
+    name="operator_compare",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_EQ],
+            action=lambda _: ast.EnumOperatorCompare.EQ
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LT_EQ_GT],
+            action=lambda _: ast.EnumOperatorCompare.EQUAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_GT_EQ],
+            action=lambda _: ast.EnumOperatorCompare.GE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_GT],
+            action=lambda _: ast.EnumOperatorCompare.GT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LT_EQ],
+            action=lambda _: ast.EnumOperatorCompare.LE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LT],
+            action=lambda _: ast.EnumOperatorCompare.LT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_BANG_EQ],
+            action=lambda _: ast.EnumOperatorCompare.NE
+        ),
+    ]
+)
 
 # 简单表达式 TODO 未完成
 # 对应 MySQL 语义组：simple_expr
