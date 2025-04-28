@@ -158,7 +158,7 @@ OPT_PARTITION_CLAUSE = ms_parser.create_group(
     name="opt_partition_clause",
     rules=[
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_PARTITION, TType.KEYWORD_BY, "group_by_list"],
+            symbols=[TType.KEYWORD_PARTITION, TType.KEYWORD_BY, "expr_list"],
             action=lambda x: x[2]
         ),
         ms_parser.template.group.EMPTY_NULL

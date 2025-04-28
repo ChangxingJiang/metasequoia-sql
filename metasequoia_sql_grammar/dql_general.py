@@ -8,27 +8,10 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType as TType
 
 __all__ = [
-    "GENERAL_GROUP_BY_LIST",
     "GENERAL_ORDER_EXPR",
     "GENERAL_ORDER_BY_LIST",
     "GENERAL_OPT_ORDER_BY_CLAUSE",
 ]
-
-# 分组字段的列表
-# 对应 MySQL 语义组：group_list
-GENERAL_GROUP_BY_LIST = ms_parser.create_group(
-    name="group_by_list",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["group_by_list", TType.OPERATOR_COMMA, "expr"],
-            action=lambda x: x[0].append(x[2])
-        ),
-        ms_parser.create_rule(
-            symbols=["expr"],
-            action=lambda x: ast.ExpressionList(expression_list=[x[0]])
-        )
-    ]
-)
 
 # 排序表达式
 # 对应 MySQL 语义组：order_expr

@@ -8,16 +8,17 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "GENERAL_SIMPLE_EXPR",
-    "GENERAL_BINARY_EXPR",
-    "GENERAL_PREDICATE_EXPR",
-    "GENERAL_BOOL_EXPR",
-    "GENERAL_EXPR",
+    "SIMPLE_EXPR",
+    "BINARY_EXPR",
+    "PREDICATE_EXPR",
+    "BOOL_EXPR",
+    "EXPR",
+    "EXPR_LIST",
 ]
 
 # 简单表达式 TODO 未完成
 # 对应 MySQL 语义组：simple_expr
-GENERAL_SIMPLE_EXPR = ms_parser.create_group(
+SIMPLE_EXPR = ms_parser.create_group(
     name="simple_expr",
     rules=[
         ms_parser.create_rule(
@@ -46,7 +47,7 @@ GENERAL_SIMPLE_EXPR = ms_parser.create_group(
 
 # 二元表达式 TODO 未完成
 # 对应 MySQL 语义组：bit_expr
-GENERAL_BINARY_EXPR = ms_parser.create_group(
+BINARY_EXPR = ms_parser.create_group(
     name="binary_expr",
     rules=[
         ms_parser.create_rule(
@@ -118,7 +119,7 @@ GENERAL_BINARY_EXPR = ms_parser.create_group(
 
 # 谓语表达式 TODO 未完成
 # 对应 MySQL 语义组：predicate
-GENERAL_PREDICATE_EXPR = ms_parser.create_group(
+PREDICATE_EXPR = ms_parser.create_group(
     name="predicate_expr",
     rules=[
         ms_parser.create_rule(
@@ -175,7 +176,7 @@ GENERAL_PREDICATE_EXPR = ms_parser.create_group(
 
 # 布尔表达式 TODO 待完成
 # 对应 MySQL 语义组：bool_pri
-GENERAL_BOOL_EXPR = ms_parser.create_group(
+BOOL_EXPR = ms_parser.create_group(
     name="bool_expr",
     rules=[
         ms_parser.create_rule(
@@ -201,7 +202,7 @@ GENERAL_BOOL_EXPR = ms_parser.create_group(
 
 # 一般表达式 TODO 待完成
 # 对应 MySQL 语义组：expr、grouping_expr
-GENERAL_EXPR = ms_parser.create_group(
+EXPR = ms_parser.create_group(
     name="expr",
     rules=[
         ms_parser.create_rule(
@@ -257,6 +258,22 @@ GENERAL_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["bool_expr"],
             sr_priority_as=TType.OPERATOR_COLON_EQ
+        )
+    ]
+)
+
+# 逗号分隔的表达式列表
+# 对应 MySQL 语义组：expr_list、group_list
+EXPR_LIST = ms_parser.create_group(
+    name="expr_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr_list", TType.OPERATOR_COMMA, "expr"],
+            action=lambda x: x[0].append(x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=["expr"],
+            action=lambda x: ast.ExpressionList(expression_list=[x[0]])
         )
     ]
 )

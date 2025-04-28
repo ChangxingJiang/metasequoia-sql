@@ -7,18 +7,18 @@
 import metasequoia_parser as ms_parser
 
 from metasequoia_sql_grammar.basic_general import GENERAL_OPT_OF
-from metasequoia_sql_grammar.dql_general import GENERAL_GROUP_BY_LIST
 from metasequoia_sql_grammar.dql_general import GENERAL_OPT_ORDER_BY_CLAUSE
 from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_BY_LIST
 from metasequoia_sql_grammar.dql_general import GENERAL_ORDER_EXPR
 from metasequoia_sql_grammar.enum_general import GENERAL_OPERATOR_COMPARE
 from metasequoia_sql_grammar.enum_general import GENERAL_OPT_ORDER_DIRECTION
 from metasequoia_sql_grammar.enum_general import GENERAL_ORDER_DIRECTION
-from metasequoia_sql_grammar.expr_general import GENERAL_BINARY_EXPR
-from metasequoia_sql_grammar.expr_general import GENERAL_BOOL_EXPR
-from metasequoia_sql_grammar.expr_general import GENERAL_EXPR
-from metasequoia_sql_grammar.expr_general import GENERAL_PREDICATE_EXPR
-from metasequoia_sql_grammar.expr_general import GENERAL_SIMPLE_EXPR
+from metasequoia_sql_grammar.expr_general import BINARY_EXPR
+from metasequoia_sql_grammar.expr_general import EXPR_LIST
+from metasequoia_sql_grammar.expr_general import BOOL_EXPR
+from metasequoia_sql_grammar.expr_general import EXPR
+from metasequoia_sql_grammar.expr_general import PREDICATE_EXPR
+from metasequoia_sql_grammar.expr_general import SIMPLE_EXPR
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_2
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_3
 from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_SYS
@@ -260,14 +260,14 @@ def build_grammar():
     grammar_builder.group_append(GENERAL_PARAM_MARKER)
 
     # 表达式
-    grammar_builder.group_append(GENERAL_SIMPLE_EXPR)
-    grammar_builder.group_append(GENERAL_BINARY_EXPR)
-    grammar_builder.group_append(GENERAL_PREDICATE_EXPR)
-    grammar_builder.group_append(GENERAL_BOOL_EXPR)
-    grammar_builder.group_append(GENERAL_EXPR)
+    grammar_builder.group_append(SIMPLE_EXPR)
+    grammar_builder.group_append(BINARY_EXPR)
+    grammar_builder.group_append(PREDICATE_EXPR)
+    grammar_builder.group_append(BOOL_EXPR)
+    grammar_builder.group_append(EXPR)
 
     # DQL 语句
-    grammar_builder.group_append(GENERAL_GROUP_BY_LIST)
+    grammar_builder.group_append(EXPR_LIST)
     grammar_builder.group_append(GENERAL_ORDER_DIRECTION)
     grammar_builder.group_append(GENERAL_OPT_ORDER_DIRECTION)
     grammar_builder.group_append(GENERAL_ORDER_EXPR)

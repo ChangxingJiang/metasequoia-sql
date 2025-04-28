@@ -9416,24 +9416,6 @@ opt_expr_list:
         | expr_list
         ;
 
-expr_list:
-          expr
-          {
-            $$= NEW_PTN PT_item_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        | expr_list ',' expr
-          {
-            if ($1 == nullptr || $1->push_back($3))
-              MYSQL_YYABORT;
-            $$= $1;
-            // This will override location of earlier list, until we get the
-            // whole location.
-            $$->m_pos = @$;
-          }
-        ;
-
 ident_list_arg:
           ident_list          { $$= $1; }
         | '(' ident_list ')'  { $$= $2; }
