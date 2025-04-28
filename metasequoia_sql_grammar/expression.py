@@ -14,12 +14,12 @@ __all__ = [
     "BOOL_EXPR",
     "EXPR",
     "EXPR_LIST",
-    "GENERAL_OPERATOR_COMPARE",
+    "OPERATOR_COMPARE",
 ]
 
 # 比较运算符
 # 对应 MySQL 语义组：comp_op
-GENERAL_OPERATOR_COMPARE = ms_parser.create_group(
+OPERATOR_COMPARE = ms_parser.create_group(
     name="operator_compare",
     rules=[
         ms_parser.create_rule(

@@ -42,18 +42,18 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "GENERAL_TEXT_LITERAL_SYS",
-    "GENERAL_INT_LITERAL",
-    "GENERAL_NUM_LITERAL",
-    "GENERAL_TEMPORAL_LITERAL",
-    "GENERAL_LITERAL",
-    "GENERAL_NULL_LITERAL",
-    "GENERAL_LITERAL_OR_NULL",
-    "GENERAL_TEXT_LITERAL",
-    "GENERAL_TEXT_STRING",
-    "GENERAL_SIGNED_LITERAL",
-    "GENERAL_SIGNED_LITERAL_OR_NULL",
-    "GENERAL_PARAM_MARKER",
+    "TEXT_LITERAL_SYS",
+    "INT_LITERAL",
+    "NUM_LITERAL",
+    "TEMPORAL_LITERAL",
+    "LITERAL",
+    "NULL_LITERAL",
+    "LITERAL_OR_NULL",
+    "TEXT_LITERAL",
+    "TEXT_STRING",
+    "SIGNED_LITERAL",
+    "SIGNED_LITERAL_OR_NULL",
+    "PARAM_MARKER",
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
@@ -64,7 +64,7 @@ __all__ = [
 # 对应 MySQL 语义组：TEXT_STRING_validated
 # 对应 MySQL 语义组：TEXT_STRING_sys_nonewline
 # 对应 MySQL 语义组：filter_wild_db_table_string
-GENERAL_TEXT_LITERAL_SYS = ms_parser.create_group(
+TEXT_LITERAL_SYS = ms_parser.create_group(
     name="text_literal_sys",
     rules=[
         ms_parser.create_rule(
@@ -76,7 +76,7 @@ GENERAL_TEXT_LITERAL_SYS = ms_parser.create_group(
 
 # 整数字面值
 # 对应 MySQL 语义组：int64_literal
-GENERAL_INT_LITERAL = ms_parser.create_group(
+INT_LITERAL = ms_parser.create_group(
     name="int_literal",
     rules=[
         ms_parser.create_rule(
@@ -88,7 +88,7 @@ GENERAL_INT_LITERAL = ms_parser.create_group(
 
 # 数值字面值
 # 对应 MySQL 语义组：NUM_literal
-GENERAL_NUM_LITERAL = ms_parser.create_group(
+NUM_LITERAL = ms_parser.create_group(
     name="num_literal",
     rules=[
         ms_parser.create_rule(
@@ -107,7 +107,7 @@ GENERAL_NUM_LITERAL = ms_parser.create_group(
 
 # 时间字面值
 # 对应 MySQL 语义组：temporal_literal
-GENERAL_TEMPORAL_LITERAL = ms_parser.create_group(
+TEMPORAL_LITERAL = ms_parser.create_group(
     name="temporal_literal",
     rules=[
         ms_parser.create_rule(
@@ -127,7 +127,7 @@ GENERAL_TEMPORAL_LITERAL = ms_parser.create_group(
 
 # 非空字面值
 # 对应 MySQL 语义组：literal
-GENERAL_LITERAL = ms_parser.create_group(
+LITERAL = ms_parser.create_group(
     name="literal",
     rules=[
         ms_parser.create_rule(
@@ -168,7 +168,7 @@ GENERAL_LITERAL = ms_parser.create_group(
 
 # 空值字面值
 # 对应 MySQL 语义组：null_as_literal
-GENERAL_NULL_LITERAL = ms_parser.create_group(
+NULL_LITERAL = ms_parser.create_group(
     name="null_literal",
     rules=[
         ms_parser.create_rule(
@@ -180,7 +180,7 @@ GENERAL_NULL_LITERAL = ms_parser.create_group(
 
 # 字面值或空值字面值
 # 对应 MySQL 语义组：literal_or_null
-GENERAL_LITERAL_OR_NULL = ms_parser.create_group(
+LITERAL_OR_NULL = ms_parser.create_group(
     name="literal_or_null",
     rules=[
         ms_parser.create_rule(
@@ -194,7 +194,7 @@ GENERAL_LITERAL_OR_NULL = ms_parser.create_group(
 
 # 字符串字面值
 # 对应 MySQL 语义组：text_literal
-GENERAL_TEXT_LITERAL = ms_parser.create_group(
+TEXT_LITERAL = ms_parser.create_group(
     name="text_literal",
     rules=[
         ms_parser.create_rule(
@@ -218,7 +218,7 @@ GENERAL_TEXT_LITERAL = ms_parser.create_group(
 
 # 字符串字面值或二进制、十六进制字面值
 # 对应 MySQL 语义组：text_string
-GENERAL_TEXT_STRING = ms_parser.create_group(
+TEXT_STRING = ms_parser.create_group(
     name="text_string",
     rules=[
         ms_parser.create_rule(
@@ -238,7 +238,7 @@ GENERAL_TEXT_STRING = ms_parser.create_group(
 
 # 非空字面值，有符号的数值字面值
 # 对应 MySQL 语义组：signed_literal
-GENERAL_SIGNED_LITERAL = ms_parser.create_group(
+SIGNED_LITERAL = ms_parser.create_group(
     name="signed_literal",
     rules=[
         ms_parser.create_rule(
@@ -257,7 +257,7 @@ GENERAL_SIGNED_LITERAL = ms_parser.create_group(
 
 # 非空字面值、有符号的数值字面值或空值字面值
 # 对应 MySQL 语义组：signed_literal_or_null
-GENERAL_SIGNED_LITERAL_OR_NULL = ms_parser.create_group(
+SIGNED_LITERAL_OR_NULL = ms_parser.create_group(
     name="signed_literal_or_null",
     rules=[
         ms_parser.create_rule(
@@ -271,7 +271,7 @@ GENERAL_SIGNED_LITERAL_OR_NULL = ms_parser.create_group(
 
 # 参数占位符
 # 对应 MySQL 语义组：param_marker
-GENERAL_PARAM_MARKER = ms_parser.create_group(
+PARAM_MARKER = ms_parser.create_group(
     name="param_marker",
     rules=[
         ms_parser.create_rule(

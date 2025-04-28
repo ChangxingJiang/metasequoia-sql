@@ -27,17 +27,17 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "GENERAL_IDENT_SYS",
-    "GENERAL_IDENT_2",
-    "GENERAL_IDENT_3",
-    "GENERAL_SIMPLE_IDENT",
-    "GENERAL_SIMPLE_IDENT_LIST",
+    "IDENT_SYS",
+    "IDENT_2",
+    "IDENT_3",
+    "SIMPLE_IDENT",
+    "SIMPLE_IDENT_LIST",
     "OPT_IDENT",
 ]
 
 # 不是保留字或非保留关键字的标识符
 # 对应 MySQL 语义组：IDENT_sys
-GENERAL_IDENT_SYS = ms_parser.create_group(
+IDENT_SYS = ms_parser.create_group(
     name="ident_sys",
     rules=[
         ms_parser.create_rule(
@@ -53,7 +53,7 @@ GENERAL_IDENT_SYS = ms_parser.create_group(
 
 # 点分隔的两个标识符（ident.ident）
 # 对应 MySQL 语义组：simple_ident_q（部分）、table_ident（部分）
-GENERAL_IDENT_2 = ms_parser.create_group(
+IDENT_2 = ms_parser.create_group(
     name="ident_2",
     rules=[
         ms_parser.create_rule(
@@ -65,7 +65,7 @@ GENERAL_IDENT_2 = ms_parser.create_group(
 
 # 点分隔的三个标识符（ident.ident.ident）
 # 对应 MySQL 语义组：simple_ident_q（部分）
-GENERAL_IDENT_3 = ms_parser.create_group(
+IDENT_3 = ms_parser.create_group(
     name="ident_3",
     rules=[
         ms_parser.create_rule(
@@ -77,7 +77,7 @@ GENERAL_IDENT_3 = ms_parser.create_group(
 
 # 通用通配符（ident 或 ident.ident 或 ident.ident.ident）
 # 对应 MySQL 语义组：simple_ident
-GENERAL_SIMPLE_IDENT = ms_parser.create_group(
+SIMPLE_IDENT = ms_parser.create_group(
     name="simple_ident",
     rules=[
         ms_parser.create_rule(
@@ -94,7 +94,7 @@ GENERAL_SIMPLE_IDENT = ms_parser.create_group(
 
 # 逗号分隔的通用通配符的列表
 # 对应 MySQL 语义组：
-GENERAL_SIMPLE_IDENT_LIST = ms_parser.create_group(
+SIMPLE_IDENT_LIST = ms_parser.create_group(
     name="simple_ident_list",
     rules=[
         ms_parser.create_rule(

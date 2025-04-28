@@ -6,25 +6,20 @@
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_grammar.basic_general import OPT_OF
-from metasequoia_sql_grammar.order_clause import OPT_ORDER_BY_CLAUSE
-from metasequoia_sql_grammar.order_clause import OPT_ORDER_DIRECTION
-from metasequoia_sql_grammar.order_clause import ORDER_BY_LIST
-from metasequoia_sql_grammar.order_clause import ORDER_DIRECTION
-from metasequoia_sql_grammar.order_clause import ORDER_EXPR
-from metasequoia_sql_grammar.expr_general import GENERAL_OPERATOR_COMPARE
-from metasequoia_sql_grammar.expr_general import BINARY_EXPR
-from metasequoia_sql_grammar.expr_general import BOOL_EXPR
-from metasequoia_sql_grammar.expr_general import EXPR
-from metasequoia_sql_grammar.expr_general import EXPR_LIST
-from metasequoia_sql_grammar.expr_general import PREDICATE_EXPR
-from metasequoia_sql_grammar.expr_general import SIMPLE_EXPR
-from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_2
-from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_3
-from metasequoia_sql_grammar.ident_general import GENERAL_IDENT_SYS
-from metasequoia_sql_grammar.ident_general import GENERAL_SIMPLE_IDENT
-from metasequoia_sql_grammar.ident_general import GENERAL_SIMPLE_IDENT_LIST
-from metasequoia_sql_grammar.ident_general import OPT_IDENT
+from metasequoia_sql_grammar.basic import OPT_OF
+from metasequoia_sql_grammar.expression import BINARY_EXPR
+from metasequoia_sql_grammar.expression import BOOL_EXPR
+from metasequoia_sql_grammar.expression import EXPR
+from metasequoia_sql_grammar.expression import EXPR_LIST
+from metasequoia_sql_grammar.expression import OPERATOR_COMPARE
+from metasequoia_sql_grammar.expression import PREDICATE_EXPR
+from metasequoia_sql_grammar.expression import SIMPLE_EXPR
+from metasequoia_sql_grammar.ident import IDENT_2
+from metasequoia_sql_grammar.ident import IDENT_3
+from metasequoia_sql_grammar.ident import IDENT_SYS
+from metasequoia_sql_grammar.ident import OPT_IDENT
+from metasequoia_sql_grammar.ident import SIMPLE_IDENT
+from metasequoia_sql_grammar.ident import SIMPLE_IDENT_LIST
 from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORD
 from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_AMBIGUOUS_1_ROLES_AND_LABELS
@@ -38,18 +33,23 @@ from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_KEYWORD
 from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_KEYWORD
-from metasequoia_sql_grammar.literal_general import GENERAL_INT_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_LITERAL_OR_NULL
-from metasequoia_sql_grammar.literal_general import GENERAL_NULL_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_NUM_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_PARAM_MARKER
-from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_SIGNED_LITERAL_OR_NULL
-from metasequoia_sql_grammar.literal_general import GENERAL_TEMPORAL_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL
-from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_LITERAL_SYS
-from metasequoia_sql_grammar.literal_general import GENERAL_TEXT_STRING
+from metasequoia_sql_grammar.literal import INT_LITERAL
+from metasequoia_sql_grammar.literal import LITERAL
+from metasequoia_sql_grammar.literal import LITERAL_OR_NULL
+from metasequoia_sql_grammar.literal import NULL_LITERAL
+from metasequoia_sql_grammar.literal import NUM_LITERAL
+from metasequoia_sql_grammar.literal import PARAM_MARKER
+from metasequoia_sql_grammar.literal import SIGNED_LITERAL
+from metasequoia_sql_grammar.literal import SIGNED_LITERAL_OR_NULL
+from metasequoia_sql_grammar.literal import TEMPORAL_LITERAL
+from metasequoia_sql_grammar.literal import TEXT_LITERAL
+from metasequoia_sql_grammar.literal import TEXT_LITERAL_SYS
+from metasequoia_sql_grammar.literal import TEXT_STRING
+from metasequoia_sql_grammar.order_clause import OPT_ORDER_BY_CLAUSE
+from metasequoia_sql_grammar.order_clause import OPT_ORDER_DIRECTION
+from metasequoia_sql_grammar.order_clause import ORDER_BY_LIST
+from metasequoia_sql_grammar.order_clause import ORDER_DIRECTION
+from metasequoia_sql_grammar.order_clause import ORDER_EXPR
 from metasequoia_sql_grammar.time_unit import INTERVAL_TIME_UNIT
 from metasequoia_sql_grammar.time_unit import TIME_UNIT
 from metasequoia_sql_grammar.window_clause import OPT_PARTITION_CLAUSE
@@ -222,10 +222,10 @@ def build_grammar():
 
     # 基础元素
     grammar_builder.group_append(OPT_OF)
-    grammar_builder.group_append(GENERAL_OPERATOR_COMPARE)
+    grammar_builder.group_append(OPERATOR_COMPARE)
 
     # 标识符
-    grammar_builder.group_append(GENERAL_IDENT_SYS)
+    grammar_builder.group_append(IDENT_SYS)
     grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_UNAMBIGUOUS)
     grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_AMBIGUOUS_1_ROLES_AND_LABELS)
     grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_AMBIGUOUS_2_LABELS)
@@ -239,25 +239,25 @@ def build_grammar():
     grammar_builder.group_append(MYSQL_LABEL_IDENT)
     grammar_builder.group_append(MYSQL_ROLE_IDENT)
     grammar_builder.group_append(MYSQL_VARIABLE_IDENT)
-    grammar_builder.group_append(GENERAL_IDENT_2)
-    grammar_builder.group_append(GENERAL_IDENT_3)
-    grammar_builder.group_append(GENERAL_SIMPLE_IDENT)
-    grammar_builder.group_append(GENERAL_SIMPLE_IDENT_LIST)
+    grammar_builder.group_append(IDENT_2)
+    grammar_builder.group_append(IDENT_3)
+    grammar_builder.group_append(SIMPLE_IDENT)
+    grammar_builder.group_append(SIMPLE_IDENT_LIST)
     grammar_builder.group_append(OPT_IDENT)
 
     # 字面值
-    grammar_builder.group_append(GENERAL_TEXT_LITERAL_SYS)
-    grammar_builder.group_append(GENERAL_INT_LITERAL)
-    grammar_builder.group_append(GENERAL_NUM_LITERAL)
-    grammar_builder.group_append(GENERAL_TEMPORAL_LITERAL)
-    grammar_builder.group_append(GENERAL_LITERAL)
-    grammar_builder.group_append(GENERAL_NULL_LITERAL)
-    grammar_builder.group_append(GENERAL_LITERAL_OR_NULL)
-    grammar_builder.group_append(GENERAL_TEXT_LITERAL)
-    grammar_builder.group_append(GENERAL_TEXT_STRING)
-    grammar_builder.group_append(GENERAL_SIGNED_LITERAL)
-    grammar_builder.group_append(GENERAL_SIGNED_LITERAL_OR_NULL)
-    grammar_builder.group_append(GENERAL_PARAM_MARKER)
+    grammar_builder.group_append(TEXT_LITERAL_SYS)
+    grammar_builder.group_append(INT_LITERAL)
+    grammar_builder.group_append(NUM_LITERAL)
+    grammar_builder.group_append(TEMPORAL_LITERAL)
+    grammar_builder.group_append(LITERAL)
+    grammar_builder.group_append(NULL_LITERAL)
+    grammar_builder.group_append(LITERAL_OR_NULL)
+    grammar_builder.group_append(TEXT_LITERAL)
+    grammar_builder.group_append(TEXT_STRING)
+    grammar_builder.group_append(SIGNED_LITERAL)
+    grammar_builder.group_append(SIGNED_LITERAL_OR_NULL)
+    grammar_builder.group_append(PARAM_MARKER)
 
     # 表达式
     grammar_builder.group_append(SIMPLE_EXPR)
