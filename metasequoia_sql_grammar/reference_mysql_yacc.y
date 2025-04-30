@@ -5417,19 +5417,6 @@ character_set:
         | CHARSET
         ;
 
-charset_name:
-          ident_or_text
-          {
-            if (!($$=get_charset_by_csname($1.str,MY_CS_PRIMARY,MYF(0))))
-            {
-              my_error(ER_UNKNOWN_CHARACTER_SET, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
-            YYLIP->warn_on_deprecated_charset($$, $1.str);
-          }
-        | BINARY_SYM { $$= &my_charset_bin; }
-        ;
-
 opt_load_data_charset:
           %empty { $$= nullptr; }
         | character_set charset_name { $$ = $2; }
@@ -12366,49 +12353,12 @@ table_ident_opt_wild:
           }
         ;
 
-IDENT_sys:
-          IDENT { $$= $1; }
-        | IDENT_QUOTED
-          {
-            THD *thd= YYTHD;
-
-            if (thd->charset_is_system_charset)
-            {
-              const CHARSET_INFO *cs= system_charset_info;
-              int dummy_error;
-              size_t wlen= cs->cset->well_formed_len(cs, $1.str,
-                                                     $1.str+$1.length,
-                                                     $1.length, &dummy_error);
-              if (wlen < $1.length)
-              {
-                ErrConvString err($1.str, $1.length, &my_charset_bin);
-                my_error(ER_INVALID_CHARACTER_STRING, MYF(0),
-                         cs->csname, err.ptr());
-                MYSQL_YYABORT;
-              }
-              $$= $1;
-            }
-            else
-            {
-              if (thd->convert_string(&$$, system_charset_info,
-                                  $1.str, $1.length, thd->charset()))
-                MYSQL_YYABORT;
-            }
-          }
-        ;
-
 TEXT_STRING_hash:
           TEXT_STRING_sys
         | HEX_NUM
           {
             $$= to_lex_string(Item_hex_string::make_hex_str($1.str, $1.length));
           }
-        ;
-
-ident_or_text:
-          ident           { $$=$1;}
-        | TEXT_STRING_sys { $$=$1;}
-        | LEX_HOSTNAME { $$=$1;}
         ;
 
 role_ident_or_text:
@@ -15046,20 +14996,3 @@ opt_force:
           %empty      { $$= false; }
         | FORCE_SYM   { $$= true; }
         ;
-
-
-json_attribute:
-          TEXT_STRING_sys
-          {
-            if ($1.str[0] != '\0') {
-              size_t eoff = 0;
-              std::string emsg;
-              if (!is_valid_json_syntax($1.str, $1.length, &eoff, &emsg,
-                  JsonDepthErrorHandler)) {
-                my_error(ER_INVALID_JSON_ATTRIBUTE, MYF(0),
-                         emsg.c_str(), eoff, $1.str+eoff);
-                MYSQL_YYABORT;
-              }
-            }
-            $$ = to_lex_cstring($1);
-          }

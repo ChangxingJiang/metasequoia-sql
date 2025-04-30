@@ -5,7 +5,6 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql_grammar.basic import OPT_OF
 from metasequoia_sql_grammar.expression import BINARY_EXPR
 from metasequoia_sql_grammar.expression import BOOL_EXPR
@@ -33,6 +32,8 @@ from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_KEYWORD
 from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_KEYWORD
+from metasequoia_sql_grammar.literal import CHARSET_NAME
+from metasequoia_sql_grammar.literal import IDENT_OR_TEXT
 from metasequoia_sql_grammar.literal import INT_LITERAL
 from metasequoia_sql_grammar.literal import LITERAL
 from metasequoia_sql_grammar.literal import LITERAL_OR_NULL
@@ -258,6 +259,10 @@ def build_grammar():
     grammar_builder.group_append(SIGNED_LITERAL)
     grammar_builder.group_append(SIGNED_LITERAL_OR_NULL)
     grammar_builder.group_append(PARAM_MARKER)
+
+    # 标识符 + 字面值
+    grammar_builder.group_append(IDENT_OR_TEXT)
+    grammar_builder.group_append(CHARSET_NAME)
 
     # 表达式
     grammar_builder.group_append(SIMPLE_EXPR)

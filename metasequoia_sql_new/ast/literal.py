@@ -20,6 +20,8 @@ __all__ = [
     "TrueLiteral",
     "NullLiteral",
     "Param",
+    "Hostname",
+    "IDENT_OR_TEXT",
 ]
 
 
@@ -184,3 +186,18 @@ class Param(Expression):
 
     def attr_list(self) -> typing.List[str]:
         return []
+
+
+class Hostname(Expression):
+    """@ 之后的 Token"""
+
+    def __init__(self, value: str):
+        self._value = value
+
+    def attr_list(self) -> typing.List[str]:
+        return ["value"]
+
+    @property
+    def value(self) -> str:
+        return self._value
+

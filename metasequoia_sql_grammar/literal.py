@@ -54,16 +54,13 @@ __all__ = [
     "SIGNED_LITERAL",
     "SIGNED_LITERAL_OR_NULL",
     "PARAM_MARKER",
+    "IDENT_OR_TEXT",
+    "CHARSET_NAME",
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
-# 对应 MySQL 语义组：TEXT_STRING_sys
-# 对应 MySQL 语义组：TEXT_STRING_literal
-# 对应 MySQL 语义组：TEXT_STRING_filesystem
-# 对应 MySQL 语义组：TEXT_STRING_password
-# 对应 MySQL 语义组：TEXT_STRING_validated
-# 对应 MySQL 语义组：TEXT_STRING_sys_nonewline
-# 对应 MySQL 语义组：filter_wild_db_table_string
+# 对应 MySQL 语义组：TEXT_STRING_sys、TEXT_STRING_literal、TEXT_STRING_filesystem、TEXT_STRING_password、TEXT_STRING_validated、
+# TEXT_STRING_sys_nonewline、filter_wild_db_table_string、json_attribute
 TEXT_LITERAL_SYS = ms_parser.create_group(
     name="text_literal_sys",
     rules=[
@@ -277,6 +274,39 @@ PARAM_MARKER = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.PARAM_MARKER],
             action=lambda _: ast.Param()
+        )
+    ]
+)
+
+# 标识符或字符串字面值表示的名称
+# 对应 MySQL 语义组：ident_or_text
+IDENT_OR_TEXT = ms_parser.create_group(
+    name="ident_or_text",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident"]
+        ),
+        ms_parser.create_rule(
+            symbols=["text_literal_sys"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LEX_HOSTNAME],
+            action=lambda x: ast.Hostname(value=x[0])
+        )
+    ]
+)
+
+# 字符集名称
+# 对应 MySQL 语义组：charset_name
+CHARSET_NAME = ms_parser.create_group(
+    name="charset_name",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_or_text"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY],
+            action=lambda x: ast.StringLiteral(value="BINARY")  # TODO 待考虑是否有更优的节点格式
         )
     ]
 )
