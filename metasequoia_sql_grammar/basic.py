@@ -3,16 +3,20 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
     "OPT_OF",
+    "OPT_PRECISION",
     "OPT_BRACES",
     "KEYWORD_CHARSET",
+    "KEYWORD_NCHAR",
+    "KEYWORD_VARCHAR",
+    "KEYWORD_NVARCHAR",
 ]
 
 # 可选的 `OPT` 关键字
-# 对应 MySQL 语义组：opt_of
 OPT_OF = ms_parser.create_group(
     name="opt_of",
     rules=[
@@ -23,8 +27,18 @@ OPT_OF = ms_parser.create_group(
     ]
 )
 
+# 可选的 `PRECISION` 关键字
+OPT_PRECISION = ms_parser.create_group(
+    name="opt_precision",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PRECISION]
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
 # 可选的空括号
-# 对应 MySQL 语义组：optional_braces
 OPT_BRACES = ms_parser.create_group(
     name="opt_braces",
     rules=[
@@ -45,6 +59,64 @@ KEYWORD_CHARSET = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CHARSET],
+            action=lambda _: None
+        )
+    ]
+)
+
+# `NCHAR` 关键字或 `NATIONAL CHAR` 关键字（兼容的 `NCHAR` 类型名称）
+KEYWORD_NCHAR = ms_parser.create_group(
+    name="keyword_nchar",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NCHAR],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NATIONAL, TType.KEYWORD_CHAR],
+            action=lambda _: None
+        )
+    ]
+)
+
+# `CHAR VARYING` 关键字或 `VARCHAR` 关键字（兼容的 `VARCHAR` 类型名称）
+KEYWORD_VARCHAR = ms_parser.create_group(
+    name="keyword_varchar",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_VARCHAR],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CHAR, TType.KEYWORD_VARYING],
+            action=lambda _: None
+        )
+    ]
+)
+
+# `NVARCHAR` 关键字、`NATIONAL VARCHAR` 关键字、`NCHAR VARCHAR` 关键字、`NATIONAL CHAR VARYING` 关键字或 `NCHAR VARYING` 关键字
+# （兼容的 `NVARCHAR` 类型名称）
+KEYWORD_NVARCHAR = ms_parser.create_group(
+    name="keyword_nvarchar",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NVARCHAR],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NATIONAL, TType.KEYWORD_VARCHAR],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NCHAR, TType.KEYWORD_VARCHAR],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NATIONAL, TType.KEYWORD_CHAR, TType.KEYWORD_VARYING],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NCHAR, TType.KEYWORD_VARYING],
             action=lambda _: None
         )
     ]

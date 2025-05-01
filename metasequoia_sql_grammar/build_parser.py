@@ -5,7 +5,7 @@
 """
 
 import metasequoia_parser as ms_parser
-from metasequoia_sql_grammar.basic import KEYWORD_CHARSET
+from metasequoia_sql_grammar import basic
 from metasequoia_sql_grammar.basic import OPT_BRACES
 from metasequoia_sql_grammar.basic import OPT_OF
 from metasequoia_sql_grammar.expression import BINARY_EXPR
@@ -208,17 +208,13 @@ def build_grammar():
         ]
     )
 
+    # 基础元素（basic）
+    for group_name in basic.__all__:
+        grammar_builder.group_append(getattr(basic, group_name))
+
     # 字段类型（field type）
     for group_name in field_type.__all__:
         grammar_builder.group_append(getattr(field_type, group_name))
-
-    for group in [
-        # 基础元素
-        OPT_OF,  # 可选的 `OPT` 关键字
-        OPT_BRACES,  # 可选的空括号
-        KEYWORD_CHARSET,  # `CHARSET` 关键字或 `CHAR SET` 关键字
-    ]:
-        grammar_builder.group_append(group)
 
     # 时间单位类型
     grammar_builder.group_append(INTERVAL_TIME_UNIT)

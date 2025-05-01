@@ -5098,24 +5098,6 @@ spatial_type:
           { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_MULTIPOLYGON); }
         ;
 
-nchar:
-          NCHAR_SYM {}
-        | NATIONAL_SYM CHAR_SYM {}
-        ;
-
-varchar:
-          CHAR_SYM VARYING {}
-        | VARCHAR_SYM {}
-        ;
-
-nvarchar:
-          NATIONAL_SYM VARCHAR_SYM {}
-        | NVARCHAR_SYM {}
-        | NCHAR_SYM VARCHAR_SYM {}
-        | NATIONAL_SYM CHAR_SYM VARYING {}
-        | NCHAR_SYM VARYING {}
-        ;
-
 int_type:
           INT_SYM       { $$=Int_type::INT; }
         | TINYINT_SYM   { $$=Int_type::TINYINT; }
@@ -5132,11 +5114,6 @@ real_type:
           }
         | DOUBLE_SYM opt_PRECISION
           { $$= Numeric_type::DOUBLE; }
-        ;
-
-opt_PRECISION:
-          %empty
-        | PRECISION
         ;
 
 numeric_type:
