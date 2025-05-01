@@ -75,5 +75,5 @@ if __name__ == "__main__":
     # print(parse(LexFSM("BINARY")))
     print(parse(LexFSM("CHAR SET charset_name")))
     print(parse(LexFSM("CHARSET charset_name")))
-    # print(parse(LexFSM("CHAR SET charset_name BINARY")))
-    # print(parse(LexFSM("BINARY CHAR SET charset_name")))
+    print(parse(LexFSM("CHAR SET charset_name BINARY")))
+    print(parse(LexFSM("BINARY CHAR SET charset_name")))

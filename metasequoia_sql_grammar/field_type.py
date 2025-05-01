@@ -3,6 +3,7 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
@@ -78,18 +79,20 @@ OPT_CHARSET = ms_parser.create_group(
             symbols=[TType.KEYWORD_BINARY],
             action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY, charset_name=None)
         ),
-        # TODO 获取 CHARSET_NAME 待改为获取字符串值方法
         ms_parser.create_rule(
             symbols=["keyword_charset", "charset_name"],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME, charset_name=x[1].value)
+            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME,
+                                         charset_name=x[1].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=["keyword_charset", "charset_name", TType.KEYWORD_BINARY],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME_BINARY, charset_name=x[1].value)
+            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME_BINARY,
+                                         charset_name=x[1].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_BINARY, "keyword_charset", "charset_name"],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY_CHARSET_NAME, charset_name=x[2].value)
+            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY_CHARSET_NAME,
+                                         charset_name=x[2].get_str_value())
         )
     ]
 )

@@ -42,6 +42,9 @@ class StringLiteral(Expression):
     def charset(self) -> typing.Optional[str]:
         return self._charset
 
+    def get_str_value(self) -> typing.Optional[str]:
+        return self._value
+
 
 class HexStringLiteral(StringLiteral):
     """十六进制字符串字面值"""
@@ -198,4 +201,7 @@ class Hostname(Expression):
 
     @property
     def value(self) -> str:
+        return self._value
+
+    def get_str_value(self) -> typing.Optional[str]:
         return self._value

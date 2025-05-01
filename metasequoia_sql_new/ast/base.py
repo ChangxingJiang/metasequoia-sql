@@ -34,6 +34,9 @@ class Node(abc.ABC):
 
     __repr__ = __str__
 
+    def get_str_value(self) -> typing.Optional[str]:
+        return None
+
 
 class Expression(Node, abc.ABC):
     """抽象语法树节点的抽象类：表达式"""

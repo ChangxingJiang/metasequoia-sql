@@ -3982,7 +3982,7 @@ def action_reduce_11_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 
 def action_reduce_12_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
-    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME_BINARY, charset_name=symbol_stack[-2].value)
+    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME_BINARY, charset_name=symbol_stack[-2].get_str_value())
     next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-4], 849)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-3:] = [symbol_value]  # 出栈 3 个参数，入栈新生成的非终结符的值
     status_stack[-3:] = [next_status]  # 出栈 3 个参数，入栈 GOTO 的新状态
@@ -3990,7 +3990,7 @@ def action_reduce_12_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 
 def action_reduce_13_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
-    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME, charset_name=symbol_stack[-1].value)
+    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME, charset_name=symbol_stack[-1].get_str_value())
     next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 849)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
@@ -4014,7 +4014,7 @@ def action_reduce_16_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 
 def action_reduce_17_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
-    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY_CHARSET_NAME, charset_name=symbol_stack[-1].value)
+    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY_CHARSET_NAME, charset_name=symbol_stack[-1].get_str_value())
     next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-4], 849)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-3:] = [symbol_value]  # 出栈 3 个参数，入栈新生成的非终结符的值
     status_stack[-3:] = [next_status]  # 出栈 3 个参数，入栈 GOTO 的新状态

@@ -27,6 +27,9 @@ class Ident(Expression):
     def value(self) -> str:
         return self._value
 
+    def get_str_value(self) -> typing.Optional[str]:
+        return self._value
+
 
 class Ident2D(Expression):
     """ident.ident"""
