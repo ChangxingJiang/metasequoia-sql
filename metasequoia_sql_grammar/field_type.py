@@ -11,7 +11,12 @@ __all__ = [
     "CHARSET_ASCII",  # ASCII 相关字符集名称关键字
     "CHARSET_UNICODE",  # UNICODE 相关字符集名称关键字
     "OPT_CHARSET",  # 可选的指定字符集信息
-    "FIELD_TYPE_PARAM_1",
+    "FIELD_TYPE_PARAM_1",  # 括号中的 1 个字段类型参数
+    "OPT_FIELD_TYPE_PARAM_1",  # 可选的括号中的 1 个字段类型参数
+    "FIELD_TYPE_PARAM_2",  # 括号中的 2 个字段类型参数
+    "OPT_FIELD_TYPE_PARAM_2",  # 可选的括号中的 2 个字段类型参数
+    "OPT_FIELD_TYPE_PARAM_0_1",  # 可选的括号中的 0 个或 1 个字段类型参数
+    "OPT_FIELD_TYPE_PARAM_1_2",  # 可选的括号中的 1 个或 2 个字段类型参数
 ]
 
 # ASCII 相关字符集名称关键字
@@ -161,16 +166,20 @@ OPT_FIELD_TYPE_PARAM_0_1 = ms_parser.create_group(
             action=lambda x: ast.FieldTypeParams(option_1=x[1], option_2=None)
         ),
         ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FieldTypeParams(option_1=None, option_2=None)
+        ),
+        ms_parser.create_rule(
             symbols=[],
             action=lambda x: ast.FieldTypeParams(option_1=None, option_2=None)
         )
     ]
 )
 
-# 可选的括号中的 0 个、1 个或 2 个字段类型参数
+# 可选的括号中的 1 个或 2 个字段类型参数
 # 对应 MySQL 语义组：func_datetime_precision
-OPT_FIELD_TYPE_PARAM_0_1_2 = ms_parser.create_group(
-    name="opt_field_type_param_0_1_2",
+OPT_FIELD_TYPE_PARAM_1_2 = ms_parser.create_group(
+    name="opt_field_type_param_1_2",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "num_literal", TType.OPERATOR_COMMA, "num_literal", TType.OPERATOR_RPAREN],

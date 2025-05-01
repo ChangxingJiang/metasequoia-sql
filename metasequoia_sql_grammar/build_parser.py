@@ -15,10 +15,7 @@ from metasequoia_sql_grammar.expression import EXPR_LIST
 from metasequoia_sql_grammar.expression import OPERATOR_COMPARE
 from metasequoia_sql_grammar.expression import PREDICATE_EXPR
 from metasequoia_sql_grammar.expression import SIMPLE_EXPR
-from metasequoia_sql_grammar.field_type import CHARSET_ASCII
-from metasequoia_sql_grammar.field_type import CHARSET_UNICODE
-from metasequoia_sql_grammar.field_type import FIELD_TYPE_PARAM_1
-from metasequoia_sql_grammar.field_type import OPT_CHARSET
+from metasequoia_sql_grammar import field_type
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
 from metasequoia_sql_grammar.ident import IDENT_SYS
@@ -211,17 +208,15 @@ def build_grammar():
         ]
     )
 
+    # 字段类型（field type）
+    for group_name in field_type.__all__:
+        grammar_builder.group_append(getattr(field_type, group_name))
+
     for group in [
         # 基础元素
         OPT_OF,  # 可选的 `OPT` 关键字
         OPT_BRACES,  # 可选的空括号
         KEYWORD_CHARSET,  # `CHARSET` 关键字或 `CHAR SET` 关键字
-
-        # 字段类型
-        CHARSET_ASCII,  # ASCII 相关字符集名称关键字
-        CHARSET_UNICODE,  # UNICODE 相关字符集名称关键字
-        OPT_CHARSET,  # 可选的指定字符集信息
-        FIELD_TYPE_PARAM_1
     ]:
         grammar_builder.group_append(group)
 
