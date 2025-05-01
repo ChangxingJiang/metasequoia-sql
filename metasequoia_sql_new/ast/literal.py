@@ -21,7 +21,6 @@ __all__ = [
     "NullLiteral",
     "Param",
     "Hostname",
-    "IDENT_OR_TEXT",
 ]
 
 
@@ -200,4 +199,3 @@ class Hostname(Expression):
     @property
     def value(self) -> str:
         return self._value
-

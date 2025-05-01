@@ -5146,19 +5146,6 @@ numeric_type:
         | FIXED_SYM   { $$= Numeric_type::DECIMAL; }
         ;
 
-standard_float_options:
-          %empty
-          {
-            $$.length = nullptr;
-            $$.dec = nullptr;
-          }
-        | field_length
-          {
-            $$.length = $1;
-            $$.dec = nullptr;
-          }
-        ;
-
 float_options:
           %empty
           {
@@ -5179,12 +5166,6 @@ precision:
             $$.length= $2.str;
             $$.dec= $4.str;
           }
-        ;
-
-
-type_datetime_precision:
-          %empty { $$= nullptr; }
-        | '(' NUM ')'                { $$= $2.str; }
         ;
 
 func_datetime_precision:
@@ -5219,17 +5200,6 @@ field_option:
                          ER_WARN_DEPRECATED_SYNTAX_NO_REPLACEMENT,
                          ER_THD(YYTHD, ER_WARN_DEPRECATED_ZEROFILL));
           }
-        ;
-
-field_length:
-          '(' LONG_NUM ')'      { $$= $2.str; }
-        | '(' ULONGLONG_NUM ')' { $$= $2.str; }
-        | '(' DECIMAL_NUM ')'   { $$= $2.str; }
-        | '(' NUM ')'           { $$= $2.str; };
-
-opt_field_length:
-          %empty { $$= nullptr; /* use default length */ }
-        | field_length
         ;
 
 opt_precision:
@@ -5412,11 +5382,6 @@ now_or_signed_literal:
         | signed_literal_or_null
         ;
 
-character_set:
-          CHAR_SYM SET_SYM
-        | CHARSET
-        ;
-
 opt_load_data_charset:
           %empty { $$= nullptr; }
         | character_set charset_name { $$ = $2; }
@@ -5458,50 +5423,6 @@ opt_collate:
 opt_default:
           %empty {}
         | DEFAULT_SYM {}
-        ;
-
-
-ascii:
-          ASCII_SYM        {
-          push_deprecated_warn(YYTHD, "ASCII", "CHARACTER SET charset_name");
-          $$= &my_charset_latin1;
-        }
-        | BINARY_SYM ASCII_SYM {
-            warn_about_deprecated_binary(YYTHD);
-            push_deprecated_warn(YYTHD, "ASCII", "CHARACTER SET charset_name");
-            $$= &my_charset_latin1_bin;
-        }
-        | ASCII_SYM BINARY_SYM {
-            push_deprecated_warn(YYTHD, "ASCII", "CHARACTER SET charset_name");
-            warn_about_deprecated_binary(YYTHD);
-            $$= &my_charset_latin1_bin;
-        }
-        ;
-
-unicode:
-          UNICODE_SYM
-          {
-            push_deprecated_warn(YYTHD, "UNICODE", "CHARACTER SET charset_name");
-            if (!($$= get_charset_by_csname("ucs2", MY_CS_PRIMARY,MYF(0))))
-            {
-              my_error(ER_UNKNOWN_CHARACTER_SET, MYF(0), "ucs2");
-              MYSQL_YYABORT;
-            }
-          }
-        | UNICODE_SYM BINARY_SYM
-          {
-            push_deprecated_warn(YYTHD, "UNICODE", "CHARACTER SET charset_name");
-            warn_about_deprecated_binary(YYTHD);
-            if (!($$= mysqld_collation_get_by_name("ucs2_bin")))
-              MYSQL_YYABORT;
-          }
-        | BINARY_SYM UNICODE_SYM
-          {
-            warn_about_deprecated_binary(YYTHD);
-            push_deprecated_warn(YYTHD, "UNICODE", "CHARACTER SET charset_name");
-            if (!($$= mysqld_collation_get_by_name("ucs2_bin")))
-              my_error(ER_UNKNOWN_COLLATION, MYF(0), "ucs2_bin");
-          }
         ;
 
 opt_charset_with_opt_binary:
@@ -8028,11 +7949,6 @@ select_alias:
         | AS TEXT_STRING_validated { $$=$2; }
         | ident { $$=$1; }
         | TEXT_STRING_validated { $$=$1; }
-        ;
-
-optional_braces:
-          %empty {}
-        | '(' ')' {}
         ;
 
 /* all possible expressions */

@@ -5,6 +5,8 @@
 """
 
 import metasequoia_parser as ms_parser
+from metasequoia_sql_grammar.basic import KEYWORD_CHARSET
+from metasequoia_sql_grammar.basic import OPT_BRACES
 from metasequoia_sql_grammar.basic import OPT_OF
 from metasequoia_sql_grammar.expression import BINARY_EXPR
 from metasequoia_sql_grammar.expression import BOOL_EXPR
@@ -13,6 +15,10 @@ from metasequoia_sql_grammar.expression import EXPR_LIST
 from metasequoia_sql_grammar.expression import OPERATOR_COMPARE
 from metasequoia_sql_grammar.expression import PREDICATE_EXPR
 from metasequoia_sql_grammar.expression import SIMPLE_EXPR
+from metasequoia_sql_grammar.field_type import CHARSET_ASCII
+from metasequoia_sql_grammar.field_type import CHARSET_UNICODE
+from metasequoia_sql_grammar.field_type import FIELD_LENGTH
+from metasequoia_sql_grammar.field_type import OPT_CHARSET
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
 from metasequoia_sql_grammar.ident import IDENT_SYS
@@ -74,7 +80,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["opt_windowing_clause"]),
+                    ms_parser.create_rule(symbols=["opt_charset"]),
                 ]
             )
         ],
@@ -205,6 +211,20 @@ def build_grammar():
         ]
     )
 
+    for group in [
+        # 基础元素
+        OPT_OF,  # 可选的 `OPT` 关键字
+        OPT_BRACES,  # 可选的空括号
+        KEYWORD_CHARSET,  # `CHARSET` 关键字或 `CHAR SET` 关键字
+
+        # 字段类型
+        CHARSET_ASCII,  # ASCII 相关字符集名称关键字
+        CHARSET_UNICODE,  # UNICODE 相关字符集名称关键字
+        OPT_CHARSET,  # 可选的指定字符集信息
+        FIELD_LENGTH
+    ]:
+        grammar_builder.group_append(group)
+
     # 时间单位类型
     grammar_builder.group_append(INTERVAL_TIME_UNIT)
     grammar_builder.group_append(TIME_UNIT)
@@ -220,10 +240,6 @@ def build_grammar():
     grammar_builder.group_append(WINDOW_NAME_OR_SPEC)
     grammar_builder.group_append(WINDOWING_CLAUSE)
     grammar_builder.group_append(OPT_WINDOWING_CLAUSE)
-
-    # 基础元素
-    grammar_builder.group_append(OPT_OF)
-    grammar_builder.group_append(OPERATOR_COMPARE)
 
     # 标识符
     grammar_builder.group_append(IDENT_SYS)
@@ -265,6 +281,7 @@ def build_grammar():
     grammar_builder.group_append(CHARSET_NAME)
 
     # 表达式
+    grammar_builder.group_append(OPERATOR_COMPARE)
     grammar_builder.group_append(SIMPLE_EXPR)
     grammar_builder.group_append(BINARY_EXPR)
     grammar_builder.group_append(PREDICATE_EXPR)

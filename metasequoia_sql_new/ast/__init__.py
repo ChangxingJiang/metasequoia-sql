@@ -1,6 +1,7 @@
 from metasequoia_sql_new.ast.base import ExpressionList
 from metasequoia_sql_new.ast.basic import EnumOperatorCompare
 from metasequoia_sql_new.ast.basic import EnumOrderDirection
+from metasequoia_sql_new.ast.field_type import *
 from metasequoia_sql_new.ast.function import FuncAnd
 from metasequoia_sql_new.ast.function import FuncBetween
 from metasequoia_sql_new.ast.function import FuncBitNot
