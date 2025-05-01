@@ -5146,38 +5146,6 @@ numeric_type:
         | FIXED_SYM   { $$= Numeric_type::DECIMAL; }
         ;
 
-float_options:
-          %empty
-          {
-            $$.length= nullptr;
-            $$.dec= nullptr;
-          }
-        | field_length
-          {
-            $$.length= $1;
-            $$.dec= nullptr;
-          }
-        | precision
-        ;
-
-precision:
-          '(' NUM ',' NUM ')'
-          {
-            $$.length= $2.str;
-            $$.dec= $4.str;
-          }
-        ;
-
-func_datetime_precision:
-          %empty { $$= 0; }
-        | '(' ')'                    { $$= 0; }
-        | '(' NUM ')'
-           {
-             int error;
-             $$= (ulong) my_strtoll10($2.str, nullptr, &error);
-           }
-        ;
-
 field_options:
           %empty { $$ = 0; }
         | field_opt_list
@@ -5200,15 +5168,6 @@ field_option:
                          ER_WARN_DEPRECATED_SYNTAX_NO_REPLACEMENT,
                          ER_THD(YYTHD, ER_WARN_DEPRECATED_ZEROFILL));
           }
-        ;
-
-opt_precision:
-          %empty
-          {
-            $$.length= nullptr;
-            $$.dec = nullptr;
-          }
-        | precision
         ;
 
 opt_column_attribute_list:

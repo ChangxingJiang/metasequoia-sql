@@ -3,6 +3,7 @@
 """
 
 import abc
+import decimal
 import typing
 
 __all__ = [
@@ -35,6 +36,9 @@ class Node(abc.ABC):
     __repr__ = __str__
 
     def get_str_value(self) -> typing.Optional[str]:
+        return None
+
+    def get_decimal_value(self) -> typing.Optional[decimal.Decimal]:
         return None
 
 

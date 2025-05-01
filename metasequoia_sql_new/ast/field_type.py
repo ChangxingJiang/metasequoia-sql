@@ -2,6 +2,7 @@
 字段类型相关节点
 """
 
+import decimal
 import enum
 import typing
 
@@ -10,7 +11,7 @@ from metasequoia_sql_new.ast.base import Node
 __all__ = [
     "CharsetTypeEnum",
     "Charset",
-    "FloatOptions",
+    "FieldTypeParams",
 ]
 
 
@@ -50,22 +51,22 @@ class Charset(Node):
         return self._charset_name
 
 
-class FloatOptions(Node):
-    """浮点数精度"""
+class FieldTypeParams(Node):
+    """字段类型的参数"""
 
     def __init__(self,
-                 length: typing.Optional[typing.Union[int, float]],
-                 decimal: typing.Optional[typing.Union[int, float]]):
-        self._length = length  # 长度
-        self._decimal = decimal  # 小数点后位数
+                 option_1: typing.Optional[decimal.Decimal] = None,
+                 option_2: typing.Optional[decimal.Decimal] = None):
+        self._option_1 = option_1  # 第 1 个参数
+        self._option_2 = option_2  # 第 2 个参数
 
     def attr_list(self) -> typing.List[str]:
-        return ["length", "decimal"]
+        return ["option_1", "option_2"]
 
     @property
-    def length(self) -> typing.Optional[typing.Union[int, float]]:
-        return self._length
+    def length(self) -> typing.Optional[decimal.Decimal]:
+        return self._option_1
 
     @property
-    def decimal(self) -> typing.Optional[typing.Union[int, float]]:
-        return self._decimal
+    def decimal(self) -> typing.Optional[decimal.Decimal]:
+        return self._option_2

@@ -17,7 +17,7 @@ from metasequoia_sql_grammar.expression import PREDICATE_EXPR
 from metasequoia_sql_grammar.expression import SIMPLE_EXPR
 from metasequoia_sql_grammar.field_type import CHARSET_ASCII
 from metasequoia_sql_grammar.field_type import CHARSET_UNICODE
-from metasequoia_sql_grammar.field_type import FIELD_LENGTH
+from metasequoia_sql_grammar.field_type import FIELD_TYPE_PARAM_1
 from metasequoia_sql_grammar.field_type import OPT_CHARSET
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
@@ -221,7 +221,7 @@ def build_grammar():
         CHARSET_ASCII,  # ASCII 相关字符集名称关键字
         CHARSET_UNICODE,  # UNICODE 相关字符集名称关键字
         OPT_CHARSET,  # 可选的指定字符集信息
-        FIELD_LENGTH
+        FIELD_TYPE_PARAM_1
     ]:
         grammar_builder.group_append(group)
 

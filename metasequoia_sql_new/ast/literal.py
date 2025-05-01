@@ -1,6 +1,7 @@
 """
 字面值类型节点
 """
+
 import abc
 import decimal
 import enum
@@ -79,6 +80,9 @@ class IntLiteral(NumberLiteral):
         self._value *= -1
         return self
 
+    def get_decimal_value(self) -> decimal.Decimal:
+        return decimal.Decimal(self._value)
+
 
 class DecimalLiteral(NumberLiteral):
     """小数字面值"""
@@ -97,6 +101,9 @@ class DecimalLiteral(NumberLiteral):
         self._value *= -1
         return self
 
+    def get_decimal_value(self) -> decimal.Decimal:
+        return self._value
+
 
 class FloatLiteral(NumberLiteral):
     """浮点数字面值"""
@@ -114,6 +121,9 @@ class FloatLiteral(NumberLiteral):
     def neg(self) -> "FloatLiteral":
         self._value *= -1
         return self
+
+    def get_decimal_value(self) -> decimal.Decimal:
+        return decimal.Decimal.from_float(self._value)
 
 
 class TemporalLiteral(Expression):

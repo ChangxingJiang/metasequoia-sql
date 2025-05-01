@@ -11,7 +11,7 @@ __all__ = [
     "CHARSET_ASCII",  # ASCII 相关字符集名称关键字
     "CHARSET_UNICODE",  # UNICODE 相关字符集名称关键字
     "OPT_CHARSET",  # 可选的指定字符集信息
-    "FIELD_LENGTH",
+    "FIELD_TYPE_PARAM_1",
 ]
 
 # ASCII 相关字符集名称关键字
@@ -97,57 +97,92 @@ OPT_CHARSET = ms_parser.create_group(
     ]
 )
 
-# 指定字段类型长度的括号
+# 括号中的 1 个字段类型参数
 # 对应 MySQL 语义组：field_length、type_datetime_precision
-FIELD_LENGTH = ms_parser.create_group(
-    name="field_length",
+FIELD_TYPE_PARAM_1 = ms_parser.create_group(
+    name="field_type_param_1",
     rules=[
         ms_parser.create_rule(
-            symbols=[TType.OPERATOR_LPAREN, TType.LITERAL_INT_NUM, TType.OPERATOR_RPAREN],
-            action=lambda x: x[1]
+            symbols=[TType.OPERATOR_LPAREN, "num_literal", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FieldTypeParams(option_1=x[1], option_2=None)
         ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_LPAREN, TType.LITERAL_DECIMAL_NUM, TType.OPERATOR_RPAREN],
-            action=lambda x: x[1]
-        )
     ]
 )
 
-# 可选的指定字段类型长度的括号
+# 可选的括号中的 1 个字段类型参数
 # 对应 MySQL 语义组：opt_field_length
-OPT_FIELD_LENGTH = ms_parser.create_group(
-    name="opt_field_length",
+OPT_FIELD_TYPE_PARAM_1 = ms_parser.create_group(
+    name="opt_field_type_param_1",
     rules=[
         ms_parser.create_rule(
-            symbols=["field_length"]
-        ),
-        ms_parser.template.group.EMPTY_NULL
-    ]
-)
-
-# 标准的浮点数精度信息的括号
-# 对应 MySQL 语义组：standard_float_options
-STANDARD_FLOAT_OPTIONS = ms_parser.create_group(
-    name="standard_float_options",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["field_length"],
-            action=lambda x: ast.FloatOptions(length=x[0], decimal=None)
+            symbols=["field_type_param_1"]
         ),
         ms_parser.create_rule(
             symbols=[],
-            action=lambda x: ast.FloatOptions(length=None, decimal=None)
+            action=lambda x: ast.FieldTypeParams(option_1=None, option_2=None)
         )
     ]
 )
 
-# 可选的字符集名称及可选的 BINARY 关键字
-# 对应 MySQL 语义组：opt_charset_with_opt_binary
-# OPT_CHARSET_WITH_OPT_BINARY = ms_parser.create_group(
-#     name="opt_charset_with_opt_binary",
-#     rules=[
-#         ms_parser.create_rule(
-#             symbols=[]
-#         )
-#     ]
-# )
+# 括号中的 2 个字段类型参数
+# 对应 MySQL 语义组：precision
+FIELD_TYPE_PARAM_2 = ms_parser.create_group(
+    name="field_type_param_2",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "num_literal", TType.OPERATOR_COMMA, "num_literal", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FieldTypeParams(option_1=x[1], option_2=x[3])
+        )
+    ]
+)
+
+# 可选的括号中的 2 个字段类型参数
+# 对应 MySQL 语义组：opt_precision
+OPT_FIELD_TYPE_PARAM_2 = ms_parser.create_group(
+    name="opt_field_type_param_2",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["field_type_param_2"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.FieldTypeParams(option_1=None, option_2=None)
+        )
+    ]
+)
+
+# 可选的括号中的 0 个或 1 个字段类型参数
+# 对应 MySQL 语义组：func_datetime_precision
+OPT_FIELD_TYPE_PARAM_0_1 = ms_parser.create_group(
+    name="opt_field_type_param_0_1",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "num_literal", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FieldTypeParams(option_1=x[1], option_2=None)
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.FieldTypeParams(option_1=None, option_2=None)
+        )
+    ]
+)
+
+# 可选的括号中的 0 个、1 个或 2 个字段类型参数
+# 对应 MySQL 语义组：func_datetime_precision
+OPT_FIELD_TYPE_PARAM_0_1_2 = ms_parser.create_group(
+    name="opt_field_type_param_0_1_2",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "num_literal", TType.OPERATOR_COMMA, "num_literal", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FieldTypeParams(option_1=x[1], option_2=x[3])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "num_literal", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FieldTypeParams(option_1=x[1], option_2=None)
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.FieldTypeParams(option_1=None, option_2=None)
+        )
+    ]
+)
