@@ -8,7 +8,6 @@ from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
     "OPT_OF",
-    "OPT_PRECISION",
     "OPT_BRACES",
     "KEYWORD_CHARSET",
     "KEYWORD_NCHAR",
@@ -22,17 +21,6 @@ OPT_OF = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_OF]
-        ),
-        ms_parser.template.group.EMPTY_NULL
-    ]
-)
-
-# 可选的 `PRECISION` 关键字
-OPT_PRECISION = ms_parser.create_group(
-    name="opt_precision",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_PRECISION]
         ),
         ms_parser.template.group.EMPTY_NULL
     ]

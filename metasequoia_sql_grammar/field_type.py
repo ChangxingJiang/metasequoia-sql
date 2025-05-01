@@ -195,3 +195,162 @@ OPT_FIELD_TYPE_PARAM_1_2 = ms_parser.create_group(
         )
     ]
 )
+
+# `CAST` 函数、`CONVERT` 函数以及 `JSON_VALUE` 函数中指定的返回值类型
+CAST_TYPE = ms_parser.create_group(
+    name="cast_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY, "opt_field_type_param_1"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.BINARY,
+                params=x[1]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CHAR, "opt_field_type_param_1", "opt_charset"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.CHAR,
+                params=x[1],
+                charset=x[2]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NCHAR, "opt_field_type_param_1"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.NCHAR,
+                params=x[1]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SIGNED],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.SIGNED
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SIGNED, TType.KEYWORD_INT],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.SIGNED_INT
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UNSIGNED],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.UNSIGNED
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UNSIGNED, TType.KEYWORD_INT],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.UNSIGNED_INT
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DATE],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.DATE
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_YEAR],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.YEAR
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TIME, "field_type_param_1"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.TIME,
+                params=x[1]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DATETIME, "field_type_param_1"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.DATETIME,
+                params=x[1]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DECIMAL, "opt_field_type_param_1_2"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.DECIMAL,
+                params=x[1]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_JSON],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.JSON
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REAL],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.REAL
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DOUBLE],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.DOUBLE
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DOUBLE, TType.KEYWORD_PRECISION],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.DOUBLE_PRECISION
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FLOAT, "opt_field_type_param_1"],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.FLOAT,
+                params=x[1]
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_POINT],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.POINT
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LINESTRING],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.LINESTRING
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_POLYGON],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.POLYGON
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MULTIPOINT],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.MULTIPOINT
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MULTILINESTRING],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.MULTILINESTRING
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MULTIPOLYGON],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.MULTIPOLYGON
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GEOMETRYCOLLECTION],
+            action=lambda x: ast.CastType(
+                field_type=ast.CastTypeEnum.GEOMETRYCOLLECTION
+            )
+        )
+    ]
+)

@@ -12,6 +12,8 @@ __all__ = [
     "CharsetTypeEnum",
     "Charset",
     "FieldTypeParams",
+    "CastTypeEnum",
+    "CastType",
 ]
 
 
@@ -70,3 +72,59 @@ class FieldTypeParams(Node):
     @property
     def decimal(self) -> typing.Optional[decimal.Decimal]:
         return self._option_2
+
+
+class CastTypeEnum(enum.IntEnum):
+    """转化的字段类型的枚举类型"""
+
+    BINARY = enum.auto()  # BINARY
+    CHAR = enum.auto()  # CHAR
+    NCHAR = enum.auto()  # NCHAR
+    SIGNED = enum.auto()  # SIGNED
+    SIGNED_INT = enum.auto()  # SIGNED INT
+    UNSIGNED = enum.auto()  # UNSIGNED
+    UNSIGNED_INT = enum.auto()  # UNSIGNED INT
+    DATE = enum.auto()  # DATE
+    YEAR = enum.auto()  # YEAR
+    TIME = enum.auto()  # TIME
+    DATETIME = enum.auto()  # DATETIME
+    DECIMAL = enum.auto()  # DECIMAL
+    JSON = enum.auto()  # JSON
+    REAL = enum.auto()  # REAL
+    DOUBLE = enum.auto()  # DOUBLE
+    DOUBLE_PRECISION = enum.auto()  # DOUBLE PRECISION
+    FLOAT = enum.auto()  # FLOAT
+    POINT = enum.auto()  # POINT
+    LINESTRING = enum.auto()  # LINESTRING
+    POLYGON = enum.auto()  # POLYGON
+    MULTIPOINT = enum.auto()  # MULTIPOINT
+    MULTILINESTRING = enum.auto()  # MULTILINESTRING
+    MULTIPOLYGON = enum.auto()  # MULTIPOLYGON
+    GEOMETRYCOLLECTION = enum.auto()  # GEOMETRYCOLLECTION
+
+
+class CastType(Node):
+    """转化的字段类型"""
+
+    def __init__(self,
+                 field_type: CastTypeEnum,
+                 params: typing.Optional[FieldTypeParams] = None,
+                 charset: typing.Optional[Charset] = None):
+        self._field_type = field_type
+        self._type_params = params if params is not None else FieldTypeParams()
+        self._charset = charset
+
+    def attr_list(self) -> typing.List[str]:
+        return ["field_type", "params", "charset"]
+
+    @property
+    def field_type(self) -> CastTypeEnum:
+        return self._field_type
+
+    @property
+    def params(self) -> FieldTypeParams:
+        return self._type_params
+
+    @property
+    def charset(self) -> Charset:
+        return self._charset
