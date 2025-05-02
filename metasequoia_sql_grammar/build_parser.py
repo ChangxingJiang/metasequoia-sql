@@ -5,9 +5,10 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql_grammar import basic
-from metasequoia_sql_grammar.basic import OPT_BRACES
-from metasequoia_sql_grammar.basic import OPT_OF
+from metasequoia_sql_grammar import field_type
+from metasequoia_sql_grammar import literal
 from metasequoia_sql_grammar.expression import BINARY_EXPR
 from metasequoia_sql_grammar.expression import BOOL_EXPR
 from metasequoia_sql_grammar.expression import EXPR
@@ -15,7 +16,6 @@ from metasequoia_sql_grammar.expression import EXPR_LIST
 from metasequoia_sql_grammar.expression import OPERATOR_COMPARE
 from metasequoia_sql_grammar.expression import PREDICATE_EXPR
 from metasequoia_sql_grammar.expression import SIMPLE_EXPR
-from metasequoia_sql_grammar import field_type
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
 from metasequoia_sql_grammar.ident import IDENT_SYS
@@ -35,20 +35,6 @@ from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_KEYWORD
 from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_IDENT
 from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_KEYWORD
-from metasequoia_sql_grammar.literal import CHARSET_NAME
-from metasequoia_sql_grammar.literal import IDENT_OR_TEXT
-from metasequoia_sql_grammar.literal import INT_LITERAL
-from metasequoia_sql_grammar.literal import LITERAL
-from metasequoia_sql_grammar.literal import LITERAL_OR_NULL
-from metasequoia_sql_grammar.literal import NULL_LITERAL
-from metasequoia_sql_grammar.literal import NUM_LITERAL
-from metasequoia_sql_grammar.literal import PARAM_MARKER
-from metasequoia_sql_grammar.literal import SIGNED_LITERAL
-from metasequoia_sql_grammar.literal import SIGNED_LITERAL_OR_NULL
-from metasequoia_sql_grammar.literal import TEMPORAL_LITERAL
-from metasequoia_sql_grammar.literal import TEXT_LITERAL
-from metasequoia_sql_grammar.literal import TEXT_LITERAL_SYS
-from metasequoia_sql_grammar.literal import TEXT_STRING
 from metasequoia_sql_grammar.order_clause import OPT_ORDER_BY_CLAUSE
 from metasequoia_sql_grammar.order_clause import OPT_ORDER_DIRECTION
 from metasequoia_sql_grammar.order_clause import ORDER_BY_LIST
@@ -77,7 +63,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["opt_charset"]),
+                    ms_parser.create_rule(symbols=["field_type"]),
                 ]
             )
         ],
@@ -212,6 +198,10 @@ def build_grammar():
     for group_name in basic.__all__:
         grammar_builder.group_append(getattr(basic, group_name))
 
+    # 字面值（literal）
+    for group_name in literal.__all__:
+        grammar_builder.group_append(getattr(literal, group_name))
+
     # 字段类型（field type）
     for group_name in field_type.__all__:
         grammar_builder.group_append(getattr(field_type, group_name))
@@ -252,24 +242,6 @@ def build_grammar():
     grammar_builder.group_append(SIMPLE_IDENT)
     grammar_builder.group_append(SIMPLE_IDENT_LIST)
     grammar_builder.group_append(OPT_IDENT)
-
-    # 字面值
-    grammar_builder.group_append(TEXT_LITERAL_SYS)
-    grammar_builder.group_append(INT_LITERAL)
-    grammar_builder.group_append(NUM_LITERAL)
-    grammar_builder.group_append(TEMPORAL_LITERAL)
-    grammar_builder.group_append(LITERAL)
-    grammar_builder.group_append(NULL_LITERAL)
-    grammar_builder.group_append(LITERAL_OR_NULL)
-    grammar_builder.group_append(TEXT_LITERAL)
-    grammar_builder.group_append(TEXT_STRING)
-    grammar_builder.group_append(SIGNED_LITERAL)
-    grammar_builder.group_append(SIGNED_LITERAL_OR_NULL)
-    grammar_builder.group_append(PARAM_MARKER)
-
-    # 标识符 + 字面值
-    grammar_builder.group_append(IDENT_OR_TEXT)
-    grammar_builder.group_append(CHARSET_NAME)
 
     # 表达式
     grammar_builder.group_append(OPERATOR_COMPARE)

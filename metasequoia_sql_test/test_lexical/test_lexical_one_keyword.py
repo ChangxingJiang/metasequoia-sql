@@ -6894,11 +6894,11 @@ class TestLexicalOneKeyword(unittest.TestCase):
     def test_keyword_tinytext_syn(self):
         """测试解析 TINYTEXT_SYN 关键字"""
         terminal = parse_one_token("TINYTEXT_SYN")
-        self.assertEqual(TType.KEYWORD_TINYTEXT_SYN, terminal.symbol_id)
+        self.assertEqual(TType.KEYWORD_TINYTEXT, terminal.symbol_id)
         self.assertEqual("TINYTEXT_SYN", terminal.symbol_value)
 
         terminal = parse_one_token("tinytext_syn")
-        self.assertEqual(TType.KEYWORD_TINYTEXT_SYN, terminal.symbol_id)
+        self.assertEqual(TType.KEYWORD_TINYTEXT, terminal.symbol_id)
         self.assertEqual("tinytext_syn", terminal.symbol_value)
 
     def test_keyword_tls(self):

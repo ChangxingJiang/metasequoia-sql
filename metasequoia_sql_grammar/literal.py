@@ -51,6 +51,7 @@ __all__ = [
     "LITERAL_OR_NULL",
     "TEXT_LITERAL",
     "TEXT_STRING",
+    "TEXT_STRING_LIST",
     "SIGNED_LITERAL",
     "SIGNED_LITERAL_OR_NULL",
     "PARAM_MARKER",
@@ -213,8 +214,7 @@ TEXT_LITERAL = ms_parser.create_group(
     ]
 )
 
-# 字符串字面值或二进制、十六进制字面值
-# 对应 MySQL 语义组：text_string
+# 字符串、二进制、十六进制字面值
 TEXT_STRING = ms_parser.create_group(
     name="text_string",
     rules=[
@@ -229,6 +229,21 @@ TEXT_STRING = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.LITERAL_BIN_NUM],
             action=lambda x: ast.BinStringLiteral(value=x[0])
+        )
+    ]
+)
+
+# 逗号分隔的字符串、二进制、十六进制字面值的列表
+TEXT_STRING_LIST = ms_parser.create_group(
+    name="text_string_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["text_string_list", TType.OPERATOR_COMMA, "text_string"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["text_string"],
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )

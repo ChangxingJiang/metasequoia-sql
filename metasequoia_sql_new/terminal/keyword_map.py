@@ -697,7 +697,7 @@ KEYWORD_TO_TERMINAL_MAP = {
     "timestamp_diff": SqlTerminalType.KEYWORD_TIMESTAMP_DIFF,
     "tinyblob": SqlTerminalType.KEYWORD_TINYBLOB,
     "tinyint": SqlTerminalType.KEYWORD_TINYINT,
-    "tinytext_syn": SqlTerminalType.KEYWORD_TINYTEXT_SYN,
+    "tinytext_syn": SqlTerminalType.KEYWORD_TINYTEXT,
     "tls": SqlTerminalType.KEYWORD_TLS,
     "to": SqlTerminalType.KEYWORD_TO,
     "trailing": SqlTerminalType.KEYWORD_TRAILING,

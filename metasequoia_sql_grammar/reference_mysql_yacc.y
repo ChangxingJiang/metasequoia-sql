@@ -5079,74 +5079,6 @@ type:
           }
         ;
 
-spatial_type:
-          GEOMETRY_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_GEOMETRY); }
-        | GEOMETRYCOLLECTION_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_GEOMETRYCOLLECTION); }
-        | POINT_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_POINT); }
-        | MULTIPOINT_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_MULTIPOINT); }
-        | LINESTRING_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_LINESTRING); }
-        | MULTILINESTRING_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_MULTILINESTRING); }
-        | POLYGON_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_POLYGON); }
-        | MULTIPOLYGON_SYM
-          { $$= NEW_PTN PT_spacial_type(@$, Field::GEOM_MULTIPOLYGON); }
-        ;
-
-int_type:
-          INT_SYM       { $$=Int_type::INT; }
-        | TINYINT_SYM   { $$=Int_type::TINYINT; }
-        | SMALLINT_SYM  { $$=Int_type::SMALLINT; }
-        | MEDIUMINT_SYM { $$=Int_type::MEDIUMINT; }
-        | BIGINT_SYM    { $$=Int_type::BIGINT; }
-        ;
-
-real_type:
-          REAL_SYM
-          {
-            $$= YYTHD->variables.sql_mode & MODE_REAL_AS_FLOAT ?
-              Numeric_type::FLOAT : Numeric_type::DOUBLE;
-          }
-        | DOUBLE_SYM opt_PRECISION
-          { $$= Numeric_type::DOUBLE; }
-        ;
-
-numeric_type:
-          FLOAT_SYM   { $$= Numeric_type::FLOAT; }
-        | DECIMAL_SYM { $$= Numeric_type::DECIMAL; }
-        | NUMERIC_SYM { $$= Numeric_type::DECIMAL; }
-        | FIXED_SYM   { $$= Numeric_type::DECIMAL; }
-        ;
-
-field_options:
-          %empty { $$ = 0; }
-        | field_opt_list
-        ;
-
-field_opt_list:
-          field_opt_list field_option
-          {
-            $$ = $1 | $2;
-          }
-        | field_option
-        ;
-
-field_option:
-          SIGNED_SYM   { $$ = 0; } // TODO: remove undocumented ignored syntax
-        | UNSIGNED_SYM { $$ = UNSIGNED_FLAG; }
-        | ZEROFILL_SYM {
-            $$ = ZEROFILL_FLAG;
-            push_warning(YYTHD, Sql_condition::SL_WARNING,
-                         ER_WARN_DEPRECATED_SYNTAX_NO_REPLACEMENT,
-                         ER_THD(YYTHD, ER_WARN_DEPRECATED_ZEROFILL));
-          }
-        ;
-
 opt_column_attribute_list:
           %empty { $$= nullptr; }
         | column_attribute_list
@@ -5754,20 +5686,6 @@ key_part_with_expression:
 opt_ident:
           %empty { $$= NULL_STR; }
         | ident
-        ;
-
-string_list:
-          text_string
-          {
-            $$= NEW_PTN List<String>;
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | string_list ',' text_string
-          {
-            if ($$->push_back($3))
-              MYSQL_YYABORT;
-          }
         ;
 
 /*

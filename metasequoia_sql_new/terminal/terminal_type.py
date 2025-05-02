@@ -776,7 +776,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_TIMESTAMP_DIFF = enum.auto()  # keyword
     KEYWORD_TINYBLOB = enum.auto()  # reserved keyword : MYSQL
     KEYWORD_TINYINT = enum.auto()  # reserved keyword : MYSQL
-    KEYWORD_TINYTEXT_SYN = enum.auto()  # reserved keyword : MYSQL
+    KEYWORD_TINYTEXT = enum.auto()  # reserved keyword : MYSQL
     KEYWORD_TLS = enum.auto()  # keyword : MYSQL (MySQL 8.0)
     KEYWORD_TO = enum.auto()  # reserved keyword : SQL-2003-R
     KEYWORD_TRAILING = enum.auto()  # reserved keyword : SQL-2003-R
