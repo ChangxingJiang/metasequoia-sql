@@ -6,7 +6,6 @@ import enum
 import typing
 
 from metasequoia_sql_new.ast.base import Expression
-from metasequoia_sql_new.ast.base import ExpressionList
 from metasequoia_sql_new.ast.base import Node
 from metasequoia_sql_new.ast.order_clause import OrderClause
 from metasequoia_sql_new.ast.time_unit import TimeUnitEnum
@@ -196,7 +195,7 @@ class Window(Node):
 
     def __init__(self,
                  name: typing.Optional[Expression],
-                 partition_clause: typing.Optional[ExpressionList],
+                 partition_clause: typing.Optional[typing.List[Expression]],
                  order_clause: typing.Optional[OrderClause],
                  frame_clause: typing.Optional[WindowFrame]):
         self._name = name
@@ -221,7 +220,7 @@ class Window(Node):
         return self._name
 
     @property
-    def partition_clause(self) -> typing.Optional[ExpressionList]:
+    def partition_clause(self) -> typing.Optional[typing.List[Expression]]:
         return self._partition_clause
 
     @property

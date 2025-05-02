@@ -299,18 +299,18 @@ EXPR = ms_parser.create_group(
     ]
 )
 
-# 逗号分隔的表达式列表
+# 逗号分隔的一般表达式列表
 # 对应 MySQL 语义组：expr_list、group_list
 EXPR_LIST = ms_parser.create_group(
     name="expr_list",
     rules=[
         ms_parser.create_rule(
             symbols=["expr_list", TType.OPERATOR_COMMA, "expr"],
-            action=lambda x: x[0].append(x[2])
+            action=lambda x: ms_parser.template.action.LIST_APPEND_2
         ),
         ms_parser.create_rule(
             symbols=["expr"],
-            action=lambda x: ast.ExpressionList(expression_list=[x[0]])
+            action=lambda x: ms_parser.template.action.LIST_INIT_0
         )
     ]
 )
