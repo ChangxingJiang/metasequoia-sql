@@ -9,6 +9,7 @@ import typing
 __all__ = [
     "Node",
     "Expression",
+    "Literal",
     "UnaryExpression",
     "BinaryExpression",
     "TernaryExpression",
@@ -43,6 +44,10 @@ class Node(abc.ABC):
 
 class Expression(Node, abc.ABC):
     """抽象语法树节点的抽象类：表达式"""
+
+
+class Literal(Expression, abc.ABC):
+    """抽象语法树节点的抽象类：字面值"""
 
 
 class UnaryExpression(Expression, abc.ABC):

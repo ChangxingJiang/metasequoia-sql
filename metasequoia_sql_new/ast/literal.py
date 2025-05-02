@@ -8,6 +8,7 @@ import enum
 import typing
 
 from metasequoia_sql_new.ast.base import Expression
+from metasequoia_sql_new.ast.base import Literal
 
 __all__ = [
     "StringLiteral",
@@ -25,7 +26,7 @@ __all__ = [
 ]
 
 
-class StringLiteral(Expression):
+class StringLiteral(Literal):
     """字符串字面值"""
 
     def __init__(self, value: str, charset: typing.Optional[str] = None):
@@ -55,7 +56,7 @@ class BinStringLiteral(StringLiteral):
     """二进制字符串字面值"""
 
 
-class NumberLiteral(Expression):
+class NumberLiteral(Literal):
     """数值字面值（包括整数、小数、浮点数）"""
 
     @abc.abstractmethod
@@ -66,11 +67,21 @@ class NumberLiteral(Expression):
 class IntLiteral(NumberLiteral):
     """整数字面值"""
 
-    def __init__(self, value: str):
-        self._value: int = int(value)
+    def __init__(self, value: int):
+        self._value = value
 
     def attr_list(self) -> typing.List[str]:
         return ["value"]
+
+    @staticmethod
+    def from_oct_string(oct_num: str) -> "IntLiteral":
+        """根据十进制字符串构造整数"""
+        return IntLiteral(int(oct_num))
+
+    @staticmethod
+    def from_hex_string(hex_num: str) -> "IntLiteral":
+        """根据十六进制字符串构造整数"""
+        return IntLiteral(int(hex_num, base=16))
 
     @property
     def value(self) -> int:
@@ -126,7 +137,7 @@ class FloatLiteral(NumberLiteral):
         return decimal.Decimal.from_float(self._value)
 
 
-class TemporalLiteral(Expression):
+class TemporalLiteral(Literal):
     """时间类型字面值"""
 
     class EnumTemporalType(enum.IntEnum):
@@ -172,21 +183,21 @@ class TemporalLiteral(Expression):
         return self._value
 
 
-class FalseLiteral(Expression):
+class FalseLiteral(Literal):
     """假值字面值"""
 
     def attr_list(self) -> typing.List[str]:
         return []
 
 
-class TrueLiteral(Expression):
+class TrueLiteral(Literal):
     """真值字面值"""
 
     def attr_list(self) -> typing.List[str]:
         return []
 
 
-class NullLiteral(Expression):
+class NullLiteral(Literal):
     """空值字面值"""
 
     def attr_list(self) -> typing.List[str]:

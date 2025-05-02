@@ -44,7 +44,9 @@ from metasequoia_sql_new.terminal import SqlTerminalType as TType
 __all__ = [
     "TEXT_LITERAL_SYS",
     "INT_LITERAL",
+    "INT_LITERAL_OR_HEX",
     "NUM_LITERAL",
+    "NUM_LITERAL_OR_HEX",
     "TEMPORAL_LITERAL",
     "LITERAL",
     "NULL_LITERAL",
@@ -59,8 +61,6 @@ __all__ = [
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
-# 对应 MySQL 语义组：TEXT_STRING_sys、TEXT_STRING_literal、TEXT_STRING_filesystem、TEXT_STRING_password、TEXT_STRING_validated、
-# TEXT_STRING_sys_nonewline、filter_wild_db_table_string、json_attribute
 TEXT_LITERAL_SYS = ms_parser.create_group(
     name="text_literal_sys",
     rules=[
@@ -72,19 +72,42 @@ TEXT_LITERAL_SYS = ms_parser.create_group(
 )
 
 # 整数字面值
-# 对应 MySQL 语义组：int64_literal
 INT_LITERAL = ms_parser.create_group(
     name="int_literal",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.LITERAL_INT_NUM],
-            action=lambda x: ast.IntLiteral(value=x[0])
+            action=lambda x: ast.IntLiteral.from_oct_string(x[0])
         )
     ]
 )
 
+# 整数字面值或十六进制字面值
+INT_LITERAL_OR_HEX = ms_parser.create_group(
+    name="int_literal_or_hex",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["int_literal"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_HEX_NUM],
+            action=lambda x: ast.IntLiteral.from_hex_string(x[0])
+        ),
+    ]
+)
+
+# 包含外层括号的整数字面值或十六进制字面值
+PAREN_INT_LITERAL_OR_HEX = ms_parser.create_group(
+    name="paren_int_literal_or_hex",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "int_literal_or_hex", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        ),
+    ]
+)
+
 # 数值字面值
-# 对应 MySQL 语义组：NUM_literal
 NUM_LITERAL = ms_parser.create_group(
     name="num_literal",
     rules=[
@@ -99,6 +122,20 @@ NUM_LITERAL = ms_parser.create_group(
             symbols=[TType.LITERAL_DECIMAL_NUM],
             action=lambda x: ast.DecimalLiteral(value=x[0])
         )
+    ]
+)
+
+# 数值字面值或十六进制字面值
+NUM_LITERAL_OR_HEX = ms_parser.create_group(
+    name="num_literal_or_hex",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["num_literal"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LITERAL_HEX_NUM],
+            action=lambda x: ast.IntLiteral.from_hex_string(x[0])
+        ),
     ]
 )
 
@@ -123,7 +160,6 @@ TEMPORAL_LITERAL = ms_parser.create_group(
 )
 
 # 非空字面值
-# 对应 MySQL 语义组：literal
 LITERAL = ms_parser.create_group(
     name="literal",
     rules=[
@@ -164,7 +200,6 @@ LITERAL = ms_parser.create_group(
 )
 
 # 空值字面值
-# 对应 MySQL 语义组：null_as_literal
 NULL_LITERAL = ms_parser.create_group(
     name="null_literal",
     rules=[
@@ -175,8 +210,7 @@ NULL_LITERAL = ms_parser.create_group(
     ]
 )
 
-# 字面值或空值字面值
-# 对应 MySQL 语义组：literal_or_null
+# 可为空字面值
 LITERAL_OR_NULL = ms_parser.create_group(
     name="literal_or_null",
     rules=[

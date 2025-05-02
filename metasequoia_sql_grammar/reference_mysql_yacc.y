@@ -5079,19 +5079,6 @@ opt_default:
         | DEFAULT_SYM {}
         ;
 
-ws_num_codepoints:
-        '(' real_ulong_num
-        {
-          if ($2 == 0)
-          {
-            YYTHD->syntax_error();
-            MYSQL_YYABORT;
-          }
-        }
-        ')'
-        { $$= $2; }
-        ;
-
 opt_primary:
           %empty
         | PRIMARY_SYM
@@ -9472,49 +9459,6 @@ limit_option:
 opt_simple_limit:
           %empty { $$= nullptr; }
         | LIMIT limit_option { $$= $2; }
-        ;
-
-ulong_num:
-          NUM           { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | HEX_NUM       { $$= (ulong) my_strtoll($1.str, nullptr, 16); }
-        | LONG_NUM      { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | ULONGLONG_NUM { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | DECIMAL_NUM   { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | FLOAT_NUM     { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        ;
-
-real_ulong_num:
-          NUM           { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | HEX_NUM       { $$= (ulong) my_strtoll($1.str, nullptr, 16); }
-        | LONG_NUM      { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | ULONGLONG_NUM { int error; $$= (ulong) my_strtoll10($1.str, nullptr, &error); }
-        | dec_num_error { MYSQL_YYABORT; }
-        ;
-
-ulonglong_num:
-          NUM           { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | ULONGLONG_NUM { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | LONG_NUM      { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | DECIMAL_NUM   { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | FLOAT_NUM     { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        ;
-
-real_ulonglong_num:
-          NUM           { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | HEX_NUM       { $$= (ulonglong) my_strtoll($1.str, nullptr, 16); }
-        | ULONGLONG_NUM { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | LONG_NUM      { int error; $$= (ulonglong) my_strtoll10($1.str, nullptr, &error); }
-        | dec_num_error { MYSQL_YYABORT; }
-        ;
-
-dec_num_error:
-          dec_num
-          { YYTHD->syntax_error(ER_ONLY_INTEGERS_ALLOWED); }
-        ;
-
-dec_num:
-          DECIMAL_NUM
-        | FLOAT_NUM
         ;
 
 select_var_list:
