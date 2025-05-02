@@ -67,28 +67,28 @@ JSON_ON_EMPTY_OR_ERROR = ms_parser.create_group(
     name="json_on_empty_on_error",
     rules=[
         ms_parser.create_rule(
-            symbols=["on_empty", "on_error"],
+            symbols=["json_on_empty", "json_on_error"],
             action=lambda x: ast.JsonOnEmptyOnError(
                 on_empty=x[0],
                 on_error=x[1]
             )
         ),
         ms_parser.create_rule(
-            symbols=["on_error", "on_empty"],
+            symbols=["json_on_error", "json_on_empty"],
             action=lambda x: ast.JsonOnEmptyOnError(
                 on_empty=x[1],
                 on_error=x[0]
             )
         ),
         ms_parser.create_rule(
-            symbols=["on_empty"],
+            symbols=["json_on_empty"],
             action=lambda x: ast.JsonOnEmptyOnError(
                 on_empty=x[0],
                 on_error=ast.JsonOnResponse.implicit()
             )
         ),
         ms_parser.create_rule(
-            symbols=["on_error"],
+            symbols=["json_on_error"],
             action=lambda x: ast.JsonOnEmptyOnError(
                 on_empty=ast.JsonOnResponse.implicit(),
                 on_error=x[0]

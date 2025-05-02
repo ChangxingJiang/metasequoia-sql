@@ -11,6 +11,7 @@ from metasequoia_sql_grammar import charset
 from metasequoia_sql_grammar import expression
 from metasequoia_sql_grammar import field_type
 from metasequoia_sql_grammar import literal
+from metasequoia_sql_grammar.elements import json_table_option
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
 from metasequoia_sql_grammar.ident import IDENT_SYS
@@ -58,7 +59,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["opt_charset"]),
+                    ms_parser.create_rule(symbols=["json_on_empty_on_error"]),
                 ]
             )
         ],
@@ -195,6 +196,7 @@ def build_grammar():
         charset,  # 字符集
         field_type,  # 字段类型
         expression,  # 表达式
+        json_table_option,  # 基础元素 - JSON 表选项
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))
