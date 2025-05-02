@@ -1,5 +1,6 @@
 from metasequoia_sql_new.ast.basic import *
 from metasequoia_sql_new.ast.charset import *
+from metasequoia_sql_new.ast.elements import *
 from metasequoia_sql_new.ast.field_type import *
 from metasequoia_sql_new.ast.function import *
 from metasequoia_sql_new.ast.ident import *

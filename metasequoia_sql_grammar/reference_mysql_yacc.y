@@ -9098,66 +9098,6 @@ jt_column_type:
           }
         ;
 
-// The optional ON EMPTY and ON ERROR clauses for JSON_TABLE and
-// JSON_VALUE. If both clauses are specified, the ON EMPTY clause
-// should come before the ON ERROR clause.
-opt_on_empty_or_error:
-          %empty
-          {
-            $$.empty = {Json_on_response_type::IMPLICIT, nullptr};
-            $$.error = {Json_on_response_type::IMPLICIT, nullptr};
-          }
-        | on_empty
-          {
-            $$.empty = $1;
-            $$.error = {Json_on_response_type::IMPLICIT, nullptr};
-          }
-        | on_error
-          {
-            $$.error = $1;
-            $$.empty = {Json_on_response_type::IMPLICIT, nullptr};
-          }
-        | on_empty on_error
-          {
-            $$.empty = $1;
-            $$.error = $2;
-          }
-        ;
-
-// JSON_TABLE extends the syntax by allowing ON ERROR to come before ON EMPTY.
-opt_on_empty_or_error_json_table:
-          opt_on_empty_or_error { $$ = $1; }
-        | on_error on_empty
-          {
-            push_warning(
-              YYTHD, Sql_condition::SL_WARNING, ER_WARN_DEPRECATED_SYNTAX,
-              ER_THD(YYTHD, ER_WARN_DEPRECATED_JSON_TABLE_ON_ERROR_ON_EMPTY));
-            $$.error = $1;
-            $$.empty = $2;
-          }
-        ;
-
-on_empty:
-          json_on_response ON_SYM EMPTY_SYM     { $$= $1; }
-        ;
-on_error:
-          json_on_response ON_SYM ERROR_SYM     { $$= $1; }
-        ;
-json_on_response:
-          ERROR_SYM
-          {
-            $$ = {Json_on_response_type::ERROR, nullptr};
-          }
-        | NULL_SYM
-          {
-            $$ = {Json_on_response_type::NULL_VALUE, nullptr};
-          }
-        | DEFAULT_SYM signed_literal
-          {
-            $$ = {Json_on_response_type::DEFAULT, $2};
-          }
-        ;
-
 index_hint_clause:
           %empty
           {

@@ -247,7 +247,7 @@ TEXT_STRING_LIST = ms_parser.create_group(
     ]
 )
 
-# 非空字面值，有符号的数值字面值
+# 非空字面值或有符号的数值字面值
 # 对应 MySQL 语义组：signed_literal
 SIGNED_LITERAL = ms_parser.create_group(
     name="signed_literal",
