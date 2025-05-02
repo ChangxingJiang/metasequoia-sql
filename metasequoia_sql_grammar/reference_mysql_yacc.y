@@ -5064,32 +5064,9 @@ opt_load_data_charset:
         | character_set charset_name { $$ = $2; }
         ;
 
-old_or_new_charset_name:
-          ident_or_text
-          {
-            if (!($$=get_charset_by_csname($1.str,MY_CS_PRIMARY,MYF(0))) &&
-                !($$=get_old_charset_by_name($1.str)))
-            {
-              my_error(ER_UNKNOWN_CHARACTER_SET, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
-          }
-        | BINARY_SYM { $$= &my_charset_bin; }
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
-        ;
-
-collation_name:
-          ident_or_text
-          {
-            if (!($$= mysqld_collation_get_by_name($1.str)))
-              MYSQL_YYABORT;
-            YYLIP->warn_on_deprecated_collation($$);
-          }
-        | BINARY_SYM { $$= &my_charset_bin; }
         ;
 
 opt_collate:
@@ -5100,58 +5077,6 @@ opt_collate:
 opt_default:
           %empty {}
         | DEFAULT_SYM {}
-        ;
-
-opt_charset_with_opt_binary:
-          %empty
-          {
-            $$.charset= nullptr;
-            $$.force_binary= false;
-          }
-        | ascii
-          {
-            $$.charset= $1;
-            $$.force_binary= false;
-          }
-        | unicode
-          {
-            $$.charset= $1;
-            $$.force_binary= false;
-          }
-        | BYTE_SYM
-          {
-            $$.charset= &my_charset_bin;
-            $$.force_binary= false;
-          }
-        | character_set charset_name opt_bin_mod
-          {
-            $$.charset= $3 ? get_bin_collation($2) : $2;
-            if ($$.charset == nullptr)
-              MYSQL_YYABORT;
-            $$.force_binary= false;
-          }
-        | BINARY_SYM
-          {
-            warn_about_deprecated_binary(YYTHD);
-            $$.charset= nullptr;
-            $$.force_binary= true;
-          }
-        | BINARY_SYM character_set charset_name
-          {
-            warn_about_deprecated_binary(YYTHD);
-            $$.charset= get_bin_collation($3);
-            if ($$.charset == nullptr)
-              MYSQL_YYABORT;
-            $$.force_binary= false;
-          }
-        ;
-
-opt_bin_mod:
-          %empty { $$= false; }
-        | BINARY_SYM {
-            warn_about_deprecated_binary(YYTHD);
-            $$= true;
-          }
         ;
 
 ws_num_codepoints:

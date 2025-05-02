@@ -47,3 +47,15 @@ class Charset(Node):
     @property
     def charset_name(self) -> typing.Optional[str]:
         return self._charset_name
+
+    def add_back_binary(self) -> "Charset":
+        """在当前字符集对象的基础上，添加后置的 `BINARY` 关键字，并返回新的字符集对象"""
+        if self._charset_type == CharsetTypeEnum.CHARSET_NAME:
+            self._charset_type = CharsetTypeEnum.CHARSET_NAME_BINARY
+        return self
+
+    def add_front_binary(self) -> "Charset":
+        """在当前字符集对象的基础上，添加前置的 `BINARY` 关键字，并返回新的字符集对象"""
+        if self._charset_type == CharsetTypeEnum.CHARSET_NAME:
+            self._charset_type = CharsetTypeEnum.BINARY_CHARSET_NAME
+        return self

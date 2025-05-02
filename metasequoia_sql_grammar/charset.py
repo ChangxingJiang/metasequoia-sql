@@ -10,11 +10,11 @@ from metasequoia_sql_new.terminal import SqlTerminalType as TType
 __all__ = [
     "CHARSET_ASCII",
     "CHARSET_UNICODE",
+    "CHARSET_NAME",
     "OPT_CHARSET",
 ]
 
 # ASCII 相关字符集名称关键字
-# 对应 MySQL 语义组：ascii
 CHARSET_ASCII = ms_parser.create_group(
     name="charset_ascii",
     rules=[
@@ -34,7 +34,6 @@ CHARSET_ASCII = ms_parser.create_group(
 )
 
 # UNICODE 相关字符集名称关键字
-# 对应 MySQL 语义组：unicode
 CHARSET_UNICODE = ms_parser.create_group(
     name="charset_unicode",
     rules=[
@@ -53,8 +52,25 @@ CHARSET_UNICODE = ms_parser.create_group(
     ]
 )
 
+# 字符集名称
+CHARSET_NAME = ms_parser.create_group(
+    name="charset_name",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_or_text"],
+            action=lambda x: ast.Charset(
+                charset_type=ast.CharsetTypeEnum.CHARSET_NAME,
+                charset_name=x[0].get_str_value()
+            )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY],
+            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY, charset_name=None)
+        )
+    ]
+)
+
 # 可选的指定字符集信息
-# 对应 MySQL 语义组：opt_charset_with_opt_binary
 OPT_CHARSET = ms_parser.create_group(
     name="opt_charset",
     rules=[
@@ -80,18 +96,15 @@ OPT_CHARSET = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["keyword_charset", "charset_name"],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME,
-                                         charset_name=x[1].get_str_value())
+            action=lambda x: x[1]
         ),
         ms_parser.create_rule(
             symbols=["keyword_charset", "charset_name", TType.KEYWORD_BINARY],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.CHARSET_NAME_BINARY,
-                                         charset_name=x[1].get_str_value())
+            action=lambda x: x[1].add_back_binary()
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_BINARY, "keyword_charset", "charset_name"],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY_CHARSET_NAME,
-                                         charset_name=x[2].get_str_value())
+            action=lambda x: x[2].add_front_binary()
         )
     ]
 )

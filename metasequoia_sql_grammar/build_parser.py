@@ -64,7 +64,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["field_type"]),
+                    ms_parser.create_rule(symbols=["opt_charset"]),
                 ]
             )
         ],

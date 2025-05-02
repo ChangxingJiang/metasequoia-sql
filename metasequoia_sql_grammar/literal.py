@@ -56,7 +56,6 @@ __all__ = [
     "SIGNED_LITERAL_OR_NULL",
     "PARAM_MARKER",
     "IDENT_OR_TEXT",
-    "CHARSET_NAME",
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
@@ -307,21 +306,6 @@ IDENT_OR_TEXT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.LEX_HOSTNAME],
             action=lambda x: ast.Hostname(value=x[0])
-        )
-    ]
-)
-
-# 字符集名称
-# 对应 MySQL 语义组：charset_name
-CHARSET_NAME = ms_parser.create_group(
-    name="charset_name",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["ident_or_text"]
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_BINARY],
-            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY, charset_name=None)
         )
     ]
 )
