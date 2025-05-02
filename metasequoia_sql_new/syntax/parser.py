@@ -842,7 +842,7 @@ WORD_VARIANCE(839): 终结符
 WORD_SUBSTRING(840): 终结符
 WORD_TRIM(841): 终结符
 WORD_CAST(842): 终结符
-entry(843): [843->·889]
+entry(843): [843->·893]
 opt_of(844): [844->·472, 844->·]
 opt_braces(845): [845->·23 24, 845->·]
 keyword_charset(846): [846->·115 633, 846->·117]
@@ -851,81 +851,86 @@ keyword_varchar(848): [848->·788, 848->·115 791]
 keyword_nvarchar(849): [849->·471, 849->·447 788, 849->·449 788, 849->·447 115 791, 849->·449 791]
 text_literal_sys(850): [850->·49]
 int_literal(851): [851->·47]
-num_literal(852): [852->·851, 852->·46, 852->·45]
-temporal_literal(853): [853->·169 49, 853->·740 49, 853->·170 49]
-literal(854): [854->·850, 854->·852, 854->·853, 854->·242, 854->·753, 854->·44, 854->·43, 854->·50 44, 854->·50 43]
-null_literal(855): [855->·467]
-literal_or_null(856): [856->·854, 856->·855]
-text_literal(857): [857->·49, 857->·48, 857->·50 49, 857->·857 49]
-text_string(858): [858->·49, 858->·44, 858->·43]
-text_string_list(859): [859->·859 25 858, 859->·858]
-signed_literal(860): [860->·854, 860->·9 852, 860->·13 852]
-signed_literal_or_null(861): [861->·860, 861->·855]
-param_marker(862): [862->·54]
-ident_or_text(863): [863->·912, 863->·850, 863->·53]
-charset_ascii(864): [864->·75, 864->·91 75, 864->·75 91]
-charset_unicode(865): [865->·763, 865->·91 763, 865->·763 91]
-charset_name(866): [866->·863, 866->·91]
-opt_charset(867): [867->·, 867->·864, 867->·865, 867->·103, 867->·91, 867->·846 866, 867->·846 866 91, 867->·91 846 866]
-field_type_param_1(868): [868->·23 852 24]
-opt_field_type_param_1(869): [869->·868, 869->·]
-field_type_param_2(870): [870->·23 852 25 852 24]
-opt_field_type_param_2(871): [871->·870, 871->·]
-opt_field_type_param_0_1(872): [872->·23 852 24, 872->·23 24, 872->·]
-opt_field_type_param_1_2(873): [873->·23 852 25 852 24, 873->·23 852 24, 873->·]
-cast_type(874): [874->·91 869, 874->·115 869 867, 874->·449 869, 874->·638, 874->·638 321, 874->·770, 874->·770 321, 874->·169, 874->·814, 874->·740 868, 874->·170 868, 874->·178 873, 874->·343, 874->·547, 874->·201, 874->·201 522, 874->·254 869, 874->·517, 874->·367, 874->·518, 874->·441, 874->·440, 874->·442, 874->·274]
-field_option(875): [875->·638, 875->·770, 875->·816]
-field_option_list(876): [876->·876 875, 876->·875]
-opt_field_option_list(877): [877->·876, 877->·]
-field_type(878): [878->·321 869 877, 878->·745 869 877, 878->·643 869 877, 878->·422 869 877, 878->·90 869 877, 878->·547 871 877, 878->·201 871 877, 878->·201 522 871 877, 878->·254 873 877, 878->·178 873 877, 878->·470 873 877, 878->·253 873 877, 878->·93, 878->·93 868, 878->·96, 878->·97, 878->·115 868 867, 878->·115 867, 878->·847 868 91, 878->·847 868, 878->·847 91, 878->·847, 878->·91 868, 878->·91, 878->·848 868 867, 878->·849 868 91, 878->·849 868, 878->·787 868, 878->·814 869 877, 878->·169, 878->·740 868, 878->·741 868, 878->·170 868, 878->·744, 878->·94 869, 878->·421, 878->·380, 878->·273, 878->·274, 878->·517, 878->·441, 878->·367, 878->·440, 878->·518, 878->·442, 878->·379 787, 878->·379 848 867, 878->·746 867, 878->·735 869 867, 878->·423 867, 878->·381 867, 878->·220 23 859 24 867, 878->·633 23 859 24 867, 878->·379 867, 878->·629, 878->·343]
-simple_expr(879): [879->·918, 879->·856, 879->·9 879, 879->·13 879, 879->·11 879]
-binary_expr(880): [880->·880 21 880, 880->·880 20 880, 880->·880 38 880, 880->·880 39 880, 880->·880 9 880, 880->·880 13 880, 880->·880 17 880, 880->·880 18 880, 880->·880 12 880, 880->·880 199 880, 880->·880 435 880, 880->·880 10 880, 880->·879]
-predicate_expr(881): [881->·880 424 844 23 879 24, 881->·880 89 880 70 881, 881->·880 460 89 880 70 881, 881->·880 648 363 880, 881->·880 363 879, 881->·880 363 879 223 879, 881->·880 460 363 879, 881->·880 460 363 879 223 879, 881->·880 555 880, 881->·880 460 555 880, 881->·880]
-bool_expr(882): [882->·882 338 467, 882->·882 338 460 467, 882->·882 885 881, 882->·881]
-expr(883): [883->·883 487 883, 883->·883 813 883, 883->·883 70 883, 883->·460 883, 883->·882 338 753, 883->·882 338 460 753, 883->·882 338 242, 883->·882 338 460 242, 883->·882 338 767, 883->·882 338 460 767, 883->·882]
-expr_list(884): [884->·884 25 883, 884->·883]
-operator_compare(885): [885->·16, 885->·33, 885->·34, 885->·15, 885->·35, 885->·14, 885->·36]
-json_on_response(886): [886->·221, 886->·467, 886->·180 860]
-json_on_empty(887): [887->·886 477 210]
-json_on_error(888): [888->·886 477 221]
-json_on_empty_on_error(889): [889->·887 888, 889->·888 887, 889->·887, 889->·888, 889->·]
-interval_time_unit(890): [890->·891, 890->·815, 890->·172, 890->·174, 890->·175, 890->·173, 890->·299, 890->·300, 890->·298, 890->·433, 890->·432, 890->·624]
-time_unit(891): [891->·814, 891->·537, 891->·439, 891->·798, 891->·171, 891->·297, 891->·431, 891->·618, 891->·428]
-window_border_type(892): [892->·607, 892->·541, 892->·284]
-opt_window_exclude(893): [893->·230 158 606, 893->·230 282, 893->·230 739, 893->·230 457 492, 893->·]
-window_frame_start(894): [894->·757 521, 894->·852 521, 894->·862 521, 894->·329 883 890 521, 894->·158 606]
-window_frame_bound(895): [895->·894, 895->·757 258, 895->·852 258, 895->·862 258, 895->·329 883 890 258]
-window_frame_extent(896): [896->·894, 896->·89 895 70 895]
-opt_window_frame_clause(897): [897->·892 896 893, 897->·]
-opt_partition_clause(898): [898->·504 102 884, 898->·]
-window_name_or_spec(899): [899->·912, 899->·23 920 898 925 897 24]
-windowing_clause(900): [900->·496 899]
-opt_windowing_clause(901): [901->·900, 901->·]
-ident_sys(902): [902->·51, 902->·52]
-ident_keywords_unambiguous(903): [903->·56, 903->·57, 903->·58, 903->·60, 903->·61, 903->·62, 903->·63, 903->·64, 903->·65, 903->·68, 903->·71, 903->·72, 903->·77, 903->·78, 903->·79, 903->·80, 903->·81, 903->·83, 903->·84, 903->·85, 903->·92, 903->·93, 903->·95, 903->·96, 903->·97, 903->·99, 903->·100, 903->·101, 903->·107, 903->·109, 903->·110, 903->·111, 903->·113, 903->·114, 903->·120, 903->·121, 903->·122, 903->·124, 903->·125, 903->·126, 903->·128, 903->·130, 903->·131, 903->·132, 903->·135, 903->·136, 903->·137, 903->·138, 903->·139, 903->·140, 903->·141, 903->·143, 903->·144, 903->·146, 903->·147, 903->·148, 903->·150, 903->·153, 903->·158, 903->·164, 903->·165, 903->·168, 903->·169, 903->·170, 903->·171, 903->·181, 903->·182, 903->·183, 903->·185, 903->·190, 903->·192, 903->·193, 903->·194, 903->·195, 903->·196, 903->·204, 903->·205, 903->·206, 903->·211, 903->·213, 903->·215, 903->·216, 903->·217, 903->·218, 903->·219, 903->·220, 903->·221, 903->·222, 903->·223, 903->·226, 903->·227, 903->·229, 903->·230, 903->·234, 903->·235, 903->·237, 903->·238, 903->·239, 903->·240, 903->·241, 903->·243, 903->·244, 903->·248, 903->·249, 903->·250, 903->·251, 903->·253, 903->·258, 903->·263, 903->·264, 903->·266, 903->·269, 903->·270, 903->·273, 903->·274, 903->·276, 903->·277, 903->·278, 903->·281, 903->·285, 903->·286, 903->·287, 903->·289, 903->·293, 903->·294, 903->·295, 903->·296, 903->·297, 903->·301, 903->·304, 903->·307, 903->·309, 903->·311, 903->·312, 903->·313, 903->·318, 903->·320, 903->·331, 903->·332, 903->·333, 903->·337, 903->·339, 903->·340, 903->·343, 903->·345, 903->·347, 903->·349, 903->·353, 903->·359, 903->·361, 903->·362, 903->·367, 903->·368, 903->·374, 903->·375, 903->·376, 903->·377, 903->·378, 903->·385, 903->·386, 903->·388, 903->·389, 903->·390, 903->·391, 903->·392, 903->·393, 903->·394, 903->·395, 903->·396, 903->·397, 903->·398, 903->·399, 903->·400, 903->·401, 903->·402, 903->·403, 903->·404, 903->·405, 903->·406, 903->·408, 903->·409, 903->·410, 903->·411, 903->·414, 903->·415, 903->·416, 903->·417, 903->·418, 903->·419, 903->·420, 903->·424, 903->·425, 903->·426, 903->·427, 903->·428, 903->·430, 903->·431, 903->·434, 903->·436, 903->·438, 903->·439, 903->·440, 903->·441, 903->·442, 903->·443, 903->·444, 903->·445, 903->·446, 903->·447, 903->·449, 903->·451, 903->·452, 903->·453, 903->·454, 903->·455, 903->·456, 903->·458, 903->·462, 903->·463, 903->·468, 903->·469, 903->·471, 903->·473, 903->·474, 903->·475, 903->·476, 903->·478, 903->·479, 903->·480, 903->·484, 903->·486, 903->·490, 903->·491, 903->·492, 903->·497, 903->·498, 903->·499, 903->·501, 903->·502, 903->·503, 903->·505, 903->·506, 903->·507, 903->·508, 903->·509, 903->·513, 903->·514, 903->·515, 903->·516, 903->·517, 903->·518, 903->·519, 903->·521, 903->·524, 903->·525, 903->·527, 903->·528, 903->·531, 903->·532, 903->·533, 903->·537, 903->·538, 903->·539, 903->·540, 903->·545, 903->·548, 903->·549, 903->·551, 903->·552, 903->·553, 903->·556, 903->·557, 903->·558, 903->·559, 903->·560, 903->·561, 903->·564, 903->·566, 903->·569, 903->·571, 903->·572, 903->·573, 903->·574, 903->·575, 903->·576, 903->·577, 903->·578, 903->·579, 903->·582, 903->·586, 903->·588, 903->·590, 903->·591, 903->·593, 903->·594, 903->·595, 903->·596, 903->·597, 903->·601, 903->·603, 903->·604, 903->·605, 903->·608, 903->·609, 903->·611, 903->·612, 903->·614, 903->·617, 903->·618, 903->·619, 903->·620, 903->·621, 903->·622, 903->·623, 903->·625, 903->·629, 903->·630, 903->·631, 903->·634, 903->·639, 903->·640, 903->·642, 903->·644, 903->·645, 903->·647, 903->·648, 903->·649, 903->·650, 903->·651, 903->·652, 903->·653, 903->·654, 903->·655, 903->·656, 903->·657, 903->·658, 903->·659, 903->·660, 903->·661, 903->·662, 903->·663, 903->·664, 903->·665, 903->·666, 903->·667, 903->·668, 903->·669, 903->·670, 903->·671, 903->·672, 903->·673, 903->·674, 903->·675, 903->·682, 903->·683, 903->·684, 903->·686, 903->·688, 903->·690, 903->·699, 903->·701, 903->·702, 903->·705, 903->·706, 903->·707, 903->·708, 903->·709, 903->·711, 903->·714, 903->·715, 903->·716, 903->·717, 903->·718, 903->·719, 903->·720, 903->·722, 903->·723, 903->·724, 903->·727, 903->·729, 903->·730, 903->·731, 903->·732, 903->·733, 903->·735, 903->·736, 903->·738, 903->·739, 903->·740, 903->·741, 903->·742, 903->·743, 903->·747, 903->·750, 903->·752, 903->·755, 903->·756, 903->·757, 903->·758, 903->·759, 903->·761, 903->·762, 903->·767, 903->·769, 903->·771, 903->·773, 903->·774, 903->·777, 903->·779, 903->·784, 903->·785, 903->·790, 903->·792, 903->·793, 903->·795, 903->·796, 903->·797, 903->·798, 903->·799, 903->·805, 903->·806, 903->·807, 903->·809, 903->·811, 903->·812, 903->·814, 903->·817]
-ident_keywords_ambiguous_1_roles_and_labels(904): [904->·587, 904->·636, 904->·231]
-ident_keywords_ambiguous_2_labels(905): [905->·257, 905->·641, 905->·259, 905->·133, 905->·134, 905->·520, 905->·523, 905->·149, 905->·288, 905->·291, 905->·810, 905->·176, 905->·305, 905->·567, 905->·319, 905->·703, 905->·710, 905->·583, 905->·200, 905->·457, 905->·75, 905->·214, 905->·87, 905->·602, 905->·352, 905->·613, 905->·103, 905->·104, 905->·754, 905->·117, 905->·119, 905->·123, 905->·764, 905->·638, 905->·763]
-ident_keywords_ambiguous_3_roles(906): [906->·225, 906->·580, 906->·585, 906->·459, 906->·721, 906->·530, 906->·563, 906->·534, 906->·247]
-ident_keywords_ambiguous_4_system_variables(907): [907->·512, 907->·370, 907->·279, 907->·632, 907->·511]
-ident_general_keyword(908): [908->·903, 908->·904, 908->·905, 908->·906, 908->·907]
-ident_label_keyword(909): [909->·903, 909->·906, 909->·907]
-ident_role_keyword(910): [910->·903, 910->·905, 910->·907]
-ident_variable_keyword(911): [911->·903, 911->·904, 911->·905, 911->·906]
-ident(912): [912->·902, 912->·908]
-label_ident(913): [913->·902, 913->·909]
-role_ident(914): [914->·902, 914->·910]
-variable_ident(915): [915->·902, 915->·911]
-ident_2(916): [916->·912 28 912]
-ident_3(917): [917->·912 28 912 28 912]
-simple_ident(918): [918->·912, 918->·916, 918->·917]
-simple_ident_list(919): [919->·919 25 918, 919->·918]
-opt_ident(920): [920->·912, 920->·]
-order_direction(921): [921->·74, 921->·188]
-opt_order_direction(922): [922->·921, 922->·]
-order_expr(923): [923->·883 922]
-order_by_list(924): [924->·924 25 923, 924->·923]
-opt_order_by_clause(925): [925->·489 102 924, 925->·]
-S'(926): [926->·843]
+int_literal_or_hex(852): [852->·851, 852->·44]
+paren_int_literal_or_hex(853): [853->·23 852 24]
+num_literal(854): [854->·851, 854->·46, 854->·45]
+num_literal_or_hex(855): [855->·854, 855->·44]
+temporal_literal(856): [856->·169 49, 856->·740 49, 856->·170 49]
+literal(857): [857->·850, 857->·854, 857->·856, 857->·242, 857->·753, 857->·44, 857->·43, 857->·50 44, 857->·50 43]
+null_literal(858): [858->·467]
+literal_or_null(859): [859->·857, 859->·858]
+text_literal(860): [860->·49, 860->·48, 860->·50 49, 860->·860 49]
+text_string(861): [861->·49, 861->·44, 861->·43]
+text_string_list(862): [862->·862 25 861, 862->·861]
+signed_literal(863): [863->·857, 863->·9 854, 863->·13 854]
+signed_literal_or_null(864): [864->·863, 864->·858]
+param_marker(865): [865->·54]
+ident_or_text(866): [866->·917, 866->·850, 866->·53]
+charset_ascii(867): [867->·75, 867->·91 75, 867->·75 91]
+charset_unicode(868): [868->·763, 868->·91 763, 868->·763 91]
+charset_name(869): [869->·866, 869->·91]
+opt_charset(870): [870->·, 870->·867, 870->·868, 870->·103, 870->·91, 870->·846 869, 870->·846 869 91, 870->·91 846 869]
+field_type_param_1(871): [871->·23 854 24]
+opt_field_type_param_1(872): [872->·871, 872->·]
+field_type_param_2(873): [873->·23 854 25 854 24]
+opt_field_type_param_2(874): [874->·873, 874->·]
+opt_field_type_param_0_1(875): [875->·23 854 24, 875->·23 24, 875->·]
+opt_field_type_param_1_2(876): [876->·23 854 25 854 24, 876->·23 854 24, 876->·]
+cast_type(877): [877->·91 872, 877->·115 872 870, 877->·449 872, 877->·638, 877->·638 321, 877->·770, 877->·770 321, 877->·169, 877->·814, 877->·740 871, 877->·170 871, 877->·178 876, 877->·343, 877->·547, 877->·201, 877->·201 522, 877->·254 872, 877->·517, 877->·367, 877->·518, 877->·441, 877->·440, 877->·442, 877->·274]
+field_option(878): [878->·638, 878->·770, 878->·816]
+field_option_list(879): [879->·879 878, 879->·878]
+opt_field_option_list(880): [880->·879, 880->·]
+field_type(881): [881->·321 872 880, 881->·745 872 880, 881->·643 872 880, 881->·422 872 880, 881->·90 872 880, 881->·547 874 880, 881->·201 874 880, 881->·201 522 874 880, 881->·254 876 880, 881->·178 876 880, 881->·470 876 880, 881->·253 876 880, 881->·93, 881->·93 871, 881->·96, 881->·97, 881->·115 871 870, 881->·115 870, 881->·847 871 91, 881->·847 871, 881->·847 91, 881->·847, 881->·91 871, 881->·91, 881->·848 871 870, 881->·849 871 91, 881->·849 871, 881->·787 871, 881->·814 872 880, 881->·169, 881->·740 871, 881->·741 871, 881->·170 871, 881->·744, 881->·94 872, 881->·421, 881->·380, 881->·273, 881->·274, 881->·517, 881->·441, 881->·367, 881->·440, 881->·518, 881->·442, 881->·379 787, 881->·379 848 870, 881->·746 870, 881->·735 872 870, 881->·423 870, 881->·381 870, 881->·220 23 862 24 870, 881->·633 23 862 24 870, 881->·379 870, 881->·629, 881->·343]
+operator_compare(882): [882->·16, 882->·33, 882->·34, 882->·15, 882->·35, 882->·14, 882->·36]
+simple_expr(883): [883->·923, 883->·859, 883->·9 883, 883->·13 883, 883->·11 883]
+binary_expr(884): [884->·884 21 884, 884->·884 20 884, 884->·884 38 884, 884->·884 39 884, 884->·884 9 884, 884->·884 13 884, 884->·884 17 884, 884->·884 18 884, 884->·884 12 884, 884->·884 199 884, 884->·884 435 884, 884->·884 10 884, 884->·883]
+predicate_expr(885): [885->·884 424 844 23 883 24, 885->·884 89 884 70 885, 885->·884 460 89 884 70 885, 885->·884 648 363 884, 885->·884 363 883, 885->·884 363 883 223 883, 885->·884 460 363 883, 885->·884 460 363 883 223 883, 885->·884 555 884, 885->·884 460 555 884, 885->·884]
+bool_expr(886): [886->·886 338 467, 886->·886 338 460 467, 886->·886 882 885, 886->·885]
+expr(887): [887->·887 487 887, 887->·887 813 887, 887->·887 70 887, 887->·460 887, 887->·886 338 753, 887->·886 338 460 753, 887->·886 338 242, 887->·886 338 460 242, 887->·886 338 767, 887->·886 338 460 767, 887->·886]
+expr_list(888): [888->·888 25 887, 888->·887]
+opt_expr_list(889): [889->·888, 889->·]
+json_on_response(890): [890->·221, 890->·467, 890->·180 863]
+json_on_empty(891): [891->·890 477 210]
+json_on_error(892): [892->·890 477 221]
+json_on_empty_on_error(893): [893->·891 892, 893->·892 891, 893->·891, 893->·892, 893->·]
+select_alias(894): [894->·73 917, 894->·73 850, 894->·917, 894->·850, 894->·]
+interval_time_unit(895): [895->·896, 895->·815, 895->·172, 895->·174, 895->·175, 895->·173, 895->·299, 895->·300, 895->·298, 895->·433, 895->·432, 895->·624]
+time_unit(896): [896->·814, 896->·537, 896->·439, 896->·798, 896->·171, 896->·297, 896->·431, 896->·618, 896->·428]
+window_border_type(897): [897->·607, 897->·541, 897->·284]
+opt_window_exclude(898): [898->·230 158 606, 898->·230 282, 898->·230 739, 898->·230 457 492, 898->·]
+window_frame_start(899): [899->·757 521, 899->·854 521, 899->·865 521, 899->·329 887 895 521, 899->·158 606]
+window_frame_bound(900): [900->·899, 900->·757 258, 900->·854 258, 900->·865 258, 900->·329 887 895 258]
+window_frame_extent(901): [901->·899, 901->·89 900 70 900]
+opt_window_frame_clause(902): [902->·897 901 898, 902->·]
+opt_partition_clause(903): [903->·504 102 888, 903->·]
+window_name_or_spec(904): [904->·917, 904->·23 925 903 930 902 24]
+windowing_clause(905): [905->·496 904]
+opt_windowing_clause(906): [906->·905, 906->·]
+ident_sys(907): [907->·51, 907->·52]
+ident_keywords_unambiguous(908): [908->·56, 908->·57, 908->·58, 908->·60, 908->·61, 908->·62, 908->·63, 908->·64, 908->·65, 908->·68, 908->·71, 908->·72, 908->·77, 908->·78, 908->·79, 908->·80, 908->·81, 908->·83, 908->·84, 908->·85, 908->·92, 908->·93, 908->·95, 908->·96, 908->·97, 908->·99, 908->·100, 908->·101, 908->·107, 908->·109, 908->·110, 908->·111, 908->·113, 908->·114, 908->·120, 908->·121, 908->·122, 908->·124, 908->·125, 908->·126, 908->·128, 908->·130, 908->·131, 908->·132, 908->·135, 908->·136, 908->·137, 908->·138, 908->·139, 908->·140, 908->·141, 908->·143, 908->·144, 908->·146, 908->·147, 908->·148, 908->·150, 908->·153, 908->·158, 908->·164, 908->·165, 908->·168, 908->·169, 908->·170, 908->·171, 908->·181, 908->·182, 908->·183, 908->·185, 908->·190, 908->·192, 908->·193, 908->·194, 908->·195, 908->·196, 908->·204, 908->·205, 908->·206, 908->·211, 908->·213, 908->·215, 908->·216, 908->·217, 908->·218, 908->·219, 908->·220, 908->·221, 908->·222, 908->·223, 908->·226, 908->·227, 908->·229, 908->·230, 908->·234, 908->·235, 908->·237, 908->·238, 908->·239, 908->·240, 908->·241, 908->·243, 908->·244, 908->·248, 908->·249, 908->·250, 908->·251, 908->·253, 908->·258, 908->·263, 908->·264, 908->·266, 908->·269, 908->·270, 908->·273, 908->·274, 908->·276, 908->·277, 908->·278, 908->·281, 908->·285, 908->·286, 908->·287, 908->·289, 908->·293, 908->·294, 908->·295, 908->·296, 908->·297, 908->·301, 908->·304, 908->·307, 908->·309, 908->·311, 908->·312, 908->·313, 908->·318, 908->·320, 908->·331, 908->·332, 908->·333, 908->·337, 908->·339, 908->·340, 908->·343, 908->·345, 908->·347, 908->·349, 908->·353, 908->·359, 908->·361, 908->·362, 908->·367, 908->·368, 908->·374, 908->·375, 908->·376, 908->·377, 908->·378, 908->·385, 908->·386, 908->·388, 908->·389, 908->·390, 908->·391, 908->·392, 908->·393, 908->·394, 908->·395, 908->·396, 908->·397, 908->·398, 908->·399, 908->·400, 908->·401, 908->·402, 908->·403, 908->·404, 908->·405, 908->·406, 908->·408, 908->·409, 908->·410, 908->·411, 908->·414, 908->·415, 908->·416, 908->·417, 908->·418, 908->·419, 908->·420, 908->·424, 908->·425, 908->·426, 908->·427, 908->·428, 908->·430, 908->·431, 908->·434, 908->·436, 908->·438, 908->·439, 908->·440, 908->·441, 908->·442, 908->·443, 908->·444, 908->·445, 908->·446, 908->·447, 908->·449, 908->·451, 908->·452, 908->·453, 908->·454, 908->·455, 908->·456, 908->·458, 908->·462, 908->·463, 908->·468, 908->·469, 908->·471, 908->·473, 908->·474, 908->·475, 908->·476, 908->·478, 908->·479, 908->·480, 908->·484, 908->·486, 908->·490, 908->·491, 908->·492, 908->·497, 908->·498, 908->·499, 908->·501, 908->·502, 908->·503, 908->·505, 908->·506, 908->·507, 908->·508, 908->·509, 908->·513, 908->·514, 908->·515, 908->·516, 908->·517, 908->·518, 908->·519, 908->·521, 908->·524, 908->·525, 908->·527, 908->·528, 908->·531, 908->·532, 908->·533, 908->·537, 908->·538, 908->·539, 908->·540, 908->·545, 908->·548, 908->·549, 908->·551, 908->·552, 908->·553, 908->·556, 908->·557, 908->·558, 908->·559, 908->·560, 908->·561, 908->·564, 908->·566, 908->·569, 908->·571, 908->·572, 908->·573, 908->·574, 908->·575, 908->·576, 908->·577, 908->·578, 908->·579, 908->·582, 908->·586, 908->·588, 908->·590, 908->·591, 908->·593, 908->·594, 908->·595, 908->·596, 908->·597, 908->·601, 908->·603, 908->·604, 908->·605, 908->·608, 908->·609, 908->·611, 908->·612, 908->·614, 908->·617, 908->·618, 908->·619, 908->·620, 908->·621, 908->·622, 908->·623, 908->·625, 908->·629, 908->·630, 908->·631, 908->·634, 908->·639, 908->·640, 908->·642, 908->·644, 908->·645, 908->·647, 908->·648, 908->·649, 908->·650, 908->·651, 908->·652, 908->·653, 908->·654, 908->·655, 908->·656, 908->·657, 908->·658, 908->·659, 908->·660, 908->·661, 908->·662, 908->·663, 908->·664, 908->·665, 908->·666, 908->·667, 908->·668, 908->·669, 908->·670, 908->·671, 908->·672, 908->·673, 908->·674, 908->·675, 908->·682, 908->·683, 908->·684, 908->·686, 908->·688, 908->·690, 908->·699, 908->·701, 908->·702, 908->·705, 908->·706, 908->·707, 908->·708, 908->·709, 908->·711, 908->·714, 908->·715, 908->·716, 908->·717, 908->·718, 908->·719, 908->·720, 908->·722, 908->·723, 908->·724, 908->·727, 908->·729, 908->·730, 908->·731, 908->·732, 908->·733, 908->·735, 908->·736, 908->·738, 908->·739, 908->·740, 908->·741, 908->·742, 908->·743, 908->·747, 908->·750, 908->·752, 908->·755, 908->·756, 908->·757, 908->·758, 908->·759, 908->·761, 908->·762, 908->·767, 908->·769, 908->·771, 908->·773, 908->·774, 908->·777, 908->·779, 908->·784, 908->·785, 908->·790, 908->·792, 908->·793, 908->·795, 908->·796, 908->·797, 908->·798, 908->·799, 908->·805, 908->·806, 908->·807, 908->·809, 908->·811, 908->·812, 908->·814, 908->·817]
+ident_keywords_ambiguous_1_roles_and_labels(909): [909->·587, 909->·636, 909->·231]
+ident_keywords_ambiguous_2_labels(910): [910->·257, 910->·641, 910->·259, 910->·133, 910->·134, 910->·520, 910->·523, 910->·149, 910->·288, 910->·291, 910->·810, 910->·176, 910->·305, 910->·567, 910->·319, 910->·703, 910->·710, 910->·583, 910->·200, 910->·457, 910->·75, 910->·214, 910->·87, 910->·602, 910->·352, 910->·613, 910->·103, 910->·104, 910->·754, 910->·117, 910->·119, 910->·123, 910->·764, 910->·638, 910->·763]
+ident_keywords_ambiguous_3_roles(911): [911->·225, 911->·580, 911->·585, 911->·459, 911->·721, 911->·530, 911->·563, 911->·534, 911->·247]
+ident_keywords_ambiguous_4_system_variables(912): [912->·512, 912->·370, 912->·279, 912->·632, 912->·511]
+ident_general_keyword(913): [913->·908, 913->·909, 913->·910, 913->·911, 913->·912]
+ident_label_keyword(914): [914->·908, 914->·911, 914->·912]
+ident_role_keyword(915): [915->·908, 915->·910, 915->·912]
+ident_variable_keyword(916): [916->·908, 916->·909, 916->·910, 916->·911]
+ident(917): [917->·907, 917->·913]
+label_ident(918): [918->·907, 918->·914]
+role_ident(919): [919->·907, 919->·915]
+variable_ident(920): [920->·907, 920->·916]
+ident_2(921): [921->·917 28 917]
+ident_3(922): [922->·917 28 917 28 917]
+simple_ident(923): [923->·917, 923->·921, 923->·922]
+simple_ident_list(924): [924->·924 25 923, 924->·923]
+opt_ident(925): [925->·917, 925->·]
+order_direction(926): [926->·74, 926->·188]
+opt_order_direction(927): [927->·926, 927->·]
+order_expr(928): [928->·887 927]
+order_by_list(929): [929->·929 25 928, 929->·928]
+opt_order_by_clause(930): [930->·489 102 929, 930->·]
+S'(931): [931->·843]
 """
 
 from typing import Any, Callable, List, Optional, Tuple
@@ -1114,7 +1119,7 @@ def action_reduce_1_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 
 def action_reduce_2_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
-    symbol_value = ast.IntLiteral(value=symbol_stack[-1])
+    symbol_value = ast.IntLiteral.from_oct_string(symbol_stack[-1])
     next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 851)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
@@ -1123,7 +1128,7 @@ def action_reduce_2_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 def action_reduce_3_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.DecimalLiteral(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 852)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1131,7 +1136,7 @@ def action_reduce_3_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 def action_reduce_4_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.FloatLiteral(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 852)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1139,7 +1144,7 @@ def action_reduce_4_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 def action_reduce_5_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 852)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1147,7 +1152,7 @@ def action_reduce_5_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 def action_reduce_6_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.TemporalLiteral.create_date_literal(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 853)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 856)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1155,7 +1160,7 @@ def action_reduce_6_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 def action_reduce_8_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.TemporalLiteral.create_datetime_literal(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 853)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 856)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1163,7 +1168,7 @@ def action_reduce_8_1(status_stack: List[int], symbol_stack: List[Any], _: ms_pa
 
 def action_reduce_10_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.TemporalLiteral.create_time_literal(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 853)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 856)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1171,7 +1176,7 @@ def action_reduce_10_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_12_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.FalseLiteral()
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1179,7 +1184,7 @@ def action_reduce_12_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_13_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.BinStringLiteral(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1187,7 +1192,7 @@ def action_reduce_13_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_14_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.HexStringLiteral(value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1195,7 +1200,7 @@ def action_reduce_14_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_15_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.BinStringLiteral(value=symbol_stack[-1], charset=symbol_stack[-2])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1203,7 +1208,7 @@ def action_reduce_15_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_16_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.HexStringLiteral(value=symbol_stack[-1], charset=symbol_stack[-2])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1211,7 +1216,7 @@ def action_reduce_16_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_18_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.TrueLiteral()
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1219,7 +1224,7 @@ def action_reduce_18_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_19_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 854)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 857)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1227,7 +1232,7 @@ def action_reduce_19_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_22_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1].neg()
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 860)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 863)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1235,7 +1240,7 @@ def action_reduce_22_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_24_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 860)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 863)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1243,7 +1248,7 @@ def action_reduce_24_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_25_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 860)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 863)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1251,7 +1256,7 @@ def action_reduce_25_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_27_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnResponse(response_type=ast.JsonOnResponseTypeEnum.DEFAULT, default_value=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 886)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 890)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1259,7 +1264,7 @@ def action_reduce_27_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_29_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnResponse(response_type=ast.JsonOnResponseTypeEnum.ERROR)
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 886)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 890)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1267,7 +1272,7 @@ def action_reduce_29_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_30_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnResponse(response_type=ast.JsonOnResponseTypeEnum.NULL)
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 886)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 890)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1275,7 +1280,7 @@ def action_reduce_30_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_31_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-3]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-4], 887)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-4], 891)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-3:] = [symbol_value]  # 出栈 3 个参数，入栈新生成的非终结符的值
     status_stack[-3:] = [next_status]  # 出栈 3 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1283,7 +1288,7 @@ def action_reduce_31_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_36_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-3]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-4], 888)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-4], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-3:] = [symbol_value]  # 出栈 3 个参数，入栈新生成的非终结符的值
     status_stack[-3:] = [next_status]  # 出栈 3 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1291,7 +1296,7 @@ def action_reduce_36_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_39_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnEmptyOnError(on_empty=symbol_stack[-2], on_error=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 889)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1299,7 +1304,7 @@ def action_reduce_39_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_40_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnEmptyOnError(on_empty=symbol_stack[-1], on_error=ast.JsonOnResponse.implicit())
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 889)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1307,7 +1312,7 @@ def action_reduce_40_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_41_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnEmptyOnError(on_empty=symbol_stack[-1], on_error=symbol_stack[-2])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 889)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-3], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-2:] = [symbol_value]  # 出栈 2 个参数，入栈新生成的非终结符的值
     status_stack[-2:] = [next_status]  # 出栈 2 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1315,7 +1320,7 @@ def action_reduce_41_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_42_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnEmptyOnError(on_empty=ast.JsonOnResponse.implicit(), on_error=symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 889)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1323,7 +1328,7 @@ def action_reduce_42_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_44_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.JsonOnEmptyOnError(on_empty=ast.JsonOnResponse.implicit(), on_error=ast.JsonOnResponse.implicit())
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-1], 889)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-1], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack.append(symbol_value)  # 出栈 0 个参数（不出栈），入栈新生成的非终结符的值
     status_stack.append(next_status)  # 出栈 0 个参数（不出栈），入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -1819,24 +1824,24 @@ def status_44(status_stack: List[int], symbol_stack: List[Any], terminal: ms_par
 
 STATUS_SYMBOL_GOTO_HASH = {
     (23, 851): 5, 
-    (23, 852): 22, 
+    (23, 854): 22, 
     (26, 851): 5, 
-    (26, 852): 25, 
+    (26, 854): 25, 
     (28, 850): 19, 
     (28, 851): 5, 
-    (28, 852): 20, 
-    (28, 853): 21, 
-    (28, 854): 24, 
-    (28, 860): 27, 
-    (40, 886): 38, 
-    (40, 888): 39, 
-    (42, 886): 35, 
-    (42, 887): 41, 
+    (28, 854): 20, 
+    (28, 856): 21, 
+    (28, 857): 24, 
+    (28, 863): 27, 
+    (40, 890): 38, 
+    (40, 892): 39, 
+    (42, 890): 35, 
+    (42, 891): 41, 
     (44, 843): 43, 
-    (44, 886): 34, 
-    (44, 887): 40, 
-    (44, 888): 42, 
-    (44, 889): 0, 
+    (44, 890): 34, 
+    (44, 891): 40, 
+    (44, 892): 42, 
+    (44, 893): 0, 
 }
 
 

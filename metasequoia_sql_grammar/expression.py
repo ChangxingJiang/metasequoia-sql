@@ -8,13 +8,14 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "OPERATOR_COMPARE",
     "SIMPLE_EXPR",
     "BINARY_EXPR",
     "PREDICATE_EXPR",
     "BOOL_EXPR",
     "EXPR",
     "EXPR_LIST",
-    "OPERATOR_COMPARE",
+    "OPT_EXPR_LIST",
 ]
 
 # 比较运算符
@@ -233,7 +234,6 @@ BOOL_EXPR = ms_parser.create_group(
 )
 
 # 一般表达式 TODO 待完成
-# 对应 MySQL 语义组：expr、grouping_expr
 EXPR = ms_parser.create_group(
     name="expr",
     rules=[
@@ -295,7 +295,6 @@ EXPR = ms_parser.create_group(
 )
 
 # 逗号分隔的一般表达式列表
-# 对应 MySQL 语义组：expr_list、group_list
 EXPR_LIST = ms_parser.create_group(
     name="expr_list",
     rules=[
@@ -306,6 +305,60 @@ EXPR_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["expr"],
             action=lambda x: ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 可选的逗号分隔的一般表达式列表
+OPT_EXPR_LIST = ms_parser.create_group(
+    name="opt_expr_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr_list"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: []
+        )
+    ]
+)
+
+# UDF 表达式（自定义函数中的参数）
+UDF_EXPRESSION = ms_parser.create_group(
+    name="udf_expr",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr", "opt_select_alias"],
+            action=lambda x: ast.UdfExpression(expression=x[0], alias=x[1])
+        )
+    ]
+)
+
+# 逗号分隔的 UDF 表达式的列表
+UDF_EXPR_LIST = ms_parser.create_group(
+    name="udf_expr_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["udf_expr_list", TType.OPERATOR_COMMA, "udf_expr"],
+            action=lambda x: ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["udf_expr"],
+            action=lambda x: ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 可选的逗号分隔的 UDF 表达式的列表
+OPT_UDF_EXPR_LIST = ms_parser.create_group(
+    name="opt_udf_expr_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["udf_expr_list"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: []
         )
     ]
 )

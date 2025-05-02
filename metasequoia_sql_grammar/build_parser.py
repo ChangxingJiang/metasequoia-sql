@@ -12,6 +12,7 @@ from metasequoia_sql_grammar import expression
 from metasequoia_sql_grammar import field_type
 from metasequoia_sql_grammar import literal
 from metasequoia_sql_grammar.elements import json_table_option
+from metasequoia_sql_grammar.elements import alias
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
 from metasequoia_sql_grammar.ident import IDENT_SYS
@@ -197,6 +198,7 @@ def build_grammar():
         field_type,  # 字段类型
         expression,  # 表达式
         json_table_option,  # 基础元素 - JSON 表选项
+        alias,  # 基础元素 - 别名
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))

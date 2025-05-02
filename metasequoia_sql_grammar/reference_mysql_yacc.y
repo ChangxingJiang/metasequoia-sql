@@ -7517,15 +7517,6 @@ select_item:
           }
         ;
 
-
-select_alias:
-          %empty { $$=null_lex_str;}
-        | AS ident { $$=$2; }
-        | AS TEXT_STRING_validated { $$=$2; }
-        | ident { $$=$1; }
-        | TEXT_STRING_validated { $$=$1; }
-        ;
-
 /* all possible expressions */
 expr:
           expr or expr %prec OR_SYM
@@ -8367,36 +8358,6 @@ opt_query_expansion:
         | WITH QUERY_SYM EXPANSION_SYM          { $$= FT_EXPAND; }
         ;
 
-opt_udf_expr_list:
-          %empty { $$= nullptr; }
-        | udf_expr_list { $$= $1; }
-        ;
-
-udf_expr_list:
-          udf_expr
-          {
-            $$= NEW_PTN PT_item_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        | udf_expr_list ',' udf_expr
-          {
-            if ($1 == nullptr || $1->push_back($3))
-              MYSQL_YYABORT;
-            $$= $1;
-            // This will override earlier udf_expr_list, until
-            // we get the whole location.
-            $$->m_pos = @$;
-          }
-        ;
-
-udf_expr:
-          expr select_alias
-          {
-            $$= NEW_PTN PTI_udf_expr(@$, $1, $2, @1.cpp);
-          }
-        ;
-
 set_function_specification:
           sum_expr
         | grouping_operation
@@ -8702,11 +8663,6 @@ in_sum_expr:
           {
             $$= NEW_PTN PTI_in_sum_expr(@1, $2);
           }
-        ;
-
-opt_expr_list:
-          %empty { $$= nullptr; }
-        | expr_list
         ;
 
 ident_list_arg:
