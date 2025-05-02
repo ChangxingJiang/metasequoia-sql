@@ -7,16 +7,10 @@
 import metasequoia_parser as ms_parser
 
 from metasequoia_sql_grammar import basic
+from metasequoia_sql_grammar import charset
+from metasequoia_sql_grammar import expression
 from metasequoia_sql_grammar import field_type
 from metasequoia_sql_grammar import literal
-from metasequoia_sql_grammar import charset
-from metasequoia_sql_grammar.expression import BINARY_EXPR
-from metasequoia_sql_grammar.expression import BOOL_EXPR
-from metasequoia_sql_grammar.expression import EXPR
-from metasequoia_sql_grammar.expression import EXPR_LIST
-from metasequoia_sql_grammar.expression import OPERATOR_COMPARE
-from metasequoia_sql_grammar.expression import PREDICATE_EXPR
-from metasequoia_sql_grammar.expression import SIMPLE_EXPR
 from metasequoia_sql_grammar.ident import IDENT_2
 from metasequoia_sql_grammar.ident import IDENT_3
 from metasequoia_sql_grammar.ident import IDENT_SYS
@@ -195,20 +189,15 @@ def build_grammar():
         ]
     )
 
-    # 基础元素（basic）
-    for group_name in basic.__all__:
-        grammar_builder.group_append(getattr(basic, group_name))
-
-    # 字面值（literal）
-    for group_name in literal.__all__:
-        grammar_builder.group_append(getattr(literal, group_name))
-
-    for group_name in charset.__all__:
-        grammar_builder.group_append(getattr(charset, group_name))
-
-    # 字段类型（field type）
-    for group_name in field_type.__all__:
-        grammar_builder.group_append(getattr(field_type, group_name))
+    for module in [
+        basic,  # 基础元素
+        literal,  # 字面值
+        charset,  # 字符集
+        field_type,  # 字段类型
+        expression,  # 表达式
+    ]:
+        for group_name in module.__all__:
+            grammar_builder.group_append(getattr(module, group_name))
 
     # 时间单位类型
     grammar_builder.group_append(INTERVAL_TIME_UNIT)
@@ -247,16 +236,7 @@ def build_grammar():
     grammar_builder.group_append(SIMPLE_IDENT_LIST)
     grammar_builder.group_append(OPT_IDENT)
 
-    # 表达式
-    grammar_builder.group_append(OPERATOR_COMPARE)
-    grammar_builder.group_append(SIMPLE_EXPR)
-    grammar_builder.group_append(BINARY_EXPR)
-    grammar_builder.group_append(PREDICATE_EXPR)
-    grammar_builder.group_append(BOOL_EXPR)
-    grammar_builder.group_append(EXPR)
-
     # DQL 语句
-    grammar_builder.group_append(EXPR_LIST)
     grammar_builder.group_append(ORDER_DIRECTION)
     grammar_builder.group_append(OPT_ORDER_DIRECTION)
     grammar_builder.group_append(ORDER_EXPR)

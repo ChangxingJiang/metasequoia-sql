@@ -862,7 +862,7 @@ text_string_list(859): [859->·859 25 858, 859->·858]
 signed_literal(860): [860->·854, 860->·9 852, 860->·13 852]
 signed_literal_or_null(861): [861->·860, 861->·855]
 param_marker(862): [862->·54]
-ident_or_text(863): [863->·901, 863->·850, 863->·53]
+ident_or_text(863): [863->·908, 863->·850, 863->·53]
 charset_ascii(864): [864->·75, 864->·91 75, 864->·75 91]
 charset_unicode(865): [865->·763, 865->·91 763, 865->·763 91]
 charset_name(866): [866->·863, 866->·91]
@@ -878,47 +878,47 @@ field_option(875): [875->·638, 875->·770, 875->·816]
 field_option_list(876): [876->·876 875, 876->·875]
 opt_field_option_list(877): [877->·876, 877->·]
 field_type(878): [878->·321 869 877, 878->·745 869 877, 878->·643 869 877, 878->·422 869 877, 878->·90 869 877, 878->·547 871 877, 878->·201 871 877, 878->·201 522 871 877, 878->·254 873 877, 878->·178 873 877, 878->·470 873 877, 878->·253 873 877, 878->·93, 878->·93 868, 878->·96, 878->·97, 878->·115 868 867, 878->·115 867, 878->·847 868 91, 878->·847 868, 878->·847 91, 878->·847, 878->·91 868, 878->·91, 878->·848 868 867, 878->·849 868 91, 878->·849 868, 878->·787 868, 878->·814 869 877, 878->·169, 878->·740 868, 878->·741 868, 878->·170 868, 878->·744, 878->·94 869, 878->·421, 878->·380, 878->·273, 878->·274, 878->·517, 878->·441, 878->·367, 878->·440, 878->·518, 878->·442, 878->·379 787, 878->·379 848 867, 878->·746 867, 878->·735 869 867, 878->·423 867, 878->·381 867, 878->·220 23 859 24 867, 878->·633 23 859 24 867, 878->·379 867, 878->·629, 878->·343]
-interval_time_unit(879): [879->·880, 879->·815, 879->·172, 879->·174, 879->·175, 879->·173, 879->·299, 879->·300, 879->·298, 879->·433, 879->·432, 879->·624]
-time_unit(880): [880->·814, 880->·537, 880->·439, 880->·798, 880->·171, 880->·297, 880->·431, 880->·618, 880->·428]
-window_border_type(881): [881->·607, 881->·541, 881->·284]
-opt_window_exclude(882): [882->·230 158 606, 882->·230 282, 882->·230 739, 882->·230 457 492, 882->·]
-window_frame_start(883): [883->·757 521, 883->·852 521, 883->·862 521, 883->·329 915 879 521, 883->·158 606]
-window_frame_bound(884): [884->·883, 884->·757 258, 884->·852 258, 884->·862 258, 884->·329 915 879 258]
-window_frame_extent(885): [885->·883, 885->·89 884 70 884]
-opt_window_frame_clause(886): [886->·881 885 882, 886->·]
-opt_partition_clause(887): [887->·504 102 916, 887->·]
-window_name_or_spec(888): [888->·901, 888->·23 909 887 921 886 24]
-windowing_clause(889): [889->·496 888]
-opt_windowing_clause(890): [890->·889, 890->·]
-ident_sys(891): [891->·51, 891->·52]
-ident_keywords_unambiguous(892): [892->·56, 892->·57, 892->·58, 892->·60, 892->·61, 892->·62, 892->·63, 892->·64, 892->·65, 892->·68, 892->·71, 892->·72, 892->·77, 892->·78, 892->·79, 892->·80, 892->·81, 892->·83, 892->·84, 892->·85, 892->·92, 892->·93, 892->·95, 892->·96, 892->·97, 892->·99, 892->·100, 892->·101, 892->·107, 892->·109, 892->·110, 892->·111, 892->·113, 892->·114, 892->·120, 892->·121, 892->·122, 892->·124, 892->·125, 892->·126, 892->·128, 892->·130, 892->·131, 892->·132, 892->·135, 892->·136, 892->·137, 892->·138, 892->·139, 892->·140, 892->·141, 892->·143, 892->·144, 892->·146, 892->·147, 892->·148, 892->·150, 892->·153, 892->·158, 892->·164, 892->·165, 892->·168, 892->·169, 892->·170, 892->·171, 892->·181, 892->·182, 892->·183, 892->·185, 892->·190, 892->·192, 892->·193, 892->·194, 892->·195, 892->·196, 892->·204, 892->·205, 892->·206, 892->·211, 892->·213, 892->·215, 892->·216, 892->·217, 892->·218, 892->·219, 892->·220, 892->·221, 892->·222, 892->·223, 892->·226, 892->·227, 892->·229, 892->·230, 892->·234, 892->·235, 892->·237, 892->·238, 892->·239, 892->·240, 892->·241, 892->·243, 892->·244, 892->·248, 892->·249, 892->·250, 892->·251, 892->·253, 892->·258, 892->·263, 892->·264, 892->·266, 892->·269, 892->·270, 892->·273, 892->·274, 892->·276, 892->·277, 892->·278, 892->·281, 892->·285, 892->·286, 892->·287, 892->·289, 892->·293, 892->·294, 892->·295, 892->·296, 892->·297, 892->·301, 892->·304, 892->·307, 892->·309, 892->·311, 892->·312, 892->·313, 892->·318, 892->·320, 892->·331, 892->·332, 892->·333, 892->·337, 892->·339, 892->·340, 892->·343, 892->·345, 892->·347, 892->·349, 892->·353, 892->·359, 892->·361, 892->·362, 892->·367, 892->·368, 892->·374, 892->·375, 892->·376, 892->·377, 892->·378, 892->·385, 892->·386, 892->·388, 892->·389, 892->·390, 892->·391, 892->·392, 892->·393, 892->·394, 892->·395, 892->·396, 892->·397, 892->·398, 892->·399, 892->·400, 892->·401, 892->·402, 892->·403, 892->·404, 892->·405, 892->·406, 892->·408, 892->·409, 892->·410, 892->·411, 892->·414, 892->·415, 892->·416, 892->·417, 892->·418, 892->·419, 892->·420, 892->·424, 892->·425, 892->·426, 892->·427, 892->·428, 892->·430, 892->·431, 892->·434, 892->·436, 892->·438, 892->·439, 892->·440, 892->·441, 892->·442, 892->·443, 892->·444, 892->·445, 892->·446, 892->·447, 892->·449, 892->·451, 892->·452, 892->·453, 892->·454, 892->·455, 892->·456, 892->·458, 892->·462, 892->·463, 892->·468, 892->·469, 892->·471, 892->·473, 892->·474, 892->·475, 892->·476, 892->·478, 892->·479, 892->·480, 892->·484, 892->·486, 892->·490, 892->·491, 892->·492, 892->·497, 892->·498, 892->·499, 892->·501, 892->·502, 892->·503, 892->·505, 892->·506, 892->·507, 892->·508, 892->·509, 892->·513, 892->·514, 892->·515, 892->·516, 892->·517, 892->·518, 892->·519, 892->·521, 892->·524, 892->·525, 892->·527, 892->·528, 892->·531, 892->·532, 892->·533, 892->·537, 892->·538, 892->·539, 892->·540, 892->·545, 892->·548, 892->·549, 892->·551, 892->·552, 892->·553, 892->·556, 892->·557, 892->·558, 892->·559, 892->·560, 892->·561, 892->·564, 892->·566, 892->·569, 892->·571, 892->·572, 892->·573, 892->·574, 892->·575, 892->·576, 892->·577, 892->·578, 892->·579, 892->·582, 892->·586, 892->·588, 892->·590, 892->·591, 892->·593, 892->·594, 892->·595, 892->·596, 892->·597, 892->·601, 892->·603, 892->·604, 892->·605, 892->·608, 892->·609, 892->·611, 892->·612, 892->·614, 892->·617, 892->·618, 892->·619, 892->·620, 892->·621, 892->·622, 892->·623, 892->·625, 892->·629, 892->·630, 892->·631, 892->·634, 892->·639, 892->·640, 892->·642, 892->·644, 892->·645, 892->·647, 892->·648, 892->·649, 892->·650, 892->·651, 892->·652, 892->·653, 892->·654, 892->·655, 892->·656, 892->·657, 892->·658, 892->·659, 892->·660, 892->·661, 892->·662, 892->·663, 892->·664, 892->·665, 892->·666, 892->·667, 892->·668, 892->·669, 892->·670, 892->·671, 892->·672, 892->·673, 892->·674, 892->·675, 892->·682, 892->·683, 892->·684, 892->·686, 892->·688, 892->·690, 892->·699, 892->·701, 892->·702, 892->·705, 892->·706, 892->·707, 892->·708, 892->·709, 892->·711, 892->·714, 892->·715, 892->·716, 892->·717, 892->·718, 892->·719, 892->·720, 892->·722, 892->·723, 892->·724, 892->·727, 892->·729, 892->·730, 892->·731, 892->·732, 892->·733, 892->·735, 892->·736, 892->·738, 892->·739, 892->·740, 892->·741, 892->·742, 892->·743, 892->·747, 892->·750, 892->·752, 892->·755, 892->·756, 892->·757, 892->·758, 892->·759, 892->·761, 892->·762, 892->·767, 892->·769, 892->·771, 892->·773, 892->·774, 892->·777, 892->·779, 892->·784, 892->·785, 892->·790, 892->·792, 892->·793, 892->·795, 892->·796, 892->·797, 892->·798, 892->·799, 892->·805, 892->·806, 892->·807, 892->·809, 892->·811, 892->·812, 892->·814, 892->·817]
-ident_keywords_ambiguous_1_roles_and_labels(893): [893->·587, 893->·636, 893->·231]
-ident_keywords_ambiguous_2_labels(894): [894->·257, 894->·641, 894->·259, 894->·133, 894->·134, 894->·520, 894->·523, 894->·149, 894->·288, 894->·291, 894->·810, 894->·176, 894->·305, 894->·567, 894->·319, 894->·703, 894->·710, 894->·583, 894->·200, 894->·457, 894->·75, 894->·214, 894->·87, 894->·602, 894->·352, 894->·613, 894->·103, 894->·104, 894->·754, 894->·117, 894->·119, 894->·123, 894->·764, 894->·638, 894->·763]
-ident_keywords_ambiguous_3_roles(895): [895->·225, 895->·580, 895->·585, 895->·459, 895->·721, 895->·530, 895->·563, 895->·534, 895->·247]
-ident_keywords_ambiguous_4_system_variables(896): [896->·512, 896->·370, 896->·279, 896->·632, 896->·511]
-ident_general_keyword(897): [897->·892, 897->·893, 897->·894, 897->·895, 897->·896]
-ident_label_keyword(898): [898->·892, 898->·895, 898->·896]
-ident_role_keyword(899): [899->·892, 899->·894, 899->·896]
-ident_variable_keyword(900): [900->·892, 900->·893, 900->·894, 900->·895]
-ident(901): [901->·891, 901->·897]
-label_ident(902): [902->·891, 902->·898]
-role_ident(903): [903->·891, 903->·899]
-variable_ident(904): [904->·891, 904->·900]
-ident_2(905): [905->·901 28 901]
-ident_3(906): [906->·901 28 901 28 901]
-simple_ident(907): [907->·901, 907->·905, 907->·906]
-simple_ident_list(908): [908->·908 25 907, 908->·907]
-opt_ident(909): [909->·901, 909->·]
-operator_compare(910): [910->·16, 910->·33, 910->·34, 910->·15, 910->·35, 910->·14, 910->·36]
-simple_expr(911): [911->·907, 911->·856, 911->·9 911, 911->·13 911, 911->·11 911]
-binary_expr(912): [912->·912 21 912, 912->·912 20 912, 912->·912 38 912, 912->·912 39 912, 912->·912 9 912, 912->·912 13 912, 912->·912 17 912, 912->·912 18 912, 912->·912 12 912, 912->·912 199 912, 912->·912 435 912, 912->·912 10 912, 912->·911]
-predicate_expr(913): [913->·912 424 844 23 911 24, 913->·912 89 912 70 913, 913->·912 460 89 912 70 913, 913->·912 648 363 912, 913->·912 363 911, 913->·912 363 911 223 911, 913->·912 460 363 911, 913->·912 460 363 911 223 911, 913->·912 555 912, 913->·912 460 555 912, 913->·912]
-bool_expr(914): [914->·914 338 467, 914->·914 338 460 467, 914->·914 910 913, 914->·913]
-expr(915): [915->·915 487 915, 915->·915 813 915, 915->·915 70 915, 915->·460 915, 915->·914 338 753, 915->·914 338 460 753, 915->·914 338 242, 915->·914 338 460 242, 915->·914 338 767, 915->·914 338 460 767, 915->·914]
-expr_list(916): [916->·916 25 915, 916->·915]
+simple_expr(879): [879->·914, 879->·856, 879->·9 879, 879->·13 879, 879->·11 879]
+binary_expr(880): [880->·880 21 880, 880->·880 20 880, 880->·880 38 880, 880->·880 39 880, 880->·880 9 880, 880->·880 13 880, 880->·880 17 880, 880->·880 18 880, 880->·880 12 880, 880->·880 199 880, 880->·880 435 880, 880->·880 10 880, 880->·879]
+predicate_expr(881): [881->·880 424 844 23 879 24, 881->·880 89 880 70 881, 881->·880 460 89 880 70 881, 881->·880 648 363 880, 881->·880 363 879, 881->·880 363 879 223 879, 881->·880 460 363 879, 881->·880 460 363 879 223 879, 881->·880 555 880, 881->·880 460 555 880, 881->·880]
+bool_expr(882): [882->·882 338 467, 882->·882 338 460 467, 882->·882 885 881, 882->·881]
+expr(883): [883->·883 487 883, 883->·883 813 883, 883->·883 70 883, 883->·460 883, 883->·882 338 753, 883->·882 338 460 753, 883->·882 338 242, 883->·882 338 460 242, 883->·882 338 767, 883->·882 338 460 767, 883->·882]
+expr_list(884): [884->·884 25 883, 884->·883]
+operator_compare(885): [885->·16, 885->·33, 885->·34, 885->·15, 885->·35, 885->·14, 885->·36]
+interval_time_unit(886): [886->·887, 886->·815, 886->·172, 886->·174, 886->·175, 886->·173, 886->·299, 886->·300, 886->·298, 886->·433, 886->·432, 886->·624]
+time_unit(887): [887->·814, 887->·537, 887->·439, 887->·798, 887->·171, 887->·297, 887->·431, 887->·618, 887->·428]
+window_border_type(888): [888->·607, 888->·541, 888->·284]
+opt_window_exclude(889): [889->·230 158 606, 889->·230 282, 889->·230 739, 889->·230 457 492, 889->·]
+window_frame_start(890): [890->·757 521, 890->·852 521, 890->·862 521, 890->·329 883 886 521, 890->·158 606]
+window_frame_bound(891): [891->·890, 891->·757 258, 891->·852 258, 891->·862 258, 891->·329 883 886 258]
+window_frame_extent(892): [892->·890, 892->·89 891 70 891]
+opt_window_frame_clause(893): [893->·888 892 889, 893->·]
+opt_partition_clause(894): [894->·504 102 884, 894->·]
+window_name_or_spec(895): [895->·908, 895->·23 916 894 921 893 24]
+windowing_clause(896): [896->·496 895]
+opt_windowing_clause(897): [897->·896, 897->·]
+ident_sys(898): [898->·51, 898->·52]
+ident_keywords_unambiguous(899): [899->·56, 899->·57, 899->·58, 899->·60, 899->·61, 899->·62, 899->·63, 899->·64, 899->·65, 899->·68, 899->·71, 899->·72, 899->·77, 899->·78, 899->·79, 899->·80, 899->·81, 899->·83, 899->·84, 899->·85, 899->·92, 899->·93, 899->·95, 899->·96, 899->·97, 899->·99, 899->·100, 899->·101, 899->·107, 899->·109, 899->·110, 899->·111, 899->·113, 899->·114, 899->·120, 899->·121, 899->·122, 899->·124, 899->·125, 899->·126, 899->·128, 899->·130, 899->·131, 899->·132, 899->·135, 899->·136, 899->·137, 899->·138, 899->·139, 899->·140, 899->·141, 899->·143, 899->·144, 899->·146, 899->·147, 899->·148, 899->·150, 899->·153, 899->·158, 899->·164, 899->·165, 899->·168, 899->·169, 899->·170, 899->·171, 899->·181, 899->·182, 899->·183, 899->·185, 899->·190, 899->·192, 899->·193, 899->·194, 899->·195, 899->·196, 899->·204, 899->·205, 899->·206, 899->·211, 899->·213, 899->·215, 899->·216, 899->·217, 899->·218, 899->·219, 899->·220, 899->·221, 899->·222, 899->·223, 899->·226, 899->·227, 899->·229, 899->·230, 899->·234, 899->·235, 899->·237, 899->·238, 899->·239, 899->·240, 899->·241, 899->·243, 899->·244, 899->·248, 899->·249, 899->·250, 899->·251, 899->·253, 899->·258, 899->·263, 899->·264, 899->·266, 899->·269, 899->·270, 899->·273, 899->·274, 899->·276, 899->·277, 899->·278, 899->·281, 899->·285, 899->·286, 899->·287, 899->·289, 899->·293, 899->·294, 899->·295, 899->·296, 899->·297, 899->·301, 899->·304, 899->·307, 899->·309, 899->·311, 899->·312, 899->·313, 899->·318, 899->·320, 899->·331, 899->·332, 899->·333, 899->·337, 899->·339, 899->·340, 899->·343, 899->·345, 899->·347, 899->·349, 899->·353, 899->·359, 899->·361, 899->·362, 899->·367, 899->·368, 899->·374, 899->·375, 899->·376, 899->·377, 899->·378, 899->·385, 899->·386, 899->·388, 899->·389, 899->·390, 899->·391, 899->·392, 899->·393, 899->·394, 899->·395, 899->·396, 899->·397, 899->·398, 899->·399, 899->·400, 899->·401, 899->·402, 899->·403, 899->·404, 899->·405, 899->·406, 899->·408, 899->·409, 899->·410, 899->·411, 899->·414, 899->·415, 899->·416, 899->·417, 899->·418, 899->·419, 899->·420, 899->·424, 899->·425, 899->·426, 899->·427, 899->·428, 899->·430, 899->·431, 899->·434, 899->·436, 899->·438, 899->·439, 899->·440, 899->·441, 899->·442, 899->·443, 899->·444, 899->·445, 899->·446, 899->·447, 899->·449, 899->·451, 899->·452, 899->·453, 899->·454, 899->·455, 899->·456, 899->·458, 899->·462, 899->·463, 899->·468, 899->·469, 899->·471, 899->·473, 899->·474, 899->·475, 899->·476, 899->·478, 899->·479, 899->·480, 899->·484, 899->·486, 899->·490, 899->·491, 899->·492, 899->·497, 899->·498, 899->·499, 899->·501, 899->·502, 899->·503, 899->·505, 899->·506, 899->·507, 899->·508, 899->·509, 899->·513, 899->·514, 899->·515, 899->·516, 899->·517, 899->·518, 899->·519, 899->·521, 899->·524, 899->·525, 899->·527, 899->·528, 899->·531, 899->·532, 899->·533, 899->·537, 899->·538, 899->·539, 899->·540, 899->·545, 899->·548, 899->·549, 899->·551, 899->·552, 899->·553, 899->·556, 899->·557, 899->·558, 899->·559, 899->·560, 899->·561, 899->·564, 899->·566, 899->·569, 899->·571, 899->·572, 899->·573, 899->·574, 899->·575, 899->·576, 899->·577, 899->·578, 899->·579, 899->·582, 899->·586, 899->·588, 899->·590, 899->·591, 899->·593, 899->·594, 899->·595, 899->·596, 899->·597, 899->·601, 899->·603, 899->·604, 899->·605, 899->·608, 899->·609, 899->·611, 899->·612, 899->·614, 899->·617, 899->·618, 899->·619, 899->·620, 899->·621, 899->·622, 899->·623, 899->·625, 899->·629, 899->·630, 899->·631, 899->·634, 899->·639, 899->·640, 899->·642, 899->·644, 899->·645, 899->·647, 899->·648, 899->·649, 899->·650, 899->·651, 899->·652, 899->·653, 899->·654, 899->·655, 899->·656, 899->·657, 899->·658, 899->·659, 899->·660, 899->·661, 899->·662, 899->·663, 899->·664, 899->·665, 899->·666, 899->·667, 899->·668, 899->·669, 899->·670, 899->·671, 899->·672, 899->·673, 899->·674, 899->·675, 899->·682, 899->·683, 899->·684, 899->·686, 899->·688, 899->·690, 899->·699, 899->·701, 899->·702, 899->·705, 899->·706, 899->·707, 899->·708, 899->·709, 899->·711, 899->·714, 899->·715, 899->·716, 899->·717, 899->·718, 899->·719, 899->·720, 899->·722, 899->·723, 899->·724, 899->·727, 899->·729, 899->·730, 899->·731, 899->·732, 899->·733, 899->·735, 899->·736, 899->·738, 899->·739, 899->·740, 899->·741, 899->·742, 899->·743, 899->·747, 899->·750, 899->·752, 899->·755, 899->·756, 899->·757, 899->·758, 899->·759, 899->·761, 899->·762, 899->·767, 899->·769, 899->·771, 899->·773, 899->·774, 899->·777, 899->·779, 899->·784, 899->·785, 899->·790, 899->·792, 899->·793, 899->·795, 899->·796, 899->·797, 899->·798, 899->·799, 899->·805, 899->·806, 899->·807, 899->·809, 899->·811, 899->·812, 899->·814, 899->·817]
+ident_keywords_ambiguous_1_roles_and_labels(900): [900->·587, 900->·636, 900->·231]
+ident_keywords_ambiguous_2_labels(901): [901->·257, 901->·641, 901->·259, 901->·133, 901->·134, 901->·520, 901->·523, 901->·149, 901->·288, 901->·291, 901->·810, 901->·176, 901->·305, 901->·567, 901->·319, 901->·703, 901->·710, 901->·583, 901->·200, 901->·457, 901->·75, 901->·214, 901->·87, 901->·602, 901->·352, 901->·613, 901->·103, 901->·104, 901->·754, 901->·117, 901->·119, 901->·123, 901->·764, 901->·638, 901->·763]
+ident_keywords_ambiguous_3_roles(902): [902->·225, 902->·580, 902->·585, 902->·459, 902->·721, 902->·530, 902->·563, 902->·534, 902->·247]
+ident_keywords_ambiguous_4_system_variables(903): [903->·512, 903->·370, 903->·279, 903->·632, 903->·511]
+ident_general_keyword(904): [904->·899, 904->·900, 904->·901, 904->·902, 904->·903]
+ident_label_keyword(905): [905->·899, 905->·902, 905->·903]
+ident_role_keyword(906): [906->·899, 906->·901, 906->·903]
+ident_variable_keyword(907): [907->·899, 907->·900, 907->·901, 907->·902]
+ident(908): [908->·898, 908->·904]
+label_ident(909): [909->·898, 909->·905]
+role_ident(910): [910->·898, 910->·906]
+variable_ident(911): [911->·898, 911->·907]
+ident_2(912): [912->·908 28 908]
+ident_3(913): [913->·908 28 908 28 908]
+simple_ident(914): [914->·908, 914->·912, 914->·913]
+simple_ident_list(915): [915->·915 25 914, 915->·914]
+opt_ident(916): [916->·908, 916->·]
 order_direction(917): [917->·74, 917->·188]
 opt_order_direction(918): [918->·917, 918->·]
-order_expr(919): [919->·915 918]
+order_expr(919): [919->·883 918]
 order_by_list(920): [920->·920 25 919, 920->·919]
 opt_order_by_clause(921): [921->·489 102 920, 921->·]
 S'(922): [922->·843]
@@ -4077,7 +4077,7 @@ def action_reduce_23_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_25_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 891)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 898)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4085,7 +4085,7 @@ def action_reduce_25_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_26_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 891)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 898)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4093,7 +4093,7 @@ def action_reduce_26_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_27_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4101,7 +4101,7 @@ def action_reduce_27_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_28_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4109,7 +4109,7 @@ def action_reduce_28_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_29_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4117,7 +4117,7 @@ def action_reduce_29_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_30_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4125,7 +4125,7 @@ def action_reduce_30_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_31_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4133,7 +4133,7 @@ def action_reduce_31_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_32_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4141,7 +4141,7 @@ def action_reduce_32_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_33_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4149,7 +4149,7 @@ def action_reduce_33_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_34_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4157,7 +4157,7 @@ def action_reduce_34_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_35_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4165,7 +4165,7 @@ def action_reduce_35_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_36_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4173,7 +4173,7 @@ def action_reduce_36_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_37_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4181,7 +4181,7 @@ def action_reduce_37_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_38_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4189,7 +4189,7 @@ def action_reduce_38_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_39_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4197,7 +4197,7 @@ def action_reduce_39_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_40_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4205,7 +4205,7 @@ def action_reduce_40_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_41_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4213,7 +4213,7 @@ def action_reduce_41_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_42_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4221,7 +4221,7 @@ def action_reduce_42_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_43_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4229,7 +4229,7 @@ def action_reduce_43_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_44_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4237,7 +4237,7 @@ def action_reduce_44_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_45_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4245,7 +4245,7 @@ def action_reduce_45_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_46_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4253,7 +4253,7 @@ def action_reduce_46_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_47_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4261,7 +4261,7 @@ def action_reduce_47_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_48_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4269,7 +4269,7 @@ def action_reduce_48_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_49_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4277,7 +4277,7 @@ def action_reduce_49_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_50_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4285,7 +4285,7 @@ def action_reduce_50_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_51_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4293,7 +4293,7 @@ def action_reduce_51_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_52_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4301,7 +4301,7 @@ def action_reduce_52_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_53_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4309,7 +4309,7 @@ def action_reduce_53_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_54_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4317,7 +4317,7 @@ def action_reduce_54_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_55_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4325,7 +4325,7 @@ def action_reduce_55_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_56_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4333,7 +4333,7 @@ def action_reduce_56_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_57_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4341,7 +4341,7 @@ def action_reduce_57_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_58_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4349,7 +4349,7 @@ def action_reduce_58_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_59_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4357,7 +4357,7 @@ def action_reduce_59_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_60_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4365,7 +4365,7 @@ def action_reduce_60_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_61_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4373,7 +4373,7 @@ def action_reduce_61_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_62_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4381,7 +4381,7 @@ def action_reduce_62_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_63_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4389,7 +4389,7 @@ def action_reduce_63_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_64_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4397,7 +4397,7 @@ def action_reduce_64_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_65_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4405,7 +4405,7 @@ def action_reduce_65_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_66_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4413,7 +4413,7 @@ def action_reduce_66_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_67_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4421,7 +4421,7 @@ def action_reduce_67_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_68_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4429,7 +4429,7 @@ def action_reduce_68_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_69_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4437,7 +4437,7 @@ def action_reduce_69_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_70_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4445,7 +4445,7 @@ def action_reduce_70_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_71_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4453,7 +4453,7 @@ def action_reduce_71_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_72_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4461,7 +4461,7 @@ def action_reduce_72_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_73_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4469,7 +4469,7 @@ def action_reduce_73_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_74_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4477,7 +4477,7 @@ def action_reduce_74_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_75_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4485,7 +4485,7 @@ def action_reduce_75_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_76_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4493,7 +4493,7 @@ def action_reduce_76_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_77_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4501,7 +4501,7 @@ def action_reduce_77_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_78_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4509,7 +4509,7 @@ def action_reduce_78_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_79_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4517,7 +4517,7 @@ def action_reduce_79_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_80_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4525,7 +4525,7 @@ def action_reduce_80_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_81_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4533,7 +4533,7 @@ def action_reduce_81_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_82_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4541,7 +4541,7 @@ def action_reduce_82_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_83_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4549,7 +4549,7 @@ def action_reduce_83_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_84_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4557,7 +4557,7 @@ def action_reduce_84_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_85_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4565,7 +4565,7 @@ def action_reduce_85_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_86_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4573,7 +4573,7 @@ def action_reduce_86_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_87_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4581,7 +4581,7 @@ def action_reduce_87_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_88_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4589,7 +4589,7 @@ def action_reduce_88_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_89_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4597,7 +4597,7 @@ def action_reduce_89_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_90_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4605,7 +4605,7 @@ def action_reduce_90_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_91_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4613,7 +4613,7 @@ def action_reduce_91_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_92_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4621,7 +4621,7 @@ def action_reduce_92_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_93_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4629,7 +4629,7 @@ def action_reduce_93_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_94_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4637,7 +4637,7 @@ def action_reduce_94_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_95_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4645,7 +4645,7 @@ def action_reduce_95_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_96_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4653,7 +4653,7 @@ def action_reduce_96_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_97_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4661,7 +4661,7 @@ def action_reduce_97_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_98_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4669,7 +4669,7 @@ def action_reduce_98_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_99_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4677,7 +4677,7 @@ def action_reduce_99_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 def action_reduce_100_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4685,7 +4685,7 @@ def action_reduce_100_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_101_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4693,7 +4693,7 @@ def action_reduce_101_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_102_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4701,7 +4701,7 @@ def action_reduce_102_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_103_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4709,7 +4709,7 @@ def action_reduce_103_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_104_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4717,7 +4717,7 @@ def action_reduce_104_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_105_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4725,7 +4725,7 @@ def action_reduce_105_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_106_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4733,7 +4733,7 @@ def action_reduce_106_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_107_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4741,7 +4741,7 @@ def action_reduce_107_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_108_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4749,7 +4749,7 @@ def action_reduce_108_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_109_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4757,7 +4757,7 @@ def action_reduce_109_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_110_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4765,7 +4765,7 @@ def action_reduce_110_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_111_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4773,7 +4773,7 @@ def action_reduce_111_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_112_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4781,7 +4781,7 @@ def action_reduce_112_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_113_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4789,7 +4789,7 @@ def action_reduce_113_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_114_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4797,7 +4797,7 @@ def action_reduce_114_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_115_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4805,7 +4805,7 @@ def action_reduce_115_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_116_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4813,7 +4813,7 @@ def action_reduce_116_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_117_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4821,7 +4821,7 @@ def action_reduce_117_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_118_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4829,7 +4829,7 @@ def action_reduce_118_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_119_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4837,7 +4837,7 @@ def action_reduce_119_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_120_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4845,7 +4845,7 @@ def action_reduce_120_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_121_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4853,7 +4853,7 @@ def action_reduce_121_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_122_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4861,7 +4861,7 @@ def action_reduce_122_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_123_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4869,7 +4869,7 @@ def action_reduce_123_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_124_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4877,7 +4877,7 @@ def action_reduce_124_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_125_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4885,7 +4885,7 @@ def action_reduce_125_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_126_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4893,7 +4893,7 @@ def action_reduce_126_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_127_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4901,7 +4901,7 @@ def action_reduce_127_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_128_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4909,7 +4909,7 @@ def action_reduce_128_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_129_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4917,7 +4917,7 @@ def action_reduce_129_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_130_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4925,7 +4925,7 @@ def action_reduce_130_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_131_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4933,7 +4933,7 @@ def action_reduce_131_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_132_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4941,7 +4941,7 @@ def action_reduce_132_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_133_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4949,7 +4949,7 @@ def action_reduce_133_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_134_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4957,7 +4957,7 @@ def action_reduce_134_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_135_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4965,7 +4965,7 @@ def action_reduce_135_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_136_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4973,7 +4973,7 @@ def action_reduce_136_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_137_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4981,7 +4981,7 @@ def action_reduce_137_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_138_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4989,7 +4989,7 @@ def action_reduce_138_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_139_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -4997,7 +4997,7 @@ def action_reduce_139_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_140_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5005,7 +5005,7 @@ def action_reduce_140_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_141_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5013,7 +5013,7 @@ def action_reduce_141_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_142_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5021,7 +5021,7 @@ def action_reduce_142_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_143_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5029,7 +5029,7 @@ def action_reduce_143_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_144_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5037,7 +5037,7 @@ def action_reduce_144_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_145_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5045,7 +5045,7 @@ def action_reduce_145_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_146_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5053,7 +5053,7 @@ def action_reduce_146_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_147_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5061,7 +5061,7 @@ def action_reduce_147_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_148_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5069,7 +5069,7 @@ def action_reduce_148_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_149_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5077,7 +5077,7 @@ def action_reduce_149_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_150_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5085,7 +5085,7 @@ def action_reduce_150_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_151_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5093,7 +5093,7 @@ def action_reduce_151_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_152_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5101,7 +5101,7 @@ def action_reduce_152_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_153_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5109,7 +5109,7 @@ def action_reduce_153_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_154_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5117,7 +5117,7 @@ def action_reduce_154_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_155_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5125,7 +5125,7 @@ def action_reduce_155_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_156_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5133,7 +5133,7 @@ def action_reduce_156_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_157_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5141,7 +5141,7 @@ def action_reduce_157_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_158_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5149,7 +5149,7 @@ def action_reduce_158_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_159_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5157,7 +5157,7 @@ def action_reduce_159_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_160_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5165,7 +5165,7 @@ def action_reduce_160_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_161_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5173,7 +5173,7 @@ def action_reduce_161_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_162_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5181,7 +5181,7 @@ def action_reduce_162_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_163_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5189,7 +5189,7 @@ def action_reduce_163_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_164_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5197,7 +5197,7 @@ def action_reduce_164_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_165_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5205,7 +5205,7 @@ def action_reduce_165_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_166_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5213,7 +5213,7 @@ def action_reduce_166_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_167_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5221,7 +5221,7 @@ def action_reduce_167_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_168_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5229,7 +5229,7 @@ def action_reduce_168_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_169_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5237,7 +5237,7 @@ def action_reduce_169_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_170_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5245,7 +5245,7 @@ def action_reduce_170_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_171_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5253,7 +5253,7 @@ def action_reduce_171_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_172_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5261,7 +5261,7 @@ def action_reduce_172_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_173_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5269,7 +5269,7 @@ def action_reduce_173_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_174_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5277,7 +5277,7 @@ def action_reduce_174_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_175_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5285,7 +5285,7 @@ def action_reduce_175_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_176_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5293,7 +5293,7 @@ def action_reduce_176_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_177_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5301,7 +5301,7 @@ def action_reduce_177_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_178_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5309,7 +5309,7 @@ def action_reduce_178_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_179_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5317,7 +5317,7 @@ def action_reduce_179_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_180_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5325,7 +5325,7 @@ def action_reduce_180_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_181_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5333,7 +5333,7 @@ def action_reduce_181_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_182_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5341,7 +5341,7 @@ def action_reduce_182_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_183_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5349,7 +5349,7 @@ def action_reduce_183_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_184_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5357,7 +5357,7 @@ def action_reduce_184_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_185_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5365,7 +5365,7 @@ def action_reduce_185_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_186_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5373,7 +5373,7 @@ def action_reduce_186_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_187_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5381,7 +5381,7 @@ def action_reduce_187_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_188_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5389,7 +5389,7 @@ def action_reduce_188_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_189_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5397,7 +5397,7 @@ def action_reduce_189_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_190_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5405,7 +5405,7 @@ def action_reduce_190_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_191_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5413,7 +5413,7 @@ def action_reduce_191_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_192_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5421,7 +5421,7 @@ def action_reduce_192_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_193_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5429,7 +5429,7 @@ def action_reduce_193_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_194_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5437,7 +5437,7 @@ def action_reduce_194_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_195_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5445,7 +5445,7 @@ def action_reduce_195_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_196_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5453,7 +5453,7 @@ def action_reduce_196_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_197_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5461,7 +5461,7 @@ def action_reduce_197_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_198_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5469,7 +5469,7 @@ def action_reduce_198_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_199_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5477,7 +5477,7 @@ def action_reduce_199_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_200_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5485,7 +5485,7 @@ def action_reduce_200_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_201_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5493,7 +5493,7 @@ def action_reduce_201_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_202_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5501,7 +5501,7 @@ def action_reduce_202_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_203_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5509,7 +5509,7 @@ def action_reduce_203_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_204_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5517,7 +5517,7 @@ def action_reduce_204_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_205_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5525,7 +5525,7 @@ def action_reduce_205_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_206_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5533,7 +5533,7 @@ def action_reduce_206_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_207_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5541,7 +5541,7 @@ def action_reduce_207_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_208_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5549,7 +5549,7 @@ def action_reduce_208_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_209_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5557,7 +5557,7 @@ def action_reduce_209_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_210_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5565,7 +5565,7 @@ def action_reduce_210_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_211_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5573,7 +5573,7 @@ def action_reduce_211_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_212_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5581,7 +5581,7 @@ def action_reduce_212_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_213_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5589,7 +5589,7 @@ def action_reduce_213_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_214_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5597,7 +5597,7 @@ def action_reduce_214_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_215_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5605,7 +5605,7 @@ def action_reduce_215_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_216_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5613,7 +5613,7 @@ def action_reduce_216_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_217_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5621,7 +5621,7 @@ def action_reduce_217_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_218_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5629,7 +5629,7 @@ def action_reduce_218_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_219_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5637,7 +5637,7 @@ def action_reduce_219_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_220_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5645,7 +5645,7 @@ def action_reduce_220_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_221_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5653,7 +5653,7 @@ def action_reduce_221_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_222_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5661,7 +5661,7 @@ def action_reduce_222_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_223_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5669,7 +5669,7 @@ def action_reduce_223_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_224_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5677,7 +5677,7 @@ def action_reduce_224_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_225_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5685,7 +5685,7 @@ def action_reduce_225_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_226_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5693,7 +5693,7 @@ def action_reduce_226_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_227_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5701,7 +5701,7 @@ def action_reduce_227_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_228_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5709,7 +5709,7 @@ def action_reduce_228_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_229_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5717,7 +5717,7 @@ def action_reduce_229_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_230_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5725,7 +5725,7 @@ def action_reduce_230_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_231_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5733,7 +5733,7 @@ def action_reduce_231_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_232_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5741,7 +5741,7 @@ def action_reduce_232_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_233_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5749,7 +5749,7 @@ def action_reduce_233_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_234_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5757,7 +5757,7 @@ def action_reduce_234_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_235_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5765,7 +5765,7 @@ def action_reduce_235_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_236_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5773,7 +5773,7 @@ def action_reduce_236_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_237_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5781,7 +5781,7 @@ def action_reduce_237_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_238_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5789,7 +5789,7 @@ def action_reduce_238_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_239_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5797,7 +5797,7 @@ def action_reduce_239_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_240_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5805,7 +5805,7 @@ def action_reduce_240_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_241_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5813,7 +5813,7 @@ def action_reduce_241_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_242_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5821,7 +5821,7 @@ def action_reduce_242_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_243_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5829,7 +5829,7 @@ def action_reduce_243_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_244_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5837,7 +5837,7 @@ def action_reduce_244_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_245_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5845,7 +5845,7 @@ def action_reduce_245_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_246_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5853,7 +5853,7 @@ def action_reduce_246_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_247_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5861,7 +5861,7 @@ def action_reduce_247_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_248_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5869,7 +5869,7 @@ def action_reduce_248_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_249_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5877,7 +5877,7 @@ def action_reduce_249_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_250_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5885,7 +5885,7 @@ def action_reduce_250_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_251_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5893,7 +5893,7 @@ def action_reduce_251_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_252_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5901,7 +5901,7 @@ def action_reduce_252_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_253_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5909,7 +5909,7 @@ def action_reduce_253_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_254_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5917,7 +5917,7 @@ def action_reduce_254_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_255_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5925,7 +5925,7 @@ def action_reduce_255_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_256_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5933,7 +5933,7 @@ def action_reduce_256_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_257_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5941,7 +5941,7 @@ def action_reduce_257_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_258_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5949,7 +5949,7 @@ def action_reduce_258_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_259_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5957,7 +5957,7 @@ def action_reduce_259_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_260_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5965,7 +5965,7 @@ def action_reduce_260_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_261_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5973,7 +5973,7 @@ def action_reduce_261_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_262_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5981,7 +5981,7 @@ def action_reduce_262_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_263_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5989,7 +5989,7 @@ def action_reduce_263_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_264_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -5997,7 +5997,7 @@ def action_reduce_264_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_265_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6005,7 +6005,7 @@ def action_reduce_265_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_266_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6013,7 +6013,7 @@ def action_reduce_266_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_267_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6021,7 +6021,7 @@ def action_reduce_267_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_268_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6029,7 +6029,7 @@ def action_reduce_268_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_269_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6037,7 +6037,7 @@ def action_reduce_269_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_270_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6045,7 +6045,7 @@ def action_reduce_270_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_271_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6053,7 +6053,7 @@ def action_reduce_271_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_272_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6061,7 +6061,7 @@ def action_reduce_272_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_273_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6069,7 +6069,7 @@ def action_reduce_273_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_274_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6077,7 +6077,7 @@ def action_reduce_274_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_275_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6085,7 +6085,7 @@ def action_reduce_275_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_276_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6093,7 +6093,7 @@ def action_reduce_276_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_277_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6101,7 +6101,7 @@ def action_reduce_277_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_278_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6109,7 +6109,7 @@ def action_reduce_278_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_279_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6117,7 +6117,7 @@ def action_reduce_279_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_280_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6125,7 +6125,7 @@ def action_reduce_280_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_281_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6133,7 +6133,7 @@ def action_reduce_281_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_282_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6141,7 +6141,7 @@ def action_reduce_282_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_283_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6149,7 +6149,7 @@ def action_reduce_283_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_284_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6157,7 +6157,7 @@ def action_reduce_284_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_285_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6165,7 +6165,7 @@ def action_reduce_285_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_286_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6173,7 +6173,7 @@ def action_reduce_286_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_287_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6181,7 +6181,7 @@ def action_reduce_287_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_288_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6189,7 +6189,7 @@ def action_reduce_288_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_289_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6197,7 +6197,7 @@ def action_reduce_289_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_290_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6205,7 +6205,7 @@ def action_reduce_290_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_291_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6213,7 +6213,7 @@ def action_reduce_291_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_292_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6221,7 +6221,7 @@ def action_reduce_292_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_293_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6229,7 +6229,7 @@ def action_reduce_293_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_294_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6237,7 +6237,7 @@ def action_reduce_294_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_295_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6245,7 +6245,7 @@ def action_reduce_295_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_296_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6253,7 +6253,7 @@ def action_reduce_296_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_297_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6261,7 +6261,7 @@ def action_reduce_297_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_298_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6269,7 +6269,7 @@ def action_reduce_298_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_299_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6277,7 +6277,7 @@ def action_reduce_299_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_300_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6285,7 +6285,7 @@ def action_reduce_300_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_301_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6293,7 +6293,7 @@ def action_reduce_301_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_302_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6301,7 +6301,7 @@ def action_reduce_302_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_303_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6309,7 +6309,7 @@ def action_reduce_303_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_304_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6317,7 +6317,7 @@ def action_reduce_304_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_305_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6325,7 +6325,7 @@ def action_reduce_305_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_306_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6333,7 +6333,7 @@ def action_reduce_306_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_307_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6341,7 +6341,7 @@ def action_reduce_307_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_308_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6349,7 +6349,7 @@ def action_reduce_308_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_309_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6357,7 +6357,7 @@ def action_reduce_309_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_310_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6365,7 +6365,7 @@ def action_reduce_310_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_311_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6373,7 +6373,7 @@ def action_reduce_311_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_312_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6381,7 +6381,7 @@ def action_reduce_312_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_313_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6389,7 +6389,7 @@ def action_reduce_313_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_314_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6397,7 +6397,7 @@ def action_reduce_314_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_315_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6405,7 +6405,7 @@ def action_reduce_315_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_316_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6413,7 +6413,7 @@ def action_reduce_316_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_317_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6421,7 +6421,7 @@ def action_reduce_317_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_318_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6429,7 +6429,7 @@ def action_reduce_318_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_319_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6437,7 +6437,7 @@ def action_reduce_319_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_320_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6445,7 +6445,7 @@ def action_reduce_320_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_321_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6453,7 +6453,7 @@ def action_reduce_321_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_322_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6461,7 +6461,7 @@ def action_reduce_322_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_323_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6469,7 +6469,7 @@ def action_reduce_323_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_324_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6477,7 +6477,7 @@ def action_reduce_324_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_325_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6485,7 +6485,7 @@ def action_reduce_325_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_326_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6493,7 +6493,7 @@ def action_reduce_326_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_327_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6501,7 +6501,7 @@ def action_reduce_327_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_328_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6509,7 +6509,7 @@ def action_reduce_328_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_329_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6517,7 +6517,7 @@ def action_reduce_329_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_330_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6525,7 +6525,7 @@ def action_reduce_330_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_331_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6533,7 +6533,7 @@ def action_reduce_331_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_332_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6541,7 +6541,7 @@ def action_reduce_332_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_333_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6549,7 +6549,7 @@ def action_reduce_333_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_334_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6557,7 +6557,7 @@ def action_reduce_334_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_335_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6565,7 +6565,7 @@ def action_reduce_335_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_336_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6573,7 +6573,7 @@ def action_reduce_336_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_337_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6581,7 +6581,7 @@ def action_reduce_337_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_338_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6589,7 +6589,7 @@ def action_reduce_338_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_339_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6597,7 +6597,7 @@ def action_reduce_339_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_340_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6605,7 +6605,7 @@ def action_reduce_340_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_341_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6613,7 +6613,7 @@ def action_reduce_341_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_342_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6621,7 +6621,7 @@ def action_reduce_342_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_343_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6629,7 +6629,7 @@ def action_reduce_343_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_344_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6637,7 +6637,7 @@ def action_reduce_344_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_345_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6645,7 +6645,7 @@ def action_reduce_345_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_346_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6653,7 +6653,7 @@ def action_reduce_346_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_347_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6661,7 +6661,7 @@ def action_reduce_347_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_348_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6669,7 +6669,7 @@ def action_reduce_348_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_349_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6677,7 +6677,7 @@ def action_reduce_349_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_350_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6685,7 +6685,7 @@ def action_reduce_350_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_351_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6693,7 +6693,7 @@ def action_reduce_351_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_352_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6701,7 +6701,7 @@ def action_reduce_352_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_353_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6709,7 +6709,7 @@ def action_reduce_353_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_354_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6717,7 +6717,7 @@ def action_reduce_354_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_355_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6725,7 +6725,7 @@ def action_reduce_355_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_356_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6733,7 +6733,7 @@ def action_reduce_356_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_357_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6741,7 +6741,7 @@ def action_reduce_357_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_358_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6749,7 +6749,7 @@ def action_reduce_358_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_359_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6757,7 +6757,7 @@ def action_reduce_359_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_360_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6765,7 +6765,7 @@ def action_reduce_360_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_361_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6773,7 +6773,7 @@ def action_reduce_361_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_362_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6781,7 +6781,7 @@ def action_reduce_362_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_363_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6789,7 +6789,7 @@ def action_reduce_363_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_364_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6797,7 +6797,7 @@ def action_reduce_364_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_365_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6805,7 +6805,7 @@ def action_reduce_365_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_366_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6813,7 +6813,7 @@ def action_reduce_366_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_367_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6821,7 +6821,7 @@ def action_reduce_367_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_368_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6829,7 +6829,7 @@ def action_reduce_368_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_369_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6837,7 +6837,7 @@ def action_reduce_369_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_370_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6845,7 +6845,7 @@ def action_reduce_370_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_371_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6853,7 +6853,7 @@ def action_reduce_371_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_372_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6861,7 +6861,7 @@ def action_reduce_372_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_373_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6869,7 +6869,7 @@ def action_reduce_373_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_374_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6877,7 +6877,7 @@ def action_reduce_374_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_375_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6885,7 +6885,7 @@ def action_reduce_375_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_376_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6893,7 +6893,7 @@ def action_reduce_376_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_377_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6901,7 +6901,7 @@ def action_reduce_377_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_378_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6909,7 +6909,7 @@ def action_reduce_378_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_379_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6917,7 +6917,7 @@ def action_reduce_379_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_380_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6925,7 +6925,7 @@ def action_reduce_380_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_381_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6933,7 +6933,7 @@ def action_reduce_381_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_382_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6941,7 +6941,7 @@ def action_reduce_382_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_383_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6949,7 +6949,7 @@ def action_reduce_383_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_384_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6957,7 +6957,7 @@ def action_reduce_384_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_385_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6965,7 +6965,7 @@ def action_reduce_385_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_386_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6973,7 +6973,7 @@ def action_reduce_386_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_387_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6981,7 +6981,7 @@ def action_reduce_387_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_388_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6989,7 +6989,7 @@ def action_reduce_388_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_389_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -6997,7 +6997,7 @@ def action_reduce_389_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_390_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7005,7 +7005,7 @@ def action_reduce_390_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_391_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7013,7 +7013,7 @@ def action_reduce_391_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_392_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7021,7 +7021,7 @@ def action_reduce_392_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_393_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7029,7 +7029,7 @@ def action_reduce_393_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_394_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7037,7 +7037,7 @@ def action_reduce_394_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_395_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7045,7 +7045,7 @@ def action_reduce_395_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_396_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7053,7 +7053,7 @@ def action_reduce_396_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_397_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7061,7 +7061,7 @@ def action_reduce_397_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_398_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7069,7 +7069,7 @@ def action_reduce_398_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_399_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7077,7 +7077,7 @@ def action_reduce_399_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_400_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7085,7 +7085,7 @@ def action_reduce_400_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_401_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7093,7 +7093,7 @@ def action_reduce_401_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_402_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7101,7 +7101,7 @@ def action_reduce_402_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_403_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7109,7 +7109,7 @@ def action_reduce_403_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_404_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7117,7 +7117,7 @@ def action_reduce_404_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_405_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7125,7 +7125,7 @@ def action_reduce_405_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_406_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7133,7 +7133,7 @@ def action_reduce_406_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_407_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7141,7 +7141,7 @@ def action_reduce_407_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_408_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7149,7 +7149,7 @@ def action_reduce_408_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_409_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7157,7 +7157,7 @@ def action_reduce_409_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_410_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7165,7 +7165,7 @@ def action_reduce_410_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_411_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7173,7 +7173,7 @@ def action_reduce_411_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_412_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7181,7 +7181,7 @@ def action_reduce_412_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_413_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7189,7 +7189,7 @@ def action_reduce_413_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_414_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7197,7 +7197,7 @@ def action_reduce_414_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_415_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7205,7 +7205,7 @@ def action_reduce_415_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_416_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7213,7 +7213,7 @@ def action_reduce_416_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_417_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7221,7 +7221,7 @@ def action_reduce_417_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_418_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7229,7 +7229,7 @@ def action_reduce_418_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_419_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7237,7 +7237,7 @@ def action_reduce_419_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_420_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7245,7 +7245,7 @@ def action_reduce_420_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_421_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7253,7 +7253,7 @@ def action_reduce_421_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_422_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7261,7 +7261,7 @@ def action_reduce_422_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_423_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7269,7 +7269,7 @@ def action_reduce_423_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_424_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7277,7 +7277,7 @@ def action_reduce_424_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_425_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7285,7 +7285,7 @@ def action_reduce_425_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_426_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7293,7 +7293,7 @@ def action_reduce_426_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_427_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7301,7 +7301,7 @@ def action_reduce_427_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_428_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7309,7 +7309,7 @@ def action_reduce_428_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_429_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7317,7 +7317,7 @@ def action_reduce_429_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_430_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7325,7 +7325,7 @@ def action_reduce_430_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_431_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7333,7 +7333,7 @@ def action_reduce_431_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_432_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7341,7 +7341,7 @@ def action_reduce_432_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_433_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7349,7 +7349,7 @@ def action_reduce_433_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_434_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7357,7 +7357,7 @@ def action_reduce_434_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_435_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7365,7 +7365,7 @@ def action_reduce_435_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_436_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7373,7 +7373,7 @@ def action_reduce_436_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_437_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7381,7 +7381,7 @@ def action_reduce_437_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_438_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7389,7 +7389,7 @@ def action_reduce_438_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_439_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7397,7 +7397,7 @@ def action_reduce_439_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_440_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7405,7 +7405,7 @@ def action_reduce_440_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_441_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7413,7 +7413,7 @@ def action_reduce_441_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_442_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7421,7 +7421,7 @@ def action_reduce_442_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_443_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7429,7 +7429,7 @@ def action_reduce_443_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_444_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7437,7 +7437,7 @@ def action_reduce_444_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_445_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7445,7 +7445,7 @@ def action_reduce_445_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_446_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7453,7 +7453,7 @@ def action_reduce_446_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_447_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7461,7 +7461,7 @@ def action_reduce_447_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_448_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7469,7 +7469,7 @@ def action_reduce_448_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_449_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7477,7 +7477,7 @@ def action_reduce_449_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_450_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7485,7 +7485,7 @@ def action_reduce_450_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_451_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7493,7 +7493,7 @@ def action_reduce_451_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_452_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7501,7 +7501,7 @@ def action_reduce_452_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_453_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 892)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 899)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7509,7 +7509,7 @@ def action_reduce_453_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_454_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 900)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7517,7 +7517,7 @@ def action_reduce_454_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_455_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 900)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7525,7 +7525,7 @@ def action_reduce_455_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_456_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 893)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 900)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7533,7 +7533,7 @@ def action_reduce_456_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_457_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7541,7 +7541,7 @@ def action_reduce_457_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_458_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7549,7 +7549,7 @@ def action_reduce_458_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_459_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7557,7 +7557,7 @@ def action_reduce_459_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_460_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7565,7 +7565,7 @@ def action_reduce_460_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_461_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7573,7 +7573,7 @@ def action_reduce_461_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_462_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7581,7 +7581,7 @@ def action_reduce_462_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_463_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7589,7 +7589,7 @@ def action_reduce_463_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_464_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7597,7 +7597,7 @@ def action_reduce_464_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_465_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7605,7 +7605,7 @@ def action_reduce_465_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_466_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7613,7 +7613,7 @@ def action_reduce_466_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_467_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7621,7 +7621,7 @@ def action_reduce_467_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_468_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7629,7 +7629,7 @@ def action_reduce_468_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_469_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7637,7 +7637,7 @@ def action_reduce_469_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_470_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7645,7 +7645,7 @@ def action_reduce_470_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_471_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7653,7 +7653,7 @@ def action_reduce_471_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_472_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7661,7 +7661,7 @@ def action_reduce_472_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_473_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7669,7 +7669,7 @@ def action_reduce_473_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_474_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7677,7 +7677,7 @@ def action_reduce_474_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_475_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7685,7 +7685,7 @@ def action_reduce_475_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_476_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7693,7 +7693,7 @@ def action_reduce_476_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_477_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7701,7 +7701,7 @@ def action_reduce_477_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_478_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7709,7 +7709,7 @@ def action_reduce_478_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_479_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7717,7 +7717,7 @@ def action_reduce_479_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_480_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7725,7 +7725,7 @@ def action_reduce_480_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_481_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7733,7 +7733,7 @@ def action_reduce_481_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_482_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7741,7 +7741,7 @@ def action_reduce_482_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_483_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7749,7 +7749,7 @@ def action_reduce_483_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_484_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7757,7 +7757,7 @@ def action_reduce_484_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_485_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7765,7 +7765,7 @@ def action_reduce_485_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_486_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7773,7 +7773,7 @@ def action_reduce_486_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_487_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7781,7 +7781,7 @@ def action_reduce_487_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_488_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7789,7 +7789,7 @@ def action_reduce_488_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_489_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7797,7 +7797,7 @@ def action_reduce_489_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_490_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7805,7 +7805,7 @@ def action_reduce_490_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_491_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 894)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7813,7 +7813,7 @@ def action_reduce_491_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_492_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7821,7 +7821,7 @@ def action_reduce_492_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_493_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7829,7 +7829,7 @@ def action_reduce_493_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_494_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7837,7 +7837,7 @@ def action_reduce_494_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_495_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7845,7 +7845,7 @@ def action_reduce_495_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_496_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7853,7 +7853,7 @@ def action_reduce_496_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_497_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7861,7 +7861,7 @@ def action_reduce_497_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_498_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7869,7 +7869,7 @@ def action_reduce_498_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_499_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7877,7 +7877,7 @@ def action_reduce_499_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_500_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 895)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 902)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7885,7 +7885,7 @@ def action_reduce_500_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_501_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 896)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 903)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7893,7 +7893,7 @@ def action_reduce_501_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_502_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 896)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 903)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7901,7 +7901,7 @@ def action_reduce_502_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_503_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 896)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 903)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7909,7 +7909,7 @@ def action_reduce_503_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_504_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 896)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 903)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7917,7 +7917,7 @@ def action_reduce_504_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_505_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = ast.Ident(symbol_stack[-1])
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 896)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 903)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7925,7 +7925,7 @@ def action_reduce_505_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_506_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 897)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 904)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -7933,7 +7933,7 @@ def action_reduce_506_1(status_stack: List[int], symbol_stack: List[Any], _: ms_
 
 def action_reduce_511_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
     symbol_value = symbol_stack[-1]
-    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 901)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
+    next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 908)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
     return STATUS_HASH[next_status], False  # 返回新状态的行为函数
@@ -15545,25 +15545,25 @@ STATUS_SYMBOL_GOTO_HASH = {
     (20, 850): 6, 
     (20, 863): 15, 
     (20, 866): 19, 
-    (20, 891): 511, 
-    (20, 892): 506, 
-    (20, 893): 507, 
-    (20, 894): 508, 
-    (20, 895): 509, 
-    (20, 896): 510, 
-    (20, 897): 512, 
-    (20, 901): 7, 
+    (20, 898): 511, 
+    (20, 899): 506, 
+    (20, 900): 507, 
+    (20, 901): 508, 
+    (20, 902): 509, 
+    (20, 903): 510, 
+    (20, 904): 512, 
+    (20, 908): 7, 
     (24, 850): 6, 
     (24, 863): 15, 
     (24, 866): 23, 
-    (24, 891): 511, 
-    (24, 892): 506, 
-    (24, 893): 507, 
-    (24, 894): 508, 
-    (24, 895): 509, 
-    (24, 896): 510, 
-    (24, 897): 512, 
-    (24, 901): 7, 
+    (24, 898): 511, 
+    (24, 899): 506, 
+    (24, 900): 507, 
+    (24, 901): 508, 
+    (24, 902): 509, 
+    (24, 903): 510, 
+    (24, 904): 512, 
+    (24, 908): 7, 
     (514, 843): 513, 
     (514, 846): 20, 
     (514, 864): 21, 

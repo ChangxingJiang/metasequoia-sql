@@ -18,7 +18,6 @@ __all__ = [
 ]
 
 # 比较运算符
-# 对应 MySQL 语义组：comp_op
 OPERATOR_COMPARE = ms_parser.create_group(
     name="operator_compare",
     rules=[
@@ -54,7 +53,6 @@ OPERATOR_COMPARE = ms_parser.create_group(
 )
 
 # 简单表达式 TODO 未完成
-# 对应 MySQL 语义组：simple_expr
 SIMPLE_EXPR = ms_parser.create_group(
     name="simple_expr",
     rules=[
@@ -83,7 +81,6 @@ SIMPLE_EXPR = ms_parser.create_group(
 )
 
 # 二元表达式 TODO 未完成
-# 对应 MySQL 语义组：bit_expr
 BINARY_EXPR = ms_parser.create_group(
     name="binary_expr",
     rules=[
@@ -155,7 +152,6 @@ BINARY_EXPR = ms_parser.create_group(
 )
 
 # 谓语表达式 TODO 未完成
-# 对应 MySQL 语义组：predicate
 PREDICATE_EXPR = ms_parser.create_group(
     name="predicate_expr",
     rules=[
@@ -212,7 +208,6 @@ PREDICATE_EXPR = ms_parser.create_group(
 )
 
 # 布尔表达式 TODO 待完成
-# 对应 MySQL 语义组：bool_pri
 BOOL_EXPR = ms_parser.create_group(
     name="bool_expr",
     rules=[
