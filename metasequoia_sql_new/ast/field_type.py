@@ -44,6 +44,7 @@ class FieldTypeParams(Node):
 class CastTypeEnum(enum.IntEnum):
     """转化的字段类型的枚举类型"""
 
+    DEFAULT = enum.auto()  # 默认值（未指定）
     BINARY = enum.auto()  # BINARY
     CHAR = enum.auto()  # CHAR
     NCHAR = enum.auto()  # NCHAR
@@ -80,6 +81,10 @@ class CastType(Node):
         self._field_type = field_type
         self._type_params = params if params is not None else FieldTypeParams()
         self._charset = charset
+
+    @staticmethod
+    def default() -> "CastType":
+        return CastType(field_type=CastTypeEnum.DEFAULT)
 
     def attr_list(self) -> typing.List[str]:
         return ["field_type", "params", "charset"]

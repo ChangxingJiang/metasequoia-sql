@@ -8195,20 +8195,6 @@ function_call_nonkeyword:
           }
         ;
 
-// JSON_VALUE's optional JSON returning clause.
-opt_returning_type:
-          // The default returning type is CHAR(512). (The max length of 512
-          // is chosen so that the returned values are not handled as BLOBs
-          // internally. See CONVERT_IF_BIGGER_TO_BLOB.)
-          %empty
-          {
-            $$= {ITEM_CAST_CHAR, nullptr, "512", nullptr};
-          }
-        | RETURNING_SYM cast_type
-          {
-            $$= $2;
-          }
-        ;
 /*
   Functions calls using a non reserved keyword, and using a regular syntax.
   Because the non reserved keyword is used in another part of the grammar,

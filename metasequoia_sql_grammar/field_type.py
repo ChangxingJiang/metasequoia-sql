@@ -274,6 +274,21 @@ CAST_TYPE = ms_parser.create_group(
     ]
 )
 
+# `JSON_VALUE` 函数中可选的返回值类型
+OPT_RETURNING_TYPE = ms_parser.create_group(
+    name="opt_returning_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RETURNING, "cast_type"],
+            action=lambda x: x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.CastType.default()
+        )
+    ]
+)
+
 # 单个字段选项（`SIGNED`、`UNSIGNED` 或 `ZEROFILL`）
 FIELD_OPTION = ms_parser.create_group(
     name="field_option",
