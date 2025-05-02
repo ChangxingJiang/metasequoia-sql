@@ -9,6 +9,7 @@ import metasequoia_parser as ms_parser
 from metasequoia_sql_grammar import basic
 from metasequoia_sql_grammar import field_type
 from metasequoia_sql_grammar import literal
+from metasequoia_sql_grammar import charset
 from metasequoia_sql_grammar.expression import BINARY_EXPR
 from metasequoia_sql_grammar.expression import BOOL_EXPR
 from metasequoia_sql_grammar.expression import EXPR
@@ -201,6 +202,9 @@ def build_grammar():
     # 字面值（literal）
     for group_name in literal.__all__:
         grammar_builder.group_append(getattr(literal, group_name))
+
+    for group_name in charset.__all__:
+        grammar_builder.group_append(getattr(charset, group_name))
 
     # 字段类型（field type）
     for group_name in field_type.__all__:

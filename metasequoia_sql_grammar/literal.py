@@ -321,7 +321,7 @@ CHARSET_NAME = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_BINARY],
-            action=lambda x: ast.StringLiteral(value="BINARY")  # TODO 待考虑是否有更优的节点格式
+            action=lambda x: ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY, charset_name=None)
         )
     ]
 )

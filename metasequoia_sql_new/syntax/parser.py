@@ -4608,7 +4608,7 @@ def action_reduce_32_1(status_stack: List[int], symbol_stack: List[Any], _: ms_p
 
 
 def action_reduce_33_1(status_stack: List[int], symbol_stack: List[Any], _: ms_parser.symbol.Terminal) -> Tuple[Optional[Callable], bool]:
-    symbol_value = ast.StringLiteral(value='BINARY')
+    symbol_value = ast.Charset(charset_type=ast.CharsetTypeEnum.BINARY, charset_name=None)
     next_status = STATUS_SYMBOL_GOTO_HASH[(status_stack[-2], 864)]  # 根据状态和生成的非终结符获取需要 GOTO 的状态
     symbol_stack[-1:] = [symbol_value]  # 出栈 1 个参数，入栈新生成的非终结符的值
     status_stack[-1:] = [next_status]  # 出栈 1 个参数，入栈 GOTO 的新状态
