@@ -7,7 +7,7 @@ from typing import List
 
 from metasequoia_sql_new.ast.base import Expression
 from metasequoia_sql_new.ast.base import Node
-from metasequoia_sql_new.ast.basic import EnumOrderDirection
+from metasequoia_sql_new.ast.other_operator import EnumOrderDirection
 
 __all__ = [
     "OrderExpression",

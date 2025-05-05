@@ -6,32 +6,15 @@
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_grammar import basic
 from metasequoia_sql_grammar import charset
 from metasequoia_sql_grammar import expression
 from metasequoia_sql_grammar import field_type
-from metasequoia_sql_grammar import literal
-from metasequoia_sql_grammar.elements import json_table_option
+from metasequoia_sql_grammar.basic import fixed_word
+from metasequoia_sql_grammar.basic import ident
+from metasequoia_sql_grammar.basic import ident_mysql
+from metasequoia_sql_grammar.basic import literal
 from metasequoia_sql_grammar.elements import alias
-from metasequoia_sql_grammar.ident import IDENT_2
-from metasequoia_sql_grammar.ident import IDENT_3
-from metasequoia_sql_grammar.ident import IDENT_SYS
-from metasequoia_sql_grammar.ident import OPT_IDENT
-from metasequoia_sql_grammar.ident import SIMPLE_IDENT
-from metasequoia_sql_grammar.ident import SIMPLE_IDENT_LIST
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORD
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_AMBIGUOUS_1_ROLES_AND_LABELS
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_AMBIGUOUS_2_LABELS
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_AMBIGUOUS_3_ROLES
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES
-from metasequoia_sql_grammar.ident_mysql import MYSQL_IDENT_KEYWORDS_UNAMBIGUOUS
-from metasequoia_sql_grammar.ident_mysql import MYSQL_LABEL_IDENT
-from metasequoia_sql_grammar.ident_mysql import MYSQL_LABEL_KEYWORD
-from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_IDENT
-from metasequoia_sql_grammar.ident_mysql import MYSQL_ROLE_KEYWORD
-from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_IDENT
-from metasequoia_sql_grammar.ident_mysql import MYSQL_VARIABLE_KEYWORD
+from metasequoia_sql_grammar.elements import json_table_option
 from metasequoia_sql_grammar.order_clause import OPT_ORDER_BY_CLAUSE
 from metasequoia_sql_grammar.order_clause import OPT_ORDER_DIRECTION
 from metasequoia_sql_grammar.order_clause import ORDER_BY_LIST
@@ -192,8 +175,10 @@ def build_grammar():
     )
 
     for module in [
-        basic,  # 基础元素
+        fixed_word,  # 固定的词语组合
         literal,  # 字面值
+        ident,  # 标识符
+        ident_mysql,  # 标识符（MySQL 专有）
         charset,  # 字符集
         field_type,  # 字段类型
         expression,  # 表达式
@@ -218,27 +203,6 @@ def build_grammar():
     grammar_builder.group_append(WINDOW_NAME_OR_SPEC)
     grammar_builder.group_append(WINDOWING_CLAUSE)
     grammar_builder.group_append(OPT_WINDOWING_CLAUSE)
-
-    # 标识符
-    grammar_builder.group_append(IDENT_SYS)
-    grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_UNAMBIGUOUS)
-    grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_AMBIGUOUS_1_ROLES_AND_LABELS)
-    grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_AMBIGUOUS_2_LABELS)
-    grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_AMBIGUOUS_3_ROLES)
-    grammar_builder.group_append(MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES)
-    grammar_builder.group_append(MYSQL_IDENT_KEYWORD)
-    grammar_builder.group_append(MYSQL_LABEL_KEYWORD)
-    grammar_builder.group_append(MYSQL_ROLE_KEYWORD)
-    grammar_builder.group_append(MYSQL_VARIABLE_KEYWORD)
-    grammar_builder.group_append(MYSQL_IDENT)
-    grammar_builder.group_append(MYSQL_LABEL_IDENT)
-    grammar_builder.group_append(MYSQL_ROLE_IDENT)
-    grammar_builder.group_append(MYSQL_VARIABLE_IDENT)
-    grammar_builder.group_append(IDENT_2)
-    grammar_builder.group_append(IDENT_3)
-    grammar_builder.group_append(SIMPLE_IDENT)
-    grammar_builder.group_append(SIMPLE_IDENT_LIST)
-    grammar_builder.group_append(OPT_IDENT)
 
     # DQL 语句
     grammar_builder.group_append(ORDER_DIRECTION)

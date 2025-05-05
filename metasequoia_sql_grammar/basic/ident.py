@@ -36,7 +36,6 @@ __all__ = [
 ]
 
 # 不是保留字或非保留关键字的标识符
-# 对应 MySQL 语义组：IDENT_sys
 IDENT_SYS = ms_parser.create_group(
     name="ident_sys",
     rules=[
@@ -51,8 +50,7 @@ IDENT_SYS = ms_parser.create_group(
     ]
 )
 
-# 点分隔的两个标识符（ident.ident）
-# 对应 MySQL 语义组：simple_ident_q（部分）、table_ident（部分）
+# 点分隔的两个标识符（`ident.ident`）
 IDENT_2 = ms_parser.create_group(
     name="ident_2",
     rules=[
@@ -63,8 +61,7 @@ IDENT_2 = ms_parser.create_group(
     ]
 )
 
-# 点分隔的三个标识符（ident.ident.ident）
-# 对应 MySQL 语义组：simple_ident_q（部分）
+# 点分隔的三个标识符（`ident.ident.ident`）
 IDENT_3 = ms_parser.create_group(
     name="ident_3",
     rules=[
@@ -75,8 +72,7 @@ IDENT_3 = ms_parser.create_group(
     ]
 )
 
-# 通用通配符（ident 或 ident.ident 或 ident.ident.ident）
-# 对应 MySQL 语义组：simple_ident
+# 通用通配符（`ident` 或 `ident.ident` 或 `ident.ident.ident`）
 SIMPLE_IDENT = ms_parser.create_group(
     name="simple_ident",
     rules=[
@@ -93,7 +89,6 @@ SIMPLE_IDENT = ms_parser.create_group(
 )
 
 # 逗号分隔的通用通配符的列表
-# 对应 MySQL 语义组：
 SIMPLE_IDENT_LIST = ms_parser.create_group(
     name="simple_ident_list",
     rules=[
@@ -109,7 +104,6 @@ SIMPLE_IDENT_LIST = ms_parser.create_group(
 )
 
 # 可选的单个标识符
-# 对应 MySQL 语义组：opt_existing_window_name
 OPT_IDENT = ms_parser.create_group(
     name="opt_ident",
     rules=[

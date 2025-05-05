@@ -8,7 +8,7 @@ from metasequoia_sql_new.ast.base import BinaryExpression
 from metasequoia_sql_new.ast.base import Expression
 from metasequoia_sql_new.ast.base import TernaryExpression
 from metasequoia_sql_new.ast.base import UnaryExpression
-from metasequoia_sql_new.ast.basic import EnumOperatorCompare
+from metasequoia_sql_new.ast.other_operator import EnumOperatorCompare
 
 __all__ = [
     "FuncNegative",

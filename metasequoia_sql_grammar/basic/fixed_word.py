@@ -1,5 +1,5 @@
 """
-通用的基础元素语义组
+固定的词语组合
 """
 
 import metasequoia_parser as ms_parser
