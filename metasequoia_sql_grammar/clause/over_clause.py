@@ -14,7 +14,6 @@ __all__ = [
     "WINDOW_FRAME_BOUND",
     "WINDOW_FRAME_EXTENT",
     "OPT_WINDOW_FRAME_CLAUSE",
-    "OPT_PARTITION_CLAUSE",
     "WINDOW_NAME_OR_SPEC",
     "WINDOWING_CLAUSE",
     "OPT_WINDOWING_CLAUSE",
@@ -147,19 +146,6 @@ OPT_WINDOW_FRAME_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["window_border_type", "window_frame_extent", "opt_window_exclude"],
             action=lambda x: ast.WindowFrame(border_type=x[0], borders=x[1], exclusion=x[2])
-        ),
-        ms_parser.template.group.EMPTY_NULL
-    ]
-)
-
-# 可选的 PARTITION BY 子句 TODO 待考虑移动到其他文件
-# 对应 MySQL 语义组：opt_partition_clause
-OPT_PARTITION_CLAUSE = ms_parser.create_group(
-    name="opt_partition_clause",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_PARTITION, TType.KEYWORD_BY, "expr_list"],
-            action=lambda x: x[2]
         ),
         ms_parser.template.group.EMPTY_NULL
     ]

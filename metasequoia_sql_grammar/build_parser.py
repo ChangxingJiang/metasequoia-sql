@@ -6,32 +6,19 @@
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_grammar import charset
-from metasequoia_sql_grammar import expression
-from metasequoia_sql_grammar import field_type
+from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
 from metasequoia_sql_grammar.basic import ident_mysql
 from metasequoia_sql_grammar.basic import literal
-from metasequoia_sql_grammar.elements import alias
-from metasequoia_sql_grammar.elements import json_table_option
-from metasequoia_sql_grammar.order_clause import OPT_ORDER_BY_CLAUSE
-from metasequoia_sql_grammar.order_clause import OPT_ORDER_DIRECTION
-from metasequoia_sql_grammar.order_clause import ORDER_BY_LIST
-from metasequoia_sql_grammar.order_clause import ORDER_DIRECTION
-from metasequoia_sql_grammar.order_clause import ORDER_EXPR
-from metasequoia_sql_grammar.time_unit import INTERVAL_TIME_UNIT
-from metasequoia_sql_grammar.time_unit import TIME_UNIT
-from metasequoia_sql_grammar.window_clause import OPT_PARTITION_CLAUSE
-from metasequoia_sql_grammar.window_clause import OPT_WINDOWING_CLAUSE
-from metasequoia_sql_grammar.window_clause import OPT_WINDOW_EXCLUDE
-from metasequoia_sql_grammar.window_clause import OPT_WINDOW_FRAME_CLAUSE
-from metasequoia_sql_grammar.window_clause import WINDOWING_CLAUSE
-from metasequoia_sql_grammar.window_clause import WINDOW_BORDER_TYPE
-from metasequoia_sql_grammar.window_clause import WINDOW_FRAME_BOUND
-from metasequoia_sql_grammar.window_clause import WINDOW_FRAME_EXTENT
-from metasequoia_sql_grammar.window_clause import WINDOW_FRAME_START
-from metasequoia_sql_grammar.window_clause import WINDOW_NAME_OR_SPEC
+from metasequoia_sql_grammar.basic import time_unit
+from metasequoia_sql_grammar.clause import order_by_clause
+from metasequoia_sql_grammar.clause import over_clause
+from metasequoia_sql_grammar.clause import partition_by_clause
+from metasequoia_sql_grammar.expression import general_expression
+from metasequoia_sql_grammar.phrase import alias
+from metasequoia_sql_grammar.phrase import field_type
+from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 
@@ -175,41 +162,22 @@ def build_grammar():
     )
 
     for module in [
-        fixed_word,  # 固定的词语组合
-        literal,  # 字面值
-        ident,  # 标识符
-        ident_mysql,  # 标识符（MySQL 专有）
-        charset,  # 字符集
-        field_type,  # 字段类型
-        expression,  # 表达式
-        json_table_option,  # 基础元素 - JSON 表选项
-        alias,  # 基础元素 - 别名
+        fixed_word,  # 基础元素 - 固定的词语组合
+        ident,  # 基础元素 - 标识符
+        ident_mysql,  # 基础元素 - 标识符（MySQL 专有）
+        literal,  # 基础元素 - 字面值
+        charset_name,  # 基础元素 - 字符集名称
+        time_unit,  # 基础元素 - 时间单位类型
+        field_type,  # 短语 - 字段类型
+        json_table_option,  # 短语 - JSON 表选项
+        alias,  # 短语 - 别名
+        general_expression,  # 表达式 - 通用表达式
+        order_by_clause,  # 子句 - ORDER BY 子句
+        over_clause,  # 子句 - OVER 子句
+        partition_by_clause,  # 子句 - PARTITION BY 子句
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))
-
-    # 时间单位类型
-    grammar_builder.group_append(INTERVAL_TIME_UNIT)
-    grammar_builder.group_append(TIME_UNIT)
-
-    # 窗口子句
-    grammar_builder.group_append(WINDOW_BORDER_TYPE)
-    grammar_builder.group_append(OPT_WINDOW_EXCLUDE)
-    grammar_builder.group_append(WINDOW_FRAME_START)
-    grammar_builder.group_append(WINDOW_FRAME_BOUND)
-    grammar_builder.group_append(WINDOW_FRAME_EXTENT)
-    grammar_builder.group_append(OPT_WINDOW_FRAME_CLAUSE)
-    grammar_builder.group_append(OPT_PARTITION_CLAUSE)
-    grammar_builder.group_append(WINDOW_NAME_OR_SPEC)
-    grammar_builder.group_append(WINDOWING_CLAUSE)
-    grammar_builder.group_append(OPT_WINDOWING_CLAUSE)
-
-    # DQL 语句
-    grammar_builder.group_append(ORDER_DIRECTION)
-    grammar_builder.group_append(OPT_ORDER_DIRECTION)
-    grammar_builder.group_append(ORDER_EXPR)
-    grammar_builder.group_append(ORDER_BY_LIST)
-    grammar_builder.group_append(OPT_ORDER_BY_CLAUSE)
 
     return grammar_builder.build()
 
