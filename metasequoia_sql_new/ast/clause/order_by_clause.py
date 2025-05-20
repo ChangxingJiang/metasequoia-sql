@@ -11,7 +11,7 @@ from metasequoia_sql_new.ast.other_operator import EnumOrderDirection
 
 __all__ = [
     "OrderExpression",
-    "OrderClause",
+    "OrderByClause",
 ]
 
 
@@ -34,7 +34,7 @@ class OrderExpression(Node):
         return self._direction
 
 
-class OrderClause(Node):
+class OrderByClause(Node):
     """ORDER BY 子句（排序表达式的列表）"""
 
     def __init__(self, column_list: List[OrderExpression]):
@@ -47,6 +47,6 @@ class OrderClause(Node):
     def column_list(self) -> List[OrderExpression]:
         return self._column_list
 
-    def append(self, column: OrderExpression) -> "OrderClause":
+    def append(self, column: OrderExpression) -> "OrderByClause":
         self._column_list.append(column)
         return self

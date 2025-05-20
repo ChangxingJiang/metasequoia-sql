@@ -7,7 +7,7 @@ import enum
 import typing
 
 from metasequoia_sql_new.ast.base import Node
-from metasequoia_sql_new.ast.charset import Charset
+from metasequoia_sql_new.ast.basic.charset_name import Charset
 
 __all__ = [
     "Charset",

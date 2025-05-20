@@ -69,7 +69,7 @@ ORDER_BY_LIST = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["order_expr"],
-            action=lambda x: ast.OrderClause(column_list=[x[0]])
+            action=lambda x: ast.OrderByClause(column_list=[x[0]])
         )
     ]
 )

@@ -7,8 +7,8 @@ import typing
 
 from metasequoia_sql_new.ast.base import Expression
 from metasequoia_sql_new.ast.base import Node
-from metasequoia_sql_new.ast.order_clause import OrderClause
-from metasequoia_sql_new.ast.time_unit import TimeUnitEnum
+from metasequoia_sql_new.ast.clause.order_by_clause import OrderByClause
+from metasequoia_sql_new.ast.basic.time_unit import TimeUnitEnum
 
 __all__ = [
     "WindowBorderTypeEnum",
@@ -196,7 +196,7 @@ class Window(Node):
     def __init__(self,
                  name: typing.Optional[Expression],
                  partition_clause: typing.Optional[typing.List[Expression]],
-                 order_clause: typing.Optional[OrderClause],
+                 order_clause: typing.Optional[OrderByClause],
                  frame_clause: typing.Optional[WindowFrame]):
         self._name = name
         self._partition_clause = partition_clause
@@ -224,7 +224,7 @@ class Window(Node):
         return self._partition_clause
 
     @property
-    def order_clause(self) -> typing.Optional[OrderClause]:
+    def order_clause(self) -> typing.Optional[OrderByClause]:
         return self._order_clause
 
     @property
