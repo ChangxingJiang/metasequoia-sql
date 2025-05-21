@@ -7,7 +7,8 @@ import metasequoia_parser as ms_parser
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "OPT_OF",
+    "OPT_KEYWORD_OF",
+    "OPT_KEYWORD_ALL",
     "OPT_BRACES",
     "KEYWORD_CHARSET",
     "KEYWORD_NCHAR",
@@ -16,11 +17,22 @@ __all__ = [
 ]
 
 # 可选的 `OPT` 关键字
-OPT_OF = ms_parser.create_group(
-    name="opt_of",
+OPT_KEYWORD_OF = ms_parser.create_group(
+    name="opt_keyword_of",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_OF]
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
+# 可选的 `ALL` 关键字
+OPT_KEYWORD_ALL = ms_parser.create_group(
+    name="opt_keyword_all",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ALL]
         ),
         ms_parser.template.group.EMPTY_NULL
     ]

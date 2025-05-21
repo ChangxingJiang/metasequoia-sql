@@ -17,7 +17,7 @@ __all__ = [
     "WindowBorder",
     "WindowBorders",
     "WindowFrame",
-    "Window",
+    "OverClause",
 ]
 
 
@@ -190,7 +190,7 @@ class WindowFrame(Node):
         return self._exclusion
 
 
-class Window(Node):
+class OverClause(Node):
     """窗口（包括可选的窗口名称、可选的 PARTITION BY 子句、可选的 ORDER BY 子句和可选的窗口框架子句"""
 
     def __init__(self,
@@ -204,8 +204,8 @@ class Window(Node):
         self._frame_clause = frame_clause
 
     @staticmethod
-    def create_by_name(name: Expression) -> "Window":
-        return Window(
+    def create_by_name(name: Expression) -> "OverClause":
+        return OverClause(
             name=name,
             partition_clause=None,
             order_clause=None,

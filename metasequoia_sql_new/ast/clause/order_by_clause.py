@@ -35,7 +35,7 @@ class OrderExpression(Node):
 
 
 class OrderByClause(Node):
-    """ORDER BY 子句（排序表达式的列表）"""
+    """ORDER BY 子句"""
 
     def __init__(self, column_list: List[OrderExpression]):
         self._column_list = column_list

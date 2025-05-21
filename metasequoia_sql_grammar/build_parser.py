@@ -16,6 +16,7 @@ from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
 from metasequoia_sql_grammar.expression import general_expression
+from metasequoia_sql_grammar.expression import sum_expression
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
@@ -30,7 +31,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["json_on_empty_on_error"]),
+                    ms_parser.create_rule(symbols=["sum_expr"]),
                 ]
             )
         ],
@@ -172,6 +173,7 @@ def build_grammar():
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
         general_expression,  # 表达式 - 通用表达式
+        sum_expression,  # 表达式 - 聚集函数表达式
         order_by_clause,  # 子句 - ORDER BY 子句
         over_clause,  # 子句 - OVER 子句
         partition_by_clause,  # 子句 - PARTITION BY 子句

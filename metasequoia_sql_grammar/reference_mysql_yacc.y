@@ -8643,28 +8643,6 @@ rvalue_system_or_user_variable:
           }
         ;
 
-opt_distinct:
-          %empty      { $$ = 0; }
-        | DISTINCT    { $$ = 1; }
-        ;
-
-opt_gconcat_separator:
-          %empty
-          {
-            $$= NEW_PTN String(",", 1, &my_charset_latin1);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | SEPARATOR_SYM text_string { $$ = $2; }
-        ;
-
-in_sum_expr:
-          opt_all expr
-          {
-            $$= NEW_PTN PTI_in_sum_expr(@1, $2);
-          }
-        ;
-
 ident_list_arg:
           ident_list          { $$= $1; }
         | '(' ident_list ')'  { $$= $2; }
@@ -9169,11 +9147,6 @@ opt_as:
 opt_table_alias:
           %empty { $$ = NULL_CSTR; }
         | opt_as ident { $$ = to_lex_cstring($2); }
-        ;
-
-opt_all:
-          %empty
-        | ALL
         ;
 
 opt_where_clause:

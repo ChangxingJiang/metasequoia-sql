@@ -84,7 +84,15 @@ if __name__ == "__main__":
     # print(parse(LexFSM("NVARCHAR (15) BINARY ")))
     # print(parse(LexFSM("VARCHAR (15) BINARY ")))
 
-    print(parse(LexFSM("NULL ON EMPTY")))
-    print(parse(LexFSM("ERROR ON ERROR")))
-    print(parse(LexFSM("NULL ON EMPTY DEFAULT 0 ON ERROR")))
+    # Json 表配置
+    # print(parse(LexFSM("NULL ON EMPTY")))
+    # print(parse(LexFSM("ERROR ON ERROR")))
+    # print(parse(LexFSM("NULL ON EMPTY DEFAULT 0 ON ERROR")))
 
+    # 测试 in_sum_expr
+    # print(parse(LexFSM("ALL 3 + 5 * 2")))
+
+    # 测试 sum_expr
+    print(parse(LexFSM("max(distinct a)")))
+    print(parse(LexFSM("min(3 + 5 * 2)")))
+    print(parse(LexFSM("group_concat(distinct 3 + 5 * 2, field1 order by field1 separator ',')")))

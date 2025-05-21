@@ -157,7 +157,7 @@ PREDICATE_EXPR = ms_parser.create_group(
     name="predicate_expr",
     rules=[
         ms_parser.create_rule(
-            symbols=["binary_expr", TType.KEYWORD_MEMBER, "opt_of", TType.OPERATOR_LPAREN, "simple_expr",
+            symbols=["binary_expr", TType.KEYWORD_MEMBER, "opt_keyword_of", TType.OPERATOR_LPAREN, "simple_expr",
                      TType.OPERATOR_RPAREN],
             action=lambda x: ast.FuncMemberOf(left_operand=x[0], right_operand=x[4])
         ),
@@ -300,11 +300,11 @@ EXPR_LIST = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["expr_list", TType.OPERATOR_COMMA, "expr"],
-            action=lambda x: ms_parser.template.action.LIST_APPEND_2
+            action=ms_parser.template.action.LIST_APPEND_2
         ),
         ms_parser.create_rule(
             symbols=["expr"],
-            action=lambda x: ms_parser.template.action.LIST_INIT_0
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )
