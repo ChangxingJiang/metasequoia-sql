@@ -6,3 +6,4 @@ from metasequoia_sql_new.ast.basic.charset_name import *
 from metasequoia_sql_new.ast.basic.ident import *
 from metasequoia_sql_new.ast.basic.literal import *
 from metasequoia_sql_new.ast.basic.time_unit import *
+from metasequoia_sql_new.ast.basic.variable import *

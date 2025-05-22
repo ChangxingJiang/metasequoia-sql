@@ -324,10 +324,6 @@ IDENT_OR_TEXT = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["text_literal_sys"]
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.LEX_HOSTNAME],
-            action=lambda x: ast.Hostname(value=x[0])
         )
     ]
 )

@@ -13,6 +13,7 @@ from metasequoia_sql_grammar.basic import ident_mysql
 from metasequoia_sql_grammar.basic import literal
 from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import param
+from metasequoia_sql_grammar.basic import variable
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
@@ -170,6 +171,7 @@ def build_grammar():
         literal,  # 基础元素 - 字面值
         charset_name,  # 基础元素 - 字符集名称
         param,  # 基础元素 - 参数
+        variable,  # 基础元素 - 变量
         time_unit,  # 基础元素 - 时间单位类型
         field_type,  # 短语 - 字段类型
         json_table_option,  # 短语 - JSON 表选项
