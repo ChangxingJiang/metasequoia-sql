@@ -5,20 +5,20 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
 from metasequoia_sql_grammar.basic import ident_mysql
 from metasequoia_sql_grammar.basic import literal
-from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import param
+from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
 from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_expression
+from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
@@ -33,7 +33,7 @@ def build_grammar():
                 rules=[
                     # ms_parser.create_rule(symbols=["simple_ident_list"]),
                     # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["sum_expr"]),
+                    ms_parser.create_rule(symbols=["window_function_expression"]),
                 ]
             )
         ],
@@ -178,6 +178,7 @@ def build_grammar():
         alias,  # 短语 - 别名
         general_expression,  # 表达式 - 通用表达式
         sum_expression,  # 表达式 - 聚集函数表达式
+        window_function_expression,  # 表达式 - 窗口函数表达式
         order_by_clause,  # 子句 - ORDER BY 子句
         over_clause,  # 子句 - OVER 子句
         partition_by_clause,  # 子句 - PARTITION BY 子句
