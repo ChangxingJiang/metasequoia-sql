@@ -57,7 +57,6 @@ __all__ = [
     "TEXT_STRING_LIST",
     "SIGNED_LITERAL",
     "SIGNED_LITERAL_OR_NULL",
-    "PARAM_MARKER",
     "IDENT_OR_TEXT",
 ]
 
@@ -311,18 +310,6 @@ SIGNED_LITERAL_OR_NULL = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["null_literal"]
-        )
-    ]
-)
-
-# 参数占位符
-# 对应 MySQL 语义组：param_marker
-PARAM_MARKER = ms_parser.create_group(
-    name="param_marker",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.PARAM_MARKER],
-            action=lambda _: ast.Param()
         )
     ]
 )
