@@ -8,12 +8,16 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "PARAM_OR_VAR"
+    "STABLE_INTEGER"
 ]
 
-PARAM_OR_VAR = ms_parser.create_group(
-    name="param_or_var",
+# 在执行过程中为常量的整数（字面值、参数占位符或用户变量）
+STABLE_INTEGER = ms_parser.create_group(
+    name="stable_integer",
     rules=[
+        ms_parser.create_rule(
+            symbols=["int_literal"]
+        ),
         ms_parser.create_rule(
             symbols=["param_marker"]
         ),
