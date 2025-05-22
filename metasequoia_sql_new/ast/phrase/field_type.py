@@ -5,9 +5,11 @@
 import decimal
 import enum
 import typing
+from typing import List
 
-from metasequoia_sql_new.ast.base import Node
+from metasequoia_sql_new.ast.base import Expression, Node
 from metasequoia_sql_new.ast.basic.charset_name import Charset
+from metasequoia_sql_new.ast.basic.literal import DecimalLiteral
 
 __all__ = [
     "Charset",
@@ -39,6 +41,14 @@ class FieldTypeParams(Node):
     @property
     def option_2(self) -> typing.Optional[decimal.Decimal]:
         return self._option_2
+
+    def as_param_list(self) -> List[Expression]:
+        param_list = []
+        if self._option_1 is not None:
+            param_list.append(DecimalLiteral(self._option_1))
+        if self._option_2 is not None:
+            param_list.append(DecimalLiteral(self._option_2))
+        return param_list
 
 
 class CastTypeEnum(enum.IntEnum):

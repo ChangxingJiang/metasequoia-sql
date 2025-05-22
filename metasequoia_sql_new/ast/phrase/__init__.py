@@ -4,3 +4,4 @@
 
 from metasequoia_sql_new.ast.phrase.field_type import *
 from metasequoia_sql_new.ast.phrase.json_table_option import *
+from metasequoia_sql_new.ast.phrase.time_interval import *

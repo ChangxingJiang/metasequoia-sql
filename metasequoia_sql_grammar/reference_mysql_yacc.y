@@ -5045,12 +5045,6 @@ storage_media:
         | MEMORY_SYM  { $$= HA_SM_MEMORY; }
         ;
 
-now:
-          NOW_SYM func_datetime_precision
-          {
-            $$= $2;
-          };
-
 now_or_signed_literal:
           now
           {
@@ -7931,134 +7925,6 @@ opt_array_cast:
         ;
 
 /*
-  Function call syntax using official SQL 2003 keywords.
-  Because the function name is an official token,
-  a dedicated grammar rule is needed in the parser.
-  There is no potential for conflicts
-*/
-function_call_keyword:
-          CHAR_SYM '(' expr_list ')'
-          {
-            $$= NEW_PTN Item_func_char(@$, $3);
-          }
-        | CHAR_SYM '(' expr_list USING charset_name ')'
-          {
-            $$= NEW_PTN Item_func_char(@$, $3, $5);
-          }
-        | CURRENT_USER optional_braces
-          {
-            $$= NEW_PTN Item_func_current_user(@$);
-          }
-        | DATE_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_typecast_date(@$, $3);
-          }
-        | DAY_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_dayofmonth(@$, $3);
-          }
-        | HOUR_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_hour(@$, $3);
-          }
-        | INSERT_SYM '(' expr ',' expr ',' expr ',' expr ')'
-          {
-            $$= NEW_PTN Item_func_insert(@$, $3, $5, $7, $9);
-          }
-        | INTERVAL_SYM '(' expr ',' expr ')' %prec INTERVAL_SYM
-          {
-            $$= NEW_PTN Item_func_interval(@$, YYMEM_ROOT, $3, $5);
-          }
-        | INTERVAL_SYM '(' expr ',' expr ',' expr_list ')' %prec INTERVAL_SYM
-          {
-            $$= NEW_PTN Item_func_interval(@$, YYMEM_ROOT, $3, $5, $7);
-          }
-        | JSON_VALUE_SYM '(' simple_expr ',' text_literal
-          opt_returning_type opt_on_empty_or_error ')'
-          {
-            $$= create_func_json_value(YYTHD, @3, $3, $5, $6,
-                                       $7.empty.type, $7.empty.default_string,
-                                       $7.error.type, $7.error.default_string);
-          }
-        | LEFT '(' expr ',' expr ')'
-          {
-            $$= NEW_PTN Item_func_left(@$, $3, $5);
-          }
-        | MINUTE_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_minute(@$, $3);
-          }
-        | MONTH_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_month(@$, $3);
-          }
-        | RIGHT '(' expr ',' expr ')'
-          {
-            $$= NEW_PTN Item_func_right(@$, $3, $5);
-          }
-        | SECOND_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_second(@$, $3);
-          }
-        | TIME_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_typecast_time(@$, $3);
-          }
-        | TIMESTAMP_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_typecast_datetime(@$, $3);
-          }
-        | TIMESTAMP_SYM '(' expr ',' expr ')'
-          {
-            $$= NEW_PTN Item_func_add_time(@$, $3, $5, 1, 0);
-          }
-        | TRIM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $3,
-                                       Item_func_trim::TRIM_BOTH_DEFAULT);
-          }
-        | TRIM '(' LEADING expr FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $6, $4,
-                                       Item_func_trim::TRIM_LEADING);
-          }
-        | TRIM '(' TRAILING expr FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $6, $4,
-                                       Item_func_trim::TRIM_TRAILING);
-          }
-        | TRIM '(' BOTH expr FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $6, $4, Item_func_trim::TRIM_BOTH);
-          }
-        | TRIM '(' LEADING FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $5, Item_func_trim::TRIM_LEADING);
-          }
-        | TRIM '(' TRAILING FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $5, Item_func_trim::TRIM_TRAILING);
-          }
-        | TRIM '(' BOTH FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $5, Item_func_trim::TRIM_BOTH);
-          }
-        | TRIM '(' expr FROM expr ')'
-          {
-            $$= NEW_PTN Item_func_trim(@$, $5, $3,
-                                       Item_func_trim::TRIM_BOTH_DEFAULT);
-          }
-        | USER '(' ')'
-          {
-            $$= NEW_PTN Item_func_user(@$);
-          }
-        | YEAR_SYM '(' expr ')'
-          {
-            $$= NEW_PTN Item_func_year(@$, $3);
-          }
-        ;
-
-/*
   Function calls using non reserved keywords, with special syntaxic forms.
   Dedicated grammar rules are needed because of the syntax,
   but also have the potential to cause incompatibilities with other
@@ -8879,13 +8745,6 @@ ident_string_list:
               MYSQL_YYABORT;
             $$= $1;
           }
-        ;
-
-date_time_type:
-          DATE_SYM  {$$= MYSQL_TIMESTAMP_DATE; }
-        | TIME_SYM  {$$= MYSQL_TIMESTAMP_TIME; }
-        | TIMESTAMP_SYM {$$= MYSQL_TIMESTAMP_DATETIME; }
-        | DATETIME_SYM  {$$= MYSQL_TIMESTAMP_DATETIME; }
         ;
 
 opt_as:

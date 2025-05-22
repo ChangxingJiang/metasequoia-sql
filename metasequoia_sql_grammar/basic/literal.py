@@ -120,7 +120,7 @@ NUM_LITERAL = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.LITERAL_DECIMAL_NUM],
-            action=lambda x: ast.DecimalLiteral(value=x[0])
+            action=lambda x: ast.DecimalLiteral.create(source_string=x[0])
         )
     ]
 )

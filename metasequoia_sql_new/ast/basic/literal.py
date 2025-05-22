@@ -98,8 +98,12 @@ class IntLiteral(NumberLiteral):
 class DecimalLiteral(NumberLiteral):
     """小数字面值"""
 
-    def __init__(self, value: str):
-        self._value: decimal.Decimal = decimal.Decimal(value)
+    def __init__(self, value: decimal.Decimal):
+        self._value: decimal.Decimal = value
+
+    @staticmethod
+    def create(source_string: str):
+        return DecimalLiteral(decimal.Decimal(source_string))
 
     def attr_list(self) -> typing.List[str]:
         return ["value"]
