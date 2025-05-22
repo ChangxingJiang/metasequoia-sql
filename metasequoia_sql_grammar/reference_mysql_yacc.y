@@ -8442,21 +8442,6 @@ opt_lead_lag_info:
           }
         ;
 
-/*
-  The stable_integer nonterminal symbol is not really constant, but constant
-  for the duration of an execution.
-*/
-stable_integer:
-          int64_literal  { $$ = $1; }
-        | param_or_var
-        ;
-
-param_or_var:
-          param_marker { $$ = $1; }
-        | ident        { $$ = NEW_PTN PTI_int_splocal(@$, to_lex_cstring($1)); }
-        | '@' ident_or_text     { $$ = NEW_PTN PTI_user_variable(@$, $2); }
-        ;
-
 opt_ll_default:
           %empty
           {
