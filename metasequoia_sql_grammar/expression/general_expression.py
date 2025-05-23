@@ -16,6 +16,9 @@ __all__ = [
     "EXPR",
     "EXPR_LIST",
     "OPT_EXPR_LIST",
+    "UDF_EXPRESSION",
+    "UDF_EXPR_LIST",
+    "OPT_UDF_EXPR_LIST",
 ]
 
 # 比较运算符

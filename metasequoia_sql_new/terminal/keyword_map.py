@@ -473,6 +473,7 @@ KEYWORD_TO_TERMINAL_MAP = {
     "point": SqlTerminalType.KEYWORD_POINT,
     "polygon": SqlTerminalType.KEYWORD_POLYGON,
     "port": SqlTerminalType.KEYWORD_PORT,
+    "position": SqlTerminalType.KEYWORD_POSITION,
     "precedes": SqlTerminalType.KEYWORD_PRECEDES,
     "preceding": SqlTerminalType.KEYWORD_PRECEDING,
     "precision": SqlTerminalType.KEYWORD_PRECISION,

@@ -7,6 +7,12 @@ import metasequoia_parser as ms_parser
 from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
+__all__ = [
+    "FUNCTION_EXPRESSION",
+    "NOW_EXPRESSION",
+    "DATE_TIME_TYPE",
+]
+
 # 函数表达式
 FUNCTION_EXPRESSION = ms_parser.create_group(
     name="function_expression",
@@ -196,6 +202,215 @@ FUNCTION_EXPRESSION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["now_expression"],
         ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_POSITION, TType.OPERATOR_LPAREN, "binary_expr", TType.KEYWORD_IN, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionPosition.create(sub_string=x[2], string=x[4])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SUBDATE, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="subdate", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SUBDATE, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "time_interval",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="subdate", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_SUBSTRING, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_COMMA, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionSubstring.create(string=x[2], pos=x[4], length=x[6])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_SUBSTRING, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionSubstring.create(string=x[2], pos=x[4], length=None)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_SUBSTRING, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_FROM, "expr",
+                     TType.KEYWORD_FOR, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionSubstring.create(string=x[2], pos=x[4], length=x[6])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_SUBSTRING, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_FROM, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionSubstring.create(string=x[2], pos=x[4], length=None)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_SYSDATE, "opt_field_type_param_0_1"],
+            action=lambda x: ast.FunctionExpression(function_name="sysdate", param_list=x[1].as_param_list())
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TIMESTAMP_ADD, TType.OPERATOR_LPAREN, "time_unit", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_COMMA, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="timestamp_add", param_list=[x[2], x[4], x[6]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TIMESTAMP_DIFF, TType.OPERATOR_LPAREN, "time_unit", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_COMMA, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="timestamp_diff", param_list=[x[2], x[4], x[6]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UTC_DATE, "opt_braces"],
+            action=lambda x: ast.FunctionExpression(function_name="utc_date", param_list=[])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UTC_TIME, "opt_field_type_param_0_1"],
+            action=lambda x: ast.FunctionExpression(function_name="utc_time", param_list=x[1].as_param_list())
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UTC_TIMESTAMP, "opt_field_type_param_0_1"],
+            action=lambda x: ast.FunctionExpression(function_name="utc_timestamp", param_list=x[1].as_param_list())
+        ),
+
+        # 冲突风险函数：函数名称为非保留关键字，因为使用了常规的语法形式且该非保留关键字在文法的其他部分也有使用，所以需要专门的语法规则来处理
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ASCII, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="ascii", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CHARSET, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="charset", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COALESCE, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="coalesce", param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COLLATION, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="collation", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DATABASE, TType.OPERATOR_LPAREN, TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="database", param_list=[])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IF, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_COMMA, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="if", param_list=[x[2], x[4], x[6]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FORMAT, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="format", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FORMAT, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_COMMA, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="format", param_list=[x[2], x[4], x[6]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MICROSECOND, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="microsecond", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MOD, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="mod", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_QUARTER, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="quarter", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REPEAT, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="repeat", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REPLACE, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_COMMA, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="replace", param_list=[x[2], x[4], x[6]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REVERSE, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="reverse", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ROW_COUNT, TType.OPERATOR_LPAREN, TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="row_count", param_list=[])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TRUNCATE, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="truncate", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WEEK, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="week", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WEEK, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="week", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WEIGHT_STRING, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionWeightString.create(param1=x[2], param2=None, param3=None, param4=None,
+                                                             binary_flag=False)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WEIGHT_STRING, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_AS, TType.KEYWORD_CHAR,
+                     "paren_int_literal_or_hex", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionWeightString.create(param1=x[2], param2=None, param3=x[5], param4=None,
+                                                             binary_flag=False)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WEIGHT_STRING, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_AS, TType.KEYWORD_BINARY,
+                     "paren_int_literal_or_hex", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionWeightString.create(param1=x[2], param2=None, param3=x[5], param4=None,
+                                                             binary_flag=True)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WEIGHT_STRING, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA,
+                     "num_literal_or_hex", TType.OPERATOR_COMMA, "num_literal_or_hex", TType.OPERATOR_COMMA,
+                     "num_literal_or_hex", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionWeightString.create(param1=x[2], param2=x[4], param3=x[6], param4=x[8],
+                                                             binary_flag=False)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GEOMETRYCOLLECTION, TType.OPERATOR_LPAREN, "opt_expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="geometrycollection", param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LINESTRING, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="linestring", param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MULTILINESTRING, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="multilinestring", param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MULTIPOINT, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="multipoint", param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MULTIPOLYGON, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="multipolygon", param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_POINT, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="point", param_list=[x[2], x[4]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_POLYGON, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="polygon", param_list=x[2])
+        ),
+
+        # 常规函数：函数名称不是关键字，通常不会对语言引入副作用
+        ms_parser.create_rule(
+            symbols=["ident_sys", TType.OPERATOR_LPAREN, "opt_udf_expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name=x[0].get_str_value(), param_list=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=["ident", TType.OPERATOR_DOT, "ident", TType.OPERATOR_LPAREN, "opt_expr_list",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(schema_name=x[0].get_str_value(),
+                                                    function_name=x[2].get_str_value(),
+                                                    param_list=x[4])
+        )
     ]
 )
 

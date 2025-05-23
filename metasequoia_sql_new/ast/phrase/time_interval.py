@@ -4,7 +4,7 @@
 
 from typing import List, TYPE_CHECKING
 
-from metasequoia_sql_new.ast.base import Expression
+from metasequoia_sql_new.ast.base import Expression, Node
 
 if TYPE_CHECKING:
     from metasequoia_sql_new.ast.basic import TimeUnitEnum
@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-class TimeInterval(Expression):
+class TimeInterval(Node):
     """时间间隔"""
 
     def __init__(self, time_unit: "TimeUnitEnum", time_value: Expression):

@@ -550,6 +550,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_POINT = enum.auto()  # keyword
     KEYWORD_POLYGON = enum.auto()  # keyword : MYSQL
     KEYWORD_PORT = enum.auto()  # keyword
+    KEYWORD_POSITION = enum.auto()  # keyword : SQL-2003-N
     KEYWORD_PRECEDES = enum.auto()  # keyword : MYSQL
     KEYWORD_PRECEDING = enum.auto()  # keyword ； SQL-2003-N (MySQL 8.0)
     KEYWORD_PRECISION = enum.auto()  # reserved keyword : SQL-2003-R

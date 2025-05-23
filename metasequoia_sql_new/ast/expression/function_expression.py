@@ -38,17 +38,17 @@ class FunctionExpression(Expression):
     schema_name . function_name ( ... )
     """
 
-    def __init__(self, function_name: str, param_list: List[FunctionParam], schema_name: Optional[str] = None):
+    def __init__(self, function_name: str, param_list: List["FunctionParam"], schema_name: Optional[str] = None):
         self._schema_name = schema_name
         self._function_name = function_name
         self._param_list = param_list
 
     @staticmethod
-    def create_by_1_param(function_name: str, param_1: FunctionParam) -> "FunctionExpression":
+    def create_by_1_param(function_name: str, param_1: "FunctionParam") -> "FunctionExpression":
         return FunctionExpression(function_name=function_name, param_list=[param_1])
 
     @staticmethod
-    def create_by_2_param(function_name: str, param_1: FunctionParam, param_2: FunctionParam) -> "FunctionExpression":
+    def create_by_2_param(function_name: str, param_1: "FunctionParam", param_2: "FunctionParam") -> "FunctionExpression":
         return FunctionExpression(function_name=function_name, param_list=[param_1, param_2])
 
     def attr_list(self) -> List[str]:
@@ -59,26 +59,26 @@ class FunctionExpression(Expression):
         return self._function_name
 
     @property
-    def param_list(self) -> List[FunctionParam]:
+    def param_list(self) -> List["FunctionParam"]:
         return self._param_list
 
 
 class FunctionChar(FunctionExpression):
     """CHAR 函数"""
 
-    def __init__(self, function_name: str, param_list: List[Expression], charset_name: Optional[Charset]):
+    def __init__(self, function_name: str, param_list: List[Expression], charset_name: Optional["Charset"]):
         super().__init__(function_name, param_list)
         self._charset_name = charset_name
 
     @staticmethod
-    def create(param_list: List[Expression], charset_name: Optional[Charset]) -> "FunctionChar":
+    def create(param_list: List[Expression], charset_name: Optional["Charset"]) -> "FunctionChar":
         return FunctionChar(function_name="char", param_list=param_list, charset_name=charset_name)
 
     def attr_list(self) -> List[str]:
         return super().attr_list() + ["charset_name"]
 
     @property
-    def charset_name(self) -> Optional[Charset]:
+    def charset_name(self) -> Optional["Charset"]:
         return self._charset_name
 
 
@@ -263,15 +263,15 @@ class FunctionSubstring(FunctionExpression):
 class FunctionWeightString(FunctionExpression):
     """WEIGHT_STRING 函数"""
 
-    def __init__(self, function_name: str, param_list: List[FunctionParam], binary_flag: bool):
+    def __init__(self, function_name: str, param_list: List["FunctionParam"], binary_flag: bool):
         super().__init__(function_name, param_list)
         self._binary_flag = binary_flag
 
     @staticmethod
     def create(param1: Expression,
-               param2: Expression,
-               param3: Expression,
-               param4: Expression,
+               param2: Optional[Expression],
+               param3: Optional[Expression],
+               param4: Optional[Expression],
                binary_flag: bool) -> "FunctionWeightString":
         return FunctionWeightString(
             function_name="weight_string",
@@ -284,15 +284,15 @@ class FunctionWeightString(FunctionExpression):
         return self.param_list[0]
 
     @property
-    def param2(self) -> Expression:
+    def param2(self) -> Optional[Expression]:
         return self.param_list[1]
 
     @property
-    def param3(self) -> Expression:
+    def param3(self) -> Optional[Expression]:
         return self.param_list[2]
 
     @property
-    def param4(self) -> Expression:
+    def param4(self) -> Optional[Expression]:
         return self.param_list[3]
 
     @property
