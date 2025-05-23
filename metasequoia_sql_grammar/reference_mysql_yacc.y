@@ -8482,14 +8482,6 @@ opt_table_alias:
         | opt_as ident { $$ = to_lex_cstring($2); }
         ;
 
-opt_qualify_clause:
-           %empty { $$= nullptr; }
-        | QUALIFY_SYM expr
-          {
-            $$= new PTI_qualify(@$, $2);
-          }
-        ;
-
 with_clause:
           WITH with_list
           {
