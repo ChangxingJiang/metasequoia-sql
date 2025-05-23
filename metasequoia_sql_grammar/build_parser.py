@@ -15,6 +15,7 @@ from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
 from metasequoia_sql_grammar.clause import group_by_clause
 from metasequoia_sql_grammar.clause import having_clause
+from metasequoia_sql_grammar.clause import limit_clause
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
@@ -192,6 +193,7 @@ def build_grammar():
         # 子句层级
         group_by_clause,  # GROUP BY 子句
         having_clause,  # HAVING 子句
+        limit_clause,  # LIMIT 子句
         order_by_clause,  # ORDER BY 子句
         over_clause,  # OVER 子句
         partition_by_clause,  # PARTITION BY 子句

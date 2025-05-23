@@ -8567,62 +8567,6 @@ alter_order_item:
           }
         ;
 
-opt_limit_clause:
-          %empty { $$= nullptr; }
-        | limit_clause
-        ;
-
-limit_clause:
-          LIMIT limit_options
-          {
-            $$= NEW_PTN PT_limit_clause(@$, $2);
-          }
-        ;
-
-limit_options:
-          limit_option
-          {
-            $$.limit= $1;
-            $$.opt_offset= nullptr;
-            $$.is_offset_first= false;
-          }
-        | limit_option ',' limit_option
-          {
-            $$.limit= $3;
-            $$.opt_offset= $1;
-            $$.is_offset_first= true;
-          }
-        | limit_option OFFSET_SYM limit_option
-          {
-            $$.limit= $1;
-            $$.opt_offset= $3;
-            $$.is_offset_first= false;
-          }
-        ;
-
-limit_option:
-          ident
-          {
-            $$= NEW_PTN PTI_limit_option_ident(@$, to_lex_cstring($1));
-          }
-        | param_marker
-          {
-            $$= NEW_PTN PTI_limit_option_param_marker(@$, $1);
-          }
-        | ULONGLONG_NUM
-          {
-            $$= NEW_PTN Item_uint(@$, $1.str, $1.length);
-          }
-        | LONG_NUM
-          {
-            $$= NEW_PTN Item_uint(@$, $1.str, $1.length);
-          }
-        | NUM
-          {
-            $$= NEW_PTN Item_uint(@$, $1.str, $1.length);
-          }
-        ;
-
 opt_simple_limit:
           %empty { $$= nullptr; }
         | LIMIT limit_option { $$= $2; }
