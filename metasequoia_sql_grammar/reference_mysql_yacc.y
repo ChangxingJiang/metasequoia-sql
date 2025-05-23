@@ -7956,28 +7956,6 @@ grouping_operation:
           }
         ;
 
-in_expression_user_variable_assignment:
-          '@' ident_or_text SET_VAR expr
-          {
-            push_warning(YYTHD, Sql_condition::SL_WARNING,
-                         ER_WARN_DEPRECATED_SYNTAX,
-                         ER_THD(YYTHD, ER_WARN_DEPRECATED_USER_SET_EXPR));
-            $$ = NEW_PTN PTI_variable_aux_set_var(@$, $2, $4);
-          }
-        ;
-
-rvalue_system_or_user_variable:
-          '@' ident_or_text
-          {
-            $$ = NEW_PTN PTI_user_variable(@$, $2);
-          }
-        | '@' '@' opt_rvalue_system_variable_type rvalue_system_variable
-          {
-            $$ = NEW_PTN PTI_get_system_variable(@$, $3,
-                                                 @4, $4.prefix, $4.name);
-          }
-        ;
-
 ident_list_arg:
           ident_list          { $$= $1; }
         | '(' ident_list ')'  { $$= $2; }
@@ -10834,13 +10812,6 @@ opt_var_type:
         | SESSION_SYM { $$=OPT_SESSION; }
         ;
 
-opt_rvalue_system_variable_type:
-          %empty          { $$=OPT_DEFAULT; }
-        | GLOBAL_SYM '.'  { $$=OPT_GLOBAL; }
-        | LOCAL_SYM '.'   { $$=OPT_SESSION; }
-        | SESSION_SYM '.' { $$=OPT_SESSION; }
-        ;
-
 opt_set_var_ident_type:
           %empty          { $$=OPT_DEFAULT; }
         | PERSIST_SYM '.' { $$=OPT_PERSIST; }
@@ -10917,22 +10888,6 @@ lvalue_variable:
         | DEFAULT_SYM '.' ident
           {
             $$ = Bipartite_name{{STRING_WITH_LEN("default")}, to_lex_cstring($3)};
-          }
-        ;
-
-rvalue_system_variable:
-          ident_or_text
-          {
-            $$ = Bipartite_name{{}, to_lex_cstring($1)};
-          }
-        | ident_or_text '.' ident
-          {
-            // disallow "SELECT @@global.global.variable"
-            if (check_reserved_words($1.str)) {
-              YYTHD->syntax_error_at(@1);
-              MYSQL_YYABORT;
-            }
-            $$ = Bipartite_name{to_lex_cstring($1), to_lex_cstring($3)};
           }
         ;
 
