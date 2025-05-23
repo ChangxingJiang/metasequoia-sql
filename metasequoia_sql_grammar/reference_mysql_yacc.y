@@ -8548,44 +8548,6 @@ opt_derived_column_list:
           }
         ;
 
-opt_window_clause:
-          %empty
-          {
-            $$= nullptr;
-          }
-        | WINDOW_SYM window_definition_list
-          {
-            $$= $2;
-          }
-        ;
-
-window_definition_list:
-          window_definition
-          {
-            $$= NEW_PTN PT_window_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | window_definition_list ',' window_definition
-          {
-            if ($1->push_back($3))
-              MYSQL_YYABORT; // OOM
-            $$= $1;
-            $$->m_pos = @$;
-          }
-        ;
-
-window_definition:
-          window_name AS window_spec
-          {
-            $$= $3;
-            if ($$ == nullptr)
-              MYSQL_YYABORT; // OOM
-            $$->m_pos = @$;
-            $$->set_name($1);
-          }
-        ;
-
 /*
   Order by statement in ALTER TABLE
 */
