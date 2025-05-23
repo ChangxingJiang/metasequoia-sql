@@ -8595,38 +8595,6 @@ window_definition:
         ;
 
 /*
-   group by statement in select
-*/
-
-opt_group_clause:
-          %empty { $$= nullptr; }
-        | GROUP_SYM BY group_list olap_opt
-          {
-            $$= NEW_PTN PT_group(@$, $3, $4);
-          }
-        | GROUP_SYM BY ROLLUP_SYM '(' group_list ')'
-          {
-            $$= NEW_PTN PT_group(@$, $5, ROLLUP_TYPE);
-          }
-        | GROUP_SYM BY CUBE_SYM '(' group_list ')'
-          {
-            $$= NEW_PTN PT_group(@$, $5, CUBE_TYPE);
-          }
-        ;
-
-olap_opt:
-          %empty { $$= UNSPECIFIED_OLAP_TYPE; }
-        | WITH_ROLLUP_SYM { $$= ROLLUP_TYPE; }
-            /*
-              'WITH ROLLUP' is needed for backward compatibility,
-              and cause LALR(2) conflicts.
-              This syntax is not standard.
-              MySQL syntax: GROUP BY col1, col2, col3 WITH ROLLUP
-              SQL-2003: GROUP BY ... ROLLUP(col1, col2, col3)
-            */
-        ;
-
-/*
   Order by statement in ALTER TABLE
 */
 

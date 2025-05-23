@@ -5,7 +5,6 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
@@ -14,6 +13,7 @@ from metasequoia_sql_grammar.basic import literal
 from metasequoia_sql_grammar.basic import param
 from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
+from metasequoia_sql_grammar.clause import group_by_clause
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
@@ -187,6 +187,7 @@ def build_grammar():
         function_expression,  # 表达式 - 普通函数表达式
 
         # 子句层级
+        group_by_clause,  # GROUP BY 子句
         order_by_clause,  # ORDER BY 子句
         over_clause,  # OVER 子句
         partition_by_clause,  # PARTITION BY 子句
