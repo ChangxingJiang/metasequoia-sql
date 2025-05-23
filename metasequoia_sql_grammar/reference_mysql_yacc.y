@@ -8482,15 +8482,6 @@ opt_table_alias:
         | opt_as ident { $$ = to_lex_cstring($2); }
         ;
 
-opt_where_clause:
-          %empty { $$ = nullptr; }
-        | where_clause
-        ;
-
-where_clause:
-          WHERE expr    { $$ = NEW_PTN PTI_where(@2, $2); }
-        ;
-
 opt_having_clause:
           %empty { $$= nullptr; }
         | HAVING expr

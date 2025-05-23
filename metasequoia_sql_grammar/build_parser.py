@@ -17,6 +17,7 @@ from metasequoia_sql_grammar.basic import variable
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
+from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_expression
@@ -184,9 +185,12 @@ def build_grammar():
         sum_expression,  # 表达式 - 聚集函数表达式
         window_function_expression,  # 表达式 - 窗口函数表达式
         function_expression,  # 表达式 - 普通函数表达式
-        order_by_clause,  # 子句 - ORDER BY 子句
-        over_clause,  # 子句 - OVER 子句
-        partition_by_clause,  # 子句 - PARTITION BY 子句
+
+        # 子句层级
+        order_by_clause,  # ORDER BY 子句
+        over_clause,  # OVER 子句
+        partition_by_clause,  # PARTITION BY 子句
+        where_clause,  # WHERE 子句
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))
