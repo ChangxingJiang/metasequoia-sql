@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from metasequoia_sql_new.ast.base import Expression
 
 if TYPE_CHECKING:
-    from metasequoia_sql_new.ast.clause import OverClause
+    from metasequoia_sql_new.ast.clause import Window
     from metasequoia_sql_new.ast.clause import OrderByClause
     from metasequoia_sql_new.ast.basic import StringLiteral
 
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class FuncSumBase(Expression):
     """聚集函数的基类"""
 
-    def __init__(self, param: Expression, window_clause: Optional["OverClause"]):
+    def __init__(self, param: Expression, window_clause: Optional["Window"]):
         self._param = param
         self._window_clause = window_clause
 
@@ -28,14 +28,14 @@ class FuncSumBase(Expression):
         return self._param
 
     @property
-    def window_clause(self) -> Optional["OverClause"]:
+    def window_clause(self) -> Optional["Window"]:
         return self._window_clause
 
 
 class FuncSumDistinctBase(FuncSumBase):
     """包含可选的 DISTINCT 关键字的聚集函数的基类"""
 
-    def __init__(self, param: Expression, distinct: bool, window_clause: Optional["OverClause"]):
+    def __init__(self, param: Expression, distinct: bool, window_clause: Optional["Window"]):
         super().__init__(param, window_clause)
         self._distinct = distinct
 
@@ -66,7 +66,7 @@ class FuncSumJsonArrayAgg(FuncSumBase):
 class FuncSumJsonObjectAgg(Expression):
     """聚集函数：json_objectagg()"""
 
-    def __init__(self, param1: Expression, param2: Expression, window_clause: Optional["OverClause"]):
+    def __init__(self, param1: Expression, param2: Expression, window_clause: Optional["Window"]):
         self._param1 = param1
         self._param2 = param2
         self._window_clause = window_clause
@@ -83,7 +83,7 @@ class FuncSumJsonObjectAgg(Expression):
         return self._param2
 
     @property
-    def window_clause(self) -> Optional["OverClause"]:
+    def window_clause(self) -> Optional["Window"]:
         return self._window_clause
 
 
@@ -98,14 +98,14 @@ class FuncSumBitXor(FuncSumBase):
 class FuncSumCountStar(Expression):
     """聚集函数：count(*)"""
 
-    def __init__(self, window_clause: Optional["OverClause"]):
+    def __init__(self, window_clause: Optional["Window"]):
         self._window_clause = window_clause
 
     def attr_list(self) -> List[str]:
         return ["window_clause"]
 
     @property
-    def window_clause(self) -> Optional["OverClause"]:
+    def window_clause(self) -> Optional["Window"]:
         return self._window_clause
 
 
@@ -149,7 +149,7 @@ class FuncSumGroupConcat(Expression):
                  param_list: List[Expression],
                  order_by_clause: Optional["OrderByClause"],
                  separator: Optional["StringLiteral"],
-                 window_clause: Optional["OverClause"]):
+                 window_clause: Optional["Window"]):
         self._distinct = distinct
         self._param_list = param_list
         self._order_by_clause = order_by_clause
@@ -176,5 +176,5 @@ class FuncSumGroupConcat(Expression):
         return self._separator
 
     @property
-    def window_clause(self) -> Optional["OverClause"]:
+    def window_clause(self) -> Optional["Window"]:
         return self._window_clause

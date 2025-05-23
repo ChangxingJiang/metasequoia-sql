@@ -7,7 +7,7 @@ from typing import List, Optional, TYPE_CHECKING
 from metasequoia_sql_new.ast.base import Expression, Node
 
 if TYPE_CHECKING:
-    from metasequoia_sql_new.ast.clause import OverClause
+    from metasequoia_sql_new.ast.clause import Window
 
 __all__ = [
     # 窗口函数表达式的组成元素
@@ -68,14 +68,14 @@ class LeadOrLagInfo(Node):
 class FuncWindowBase(Expression):
     """窗口函数的基类"""
 
-    def __init__(self, window_clause: "OverClause"):
+    def __init__(self, window_clause: "Window"):
         self._window_clause = window_clause
 
     def attr_list(self) -> List[str]:
         return ["window_clause"]
 
     @property
-    def window_clause(self) -> "OverClause":
+    def window_clause(self) -> "Window":
         return self._window_clause
 
 
@@ -102,7 +102,7 @@ class FuncWindowPercentRank(FuncWindowBase):
 class FuncWindowNtile(FuncWindowBase):
     """NTILE 窗口函数"""
 
-    def __init__(self, param: Expression, window_clause: "OverClause"):
+    def __init__(self, param: Expression, window_clause: "Window"):
         super().__init__(window_clause)
         self._param = param
 
@@ -118,7 +118,7 @@ class FuncWindowLeadOrLag(FuncWindowBase):
     """LEAD 窗口函数和 LAG 窗口函数的抽象类"""
 
     def __init__(self, param: Expression, offset: Optional[Expression], default_value: Optional[Expression],
-                 null_treatment: NullTreatment, window_clause: "OverClause"):
+                 null_treatment: NullTreatment, window_clause: "Window"):
         super().__init__(window_clause)
         self._param = param
         self._offset = offset
@@ -156,7 +156,7 @@ class FuncWindowLag(FuncWindowLeadOrLag):
 class FuncWindowFirstValueOrLastValue(FuncWindowBase):
     """FIRST_VALUE 窗口函数和 LAST_VALUE 窗口函数的抽象类"""
 
-    def __init__(self, param: Expression, null_treatment: NullTreatment, window_clause: "OverClause"):
+    def __init__(self, param: Expression, null_treatment: NullTreatment, window_clause: "Window"):
         super().__init__(window_clause)
         self._param = param
         self._null_treatment = null_treatment
@@ -183,7 +183,7 @@ class FuncWindowLastValue(FuncWindowFirstValueOrLastValue):
 
 class FuncWindowNthValue(FuncWindowBase):
     def __init__(self, param_1: Expression, param_2: Expression, from_first_or_last: FromFirstOrLast,
-                 null_treatment: NullTreatment, window_clause: "OverClause"):
+                 null_treatment: NullTreatment, window_clause: "Window"):
         super().__init__(window_clause)
         self._param1 = param_1
         self._param2 = param_2

@@ -158,12 +158,12 @@ WINDOW_NAME_OR_SPEC = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["ident"],
-            action=lambda x: ast.OverClause.create_by_name(name=x[0])
+            action=lambda x: ast.Window.create_by_name(name=x[0])
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "opt_ident", "opt_partition_clause", "opt_order_by_clause",
                      "opt_window_frame_clause", TType.OPERATOR_RPAREN],
-            action=lambda x: ast.OverClause(name=x[1], partition_clause=x[2], order_clause=x[3], frame_clause=x[4])
+            action=lambda x: ast.Window(name=x[1], partition_clause=x[2], order_clause=x[3], frame_clause=x[4])
         )
     ]
 )
