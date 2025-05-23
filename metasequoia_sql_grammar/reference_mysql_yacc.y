@@ -5165,11 +5165,6 @@ constraint_key_type:
         | UNIQUE_SYM opt_key_or_index { $$= KEYTYPE_UNIQUE; }
         ;
 
-key_or_index:
-          KEY_SYM {}
-        | INDEX_SYM {}
-        ;
-
 opt_key_or_index:
           %empty {}
         | key_or_index
@@ -8356,94 +8351,6 @@ jt_column_type:
         | EXISTS
           {
             $$= enum_jt_column::JTC_EXISTS;
-          }
-        ;
-
-index_hint_clause:
-          %empty
-          {
-            $$= old_mode ?  INDEX_HINT_MASK_JOIN : INDEX_HINT_MASK_ALL;
-          }
-        | FOR_SYM JOIN_SYM      { $$= INDEX_HINT_MASK_JOIN;  }
-        | FOR_SYM ORDER_SYM BY  { $$= INDEX_HINT_MASK_ORDER; }
-        | FOR_SYM GROUP_SYM BY  { $$= INDEX_HINT_MASK_GROUP; }
-        ;
-
-index_hint_type:
-          FORCE_SYM  { $$= INDEX_HINT_FORCE; }
-        | IGNORE_SYM { $$= INDEX_HINT_IGNORE; }
-        ;
-
-index_hint_definition:
-          index_hint_type key_or_index index_hint_clause
-          '(' key_usage_list ')'
-          {
-            init_index_hints($5, $1, $3);
-            $$= $5;
-          }
-        | USE_SYM key_or_index index_hint_clause
-          '(' opt_key_usage_list ')'
-          {
-            init_index_hints($5, INDEX_HINT_USE, $3);
-            $$= $5;
-          }
-       ;
-
-index_hints_list:
-          index_hint_definition
-        | index_hints_list index_hint_definition
-          {
-            $2->concat($1);
-            $$= $2;
-          }
-        ;
-
-opt_index_hints_list:
-          %empty { $$= nullptr; }
-        | index_hints_list
-        ;
-
-opt_key_definition:
-          opt_index_hints_list
-        ;
-
-opt_key_usage_list:
-          %empty
-          {
-            $$= NEW_PTN List<Index_hint>;
-            Index_hint *hint= NEW_PTN Index_hint(nullptr, 0);
-            if ($$ == nullptr || hint == nullptr || $$->push_front(hint))
-              MYSQL_YYABORT;
-          }
-        | key_usage_list
-        ;
-
-key_usage_element:
-          ident
-          {
-            $$= NEW_PTN Index_hint($1.str, $1.length);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | PRIMARY_SYM
-          {
-            $$= NEW_PTN Index_hint(STRING_WITH_LEN("PRIMARY"));
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        ;
-
-key_usage_list:
-          key_usage_element
-          {
-            $$= NEW_PTN List<Index_hint>;
-            if ($$ == nullptr || $$->push_front($1))
-              MYSQL_YYABORT;
-          }
-        | key_usage_list ',' key_usage_element
-          {
-            if ($$->push_front($3))
-              MYSQL_YYABORT;
           }
         ;
 

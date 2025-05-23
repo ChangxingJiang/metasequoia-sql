@@ -3,6 +3,7 @@
 """
 
 from metasequoia_sql_new.ast.clause.group_by_clause import *
+from metasequoia_sql_new.ast.clause.index_hint_clause import *
 from metasequoia_sql_new.ast.clause.limit_clause import *
 from metasequoia_sql_new.ast.clause.order_by_clause import *
 from metasequoia_sql_new.ast.clause.over_clause import *

@@ -121,3 +121,16 @@ KEYWORD_NVARCHAR = ms_parser.create_group(
         )
     ]
 )
+
+# KEY 关键字或 INDEX 关键字
+KEYWORD_KEY_OR_INDEX = ms_parser.create_group(
+    name="keyword_key_or_index",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_KEY]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INDEX]
+        )
+    ]
+)

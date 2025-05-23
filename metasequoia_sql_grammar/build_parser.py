@@ -15,6 +15,7 @@ from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
 from metasequoia_sql_grammar.clause import group_by_clause
 from metasequoia_sql_grammar.clause import having_clause
+from metasequoia_sql_grammar.clause import index_hint_clause
 from metasequoia_sql_grammar.clause import limit_clause
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
@@ -200,6 +201,7 @@ def build_grammar():
         qualify_clause,  # QUALIFY 子句
         where_clause,  # WHERE 子句
         window_clause,  # WINDOW 子句
+        index_hint_clause,  # 索引指定子句
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))
