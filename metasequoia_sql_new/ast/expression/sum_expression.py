@@ -12,6 +12,28 @@ if TYPE_CHECKING:
     from metasequoia_sql_new.ast.clause import OrderByClause
     from metasequoia_sql_new.ast.basic import StringLiteral
 
+__all__ = [
+    "FuncSumDistinctBase",
+    "FuncSumAvg",
+    "FuncSumBitAnd",
+    "FuncSumBitOr",
+    "FuncSumJsonArrayAgg",
+    "FuncSumJsonObjectAgg",
+    "FuncSumStCollect",
+    "FuncSumBitXor",
+    "FuncSumCountStar",
+    "FuncSumCount",
+    "FuncSumMin",
+    "FuncSumMax",
+    "FuncSumStd",
+    "FuncSumVariance",
+    "FuncSumStddevSamp",
+    "FuncSumVarSamp",
+    "FuncSumSum",
+    "FuncSumGroupConcat",
+    "FunctionSumGrouping",
+]
+
 
 class FuncSumBase(Expression):
     """聚集函数的基类"""
@@ -178,3 +200,17 @@ class FuncSumGroupConcat(Expression):
     @property
     def window_clause(self) -> Optional["Window"]:
         return self._window_clause
+
+
+class FunctionSumGrouping(Expression):
+    """GROUPING 函数"""
+
+    def __init__(self, param_list: List[Expression]):
+        self._param_list = param_list
+
+    def attr_list(self) -> List[str]:
+        return ["param_list"]
+
+    @property
+    def param_list(self) -> List[Expression]:
+        return self._param_list

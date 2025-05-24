@@ -103,6 +103,10 @@ SUM_EXPR = ms_parser.create_group(
                      "opt_separator", TType.OPERATOR_RPAREN, "opt_windowing_clause"],
             action=lambda x: ast.FuncSumGroupConcat(distinct=x[2], param_list=x[3], order_by_clause=x[4],
                                                     separator=x[5], window_clause=x[7])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GROUPING, TType.OPERATOR_LPAREN, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionSumGrouping(param_list=x[2])
         )
     ]
 )

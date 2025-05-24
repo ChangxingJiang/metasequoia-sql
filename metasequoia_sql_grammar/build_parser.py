@@ -74,7 +74,7 @@ def build_grammar():
                 combine_type=ms_parser.COMBINE_RIGHT
             ),
             ms_parser.create_sr_priority(
-                symbols=[TType.KEYWORD_NOT, TType.KEYWORD_NOT2],
+                symbols=[TType.KEYWORD_NOT],
                 combine_type=ms_parser.COMBINE_RIGHT
             ),
             ms_parser.create_sr_priority(

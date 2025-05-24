@@ -4,11 +4,12 @@
 
 from typing import List, Optional
 
-from metasequoia_sql_new.ast.base import Expression
+from metasequoia_sql_new.ast.base import BinaryExpression, Expression
 
 __all__ = [
     "UdfExpression",
-    "BuiltInCollate",
+    "OperatorCollate",
+    "OperatorConcat",
 ]
 
 
@@ -31,7 +32,7 @@ class UdfExpression(Expression):
         return self._alias
 
 
-class BuiltInCollate(Expression):
+class OperatorCollate(Expression):
     """内置 COLLATE 关键字运算符（指定排序规则）
 
     collation_operand COLLATE collation_name
@@ -51,3 +52,10 @@ class BuiltInCollate(Expression):
     @property
     def collation_name(self) -> str:
         return self._collation_name
+
+
+class OperatorConcat(BinaryExpression):
+    """内置 || 运算符（字符串合并）
+
+    left_operand || right_operand
+    """

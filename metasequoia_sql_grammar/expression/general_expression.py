@@ -68,7 +68,7 @@ SIMPLE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["simple_expr", TType.KEYWORD_COLLATE, "ident_or_text"],
-            action=lambda x: ast.BuiltInCollate(collation_operand=x[0], collation_name=x[2]),
+            action=lambda x: ast.OperatorCollate(collation_operand=x[0], collation_name=x[2]),
             sr_priority_as=TType.NEG
         ),
         ms_parser.create_rule(
@@ -82,6 +82,16 @@ SIMPLE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["user_variable_assignment"]
+        ),
+        ms_parser.create_rule(
+            symbols=["sum_expr"]
+        ),
+        ms_parser.create_rule(
+            symbols=["window_function_expression"]
+        ),
+        ms_parser.create_rule(
+            symbols=["simple_expr", TType.OPERATOR_BAR_BAR, "simple_expr"],
+            action=lambda x: ast.OperatorConcat(left_operand=x[0], right_operand=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_PLUS, "simple_expr"],

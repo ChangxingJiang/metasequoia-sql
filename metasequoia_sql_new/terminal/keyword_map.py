@@ -414,7 +414,6 @@ KEYWORD_TO_TERMINAL_MAP = {
     "nodegroup": SqlTerminalType.KEYWORD_NODEGROUP,
     "none": SqlTerminalType.KEYWORD_NONE,
     "not": SqlTerminalType.KEYWORD_NOT,
-    "not2": SqlTerminalType.KEYWORD_NOT2,
     "nowait": SqlTerminalType.KEYWORD_NOWAIT,
     "no_wait": SqlTerminalType.KEYWORD_NO_WAIT,
     "no_write_to_binlog": SqlTerminalType.KEYWORD_NO_WRITE_TO_BINLOG,

@@ -7944,18 +7944,6 @@ opt_query_expansion:
         | WITH QUERY_SYM EXPANSION_SYM          { $$= FT_EXPAND; }
         ;
 
-set_function_specification:
-          sum_expr
-        | grouping_operation
-        ;
-
-grouping_operation:
-          GROUPING_SYM '(' expr_list ')'
-          {
-            $$= NEW_PTN Item_func_grouping(@$, $3);
-          }
-        ;
-
 ident_list_arg:
           ident_list          { $$= $1; }
         | '(' ident_list ')'  { $$= $2; }

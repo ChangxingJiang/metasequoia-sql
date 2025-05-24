@@ -491,7 +491,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_NODEGROUP = enum.auto()  # keyword
     KEYWORD_NONE = enum.auto()  # keyword : SQL-2003-R
     KEYWORD_NOT = enum.auto()  # reserved keyword : SQL-2003-R
-    KEYWORD_NOT2 = enum.auto()  # reserved keyword : SQL-2003-R (sql_mode & MODE_HIGH_NOT_PRECEDENCE)
+    # KEYWORD_NOT2 = enum.auto()  # reserved keyword : SQL-2003-R (sql_mode & MODE_HIGH_NOT_PRECEDENCE)
     KEYWORD_NOWAIT = enum.auto()  # keyword : MYSQL (MySQL 8.0)
     KEYWORD_NO_WAIT = enum.auto()  # keyword
     KEYWORD_NO_WRITE_TO_BINLOG = enum.auto()  # reserved keyword
