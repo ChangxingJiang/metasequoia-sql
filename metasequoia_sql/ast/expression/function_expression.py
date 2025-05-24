@@ -31,6 +31,8 @@ __all__ = [
     "FunctionWeightString",
     "FunctionCast",
     "FunctionCastAtTimeZone",
+    "FunctionConvert",
+    "FunctionConvertCharset",
 ]
 
 
@@ -362,3 +364,45 @@ class FunctionCastAtTimeZone(Expression):
     @property
     def precision(self) -> Decimal:
         return self._precision
+
+
+class FunctionConvert(Expression):
+    """CONVERT 函数的第一种形式
+
+    CONVERT ( expression , cast_type )
+    """
+
+    __slots__ = ["_expression", "_cast_type"]
+
+    def __init__(self, expression: Expression, cast_type: "CastType"):
+        self._expression = expression
+        self._cast_type = cast_type
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+    @property
+    def cast_type(self) -> "CastType":
+        return self._cast_type
+
+
+class FunctionConvertCharset(Expression):
+    """CONVERT 函数的第二种形式
+
+    CONVERT ( expression USING charset_name )
+    """
+
+    __slots__ = ["_expression", "_charset"]
+
+    def __init__(self, expression: Expression, charset: "Charset"):
+        self._expression = expression
+        self._charset = charset
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+    @property
+    def charset_name(self) -> "Charset":
+        return self._charset

@@ -170,6 +170,24 @@ SIMPLE_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CASE, "opt_expr", "when_list", "opt_else", TType.KEYWORD_END],
             action=lambda x: ast.Case(case_expression=x[1], when_list=x[2], else_expression=x[3])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONVERT, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "cast_type",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionConvert(expression=x[2], cast_type=x[4])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONVERT, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_USING, "charset_name",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionConvertCharset(expression=x[2], charset=x[4])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT, TType.OPERATOR_LPAREN, "simple_ident", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="default", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_VALUES, TType.OPERATOR_LPAREN, "simple_ident", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionExpression(function_name="values", param_list=[x[2]])
         )
     ]
 )
