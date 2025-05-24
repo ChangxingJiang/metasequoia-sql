@@ -2,7 +2,7 @@
 函数类型节点
 """
 
-import typing
+from typing import List, Optional
 
 from metasequoia_sql.ast.base import BinaryExpression
 from metasequoia_sql.ast.base import Expression
@@ -183,13 +183,13 @@ class OperatorCompare(BinaryExpression):
     """
 
     def __init__(self,
-                 left_operand: typing.Optional[Expression],
-                 right_operand: typing.Optional[Expression],
+                 left_operand: Optional[Expression],
+                 right_operand: Optional[Expression],
                  operator: EnumOperatorCompare):
         super().__init__(left_operand, right_operand)
         self._operator = operator
 
-    def attr_list(self) -> typing.List[str]:
+    def attr_list(self) -> List[str]:
         return ["left_operand", "right_operand", "operator"]
 
     @property
