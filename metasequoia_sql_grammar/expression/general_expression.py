@@ -64,7 +64,7 @@ OPERATOR_COMPARE = ms_parser.create_group(
     ]
 )
 
-# 简单表达式 TODO 未完成
+# 简单表达式
 SIMPLE_EXPR = ms_parser.create_group(
     name="simple_expr",
     rules=[
@@ -188,6 +188,18 @@ SIMPLE_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_VALUES, TType.OPERATOR_LPAREN, "simple_ident", TType.OPERATOR_RPAREN],
             action=lambda x: ast.FunctionExpression(function_name="values", param_list=[x[2]])
+        ),
+        ms_parser.create_rule(
+            symbols=["time_interval", TType.OPERATOR_PLUS, "expr"],
+            action=lambda x: ast.OperatorDatePlus(left_operand=x[0], right_operand=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=["simple_ident", TType.KEYWORD_JSON_SEPARATOR, "text_literal_sys"],
+            action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2], is_unquoted=False)
+        ),
+        ms_parser.create_rule(
+            symbols=["simple_ident", TType.KEYWORD_JSON_UNQUOTED_SEPARATOR, "text_literal_sys"],
+            action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2], is_unquoted=True)
         )
     ]
 )

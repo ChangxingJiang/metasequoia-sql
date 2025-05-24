@@ -10,6 +10,7 @@ from metasequoia_sql.ast.other_operator import EnumOperatorCompare
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.ident import Ident
+    from metasequoia_sql.ast.phrase.time_interval import TimeInterval
 
 __all__ = [
     "OperatorNegative",
@@ -19,6 +20,7 @@ __all__ = [
     "OperatorShiftLeft",
     "OperatorShiftRight",
     "OperatorPlus",
+    "OperatorDatePlus",
     "OperatorMinus",
     "OperatorMul",
     "OperatorDiv",
@@ -53,6 +55,7 @@ __all__ = [
     "FulltextOption",
     "OperatorMatch",
     "OperatorBinary",
+    "OperatorJsonSeparator",
 ]
 
 
@@ -82,6 +85,24 @@ class OperatorShiftRight(BinaryExpression):
 
 class OperatorPlus(BinaryExpression):
     """内置函数：加法（`+` 运算符）"""
+
+
+class OperatorDatePlus(Expression):
+    """内置 + 运算符，但 left_operand 为 time_interval 类型"""
+
+    __slots__ = ["_left_operand", "_right_operand"]
+
+    def __init__(self, left_operand: "TimeInterval", right_operand: Expression):
+        self._left_operand = left_operand
+        self._right_operand = right_operand
+
+    @property
+    def left_operand(self) -> "TimeInterval":
+        return self._left_operand
+
+    @property
+    def right_operand(self) -> Expression:
+        return self._right_operand
 
 
 class OperatorMinus(BinaryExpression):
@@ -339,3 +360,30 @@ class OperatorMatch(Expression):
 
 class OperatorBinary(UnaryExpression):
     """内置 BINARY 运算符"""
+
+
+class OperatorJsonSeparator(Expression):
+    """内置 JSON_SEPARATOR 运算符或 JSON_UNQUOTED_SEPARATOR 运算符（提取 Json 元素）
+
+    expression JSON_SEPARATOR path
+    expression JSON_UNQUOTED_SEPARATOR path
+    """
+
+    __slots__ = ["_expression", "_path", "_is_unquoted"]
+
+    def __init__(self, expression: Expression, path: str, is_unquoted: bool):
+        self._expression = expression
+        self._path = path
+        self._is_unquoted = is_unquoted
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+    @property
+    def path(self) -> str:
+        return self._path
+
+    @property
+    def is_unquoted(self) -> bool:
+        return self._is_unquoted

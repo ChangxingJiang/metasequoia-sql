@@ -297,6 +297,8 @@ KEYWORD_TO_TERMINAL_MAP = {
     "iterate": SqlTerminalType.KEYWORD_ITERATE,
     "join": SqlTerminalType.KEYWORD_JOIN,
     "json": SqlTerminalType.KEYWORD_JSON,
+    "json_separator": SqlTerminalType.KEYWORD_JSON_SEPARATOR,
+    "json_unquoted_separator": SqlTerminalType.KEYWORD_JSON_UNQUOTED_SEPARATOR,
     "json_table": SqlTerminalType.KEYWORD_JSON_TABLE,
     "json_value": SqlTerminalType.KEYWORD_JSON_VALUE,
     "key": SqlTerminalType.KEYWORD_KEY,
