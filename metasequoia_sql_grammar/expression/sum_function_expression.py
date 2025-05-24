@@ -1,5 +1,5 @@
 """
-聚集函数表达式（sum expression）
+聚集函数表达式（sum function expression）
 """
 
 import metasequoia_parser as ms_parser
@@ -8,15 +8,15 @@ from metasequoia_sql_new import ast
 from metasequoia_sql_new.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "SUM_EXPR",
+    "SUM_FUNCTION_EXPRESSION",
     "IN_SUM_EXPR",
     "OPT_SEPARATOR",
     "OPT_DISTINCT",
 ]
 
 # 聚集函数的表达式
-SUM_EXPR = ms_parser.create_group(
-    name="sum_expr",
+SUM_FUNCTION_EXPRESSION = ms_parser.create_group(
+    name="sum_function_expression",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AVG, TType.OPERATOR_LPAREN, "opt_distinct", "in_sum_expr", TType.OPERATOR_RPAREN,

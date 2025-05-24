@@ -84,7 +84,7 @@ SIMPLE_EXPR = ms_parser.create_group(
             symbols=["user_variable_assignment"]
         ),
         ms_parser.create_rule(
-            symbols=["sum_expr"]
+            symbols=["sum_function_expression"]
         ),
         ms_parser.create_rule(
             symbols=["window_function_expression"]

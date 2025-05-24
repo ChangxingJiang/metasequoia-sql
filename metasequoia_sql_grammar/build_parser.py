@@ -25,7 +25,7 @@ from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
-from metasequoia_sql_grammar.expression import sum_expression
+from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
