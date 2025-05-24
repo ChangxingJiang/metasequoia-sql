@@ -45,6 +45,7 @@ __all__ = [
     "FuncIsNotFalse",
     "FuncIsUnknown",
     "FuncIsNotUnknown",
+    "OperatorTruthTransform",
 ]
 
 
@@ -261,3 +262,7 @@ class FuncIsNotUnknown(UnaryExpression):
 
     {operand} IS NOT UNKNOWN
     """
+
+
+class OperatorTruthTransform(UnaryExpression):
+    """内置 ! 运算符（逻辑取反）"""

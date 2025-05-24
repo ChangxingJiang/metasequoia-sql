@@ -107,6 +107,30 @@ SIMPLE_EXPR = ms_parser.create_group(
             symbols=[TType.OPERATOR_TILDE, "simple_expr"],
             action=lambda x: ast.FuncBitNot(operand=x[1]),
             sr_priority_as=TType.NEG
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_BANG, "simple_expr"],
+            action=lambda x: ast.OperatorTruthTransform(operand=x[1]),
+            sr_priority_as=TType.NEG
+        ),
+        # TODO : row_subquery
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.Row(value_list=[x[1]] + x[3])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ROW, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr_list",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.Row(value_list=[x[2]] + x[4])
+        ),
+        # TODO : EXISTS table_subquery
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LBRACE, "ident", "expr", TType.OPERATOR_RBRACE],
+            action=lambda x: ast.OdbcDate(odbc_type=x[1].get_str_value(), odbc_value=x[2])
         )
     ]
 )

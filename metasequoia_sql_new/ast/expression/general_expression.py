@@ -10,6 +10,8 @@ __all__ = [
     "UdfExpression",
     "OperatorCollate",
     "OperatorConcat",
+    "Row",
+    "OdbcDate",
 ]
 
 
@@ -59,3 +61,40 @@ class OperatorConcat(BinaryExpression):
 
     left_operand || right_operand
     """
+
+
+class Row(Expression):
+    """行表达式"""
+
+    def __init__(self, value_list: List[Expression]):
+        self._value_list = value_list
+
+    def attr_list(self) -> List[str]:
+        return ["value_list"]
+
+    @property
+    def value_list(self) -> List[Expression]:
+        return self._value_list
+
+
+class OdbcDate(Expression):
+    """ODBC 日期格式
+
+    { odbc_type odbc_value }
+
+    """
+
+    def __init__(self, odbc_type: str, odbc_value: Expression):
+        self._odbc_type = odbc_type
+        self._odbc_value = odbc_value
+
+    def attr_list(self) -> List[str]:
+        return ["odbc_type", "odbc_value"]
+
+    @property
+    def odbc_type(self) -> str:
+        return self._odbc_type
+
+    @property
+    def odbc_value(self) -> Expression:
+        return self._odbc_value
