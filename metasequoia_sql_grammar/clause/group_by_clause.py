@@ -4,8 +4,8 @@ GROUP BY 子句（group by clause）
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_new import ast
-from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType as TType
+from metasequoia_sql import ast
+from metasequoia_sql.terminal.terminal_type import SqlTerminalType as TType
 
 __all__ = [
     "OPT_GROUP_BY_CLAUSE",

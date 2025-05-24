@@ -38,8 +38,8 @@ literal_or_null:
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_new import ast
-from metasequoia_sql_new.terminal import SqlTerminalType as TType
+from metasequoia_sql import ast
+from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
     "TEXT_LITERAL_SYS",

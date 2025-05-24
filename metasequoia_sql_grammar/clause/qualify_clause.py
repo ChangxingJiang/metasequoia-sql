@@ -4,7 +4,7 @@ QUALIFY 子句（qualify clause）
 
 import metasequoia_parser as ms_parser
 
-from metasequoia_sql_new.terminal import SqlTerminalType as TType
+from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
     "OPT_QUALIFY_CLAUSE",

@@ -1,2 +1,0 @@
-from metasequoia_sql_new.terminal.keyword_map import KEYWORD_TO_TERMINAL_MAP
-from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType

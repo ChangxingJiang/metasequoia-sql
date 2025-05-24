@@ -6,7 +6,7 @@ from typing import Tuple
 
 from metasequoia_parser.common import Terminal
 
-from metasequoia_sql_new.lexical.lex_fsm import LexFSM
+from metasequoia_sql.lexical.lex_fsm import LexFSM
 
 
 def parse_one_token(text: str) -> Terminal:

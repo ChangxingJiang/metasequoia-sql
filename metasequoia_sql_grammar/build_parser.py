@@ -31,7 +31,7 @@ from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
-from metasequoia_sql_new.terminal import SqlTerminalType as TType
+from metasequoia_sql.terminal import SqlTerminalType as TType
 
 
 def build_grammar():
@@ -213,11 +213,11 @@ if __name__ == "__main__":
     import os
 
     repository_path = os.path.dirname(os.path.dirname(__file__))
-    parser_path = os.path.join(repository_path, "metasequoia_sql_new", "syntax", "parser.py")
+    parser_path = os.path.join(repository_path, "metasequoia_sql", "syntax", "parser.py")
 
     parser = ms_parser.parser.ParserLALR1(build_grammar())
     source_code = ms_parser.compiler.compile_lalr1(parser, import_list=[
-        "from metasequoia_sql_new import ast"
+        "from metasequoia_sql import ast"
     ])
     with open(parser_path, "w+", encoding="UTF-8") as file:
         for row in source_code:

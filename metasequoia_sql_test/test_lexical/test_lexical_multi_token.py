@@ -4,7 +4,7 @@
 
 import unittest
 
-from metasequoia_sql_new.terminal.terminal_type import SqlTerminalType as TType
+from metasequoia_sql.terminal.terminal_type import SqlTerminalType as TType
 from metasequoia_sql_test.common import parse_two_token
 from metasequoia_sql_test.common import parse_three_token
 
