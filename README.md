@@ -28,7 +28,7 @@ pip install metasequoia-sql
 将 SQL 语句解析为一个词法节点的列表（demo_101），节点中包含对应的源代码（`source` 属性）以及节点标签（`marks` 属性）。
 
 ```python
-from metasequoia_sql import FSMMachine
+from metasequoia_sql_old import FSMMachine
 
 amt_tree = FSMMachine.parse("SELECT column1, '2' FROM table_1")
 for node in amt_tree:
@@ -39,7 +39,7 @@ for node in amt_tree:
 标记，括号中的词法节点会被添加到括号节点的 `children` 属性中（demo_102）。
 
 ```python
-from metasequoia_sql import FSMMachine
+from metasequoia_sql_old import FSMMachine
 
 amt_tree = FSMMachine.parse("SELECT column1, (column2 + 1) * 2 FROM table_1")
 for node in amt_tree:
@@ -53,7 +53,7 @@ for node in amt_tree:
 词法解析支持一次性解析一个语句（demo_201）：
 
 ```python
-from metasequoia_sql import SQLParser
+from metasequoia_sql_old import SQLParser
 
 statement = SQLParser.parse_select_statement("SELECT column1, '2' FROM table_1")
 print(statement)
@@ -62,7 +62,7 @@ print(statement)
 也支持一次性解析多个语句（demo_202）：
 
 ```python
-from metasequoia_sql import SQLParser
+from metasequoia_sql_old import SQLParser
 
 statements = SQLParser.parse_statements("SELECT column1 FROM table_1; SELECT column2 FROM table_2")
 for statement in statements:
@@ -72,7 +72,7 @@ for statement in statements:
 此外，也可以解析语句中的某个部分（demo_203）：
 
 ```python
-from metasequoia_sql import SQLParser
+from metasequoia_sql_old import SQLParser
 
 expression = SQLParser.parse_logical_and_level_expression("(`column1` > 2) AND (`column2` > 1)")
 print(expression)
@@ -86,9 +86,9 @@ print(expression)
 类并提供给数据血缘分析器（demo_301）：
 
 ```python
-from metasequoia_sql import *
-from metasequoia_sql.analyzer import CreateTableStatementGetter
-from metasequoia_sql.analyzer.data_linage.table_lineage_analyzer import TableLineageAnalyzer
+from metasequoia_sql_old import *
+from metasequoia_sql_old.analyzer import CreateTableStatementGetter
+from metasequoia_sql_old.analyzer.data_linage.table_lineage_analyzer import TableLineageAnalyzer
 
 table_lineage_analyzer = TableLineageAnalyzer(CreateTableStatementGetter(...))
 for statement in SQLParser.parse_statements("your sql file"):
@@ -103,7 +103,7 @@ for statement in SQLParser.parse_statements("your sql file"):
 对 MyBatis 语法进行解析（demo_302）：
 
 ```python
-from metasequoia_sql.plugins.mybaitis import SQLParserMyBatis
+from metasequoia_sql_old.plugins.mybaitis import SQLParserMyBatis
 
 statements = SQLParserMyBatis.parse_statements("SELECT column_1 FROM Shohin "
                                                "WHERE #{column_2} > 500 "
@@ -142,7 +142,7 @@ for statement in statements:
 pylint 代码质量检查（在 Pull Request 时自动检查）：
 
 ```bash
-pylint --max-line-length=120 metasequoia_sql
+pylint --max-line-length=120 metasequoia_sql_old
 ```
 
 单元测试覆盖率检查（当前不会自动检查）：

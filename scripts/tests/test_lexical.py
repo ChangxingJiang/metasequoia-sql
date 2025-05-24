@@ -5,7 +5,7 @@
 import unittest
 from typing import List
 
-from metasequoia_sql import lexical
+from metasequoia_sql_old import lexical
 
 
 def get_amt_source(amt_list: List[lexical.AMTBase]):

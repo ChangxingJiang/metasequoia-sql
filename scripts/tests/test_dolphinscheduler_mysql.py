@@ -5,7 +5,7 @@
 import os
 import unittest
 
-from metasequoia_sql import core
+from metasequoia_sql_old import core
 
 
 class TestDolphinSchedulerMysql(unittest.TestCase):

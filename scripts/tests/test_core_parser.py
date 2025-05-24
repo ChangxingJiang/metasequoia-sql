@@ -1,10 +1,10 @@
 """
-metasequoia_sql.core.parser 的单元测试
+metasequoia_sql_old.core.parser 的单元测试
 """
 
 import unittest
 
-from metasequoia_sql import *
+from metasequoia_sql_old import *
 
 
 class TestCoreParser(unittest.TestCase):

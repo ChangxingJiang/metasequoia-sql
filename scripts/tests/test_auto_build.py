@@ -1,10 +1,10 @@
 import unittest
 from typing import List, Dict
 
-from metasequoia_sql import *
-from metasequoia_sql.analyzer import *
-from metasequoia_sql.analyzer.node import StandardColumn
-from metasequoia_sql.common import ordered_distinct
+from metasequoia_sql_old import *
+from metasequoia_sql_old.analyzer import *
+from metasequoia_sql_old.analyzer.node import StandardColumn
+from metasequoia_sql_old.common import ordered_distinct
 from scripts.demo_sql.sql_basic_tutorial import *
 
 

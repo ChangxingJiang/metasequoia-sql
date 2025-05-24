@@ -4,7 +4,7 @@ Issue 问题测试用例
 
 import unittest
 
-from metasequoia_sql import SQLParser
+from metasequoia_sql_old import SQLParser
 
 
 class TestIssueQuestion(unittest.TestCase):
