@@ -4,6 +4,6 @@
 
 from metasequoia_sql.ast.expression.function_expression import *
 from metasequoia_sql.ast.expression.general_expression import *
-from metasequoia_sql.ast.expression.operator import *
+from metasequoia_sql.ast.expression.operator_expression import *
 from metasequoia_sql.ast.expression.sum_expression import *
 from metasequoia_sql.ast.expression.window_function_expression import *

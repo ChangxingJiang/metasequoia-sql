@@ -11,167 +11,170 @@ from metasequoia_sql.ast.base import UnaryExpression
 from metasequoia_sql.ast.other_operator import EnumOperatorCompare
 
 __all__ = [
-    "FuncNegative",
-    "FuncBitNot",
-    "FuncBitOr",
-    "FuncBitAnd",
-    "FuncShiftLeft",
-    "FuncShiftRight",
-    "FuncPlus",
-    "FuncMinus",
-    "FuncMul",
-    "FuncDiv",
-    "FuncMod",
-    "FuncDivInt",
-    "FuncBitXor",
-    "FuncMemberOf",
-    "FuncBetween",
-    "FuncNotBetween",
-    "FuncSoundsLike",
-    "FuncLike",
-    "FuncNotLike",
-    "FuncRegexp",
-    "FuncNotRegexp",
-    "FuncIsNull",
-    "FuncIsNotNull",
-    "FuncCompare",
-    "FuncOr",
-    "FuncXor",
-    "FuncAnd",
-    "FuncNot",
-    "FuncIsTrue",
-    "FuncIsNotTrue",
-    "FuncIsFalse",
-    "FuncIsNotFalse",
-    "FuncIsUnknown",
-    "FuncIsNotUnknown",
+    "OperatorNegative",
+    "OperatorBitNot",
+    "OperatorBitOr",
+    "OperatorBitAnd",
+    "OperatorShiftLeft",
+    "OperatorShiftRight",
+    "OperatorPlus",
+    "OperatorMinus",
+    "OperatorMul",
+    "OperatorDiv",
+    "OperatorMod",
+    "OperatorDivInt",
+    "OperatorBitXor",
+    "OperatorMemberOf",
+    "OperatorBetween",
+    "OperatorNotBetween",
+    "OperatorSoundsLike",
+    "OperatorLike",
+    "OperatorNotLike",
+    "OperatorRegexp",
+    "OperatorNotRegexp",
+    "OperatorIsNull",
+    "OperatorIsNotNull",
+    "OperatorCompare",
+    "OperatorOr",
+    "OperatorXor",
+    "OperatorAnd",
+    "OperatorNot",
+    "OperatorIsTrue",
+    "OperatorIsNotTrue",
+    "OperatorIsFalse",
+    "OperatorIsNotFalse",
+    "OperatorIsUnknown",
+    "OperatorIsUnknown",
+    "OperatorIsNotUnknown",
     "OperatorTruthTransform",
+    "OperatorCollate",
+    "OperatorConcat",
 ]
 
 
-class FuncNegative(UnaryExpression):
+class OperatorNegative(UnaryExpression):
     """内置函数：取相反数（`-` 运算符）"""
 
 
-class FuncBitNot(UnaryExpression):
+class OperatorBitNot(UnaryExpression):
     """内置函数：按位取反（`~` 运算符）"""
 
 
-class FuncBitOr(BinaryExpression):
+class OperatorBitOr(BinaryExpression):
     """内置函数：按位或（`|` 运算符）"""
 
 
-class FuncBitAnd(BinaryExpression):
+class OperatorBitAnd(BinaryExpression):
     """内置函数：按位与（`&` 运算符）"""
 
 
-class FuncShiftLeft(BinaryExpression):
+class OperatorShiftLeft(BinaryExpression):
     """内置函数：左移位（`<<` 运算符）"""
 
 
-class FuncShiftRight(BinaryExpression):
+class OperatorShiftRight(BinaryExpression):
     """内置函数：右移位（`>>` 运算符）"""
 
 
-class FuncPlus(BinaryExpression):
+class OperatorPlus(BinaryExpression):
     """内置函数：加法（`+` 运算符）"""
 
 
-class FuncMinus(BinaryExpression):
+class OperatorMinus(BinaryExpression):
     """内置函数：减法（`-` 运算符）"""
 
 
-class FuncMul(BinaryExpression):
+class OperatorMul(BinaryExpression):
     """内置函数：乘法（`*` 运算符）"""
 
 
-class FuncDiv(BinaryExpression):
+class OperatorDiv(BinaryExpression):
     """内置函数：除法（`/` 运算符）"""
 
 
-class FuncMod(BinaryExpression):
+class OperatorMod(BinaryExpression):
     """内置函数：取模（`%` 运算符）"""
 
 
-class FuncDivInt(BinaryExpression):
+class OperatorDivInt(BinaryExpression):
     """内置函数：整数除法（`DIV` 关键字）"""
 
 
-class FuncBitXor(BinaryExpression):
+class OperatorBitXor(BinaryExpression):
     """内置函数：异或（`^` 关键字）"""
 
 
-class FuncMemberOf(BinaryExpression):
+class OperatorMemberOf(BinaryExpression):
     """内置函数：MEMBER OF 关键字
 
     {left_operand} MEMBER [OF] ( {right_operand} )
     """
 
 
-class FuncBetween(TernaryExpression):
+class OperatorBetween(TernaryExpression):
     """内置函数 BETWEEN 关键字
 
     {first_operand} BETWEEN {second_operand} AND {third_operand}
     """
 
 
-class FuncNotBetween(TernaryExpression):
+class OperatorNotBetween(TernaryExpression):
     """内置函数 NOT BETWEEN 关键字
 
     {first_operand} NOT BETWEEN {second_operand} AND {third_operand}
     """
 
 
-class FuncSoundsLike(BinaryExpression):
+class OperatorSoundsLike(BinaryExpression):
     """内置函数 SOUNDS LIKE 关键字
 
     {left_operand} SOUNDS LIKE {right_operand}
     """
 
 
-class FuncLike(TernaryExpression):
+class OperatorLike(TernaryExpression):
     """内置函数 LIKE 关键字
 
     {first_operand} LIKE {second_operand} [ ESCAPE {third_operand} ]
     """
 
 
-class FuncNotLike(TernaryExpression):
+class OperatorNotLike(TernaryExpression):
     """内置函数 NOT LIKE 关键字
 
     {first_operand} NOT LIKE {second_operand} [ ESCAPE {third_operand} ]
     """
 
 
-class FuncRegexp(BinaryExpression):
+class OperatorRegexp(BinaryExpression):
     """内置函数 REGEXP 关键字
 
     {left_operand} REGEXP {right_operand}
     """
 
 
-class FuncNotRegexp(BinaryExpression):
+class OperatorNotRegexp(BinaryExpression):
     """内置函数 NOT REGEXP 关键字
 
     {left_operand} NOT REGEXP {right_operand}
     """
 
 
-class FuncIsNull(UnaryExpression):
+class OperatorIsNull(UnaryExpression):
     """内置函数：IS NULL 关键字
 
     {operand} IS NULL
     """
 
 
-class FuncIsNotNull(UnaryExpression):
+class OperatorIsNotNull(UnaryExpression):
     """内置函数：IS NOT NULL 关键字
 
     {operand} IS NOT NULL
     """
 
 
-class FuncCompare(BinaryExpression):
+class OperatorCompare(BinaryExpression):
     """内置函数：比较运算符
 
     {left_operand} comp_op {right_operand}
@@ -194,70 +197,70 @@ class FuncCompare(BinaryExpression):
         return self._operator
 
 
-class FuncOr(BinaryExpression):
+class OperatorOr(BinaryExpression):
     """内置函数：逻辑或
 
     {left_operand} OR {right_operand}
     """
 
 
-class FuncXor(BinaryExpression):
+class OperatorXor(BinaryExpression):
     """内置函数：逻辑异或
 
     {left_operand} OR {right_operand}
     """
 
 
-class FuncAnd(BinaryExpression):
+class OperatorAnd(BinaryExpression):
     """内置函数：逻辑与
 
     {left_operand} AND {right_operand}
     """
 
 
-class FuncNot(UnaryExpression):
+class OperatorNot(UnaryExpression):
     """内置函数：逻辑否
 
     NOT {operand}
     """
 
 
-class FuncIsTrue(UnaryExpression):
+class OperatorIsTrue(UnaryExpression):
     """内置函数：IS TRUE 关键字
 
     {operand} IS TRUE
     """
 
 
-class FuncIsNotTrue(UnaryExpression):
+class OperatorIsNotTrue(UnaryExpression):
     """内置函数：IS NOT TRUE
 
     {operand} IS NOT TRUE
     """
 
 
-class FuncIsFalse(UnaryExpression):
+class OperatorIsFalse(UnaryExpression):
     """内置函数：IS FALSE
 
     {operand} IS FALSE
     """
 
 
-class FuncIsNotFalse(UnaryExpression):
+class OperatorIsNotFalse(UnaryExpression):
     """内置函数：IS NOT FALSE
 
     {operand} IS NOT FALSE
     """
 
 
-class FuncIsUnknown(UnaryExpression):
+class OperatorIsUnknown(UnaryExpression):
     """内置函数：IS UNKNOWN
 
     {operand} IS UNKNOWN
     """
 
 
-class FuncIsNotUnknown(UnaryExpression):
+class OperatorIsNotUnknown(UnaryExpression):
     """内置函数：IS NOT UNKNOWN
 
     {operand} IS NOT UNKNOWN
@@ -266,3 +269,32 @@ class FuncIsNotUnknown(UnaryExpression):
 
 class OperatorTruthTransform(UnaryExpression):
     """内置 ! 运算符（逻辑取反）"""
+
+
+class OperatorCollate(Expression):
+    """内置 COLLATE 关键字运算符（指定排序规则）
+
+    collation_operand COLLATE collation_name
+    """
+
+    def __init__(self, collation_operand: Expression, collation_name: str):
+        self._collation_operand = collation_operand  # 需要指定排序规则的表达式
+        self._collation_name = collation_name  # 排序规则名称
+
+    def attr_list(self) -> List[str]:
+        return ["collation_operand", "collation_name"]
+
+    @property
+    def collation_operand(self) -> Expression:
+        return self._collation_operand
+
+    @property
+    def collation_name(self) -> str:
+        return self._collation_name
+
+
+class OperatorConcat(BinaryExpression):
+    """内置 || 运算符（字符串合并）
+
+    left_operand || right_operand
+    """

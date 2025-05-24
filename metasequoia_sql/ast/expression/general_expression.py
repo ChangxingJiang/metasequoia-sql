@@ -4,12 +4,10 @@
 
 from typing import List, Optional
 
-from metasequoia_sql.ast.base import BinaryExpression, Expression
+from metasequoia_sql.ast.base import Expression
 
 __all__ = [
     "UdfExpression",
-    "OperatorCollate",
-    "OperatorConcat",
     "Row",
     "OdbcDate",
 ]
@@ -32,35 +30,6 @@ class UdfExpression(Expression):
     @property
     def alias(self) -> Optional[str]:
         return self._alias
-
-
-class OperatorCollate(Expression):
-    """内置 COLLATE 关键字运算符（指定排序规则）
-
-    collation_operand COLLATE collation_name
-    """
-
-    def __init__(self, collation_operand: Expression, collation_name: str):
-        self._collation_operand = collation_operand  # 需要指定排序规则的表达式
-        self._collation_name = collation_name  # 排序规则名称
-
-    def attr_list(self) -> List[str]:
-        return ["collation_operand", "collation_name"]
-
-    @property
-    def collation_operand(self) -> Expression:
-        return self._collation_operand
-
-    @property
-    def collation_name(self) -> str:
-        return self._collation_name
-
-
-class OperatorConcat(BinaryExpression):
-    """内置 || 运算符（字符串合并）
-
-    left_operand || right_operand
-    """
 
 
 class Row(Expression):
