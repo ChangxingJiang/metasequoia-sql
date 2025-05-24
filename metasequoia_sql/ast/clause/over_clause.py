@@ -3,7 +3,7 @@
 """
 
 import enum
-import typing
+from typing import Optional, List
 
 from metasequoia_sql.ast.base import Expression
 from metasequoia_sql.ast.base import Node
@@ -63,8 +63,8 @@ class WindowBorder(Node):
     """
 
     def __init__(self, boundary_type: WindowBoundaryTypeEnum,
-                 value: typing.Optional[Expression] = None,
-                 time_unit: typing.Optional[TimeUnitEnum] = None):
+                 value: Optional[Expression] = None,
+                 time_unit: Optional[TimeUnitEnum] = None):
         self._boundary_type = boundary_type
         self._value = value
         self._time_unit = time_unit
@@ -117,7 +117,7 @@ class WindowBorder(Node):
             time_unit=time_unit
         )
 
-    def attr_list(self) -> typing.List[str]:
+    def attr_list(self) -> List[str]:
         return ["boundary_type", "value", "time_unit"]
 
     @property
@@ -125,11 +125,11 @@ class WindowBorder(Node):
         return self._boundary_type
 
     @property
-    def value(self) -> typing.Optional[Expression]:
+    def value(self) -> Optional[Expression]:
         return self._value
 
     @property
-    def time_unit(self) -> typing.Optional[TimeUnitEnum]:
+    def time_unit(self) -> Optional[TimeUnitEnum]:
         return self._time_unit
 
 
@@ -151,7 +151,7 @@ class WindowBorders(Node):
             end_border=WindowBorder.create_current_row()
         )
 
-    def attr_list(self) -> typing.List[str]:
+    def attr_list(self) -> List[str]:
         return ["start_border", "end_border"]
 
     @property
@@ -174,7 +174,7 @@ class WindowFrame(Node):
         self._borders = borders
         self._exclusion = exclusion
 
-    def attr_list(self) -> typing.List[str]:
+    def attr_list(self) -> List[str]:
         return ["border_type", "borders", "exclusion"]
 
     @property
@@ -194,10 +194,10 @@ class Window(Node):
     """窗口（包括可选的窗口名称、可选的 PARTITION BY 子句、可选的 ORDER BY 子句和可选的窗口框架子句"""
 
     def __init__(self,
-                 name: typing.Optional[Expression],
-                 partition_clause: typing.Optional[typing.List[Expression]],
-                 order_clause: typing.Optional[OrderByClause],
-                 frame_clause: typing.Optional[WindowFrame]):
+                 name: Optional[Expression],
+                 partition_clause: Optional[List[Expression]],
+                 order_clause: Optional[OrderByClause],
+                 frame_clause: Optional[WindowFrame]):
         self._name = name
         self._partition_clause = partition_clause
         self._order_clause = order_clause
@@ -212,21 +212,21 @@ class Window(Node):
             frame_clause=None
         )
 
-    def attr_list(self) -> typing.List[str]:
+    def attr_list(self) -> List[str]:
         return ["name", "partition_clause", "order_clause", "frame_clause"]
 
     @property
-    def name(self) -> typing.Optional[Expression]:
+    def name(self) -> Optional[Expression]:
         return self._name
 
     @property
-    def partition_clause(self) -> typing.Optional[typing.List[Expression]]:
+    def partition_clause(self) -> Optional[List[Expression]]:
         return self._partition_clause
 
     @property
-    def order_clause(self) -> typing.Optional[OrderByClause]:
+    def order_clause(self) -> Optional[OrderByClause]:
         return self._order_clause
 
     @property
-    def frame_clause(self) -> typing.Optional[WindowFrame]:
+    def frame_clause(self) -> Optional[WindowFrame]:
         return self._frame_clause
