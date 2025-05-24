@@ -14,6 +14,7 @@ __all__ = [
     "PREDICATE_EXPR",
     "BOOL_EXPR",
     "EXPR",
+    "OPT_EXPR",
     "EXPR_LIST",
     "OPT_EXPR_LIST",
     "UDF_EXPRESSION",
@@ -25,6 +26,7 @@ __all__ = [
     "FULLTEXT_OPTIONS",
     "OPT_KEYWORD_ARRAY",
     "OPT_KEYWORD_INTERVAL",
+    "WHEN_LIST",
 ]
 
 # 比较运算符
@@ -164,6 +166,10 @@ SIMPLE_EXPR = ms_parser.create_group(
                      TType.KEYWORD_DATETIME, "field_type_param_1", TType.OPERATOR_RPAREN],
             action=lambda x: ast.FunctionCastAtTimeZone(expression=x[2], is_interval=x[6], time_zone=x[7],
                                                         precision=x[10].option_1)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CASE, "opt_expr", "when_list", "opt_else", TType.KEYWORD_END],
+            action=lambda x: ast.Case(case_expression=x[1], when_list=x[2], else_expression=x[3])
         )
     ]
 )
@@ -381,6 +387,17 @@ EXPR = ms_parser.create_group(
     ]
 )
 
+# 可选的一般表达式
+OPT_EXPR = ms_parser.create_group(
+    name="opt_expr",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr"]
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
 # 逗号分隔的一般表达式列表
 EXPR_LIST = ms_parser.create_group(
     name="expr_list",
@@ -537,5 +554,32 @@ OPT_KEYWORD_INTERVAL = ms_parser.create_group(
             symbols=[],
             action=lambda _: False
         )
+    ]
+)
+
+# CASE 结构中的 WHEN 条件的列表
+WHEN_LIST = ms_parser.create_group(
+    name="when_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WHEN, "expr", TType.KEYWORD_THEN, "expr"],
+            action=lambda x: [ast.WhenItem(condition=x[1], expression=x[3])]
+        ),
+        ms_parser.create_rule(
+            symbols=["when_list", TType.KEYWORD_WHEN, "expr", TType.KEYWORD_THEN, "expr"],
+            action=lambda x: x[0] + [ast.WhenItem(condition=x[2], expression=x[4])]
+        )
+    ]
+)
+
+# CASE 结构中可选的 ELSE 子句
+OPT_CASE_ELSE = ms_parser.create_group(
+    name="opt_else",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ELSE, "expr"],
+            action=lambda x: x[1]
+        ),
+        ms_parser.template.group.EMPTY_NULL
     ]
 )

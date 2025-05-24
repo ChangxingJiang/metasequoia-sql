@@ -4,12 +4,14 @@
 
 from typing import List, Optional
 
-from metasequoia_sql.ast.base import Expression
+from metasequoia_sql.ast.base import Expression, Node
 
 __all__ = [
     "UdfExpression",
     "Row",
     "OdbcDate",
+    "WhenItem",
+    "Case",
 ]
 
 
@@ -63,3 +65,44 @@ class OdbcDate(Expression):
     @property
     def odbc_value(self) -> Expression:
         return self._odbc_value
+
+
+class WhenItem(Node):
+    """CASE 结构中 WHEN 条件"""
+
+    __slots__ = ["_condition", "_expression"]
+
+    def __init__(self, condition: Expression, expression: Expression):
+        self._condition = condition
+        self._expression = expression
+
+    @property
+    def condition(self) -> Expression:
+        return self._condition
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+
+class Case(Expression):
+    """CASE 结构"""
+
+    __slots__ = ["_case_expression", "_when_list", "_else_expression"]
+
+    def __init__(self, case_expression: Expression, when_list: List[WhenItem], else_expression: Expression):
+        self._case_expression = case_expression
+        self._when_list = when_list
+        self._else_expression = else_expression
+
+    @property
+    def case_expression(self) -> Expression:
+        return self._case_expression
+
+    @property
+    def when_list(self) -> List[WhenItem]:
+        return self._when_list
+
+    @property
+    def else_expression(self) -> Expression:
+        return self._else_expression

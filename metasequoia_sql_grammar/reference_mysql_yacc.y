@@ -7914,33 +7914,6 @@ simple_expr:
           }
         ;
 
-opt_expr:
-          %empty         { $$= nullptr; }
-        | expr           { $$= $1; }
-        ;
-
-opt_else:
-          %empty       { $$= nullptr; }
-        | ELSE expr    { $$= $2; }
-        ;
-
-when_list:
-          WHEN_SYM expr THEN_SYM expr
-          {
-            $$= new (YYMEM_ROOT) mem_root_deque<Item *>(YYMEM_ROOT);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-            $$->push_back($2);
-            $$->push_back($4);
-          }
-        | when_list WHEN_SYM expr THEN_SYM expr
-          {
-            $1->push_back($3);
-            $1->push_back($5);
-            $$= $1;
-          }
-        ;
-
 table_reference:
           table_factor { $$= $1; }
         | joined_table { $$= $1; }
