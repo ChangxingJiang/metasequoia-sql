@@ -7914,11 +7914,6 @@ simple_expr:
           }
         ;
 
-opt_array_cast:
-          %empty { $$= false; }
-        | ARRAY_SYM { $$= true; }
-        ;
-
 opt_expr:
           %empty         { $$= nullptr; }
         | expr           { $$= $1; }
@@ -10447,11 +10442,6 @@ opt_load_parallel:
 opt_load_memory:
           %empty                    { $$ = 0; }
         | MEMORY_SYM EQ size_number { $$ = $3; }
-        ;
-
-opt_interval:
-          %empty        { $$ = false; }
-        | INTERVAL_SYM  { $$ = true; }
         ;
 
 

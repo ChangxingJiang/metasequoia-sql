@@ -2,6 +2,7 @@
 普通函数表达式（function expression）
 """
 
+from decimal import Decimal
 from enum import IntEnum
 from typing import List, Optional, TYPE_CHECKING, Union
 
@@ -28,6 +29,8 @@ __all__ = [
     "FunctionPosition",
     "FunctionSubstring",
     "FunctionWeightString",
+    "FunctionCast",
+    "FunctionCastAtTimeZone",
 ]
 
 
@@ -296,3 +299,66 @@ class FunctionWeightString(FunctionExpression):
     @property
     def binary_flag(self) -> bool:
         return self._binary_flag
+
+
+class FunctionCast(Expression):
+    """CAST 函数的第一种形式
+
+    CAST ( expression AS cast_type opt_array_cast )
+    CAST ( expression AT LOCAL AS cast_type opt_array_cast )
+    """
+
+    __slots__ = ["_expression", "_cast_type", "_at_local", "_is_array_cast"]
+
+    def __init__(self, expression: Expression, cast_type: "CastType", at_local: bool, is_array_cast: bool):
+        self._expression = expression
+        self._cast_type = cast_type
+        self._at_local = at_local
+        self._is_array_cast = is_array_cast
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+    @property
+    def cast_type(self) -> "CastType":
+        return self._cast_type
+
+    @property
+    def at_local(self) -> bool:
+        return self._at_local
+
+    @property
+    def is_array_cast(self) -> bool:
+        return self._is_array_cast
+
+
+class FunctionCastAtTimeZone(Expression):
+    """CAST 函数的第二种形式
+
+    CAST ( expression AT TIME ZONE [INTERVAL] time_zone AS DATETIME precision )
+    """
+
+    __slots__ = ["_expression", "_is_interval", "_time_zone", "_precision"]
+
+    def __init__(self, expression: Expression, is_interval: bool, time_zone: str, precision: Decimal):
+        self._expression = expression
+        self._is_interval = is_interval
+        self._time_zone = time_zone
+        self._precision = precision
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+    @property
+    def is_interval(self) -> bool:
+        return self._is_interval
+
+    @property
+    def time_zone(self) -> str:
+        return self._time_zone
+
+    @property
+    def precision(self) -> Decimal:
+        return self._precision

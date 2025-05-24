@@ -19,6 +19,12 @@ __all__ = [
     "UDF_EXPRESSION",
     "UDF_EXPR_LIST",
     "OPT_UDF_EXPR_LIST",
+    "MATCH_COLUMN_LIST",
+    "OPT_IN_NATURAL_LANGUAGE_MODE",
+    "OPT_WITH_QUERY_EXPANSION",
+    "FULLTEXT_OPTIONS",
+    "OPT_KEYWORD_ARRAY",
+    "OPT_KEYWORD_INTERVAL",
 ]
 
 # 比较运算符
@@ -141,6 +147,23 @@ SIMPLE_EXPR = ms_parser.create_group(
             symbols=[TType.KEYWORD_BINARY, "simple_expr"],
             action=lambda x: ast.OperatorBinary(operand=x[1]),
             sr_priority_as=TType.NEG
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_CAST, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_AS, "cast_type", "opt_keyword_array",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionCast(expression=x[2], cast_type=x[4], at_local=False, is_array_cast=x[5])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_CAST, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_AT, TType.KEYWORD_LOCAL,
+                     TType.KEYWORD_AS, "cast_type", "opt_keyword_array", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionCast(expression=x[2], cast_type=x[6], at_local=True, is_array_cast=x[7])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_CAST, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_AT, TType.KEYWORD_TIME,
+                     TType.KEYWORD_ZONE, "opt_keyword_interval", "text_literal_sys", TType.KEYWORD_AS,
+                     TType.KEYWORD_DATETIME, "field_type_param_1", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.FunctionCastAtTimeZone(expression=x[2], is_interval=x[6], time_zone=x[7],
+                                                        precision=x[10].option_1)
         )
     ]
 )
@@ -483,6 +506,36 @@ FULLTEXT_OPTIONS = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_IN, TType.KEYWORD_BOOLEAN, TType.KEYWORD_MODE],
             action=lambda _: ast.FulltextOption.IN_BOOLEAN_MODE
+        )
+    ]
+)
+
+# 可选的 ARRAY 关键字
+OPT_KEYWORD_ARRAY = ms_parser.create_group(
+    name="opt_keyword_array",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ARRAY],
+            action=lambda _: True
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: False
+        )
+    ]
+)
+
+# 可选的 INTERVAL 关键字
+OPT_KEYWORD_INTERVAL = ms_parser.create_group(
+    name="opt_keyword_interval",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INTERVAL],
+            action=lambda _: True
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: False
         )
     ]
 )
