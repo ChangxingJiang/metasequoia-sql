@@ -2,8 +2,8 @@
 字符集相关节点
 """
 
-import enum
-import typing
+from enum import IntEnum, auto
+from typing import Optional
 
 from metasequoia_sql.ast.base import Node
 
@@ -13,21 +13,21 @@ __all__ = [
 ]
 
 
-class CharsetTypeEnum(enum.IntEnum):
+class CharsetTypeEnum(IntEnum):
     """字符集类型的枚举类型"""
 
-    DEFAULT = enum.auto()
-    ASCII = enum.auto()  # ASCII
-    BINARY_ASCII = enum.auto()  # BINARY ASCII
-    ASCII_BINARY = enum.auto()  # ASCII BINARY
-    UNICODE = enum.auto()  # UNICODE
-    BINARY_UNICODE = enum.auto()  # BINARY UNICODE
-    UNICODE_BINARY = enum.auto()  # UNICODE BINARY
-    BYTE = enum.auto()  # BYTE
-    BINARY = enum.auto()  # BINARY
-    CHARSET_NAME = enum.auto()  # [CHARSET | CHAR SET] 字符集名称
-    CHARSET_NAME_BINARY = enum.auto()  # [CHARSET | CHAR SET] 字符集名称 BINARY
-    BINARY_CHARSET_NAME = enum.auto()  # BINARY [CHARSET | CHAR SET] 字符集名称
+    DEFAULT = auto()
+    ASCII = auto()  # ASCII
+    BINARY_ASCII = auto()  # BINARY ASCII
+    ASCII_BINARY = auto()  # ASCII BINARY
+    UNICODE = auto()  # UNICODE
+    BINARY_UNICODE = auto()  # BINARY UNICODE
+    UNICODE_BINARY = auto()  # UNICODE BINARY
+    BYTE = auto()  # BYTE
+    BINARY = auto()  # BINARY
+    CHARSET_NAME = auto()  # [CHARSET | CHAR SET] 字符集名称
+    CHARSET_NAME_BINARY = auto()  # [CHARSET | CHAR SET] 字符集名称 BINARY
+    BINARY_CHARSET_NAME = auto()  # BINARY [CHARSET | CHAR SET] 字符集名称
 
 
 class Charset(Node):
@@ -42,7 +42,7 @@ class Charset(Node):
         return self._charset_type
 
     @property
-    def charset_name(self) -> typing.Optional[str]:
+    def charset_name(self) -> Optional[str]:
         return self._charset_name
 
     def add_back_binary(self) -> "Charset":

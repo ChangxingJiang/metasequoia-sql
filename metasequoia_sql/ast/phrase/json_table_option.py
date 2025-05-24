@@ -2,8 +2,8 @@
 JSON 表选项的抽象语法树节点
 """
 
-import enum
-import typing
+from enum import IntEnum, auto
+from typing import Optional
 
 from metasequoia_sql.ast.base import Expression
 from metasequoia_sql.ast.base import Node
@@ -15,13 +15,13 @@ __all__ = [
 ]
 
 
-class JsonOnResponseTypeEnum(enum.IntEnum):
+class JsonOnResponseTypeEnum(IntEnum):
     """Json 解析失败时的返回值类型的枚举类"""
 
-    IMPLICIT = enum.auto()  # 默认值（未指定）
-    ERROR = enum.auto()  # ERROR
-    NULL = enum.auto()  # NULL
-    DEFAULT = enum.auto()  # DEFAULT
+    IMPLICIT = auto()  # 默认值（未指定）
+    ERROR = auto()  # ERROR
+    NULL = auto()  # NULL
+    DEFAULT = auto()  # DEFAULT
 
 
 class JsonOnResponse(Node):
@@ -29,7 +29,7 @@ class JsonOnResponse(Node):
 
     def __init__(self,
                  response_type: JsonOnResponseTypeEnum,
-                 default_value: typing.Optional[Expression] = None):
+                 default_value: Optional[Expression] = None):
         self._response_type = response_type
         self._default_value = default_value  # 默认值（仅当 response_type == DEFAULT 时需要）
 
@@ -43,7 +43,7 @@ class JsonOnResponse(Node):
         return self._response_type
 
     @property
-    def default_value(self) -> typing.Optional[Expression]:
+    def default_value(self) -> Optional[Expression]:
         return self._default_value
 
 

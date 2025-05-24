@@ -2,8 +2,7 @@
 标识符类型节点
 """
 
-import typing
-from typing import List
+from typing import Optional
 
 from metasequoia_sql.ast.base import Expression
 
@@ -24,7 +23,7 @@ class Ident(Expression):
     def value(self) -> str:
         return self._value
 
-    def get_str_value(self) -> typing.Optional[str]:
+    def get_str_value(self) -> Optional[str]:
         return self._value
 
 

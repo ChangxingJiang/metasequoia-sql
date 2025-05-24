@@ -2,7 +2,6 @@
 ORDER BY 语句节点
 """
 
-import typing
 from typing import List
 
 from metasequoia_sql.ast.base import Expression

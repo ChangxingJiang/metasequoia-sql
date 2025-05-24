@@ -2,10 +2,10 @@
 字面值类型节点
 """
 
-import abc
-import decimal
-import enum
-import typing
+from abc import abstractmethod
+from decimal import Decimal
+from enum import IntEnum
+from typing import Optional
 
 from metasequoia_sql.ast.base import Expression
 from metasequoia_sql.ast.base import Literal
@@ -29,7 +29,7 @@ __all__ = [
 class StringLiteral(Literal):
     """字符串字面值"""
 
-    def __init__(self, value: str, charset: typing.Optional[str] = None):
+    def __init__(self, value: str, charset: Optional[str] = None):
         self._value = value
         self._charset = charset  # 字符集（如果没有指定字符集则为 None）
 
@@ -38,10 +38,10 @@ class StringLiteral(Literal):
         return self._value
 
     @property
-    def charset(self) -> typing.Optional[str]:
+    def charset(self) -> Optional[str]:
         return self._charset
 
-    def get_str_value(self) -> typing.Optional[str]:
+    def get_str_value(self) -> Optional[str]:
         return self._value
 
 
@@ -56,7 +56,7 @@ class BinStringLiteral(StringLiteral):
 class NumberLiteral(Literal):
     """数值字面值（包括整数、小数、浮点数）"""
 
-    @abc.abstractmethod
+    @abstractmethod
     def neg(self) -> "NumberLiteral":
         """计算当前数值字面值的值置为相反数，并返回当前数值字面值"""
 
@@ -85,29 +85,29 @@ class IntLiteral(NumberLiteral):
         self._value *= -1
         return self
 
-    def get_decimal_value(self) -> decimal.Decimal:
-        return decimal.Decimal(self._value)
+    def get_decimal_value(self) -> Decimal:
+        return Decimal(self._value)
 
 
 class DecimalLiteral(NumberLiteral):
     """小数字面值"""
 
-    def __init__(self, value: decimal.Decimal):
-        self._value: decimal.Decimal = value
+    def __init__(self, value: Decimal):
+        self._value: Decimal = value
 
     @staticmethod
     def create(source_string: str):
-        return DecimalLiteral(decimal.Decimal(source_string))
+        return DecimalLiteral(Decimal(source_string))
 
     @property
-    def value(self) -> decimal.Decimal:
+    def value(self) -> Decimal:
         return self._value
 
     def neg(self) -> "DecimalLiteral":
         self._value *= -1
         return self
 
-    def get_decimal_value(self) -> decimal.Decimal:
+    def get_decimal_value(self) -> Decimal:
         return self._value
 
 
@@ -125,14 +125,14 @@ class FloatLiteral(NumberLiteral):
         self._value *= -1
         return self
 
-    def get_decimal_value(self) -> decimal.Decimal:
-        return decimal.Decimal.from_float(self._value)
+    def get_decimal_value(self) -> Decimal:
+        return Decimal.from_float(self._value)
 
 
 class TemporalLiteral(Literal):
     """时间类型字面值"""
 
-    class EnumTemporalType(enum.IntEnum):
+    class EnumTemporalType(IntEnum):
         """时间类型字面值的枚举值"""
         DATE = 1
         TIME = 2
@@ -198,5 +198,5 @@ class Hostname(Expression):
     def value(self) -> str:
         return self._value
 
-    def get_str_value(self) -> typing.Optional[str]:
+    def get_str_value(self) -> Optional[str]:
         return self._value

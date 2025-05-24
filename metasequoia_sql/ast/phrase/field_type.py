@@ -2,10 +2,9 @@
 字段类型相关节点
 """
 
-import decimal
-import enum
-import typing
-from typing import List
+from decimal import Decimal
+from enum import IntEnum, IntFlag, auto
+from typing import List, Optional
 
 from metasequoia_sql.ast.base import Expression, Node
 from metasequoia_sql.ast.basic.charset_name import Charset
@@ -26,17 +25,17 @@ class FieldTypeParams(Node):
     """字段类型的参数"""
 
     def __init__(self,
-                 option_1: typing.Optional[decimal.Decimal] = None,
-                 option_2: typing.Optional[decimal.Decimal] = None):
+                 option_1: Optional[Decimal] = None,
+                 option_2: Optional[Decimal] = None):
         self._option_1 = option_1  # 第 1 个参数
         self._option_2 = option_2  # 第 2 个参数
 
     @property
-    def option_1(self) -> typing.Optional[decimal.Decimal]:
+    def option_1(self) -> Optional[Decimal]:
         return self._option_1
 
     @property
-    def option_2(self) -> typing.Optional[decimal.Decimal]:
+    def option_2(self) -> Optional[Decimal]:
         return self._option_2
 
     def as_param_list(self) -> List[Expression]:
@@ -48,34 +47,34 @@ class FieldTypeParams(Node):
         return param_list
 
 
-class CastTypeEnum(enum.IntEnum):
+class CastTypeEnum(IntEnum):
     """转化的字段类型的枚举类型"""
 
-    DEFAULT = enum.auto()  # 默认值（未指定）
-    BINARY = enum.auto()  # BINARY
-    CHAR = enum.auto()  # CHAR
-    NCHAR = enum.auto()  # NCHAR
-    SIGNED = enum.auto()  # SIGNED
-    SIGNED_INT = enum.auto()  # SIGNED INT
-    UNSIGNED = enum.auto()  # UNSIGNED
-    UNSIGNED_INT = enum.auto()  # UNSIGNED INT
-    DATE = enum.auto()  # DATE
-    YEAR = enum.auto()  # YEAR
-    TIME = enum.auto()  # TIME
-    DATETIME = enum.auto()  # DATETIME
-    DECIMAL = enum.auto()  # DECIMAL
-    JSON = enum.auto()  # JSON
-    REAL = enum.auto()  # REAL
-    DOUBLE = enum.auto()  # DOUBLE
-    DOUBLE_PRECISION = enum.auto()  # DOUBLE PRECISION
-    FLOAT = enum.auto()  # FLOAT
-    POINT = enum.auto()  # POINT
-    LINESTRING = enum.auto()  # LINESTRING
-    POLYGON = enum.auto()  # POLYGON
-    MULTIPOINT = enum.auto()  # MULTIPOINT
-    MULTILINESTRING = enum.auto()  # MULTILINESTRING
-    MULTIPOLYGON = enum.auto()  # MULTIPOLYGON
-    GEOMETRYCOLLECTION = enum.auto()  # GEOMETRYCOLLECTION
+    DEFAULT = auto()  # 默认值（未指定）
+    BINARY = auto()  # BINARY
+    CHAR = auto()  # CHAR
+    NCHAR = auto()  # NCHAR
+    SIGNED = auto()  # SIGNED
+    SIGNED_INT = auto()  # SIGNED INT
+    UNSIGNED = auto()  # UNSIGNED
+    UNSIGNED_INT = auto()  # UNSIGNED INT
+    DATE = auto()  # DATE
+    YEAR = auto()  # YEAR
+    TIME = auto()  # TIME
+    DATETIME = auto()  # DATETIME
+    DECIMAL = auto()  # DECIMAL
+    JSON = auto()  # JSON
+    REAL = auto()  # REAL
+    DOUBLE = auto()  # DOUBLE
+    DOUBLE_PRECISION = auto()  # DOUBLE PRECISION
+    FLOAT = auto()  # FLOAT
+    POINT = auto()  # POINT
+    LINESTRING = auto()  # LINESTRING
+    POLYGON = auto()  # POLYGON
+    MULTIPOINT = auto()  # MULTIPOINT
+    MULTILINESTRING = auto()  # MULTILINESTRING
+    MULTIPOLYGON = auto()  # MULTIPOLYGON
+    GEOMETRYCOLLECTION = auto()  # GEOMETRYCOLLECTION
 
 
 class CastType(Node):
@@ -83,8 +82,8 @@ class CastType(Node):
 
     def __init__(self,
                  field_type: CastTypeEnum,
-                 params: typing.Optional[FieldTypeParams] = None,
-                 charset: typing.Optional[Charset] = None):
+                 params: Optional[FieldTypeParams] = None,
+                 charset: Optional[Charset] = None):
         self._field_type = field_type
         self._type_params = params if params is not None else FieldTypeParams()
         self._charset = charset
@@ -106,69 +105,69 @@ class CastType(Node):
         return self._charset
 
 
-class FieldOption(enum.IntFlag):
+class FieldOption(IntFlag):
     """字段选项的枚举值"""
 
     NONE = 0
-    SIGNED = enum.auto()
-    UNSIGNED = enum.auto()
-    ZEROFILL = enum.auto()
+    SIGNED = auto()
+    UNSIGNED = auto()
+    ZEROFILL = auto()
 
 
-class FieldTypeEnum(enum.IntEnum):
+class FieldTypeEnum(IntEnum):
     """DDL 语句中的字段类型的枚举类型"""
 
-    INT = enum.auto()  # INT
-    TINYINT = enum.auto()  # TINYINT
-    SMALLINT = enum.auto()  # SMALLINT
-    MEDIUMINT = enum.auto()  # MEDIUMINT
-    BIGINT = enum.auto()  # BIGINT
-    REAL = enum.auto()  # REAL
-    DOUBLE = enum.auto()  # DOUBLE
-    DOUBLE_PRECISION = enum.auto()  # DOUBLE PRECISION
-    FLOAT = enum.auto()  # FLOAT
-    DECIMAL = enum.auto()  # DECIMAL
-    NUMERIC = enum.auto()  # NUMERIC
-    FIXED = enum.auto()  # FIXED
-    BIT = enum.auto()  # BIT
-    BOOL = enum.auto()  # BOOL
-    BOOLEAN = enum.auto()  # BOOLEAN
-    CHAR = enum.auto()  # CHAR
-    NCHAR = enum.auto()  # NCHAR
-    NCHAR_BINARY = enum.auto()  # NCHAR BINARY
-    BINARY = enum.auto()  # BINARY
-    VARCHAR = enum.auto()  # VARCHAR
-    NVARCHAR = enum.auto()  # NVARCHAR
-    NVARCHAR_BINARY = enum.auto()  # NVARCHAR BINARY
-    VARBINARY = enum.auto()  # VARBINARY
-    YEAR = enum.auto()  # YEAR
-    DATE = enum.auto()  # DATE
-    TIME = enum.auto()  # TIME
-    TIMESTAMP = enum.auto()  # TIMESTAMP
-    DATETIME = enum.auto()  # DATETIME
-    TINYBLOB = enum.auto()  # TINYBLOB
-    BLOB = enum.auto()  # BLOB
-    MEDIUMBLOB = enum.auto()  # MEDIUMBLOB
-    LONGBLOB = enum.auto()  # LONGBLOB
-    GEOMETRY = enum.auto()  # GEOMETRY
-    GEOMETRYCOLLECTION = enum.auto()  # GEOMETRYCOLLECTION
-    POINT = enum.auto()  # POINT
-    MULTIPOINT = enum.auto()  # MULTIPOINT
-    LINESTRING = enum.auto()  # LINESTRING
-    MULTILINESTRING = enum.auto()  # MULTILINESTRING
-    POLYGON = enum.auto()  # POLYGON
-    MULTIPOLYGON = enum.auto()  # MULTIPOLYGON
-    LONG_VARBINARY = enum.auto()  # LONG VARBINARY
-    LONG_VARCHAR = enum.auto()  # LONG VARCHAR
-    TINYTEXT = enum.auto()  # TINYTEXT
-    TEXT = enum.auto()  # TEXT
-    MEDIUMTEXT = enum.auto()  # MEDIUMTEXT
-    LONGTEXT = enum.auto()  # LONGTEXT
-    ENUM = enum.auto()  # ENUM
-    SET = enum.auto()  # SET
-    LONG = enum.auto()  # LONG
-    SERIAL = enum.auto()  # SERIAL
-    JSON = enum.auto()
+    INT = auto()  # INT
+    TINYINT = auto()  # TINYINT
+    SMALLINT = auto()  # SMALLINT
+    MEDIUMINT = auto()  # MEDIUMINT
+    BIGINT = auto()  # BIGINT
+    REAL = auto()  # REAL
+    DOUBLE = auto()  # DOUBLE
+    DOUBLE_PRECISION = auto()  # DOUBLE PRECISION
+    FLOAT = auto()  # FLOAT
+    DECIMAL = auto()  # DECIMAL
+    NUMERIC = auto()  # NUMERIC
+    FIXED = auto()  # FIXED
+    BIT = auto()  # BIT
+    BOOL = auto()  # BOOL
+    BOOLEAN = auto()  # BOOLEAN
+    CHAR = auto()  # CHAR
+    NCHAR = auto()  # NCHAR
+    NCHAR_BINARY = auto()  # NCHAR BINARY
+    BINARY = auto()  # BINARY
+    VARCHAR = auto()  # VARCHAR
+    NVARCHAR = auto()  # NVARCHAR
+    NVARCHAR_BINARY = auto()  # NVARCHAR BINARY
+    VARBINARY = auto()  # VARBINARY
+    YEAR = auto()  # YEAR
+    DATE = auto()  # DATE
+    TIME = auto()  # TIME
+    TIMESTAMP = auto()  # TIMESTAMP
+    DATETIME = auto()  # DATETIME
+    TINYBLOB = auto()  # TINYBLOB
+    BLOB = auto()  # BLOB
+    MEDIUMBLOB = auto()  # MEDIUMBLOB
+    LONGBLOB = auto()  # LONGBLOB
+    GEOMETRY = auto()  # GEOMETRY
+    GEOMETRYCOLLECTION = auto()  # GEOMETRYCOLLECTION
+    POINT = auto()  # POINT
+    MULTIPOINT = auto()  # MULTIPOINT
+    LINESTRING = auto()  # LINESTRING
+    MULTILINESTRING = auto()  # MULTILINESTRING
+    POLYGON = auto()  # POLYGON
+    MULTIPOLYGON = auto()  # MULTIPOLYGON
+    LONG_VARBINARY = auto()  # LONG VARBINARY
+    LONG_VARCHAR = auto()  # LONG VARCHAR
+    TINYTEXT = auto()  # TINYTEXT
+    TEXT = auto()  # TEXT
+    MEDIUMTEXT = auto()  # MEDIUMTEXT
+    LONGTEXT = auto()  # LONGTEXT
+    ENUM = auto()  # ENUM
+    SET = auto()  # SET
+    LONG = auto()  # LONG
+    SERIAL = auto()  # SERIAL
+    JSON = auto()
 
 
 class FieldType(Node):
@@ -176,10 +175,10 @@ class FieldType(Node):
 
     def __init__(self,
                  field_type: FieldTypeEnum,
-                 params: typing.Optional[FieldTypeParams] = None,
-                 options: typing.Optional[FieldOption] = None,
-                 enum_value_list: typing.Optional[typing.List[str]] = None,
-                 charset: typing.Optional[Charset] = None):
+                 params: Optional[FieldTypeParams] = None,
+                 options: Optional[FieldOption] = None,
+                 enum_value_list: Optional[List[str]] = None,
+                 charset: Optional[Charset] = None):
         self._field_type = field_type
         self._params = params
         self._options = options
@@ -191,17 +190,17 @@ class FieldType(Node):
         return self._field_type
 
     @property
-    def params(self) -> typing.Optional[FieldTypeParams]:
+    def params(self) -> Optional[FieldTypeParams]:
         return self._params
 
     @property
-    def options(self) -> typing.Optional[FieldOption]:
+    def options(self) -> Optional[FieldOption]:
         return self._options
 
     @property
-    def enum_value_list(self) -> typing.Optional[typing.List[str]]:
+    def enum_value_list(self) -> Optional[List[str]]:
         return self._enum_value_list
 
     @property
-    def charset(self) -> typing.Optional[Charset]:
+    def charset(self) -> Optional[Charset]:
         return self._charset
