@@ -7949,22 +7949,6 @@ ident_list_arg:
         | '(' ident_list ')'  { $$= $2; }
         ;
 
-ident_list:
-          simple_ident
-          {
-            $$= NEW_PTN PT_item_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        | ident_list ',' simple_ident
-          {
-            if ($1 == nullptr || $1->push_back($3))
-              MYSQL_YYABORT;
-            $$= $1;
-            $$->m_pos = @$;
-          }
-        ;
-
 opt_expr:
           %empty         { $$= nullptr; }
         | expr           { $$= $1; }

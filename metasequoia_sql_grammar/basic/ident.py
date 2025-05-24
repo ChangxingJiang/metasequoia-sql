@@ -1,24 +1,5 @@
 """
-标识符的语义组
-
-ident_sys:
-        IDENT
-      | IDENT_QUOTED;
-
-ident_2:
-        ident '.' ident;
-
-ident_3:
-        ident '.' ident '.' ident;
-
-simple_ident:
-        ident
-      | ident_2
-      | ident_3;
-
-simple_ident_list:
-        simple_ident_list ',' simple_ident
-      | simple_ident;
+标识符（ident）
 """
 
 import metasequoia_parser as ms_parser
@@ -32,6 +13,7 @@ __all__ = [
     "IDENT_3",
     "SIMPLE_IDENT",
     "SIMPLE_IDENT_LIST",
+    "IDENT_LIST",
     "OPT_IDENT",
 ]
 
@@ -98,6 +80,21 @@ SIMPLE_IDENT_LIST = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["simple_ident"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 一般场景标识符的列表
+IDENT_LIST = ms_parser.create_group(
+    name="ident_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_list", TType.OPERATOR_COMMA, "ident"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["ident"],
             action=ms_parser.template.action.LIST_INIT_0
         )
     ]
