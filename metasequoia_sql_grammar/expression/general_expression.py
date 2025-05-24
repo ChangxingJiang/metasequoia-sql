@@ -131,6 +131,11 @@ SIMPLE_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LBRACE, "ident", "expr", TType.OPERATOR_RBRACE],
             action=lambda x: ast.OdbcDate(odbc_type=x[1].get_str_value(), odbc_value=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MATCH, "match_column_list", TType.KEYWORD_AGAINST, TType.OPERATOR_LPAREN,
+                     "binary_expr", "fulltext_options", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.OperatorMatch(column_list=x[1], sub_string=x[4], fulltext_options=x[5])
         )
     ]
 )
@@ -413,6 +418,66 @@ OPT_UDF_EXPR_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[],
             action=lambda _: []
+        )
+    ]
+)
+
+# MATCH 函数的列名的列表
+MATCH_COLUMN_LIST = ms_parser.create_group(
+    name="match_column_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["simple_ident_list"],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "simple_ident_list", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        )
+    ]
+)
+
+# 全文本索引可选的 IN NATURAL LANGUAGE MODE 选项
+OPT_IN_NATURAL_LANGUAGE_MODE = ms_parser.create_group(
+    name="opt_in_natural_language_mode",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IN, TType.KEYWORD_NATURAL, TType.KEYWORD_LANGUAGE, TType.KEYWORD_MODE],
+            action=lambda _: ast.FulltextOption.IN_NATURAL_LANGUAGE_MODE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.FulltextOption.DEFAULT
+        )
+    ]
+)
+
+# 全文本索引可选的 WITH QUERY EXPANSION 选项
+OPT_WITH_QUERY_EXPANSION = ms_parser.create_group(
+    name="opt_with_query_expansion",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_QUERY, TType.KEYWORD_EXPANSION],
+            action=lambda _: ast.FulltextOption.WITH_QUERY_EXPANSION
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.FulltextOption.DEFAULT
+        )
+    ]
+)
+
+# 全文本索引的选项
+FULLTEXT_OPTIONS = ms_parser.create_group(
+    name="fulltext_options",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["opt_in_natural_language_mode", "opt_with_query_expansion"],
+            action=lambda x: x[0] | x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IN, TType.KEYWORD_BOOLEAN, TType.KEYWORD_MODE],
+            action=lambda _: ast.FulltextOption.IN_BOOLEAN_MODE
         )
     ]
 )

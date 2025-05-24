@@ -7919,36 +7919,6 @@ opt_array_cast:
         | ARRAY_SYM { $$= true; }
         ;
 
-fulltext_options:
-          opt_natural_language_mode opt_query_expansion
-          { $$= $1 | $2; }
-        | IN_SYM BOOLEAN_SYM MODE_SYM
-          {
-            $$= FT_BOOL;
-            DBUG_EXECUTE_IF("simulate_bug18831513",
-                            {
-                              THD *thd= YYTHD;
-                              if (thd->sp_runtime_ctx)
-                                YYTHD->syntax_error();
-                            });
-          }
-        ;
-
-opt_natural_language_mode:
-          %empty { $$= FT_NL; }
-        | IN_SYM NATURAL LANGUAGE_SYM MODE_SYM  { $$= FT_NL; }
-        ;
-
-opt_query_expansion:
-          %empty { $$= 0;         }
-        | WITH QUERY_SYM EXPANSION_SYM          { $$= FT_EXPAND; }
-        ;
-
-ident_list_arg:
-          ident_list          { $$= $1; }
-        | '(' ident_list ')'  { $$= $2; }
-        ;
-
 opt_expr:
           %empty         { $$= nullptr; }
         | expr           { $$= $1; }

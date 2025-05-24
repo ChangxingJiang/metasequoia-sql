@@ -2,13 +2,14 @@
 函数类型节点
 """
 
-from typing import Optional
+from enum import IntFlag
+from typing import List, Optional, TYPE_CHECKING
 
-from metasequoia_sql.ast.base import BinaryExpression
-from metasequoia_sql.ast.base import Expression
-from metasequoia_sql.ast.base import TernaryExpression
-from metasequoia_sql.ast.base import UnaryExpression
+from metasequoia_sql.ast.base import BinaryExpression, Expression, TernaryExpression, UnaryExpression
 from metasequoia_sql.ast.other_operator import EnumOperatorCompare
+
+if TYPE_CHECKING:
+    from metasequoia_sql.ast.basic.ident import Ident
 
 __all__ = [
     "OperatorNegative",
@@ -49,6 +50,8 @@ __all__ = [
     "OperatorTruthTransform",
     "OperatorCollate",
     "OperatorConcat",
+    "FulltextOption",
+    "OperatorMatch",
 ]
 
 
@@ -296,3 +299,38 @@ class OperatorConcat(BinaryExpression):
 
     left_operand || right_operand
     """
+
+
+class FulltextOption(IntFlag):
+    """全文本索引选项"""
+
+    DEFAULT = 0
+    IN_NATURAL_LANGUAGE_MODE = 1  # IN NATURAL LANGUAGE MODE
+    WITH_QUERY_EXPANSION = 2  # WITH QUERY EXPANSION
+    IN_BOOLEAN_MODE = 4  # IN BOOLEAN MODE
+
+
+class OperatorMatch(Expression):
+    """内置 MATCH 运算符（全文本索引搜索）
+
+    MATCH column_list AGAINST ( sub_string fulltext_options )
+    """
+
+    __slots__ = ["_column_list", "_sub_string", "_fulltext_options"]
+
+    def __init__(self, column_list: List["Ident"], sub_string: Expression, fulltext_options: FulltextOption):
+        self._column_list = column_list
+        self._sub_string = sub_string
+        self._fulltext_options = fulltext_options
+
+    @property
+    def column_list(self) -> List["Ident"]:
+        return self._column_list
+
+    @property
+    def sub_string(self) -> Expression:
+        return self._sub_string
+
+    @property
+    def fulltext_options(self) -> FulltextOption:
+        return self._fulltext_options
