@@ -21,7 +21,9 @@ __all__ = [
     "OperatorShiftRight",
     "OperatorPlus",
     "OperatorDatePlus",
+    "OperatorPlusDate",
     "OperatorMinus",
+    "OperatorMinusDate",
     "OperatorMul",
     "OperatorDiv",
     "OperatorMod",
@@ -105,8 +107,44 @@ class OperatorDatePlus(Expression):
         return self._right_operand
 
 
+class OperatorPlusDate(Expression):
+    """内置 + 运算符，但 right_operand 为 time_interval 类型"""
+
+    __slots__ = ["_left_operand", "_right_operand"]
+
+    def __init__(self, left_operand: Expression, right_operand: "TimeInterval"):
+        self._left_operand = left_operand
+        self._right_operand = right_operand
+
+    @property
+    def left_operand(self) -> Expression:
+        return self._left_operand
+
+    @property
+    def right_operand(self) -> "TimeInterval":
+        return self._right_operand
+
+
 class OperatorMinus(BinaryExpression):
     """内置函数：减法（`-` 运算符）"""
+
+
+class OperatorMinusDate(Expression):
+    """内置 - 运算符，但 right_operand 为 time_interval 类型"""
+
+    __slots__ = ["_left_operand", "_right_operand"]
+
+    def __init__(self, left_operand: Expression, right_operand: "TimeInterval"):
+        self._left_operand = left_operand
+        self._right_operand = right_operand
+
+    @property
+    def left_operand(self) -> Expression:
+        return self._left_operand
+
+    @property
+    def right_operand(self) -> "TimeInterval":
+        return self._right_operand
 
 
 class OperatorMul(BinaryExpression):

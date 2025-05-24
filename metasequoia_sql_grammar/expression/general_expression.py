@@ -204,7 +204,7 @@ SIMPLE_EXPR = ms_parser.create_group(
     ]
 )
 
-# 二元表达式 TODO 未完成
+# 二元表达式
 BINARY_EXPR = ms_parser.create_group(
     name="binary_expr",
     rules=[
@@ -236,6 +236,16 @@ BINARY_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["binary_expr", TType.OPERATOR_SUB, "binary_expr"],
             action=lambda x: ast.OperatorMinus(left_operand=x[0], right_operand=x[2]),
+            sr_priority_as=TType.OPERATOR_SUB
+        ),
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.OPERATOR_PLUS, "time_interval"],
+            action=lambda x: ast.OperatorPlusDate(left_operand=x[0], right_operand=x[2]),
+            sr_priority_as=TType.OPERATOR_PLUS
+        ),
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.OPERATOR_SUB, "time_interval"],
+            action=lambda x: ast.OperatorMinusDate(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_SUB
         ),
         ms_parser.create_rule(
