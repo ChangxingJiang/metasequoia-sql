@@ -38,9 +38,6 @@ class JsonOnResponse(Node):
         """构造未指定的默认值对象"""
         return JsonOnResponse(response_type=JsonOnResponseTypeEnum.DEFAULT)
 
-    def attr_list(self) -> typing.List[str]:
-        return ["response_type", "default_value"]
-
     @property
     def response_type(self) -> JsonOnResponseTypeEnum:
         return self._response_type
@@ -56,9 +53,6 @@ class JsonOnEmptyOnError(Node):
     def __init__(self, on_empty: JsonOnResponse, on_error: JsonOnResponse):
         self._on_empty = on_empty
         self._on_error = on_error
-
-    def attr_list(self) -> typing.List[str]:
-        return ["on_empty", "on_error"]
 
     @property
     def on_empty(self) -> JsonOnResponse:

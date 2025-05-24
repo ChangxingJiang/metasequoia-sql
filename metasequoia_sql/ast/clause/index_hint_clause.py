@@ -42,9 +42,6 @@ class IndexHint(Node):
         self._index_hint_for = index_hint_for
         self._index_name_list = index_name_list
 
-    def attr_list(self) -> List[str]:
-        return ["index_hint_type", "index_hint_for", "index_name_list"]
-
     @property
     def index_hint_type(self) -> EnumIndexHintType:
         return self._index_hint_type

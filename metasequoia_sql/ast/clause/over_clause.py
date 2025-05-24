@@ -117,9 +117,6 @@ class WindowBorder(Node):
             time_unit=time_unit
         )
 
-    def attr_list(self) -> List[str]:
-        return ["boundary_type", "value", "time_unit"]
-
     @property
     def boundary_type(self) -> WindowBoundaryTypeEnum:
         return self._boundary_type
@@ -151,9 +148,6 @@ class WindowBorders(Node):
             end_border=WindowBorder.create_current_row()
         )
 
-    def attr_list(self) -> List[str]:
-        return ["start_border", "end_border"]
-
     @property
     def start_border(self) -> WindowBorder:
         return self._start_border
@@ -173,9 +167,6 @@ class WindowFrame(Node):
         self._border_type = border_type
         self._borders = borders
         self._exclusion = exclusion
-
-    def attr_list(self) -> List[str]:
-        return ["border_type", "borders", "exclusion"]
 
     @property
     def border_type(self) -> WindowBorderTypeEnum:
@@ -211,9 +202,6 @@ class Window(Node):
             order_clause=None,
             frame_clause=None
         )
-
-    def attr_list(self) -> List[str]:
-        return ["name", "partition_clause", "order_clause", "frame_clause"]
 
     @property
     def name(self) -> Optional[Expression]:

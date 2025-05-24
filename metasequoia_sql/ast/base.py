@@ -2,7 +2,7 @@
 抽象语法树（AST）的抽象节点
 """
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from decimal import Decimal
 from typing import List, Optional
 
@@ -20,13 +20,20 @@ __all__ = [
 class Node(ABC):
     """抽象语法树节点的抽象基类"""
 
-    @abstractmethod
-    def attr_list(self) -> List[str]:
-        """返回属性名称的列表"""
+    def properties(self) -> List[str]:
+        """返回节点中通过 @property 装饰器定义的方法（性能较差，建议仅用于调试场景）"""
+        attr_name_list = []
+        now_class = self.__class__
+        while now_class != Node:
+            for name, attr in now_class.__dict__.items():
+                if isinstance(attr, property):
+                    attr_name_list.append(name)
+            now_class = now_class.__base__
+        return attr_name_list
 
     def __str__(self):
         result = []
-        for attr_name in self.attr_list():
+        for attr_name in self.properties():
             result.append(f"{attr_name}={repr(getattr(self, attr_name))}")
         if not result:
             return f"<{self.__class__.__name__}>"
@@ -56,9 +63,6 @@ class UnaryExpression(Expression, ABC):
     def __init__(self, operand: Optional[Expression]):
         self._operand = operand
 
-    def attr_list(self) -> List[str]:
-        return ["operand"]
-
     @property
     def operand(self) -> Optional[Expression]:
         return self._operand
@@ -70,9 +74,6 @@ class BinaryExpression(Expression, ABC):
     def __init__(self, left_operand: Optional[Expression], right_operand: Optional[Expression]):
         self._left_operand = left_operand
         self._right_operand = right_operand
-
-    def attr_list(self) -> List[str]:
-        return ["left_operand", "right_operand"]
 
     @property
     def left_operand(self) -> Optional[Expression]:
@@ -93,9 +94,6 @@ class TernaryExpression(Expression, ABC):
         self._first_operand = first_operand
         self._second_operand = second_operand
         self._third_operand = third_operand
-
-    def attr_list(self) -> List[str]:
-        return ["first_operand", "second_operand", "third_operand"]
 
     @property
     def first_operand(self) -> Optional[Expression]:

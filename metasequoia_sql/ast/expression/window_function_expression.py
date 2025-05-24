@@ -53,9 +53,6 @@ class LeadOrLagInfo(Node):
         self._offset = offset
         self._default_value = default_value
 
-    def attr_list(self) -> List[str]:
-        return ["offset", "default_value"]
-
     @property
     def offset(self) -> Optional[Expression]:
         return self._offset
@@ -70,9 +67,6 @@ class FuncWindowBase(Expression):
 
     def __init__(self, window_clause: "Window"):
         self._window_clause = window_clause
-
-    def attr_list(self) -> List[str]:
-        return ["window_clause"]
 
     @property
     def window_clause(self) -> "Window":
@@ -106,9 +100,6 @@ class FuncWindowNtile(FuncWindowBase):
         super().__init__(window_clause)
         self._param = param
 
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["param"]
-
     @property
     def param(self) -> Expression:
         return self._param
@@ -124,9 +115,6 @@ class FuncWindowLeadOrLag(FuncWindowBase):
         self._offset = offset
         self._default_value = default_value
         self._null_treatment = null_treatment
-
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["param", "offset", "default_value", "null_treatment"]
 
     @property
     def param(self) -> Expression:
@@ -161,9 +149,6 @@ class FuncWindowFirstValueOrLastValue(FuncWindowBase):
         self._param = param
         self._null_treatment = null_treatment
 
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["param", "null_treatment"]
-
     @property
     def param(self) -> Expression:
         return self._param
@@ -189,9 +174,6 @@ class FuncWindowNthValue(FuncWindowBase):
         self._param2 = param_2
         self._from_first_or_last = from_first_or_last
         self._null_treatment = null_treatment
-
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["param1", "param2", "from_first_or_last", "null_treatment"]
 
     @property
     def param1(self) -> Expression:

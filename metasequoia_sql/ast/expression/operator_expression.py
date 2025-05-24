@@ -189,9 +189,6 @@ class OperatorCompare(BinaryExpression):
         super().__init__(left_operand, right_operand)
         self._operator = operator
 
-    def attr_list(self) -> List[str]:
-        return ["left_operand", "right_operand", "operator"]
-
     @property
     def operator(self) -> EnumOperatorCompare:
         return self._operator
@@ -280,9 +277,6 @@ class OperatorCollate(Expression):
     def __init__(self, collation_operand: Expression, collation_name: str):
         self._collation_operand = collation_operand  # 需要指定排序规则的表达式
         self._collation_name = collation_name  # 排序规则名称
-
-    def attr_list(self) -> List[str]:
-        return ["collation_operand", "collation_name"]
 
     @property
     def collation_operand(self) -> Expression:

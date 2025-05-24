@@ -42,9 +42,6 @@ class FuncSumBase(Expression):
         self._param = param
         self._window_clause = window_clause
 
-    def attr_list(self) -> List[str]:
-        return ["param", "window_clause"]
-
     @property
     def param(self) -> Expression:
         return self._param
@@ -60,9 +57,6 @@ class FuncSumDistinctBase(FuncSumBase):
     def __init__(self, param: Expression, distinct: bool, window_clause: Optional["Window"]):
         super().__init__(param, window_clause)
         self._distinct = distinct
-
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["distinct"]
 
     @property
     def distinct(self) -> bool:
@@ -93,9 +87,6 @@ class FuncSumJsonObjectAgg(Expression):
         self._param2 = param2
         self._window_clause = window_clause
 
-    def attr_list(self) -> List[str]:
-        return ["param1", "param2", "window_clause"]
-
     @property
     def param1(self) -> Expression:
         return self._param1
@@ -122,9 +113,6 @@ class FuncSumCountStar(Expression):
 
     def __init__(self, window_clause: Optional["Window"]):
         self._window_clause = window_clause
-
-    def attr_list(self) -> List[str]:
-        return ["window_clause"]
 
     @property
     def window_clause(self) -> Optional["Window"]:
@@ -178,9 +166,6 @@ class FuncSumGroupConcat(Expression):
         self._separator = separator
         self._window_clause = window_clause
 
-    def attr_list(self) -> List[str]:
-        return ["distinct", "param_list", "order_by_clause", "separator", "window_clause"]
-
     @property
     def distinct(self) -> bool:
         return self._distinct
@@ -207,9 +192,6 @@ class FunctionSumGrouping(Expression):
 
     def __init__(self, param_list: List[Expression]):
         self._param_list = param_list
-
-    def attr_list(self) -> List[str]:
-        return ["param_list"]
 
     @property
     def param_list(self) -> List[Expression]:

@@ -20,9 +20,6 @@ class UdfExpression(Expression):
         self._expression = expression
         self._alias = alias
 
-    def attr_list(self) -> List[str]:
-        return ["expression", "alias"]
-
     @property
     def expression(self) -> Expression:
         return self._expression
@@ -37,9 +34,6 @@ class Row(Expression):
 
     def __init__(self, value_list: List[Expression]):
         self._value_list = value_list
-
-    def attr_list(self) -> List[str]:
-        return ["value_list"]
 
     @property
     def value_list(self) -> List[Expression]:
@@ -56,9 +50,6 @@ class OdbcDate(Expression):
     def __init__(self, odbc_type: str, odbc_value: Expression):
         self._odbc_type = odbc_type
         self._odbc_value = odbc_value
-
-    def attr_list(self) -> List[str]:
-        return ["odbc_type", "odbc_value"]
 
     @property
     def odbc_type(self) -> str:

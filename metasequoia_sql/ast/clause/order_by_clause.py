@@ -22,9 +22,6 @@ class OrderExpression(Node):
         self._column = column
         self._direction = direction
 
-    def attr_list(self) -> typing.List[str]:
-        return ["column", "direction"]
-
     @property
     def column(self) -> Expression:
         return self._column
@@ -39,9 +36,6 @@ class OrderByClause(Node):
 
     def __init__(self, column_list: List[OrderExpression]):
         self._column_list = column_list
-
-    def attr_list(self) -> typing.List[str]:
-        return ["column_list"]
 
     @property
     def column_list(self) -> List[OrderExpression]:

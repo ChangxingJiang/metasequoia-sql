@@ -37,9 +37,6 @@ class Charset(Node):
         self._charset_type = charset_type
         self._charset_name = charset_name
 
-    def attr_list(self) -> typing.List[str]:
-        return ["charset_type", "charset_name"]
-
     @property
     def charset_type(self) -> CharsetTypeEnum:
         return self._charset_type

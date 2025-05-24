@@ -18,9 +18,6 @@ class LimitClause(Node):
         self._offset = offset
         self._limit = limit
 
-    def attr_list(self) -> List[str]:
-        return ["offset", "limit"]
-
     @property
     def offset(self) -> Optional[Expression]:
         return self._offset

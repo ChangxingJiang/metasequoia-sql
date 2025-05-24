@@ -51,9 +51,6 @@ class FunctionExpression(Expression):
     def create_by_2_param(function_name: str, param_1: "FunctionParam", param_2: "FunctionParam") -> "FunctionExpression":
         return FunctionExpression(function_name=function_name, param_list=[param_1, param_2])
 
-    def attr_list(self) -> List[str]:
-        return ["function_name", "param_list"]
-
     @property
     def function_name(self) -> str:
         return self._function_name
@@ -73,9 +70,6 @@ class FunctionChar(FunctionExpression):
     @staticmethod
     def create(param_list: List[Expression], charset_name: Optional["Charset"]) -> "FunctionChar":
         return FunctionChar(function_name="char", param_list=param_list, charset_name=charset_name)
-
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["charset_name"]
 
     @property
     def charset_name(self) -> Optional["Charset"]:
@@ -102,9 +96,6 @@ class FunctionJsonValue(FunctionExpression):
             returning_type=returning_type,
             json_on_empty_on_error=json_on_empty_on_error
         )
-
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["returning_type", "json_on_empty_on_error"]
 
     @property
     def returning_type(self) -> "CastType":
@@ -151,9 +142,6 @@ class FunctionTrim(FunctionExpression):
         return FunctionTrim(function_name="trim", param_list=[chars_to_remove, source_string],
                             trim_type=TrimTypeEnum.BOTH)
 
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["trim_type"]
-
     @property
     def trim_type(self) -> TrimTypeEnum:
         return self._trim_type
@@ -177,9 +165,6 @@ class FunctionExtract(FunctionExpression):
     @staticmethod
     def create(time_unit: "TimeUnitEnum", source_expression: Expression) -> "FunctionExtract":
         return FunctionExtract(function_name="extract", param_list=[source_expression], time_unit=time_unit)
-
-    def attr_list(self) -> List[str]:
-        return super().attr_list() + ["time_unit"]
 
     @property
     def time_unit(self) -> "TimeUnitEnum":

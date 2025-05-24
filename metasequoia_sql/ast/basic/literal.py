@@ -33,9 +33,6 @@ class StringLiteral(Literal):
         self._value = value
         self._charset = charset  # 字符集（如果没有指定字符集则为 None）
 
-    def attr_list(self) -> typing.List[str]:
-        return ["value", "charset"]
-
     @property
     def value(self) -> str:
         return self._value
@@ -70,9 +67,6 @@ class IntLiteral(NumberLiteral):
     def __init__(self, value: int):
         self._value = value
 
-    def attr_list(self) -> typing.List[str]:
-        return ["value"]
-
     @staticmethod
     def from_oct_string(oct_num: str) -> "IntLiteral":
         """根据十进制字符串构造整数"""
@@ -105,9 +99,6 @@ class DecimalLiteral(NumberLiteral):
     def create(source_string: str):
         return DecimalLiteral(decimal.Decimal(source_string))
 
-    def attr_list(self) -> typing.List[str]:
-        return ["value"]
-
     @property
     def value(self) -> decimal.Decimal:
         return self._value
@@ -125,9 +116,6 @@ class FloatLiteral(NumberLiteral):
 
     def __init__(self, value: str):
         self._value: float = float(value)
-
-    def attr_list(self) -> typing.List[str]:
-        return ["value"]
 
     @property
     def value(self) -> float:
@@ -153,9 +141,6 @@ class TemporalLiteral(Literal):
     def __init__(self, temporal_type: "TemporalLiteral.EnumTemporalType", value: str):
         self._temporal_type: TemporalLiteral.EnumTemporalType = temporal_type
         self._value = value
-
-    def attr_list(self) -> typing.List[str]:
-        return ["temporal_type", "value"]
 
     @staticmethod
     def create_date_literal(value: str) -> "TemporalLiteral":
@@ -190,29 +175,17 @@ class TemporalLiteral(Literal):
 class FalseLiteral(Literal):
     """假值字面值"""
 
-    def attr_list(self) -> typing.List[str]:
-        return []
-
 
 class TrueLiteral(Literal):
     """真值字面值"""
-
-    def attr_list(self) -> typing.List[str]:
-        return []
 
 
 class NullLiteral(Literal):
     """空值字面值"""
 
-    def attr_list(self) -> typing.List[str]:
-        return []
-
 
 class Param(Expression):
     """参数占位符"""
-
-    def attr_list(self) -> typing.List[str]:
-        return []
 
 
 class Hostname(Expression):
@@ -220,9 +193,6 @@ class Hostname(Expression):
 
     def __init__(self, value: str):
         self._value = value
-
-    def attr_list(self) -> typing.List[str]:
-        return ["value"]
 
     @property
     def value(self) -> str:

@@ -31,9 +31,6 @@ class FieldTypeParams(Node):
         self._option_1 = option_1  # 第 1 个参数
         self._option_2 = option_2  # 第 2 个参数
 
-    def attr_list(self) -> typing.List[str]:
-        return ["option_1", "option_2"]
-
     @property
     def option_1(self) -> typing.Optional[decimal.Decimal]:
         return self._option_1
@@ -95,9 +92,6 @@ class CastType(Node):
     @staticmethod
     def default() -> "CastType":
         return CastType(field_type=CastTypeEnum.DEFAULT)
-
-    def attr_list(self) -> typing.List[str]:
-        return ["field_type", "params", "charset"]
 
     @property
     def field_type(self) -> CastTypeEnum:
@@ -191,9 +185,6 @@ class FieldType(Node):
         self._options = options
         self._enum_value_list = enum_value_list
         self._charset = charset
-
-    def attr_list(self) -> typing.List[str]:
-        return ["field_type", "params", "options", "enum_value_list", "charset"]
 
     @property
     def field_type(self) -> FieldTypeEnum:

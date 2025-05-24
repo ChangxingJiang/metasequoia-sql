@@ -28,9 +28,6 @@ class GroupByClause(Node):
         self._columns = columns
         self._olap_opt = olap_opt
 
-    def attr_list(self) -> List[str]:
-        return ["columns", "olap_opt"]
-
     @property
     def columns(self) -> List[Expression]:
         return self._columns

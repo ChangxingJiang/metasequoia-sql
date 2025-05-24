@@ -20,9 +20,6 @@ class Ident(Expression):
     def __init__(self, value: str):
         self._value = value
 
-    def attr_list(self) -> List[str]:
-        return ["value"]
-
     @property
     def value(self) -> str:
         return self._value
@@ -37,9 +34,6 @@ class Ident2D(Expression):
     def __init__(self, value1: Ident, value2: Ident):
         self._value1 = value1
         self._value2 = value2
-
-    def attr_list(self) -> typing.List[str]:
-        return ["value1", "value2"]
 
     @property
     def value1(self) -> Ident:
@@ -57,9 +51,6 @@ class Ident3D(Expression):
         self._value1 = value1
         self._value2 = value2
         self._value3 = value3
-
-    def attr_list(self) -> typing.List[str]:
-        return ["value1", "value2", "value3"]
 
     @property
     def value1(self) -> Ident:

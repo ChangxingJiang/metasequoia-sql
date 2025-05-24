@@ -21,9 +21,6 @@ class TimeInterval(Node):
         self._time_unit = time_unit
         self._time_value = time_value
 
-    def attr_list(self) -> List[str]:
-        return ["time_unit", "time_value"]
-
     @property
     def time_unit(self) -> "TimeUnitEnum":
         return self._time_unit
