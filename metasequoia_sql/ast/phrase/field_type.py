@@ -24,6 +24,8 @@ __all__ = [
 class FieldTypeParams(Node):
     """字段类型的参数"""
 
+    __slots__ = ["_option_1", "_option_2"]
+
     def __init__(self,
                  option_1: Optional[Decimal] = None,
                  option_2: Optional[Decimal] = None):
@@ -79,6 +81,8 @@ class CastTypeEnum(IntEnum):
 
 class CastType(Node):
     """转化的字段类型"""
+
+    __slots__ = ["_field_type", "_type_params", "_charset"]
 
     def __init__(self,
                  field_type: CastTypeEnum,
@@ -172,6 +176,8 @@ class FieldTypeEnum(IntEnum):
 
 class FieldType(Node):
     """DDL 语句中的字段类型"""
+
+    __slots__ = ["_field_type", "_params", "_options", "_enum_value_list", "_charset"]
 
     def __init__(self,
                  field_type: FieldTypeEnum,

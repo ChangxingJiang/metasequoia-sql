@@ -16,6 +16,8 @@ __all__ = [
 class UdfExpression(Expression):
     """UDF 表达式"""
 
+    __slots__ = ["_expression", "_alias"]
+
     def __init__(self, expression: Expression, alias: Optional[str]):
         self._expression = expression
         self._alias = alias
@@ -32,6 +34,8 @@ class UdfExpression(Expression):
 class Row(Expression):
     """行表达式"""
 
+    __slots__ = ["_value_list"]
+
     def __init__(self, value_list: List[Expression]):
         self._value_list = value_list
 
@@ -44,8 +48,9 @@ class OdbcDate(Expression):
     """ODBC 日期格式
 
     { odbc_type odbc_value }
-
     """
+
+    __slots__ = ["_odbc_type", "_odbc_value"]
 
     def __init__(self, odbc_type: str, odbc_value: Expression):
         self._odbc_type = odbc_type

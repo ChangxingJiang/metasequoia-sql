@@ -34,6 +34,8 @@ class EnumIndexHintType(IntEnum):
 class IndexHint(Node):
     """索引指定子句"""
 
+    __slots__ = ["_index_hint_type", "_index_hint_for", "_index_name_list"]
+
     def __init__(self,
                  index_hint_type: EnumIndexHintType,
                  index_hint_for: EnumIndexHintFor,

@@ -17,6 +17,8 @@ __all__ = [
 class OrderExpression(Node):
     """排序字段（用于 ORDER BY 子句）"""
 
+    __slots__ = ["_column", "_direction"]
+
     def __init__(self, column: Expression, direction: EnumOrderDirection):
         self._column = column
         self._direction = direction
@@ -32,6 +34,8 @@ class OrderExpression(Node):
 
 class OrderByClause(Node):
     """ORDER BY 子句"""
+
+    __slots__ = ["_column_list"]
 
     def __init__(self, column_list: List[OrderExpression]):
         self._column_list = column_list

@@ -27,6 +27,8 @@ class JsonOnResponseTypeEnum(IntEnum):
 class JsonOnResponse(Node):
     """Json 解析失败时的返回值"""
 
+    __slots__ = ["_response_type", "_default_value"]
+
     def __init__(self,
                  response_type: JsonOnResponseTypeEnum,
                  default_value: Optional[Expression] = None):
@@ -49,6 +51,8 @@ class JsonOnResponse(Node):
 
 class JsonOnEmptyOnError(Node):
     """Json 解析遇到空值或错误时的处理方法"""
+
+    __slots__ = ["_on_empty", "_on_error"]
 
     def __init__(self, on_empty: JsonOnResponse, on_error: JsonOnResponse):
         self._on_empty = on_empty

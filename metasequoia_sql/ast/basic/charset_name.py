@@ -33,7 +33,9 @@ class CharsetTypeEnum(IntEnum):
 class Charset(Node):
     """字符集类型"""
 
-    def __init__(self, charset_type: CharsetTypeEnum, charset_name: typing.Optional[str]):
+    __slots__ = ["_charset_type", "_charset_name"]
+
+    def __init__(self, charset_type: CharsetTypeEnum, charset_name: Optional[str]):
         self._charset_type = charset_type
         self._charset_name = charset_name
 

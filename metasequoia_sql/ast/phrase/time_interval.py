@@ -2,7 +2,7 @@
 时间间隔表达式（time interval）
 """
 
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Expression, Node
 
@@ -16,6 +16,8 @@ __all__ = [
 
 class TimeInterval(Node):
     """时间间隔"""
+
+    __slots__ = ["_time_unit", "_time_value"]
 
     def __init__(self, time_unit: "TimeUnitEnum", time_value: Expression):
         self._time_unit = time_unit

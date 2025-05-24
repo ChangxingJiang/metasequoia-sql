@@ -2,7 +2,7 @@
 LIMIT 子句（limit clause）
 """
 
-from typing import List, Optional
+from typing import Optional
 
 from metasequoia_sql.ast.base import Expression, Node
 
@@ -13,6 +13,8 @@ __all__ = [
 
 class LimitClause(Node):
     """LIMIT 子句"""
+
+    __slots__ = ["_offset", "_limit"]
 
     def __init__(self, offset: Optional[Expression], limit: Expression):
         self._offset = offset

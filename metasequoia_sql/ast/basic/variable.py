@@ -3,7 +3,7 @@
 """
 
 from enum import IntEnum
-from typing import List, Optional
+from typing import Optional
 
 from metasequoia_sql.ast.base import Expression
 
@@ -17,6 +17,8 @@ __all__ = [
 
 class UserVariable(Expression):
     """用户变量"""
+
+    __slots__ = ["_variable_name"]
 
     def __init__(self, variable_name: str):
         self._variable_name = variable_name
@@ -38,6 +40,8 @@ class EnumSystemVariableType(IntEnum):
 class SystemVariable(Expression):
     """系统变量"""
 
+    __slots__ = ["_variable_type", "_variable_namespace", "_variable_name"]
+
     def __init__(self, variable_type: EnumSystemVariableType, variable_namespace: Optional[str], variable_name: str):
         self._variable_type = variable_type
         self._variable_namespace = variable_namespace
@@ -58,6 +62,8 @@ class SystemVariable(Expression):
 
 class UserVariableAssignment(Expression):
     """用户变量赋值"""
+
+    __slots__ = ["_variable_name", "_variable_value"]
 
     def __init__(self, variable_name: str, variable_value: Expression):
         self._variable_name = variable_name

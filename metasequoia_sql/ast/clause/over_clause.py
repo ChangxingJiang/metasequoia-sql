@@ -3,12 +3,12 @@
 """
 
 import enum
-from typing import Optional, List
+from typing import List, Optional
 
 from metasequoia_sql.ast.base import Expression
 from metasequoia_sql.ast.base import Node
-from metasequoia_sql.ast.clause.order_by_clause import OrderByClause
 from metasequoia_sql.ast.basic.time_unit import TimeUnitEnum
+from metasequoia_sql.ast.clause.order_by_clause import OrderByClause
 
 __all__ = [
     "WindowBorderTypeEnum",
@@ -61,6 +61,8 @@ class WindowBorder(Node):
     INTERVAL {value} {time_unit} [PRECEDING|FOLLOWING]
     CURRENT ROW
     """
+
+    __slots__ = ["_boundary_type", "_value", "_time_unit"]
 
     def __init__(self, boundary_type: WindowBoundaryTypeEnum,
                  value: Optional[Expression] = None,
@@ -137,6 +139,8 @@ class WindowBorders(Node):
     BETWEEN {start_border} AND {end_border}
     """
 
+    __slots__ = ["_start_border", "_end_border"]
+
     def __init__(self, start_border: WindowBorder, end_border: WindowBorder):
         self._start_border = start_border
         self._end_border = end_border
@@ -159,6 +163,8 @@ class WindowBorders(Node):
 
 class WindowFrame(Node):
     """窗口框架子句（包括边界类型、边界值、排除值）"""
+
+    __slots__ = ["_border_type", "_borders", "_exclusion"]
 
     def __init__(self,
                  border_type: WindowBorderTypeEnum,
@@ -183,6 +189,8 @@ class WindowFrame(Node):
 
 class Window(Node):
     """窗口（包括可选的窗口名称、可选的 PARTITION BY 子句、可选的 ORDER BY 子句和可选的窗口框架子句"""
+
+    __slots__ = ["_name", "_partition_clause", "_order_clause", "_frame_clause"]
 
     def __init__(self,
                  name: Optional[Expression],

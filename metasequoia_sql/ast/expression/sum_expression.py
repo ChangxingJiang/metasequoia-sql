@@ -2,8 +2,7 @@
 聚集函数表达式（sum expression）
 """
 
-from typing import List, Optional
-from typing import TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Expression
 
@@ -38,6 +37,8 @@ __all__ = [
 class FuncSumBase(Expression):
     """聚集函数的基类"""
 
+    __slots__ = ["_param", "_window_clause"]
+
     def __init__(self, param: Expression, window_clause: Optional["Window"]):
         self._param = param
         self._window_clause = window_clause
@@ -53,6 +54,8 @@ class FuncSumBase(Expression):
 
 class FuncSumDistinctBase(FuncSumBase):
     """包含可选的 DISTINCT 关键字的聚集函数的基类"""
+
+    __slots__ = ["_param", "_distinct"]
 
     def __init__(self, param: Expression, distinct: bool, window_clause: Optional["Window"]):
         super().__init__(param, window_clause)
@@ -82,6 +85,8 @@ class FuncSumJsonArrayAgg(FuncSumBase):
 class FuncSumJsonObjectAgg(Expression):
     """聚集函数：json_objectagg()"""
 
+    __slots__ = ["_param1", "_param2", "_window_clause"]
+
     def __init__(self, param1: Expression, param2: Expression, window_clause: Optional["Window"]):
         self._param1 = param1
         self._param2 = param2
@@ -110,6 +115,8 @@ class FuncSumBitXor(FuncSumBase):
 
 class FuncSumCountStar(Expression):
     """聚集函数：count(*)"""
+
+    __slots__ = ["_window_clause"]
 
     def __init__(self, window_clause: Optional["Window"]):
         self._window_clause = window_clause
@@ -154,6 +161,8 @@ class FuncSumSum(FuncSumDistinctBase):
 class FuncSumGroupConcat(Expression):
     """聚集函数：group_concat()"""
 
+    __slots__ = ["_distinct", "_param_list", "_order_by_clause", "_separator", "_window_clause"]
+
     def __init__(self,
                  distinct: bool,
                  param_list: List[Expression],
@@ -189,6 +198,8 @@ class FuncSumGroupConcat(Expression):
 
 class FunctionSumGrouping(Expression):
     """GROUPING 函数"""
+
+    __slots__ = ["_param_list"]
 
     def __init__(self, param_list: List[Expression]):
         self._param_list = param_list

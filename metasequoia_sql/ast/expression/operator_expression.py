@@ -2,7 +2,7 @@
 函数类型节点
 """
 
-from typing import List, Optional
+from typing import Optional
 
 from metasequoia_sql.ast.base import BinaryExpression
 from metasequoia_sql.ast.base import Expression
@@ -182,6 +182,8 @@ class OperatorCompare(BinaryExpression):
     - 其中 comp_op 为比较运算符
     """
 
+    __slots__ = ["_operator"]
+
     def __init__(self,
                  left_operand: Optional[Expression],
                  right_operand: Optional[Expression],
@@ -273,6 +275,8 @@ class OperatorCollate(Expression):
 
     collation_operand COLLATE collation_name
     """
+
+    __slots__ = ["_collation_operand", "_collation_name"]
 
     def __init__(self, collation_operand: Expression, collation_name: str):
         self._collation_operand = collation_operand  # 需要指定排序规则的表达式

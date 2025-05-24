@@ -38,6 +38,8 @@ class FunctionExpression(Expression):
     schema_name . function_name ( ... )
     """
 
+    __slots__ = ["_schema_name", "_function_name", "_param_list"]
+
     def __init__(self, function_name: str, param_list: List["FunctionParam"], schema_name: Optional[str] = None):
         self._schema_name = schema_name
         self._function_name = function_name
@@ -48,7 +50,8 @@ class FunctionExpression(Expression):
         return FunctionExpression(function_name=function_name, param_list=[param_1])
 
     @staticmethod
-    def create_by_2_param(function_name: str, param_1: "FunctionParam", param_2: "FunctionParam") -> "FunctionExpression":
+    def create_by_2_param(function_name: str, param_1: "FunctionParam",
+                          param_2: "FunctionParam") -> "FunctionExpression":
         return FunctionExpression(function_name=function_name, param_list=[param_1, param_2])
 
     @property
@@ -62,6 +65,8 @@ class FunctionExpression(Expression):
 
 class FunctionChar(FunctionExpression):
     """CHAR 函数"""
+
+    __slots__ = ["_charset_name"]
 
     def __init__(self, function_name: str, param_list: List[Expression], charset_name: Optional["Charset"]):
         super().__init__(function_name, param_list)
@@ -78,6 +83,8 @@ class FunctionChar(FunctionExpression):
 
 class FunctionJsonValue(FunctionExpression):
     """JSON_VALUE 函数"""
+
+    __slots__ = ["_returning_type", "_json_on_empty_on_error"]
 
     def __init__(self, function_name: str, param_list: List[Expression], returning_type: "CastType",
                  json_on_empty_on_error: "JsonOnEmptyOnError"):
@@ -118,6 +125,8 @@ class TrimTypeEnum(IntEnum):
 class FunctionTrim(FunctionExpression):
     """TRIM 函数"""
 
+    __slots__ = ["_trim_type"]
+
     def __init__(self, function_name: str, param_list: List[Expression], trim_type: TrimTypeEnum):
         super().__init__(function_name, param_list)
         self._trim_type = trim_type
@@ -157,6 +166,8 @@ class FunctionTrim(FunctionExpression):
 
 class FunctionExtract(FunctionExpression):
     """EXTRACT 函数"""
+
+    __slots__ = ["_time_unit"]
 
     def __init__(self, function_name: str, param_list: List[Expression], time_unit: "TimeUnitEnum"):
         super().__init__(function_name, param_list)
@@ -247,6 +258,8 @@ class FunctionSubstring(FunctionExpression):
 
 class FunctionWeightString(FunctionExpression):
     """WEIGHT_STRING 函数"""
+
+    __slots__ = ["_binary_flag"]
 
     def __init__(self, function_name: str, param_list: List["FunctionParam"], binary_flag: bool):
         super().__init__(function_name, param_list)

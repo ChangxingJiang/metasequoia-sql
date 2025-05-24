@@ -29,6 +29,8 @@ __all__ = [
 class StringLiteral(Literal):
     """字符串字面值"""
 
+    __slots__ = ["_value", "_charset"]
+
     def __init__(self, value: str, charset: Optional[str] = None):
         self._value = value
         self._charset = charset  # 字符集（如果没有指定字符集则为 None）
@@ -64,6 +66,8 @@ class NumberLiteral(Literal):
 class IntLiteral(NumberLiteral):
     """整数字面值"""
 
+    __slots__ = ["_value"]
+
     def __init__(self, value: int):
         self._value = value
 
@@ -92,6 +96,8 @@ class IntLiteral(NumberLiteral):
 class DecimalLiteral(NumberLiteral):
     """小数字面值"""
 
+    __slots__ = ["_value"]
+
     def __init__(self, value: Decimal):
         self._value: Decimal = value
 
@@ -113,6 +119,8 @@ class DecimalLiteral(NumberLiteral):
 
 class FloatLiteral(NumberLiteral):
     """浮点数字面值"""
+
+    __slots__ = ["_value"]
 
     def __init__(self, value: str):
         self._value: float = float(value)
@@ -137,6 +145,8 @@ class TemporalLiteral(Literal):
         DATE = 1
         TIME = 2
         DATETIME = 3
+
+    __slots__ = ["_temporal_type", "_value"]
 
     def __init__(self, temporal_type: "TemporalLiteral.EnumTemporalType", value: str):
         self._temporal_type: TemporalLiteral.EnumTemporalType = temporal_type
@@ -190,6 +200,8 @@ class Param(Expression):
 
 class Hostname(Expression):
     """@ 之后的 Token"""
+
+    __slots__ = ["_value"]
 
     def __init__(self, value: str):
         self._value = value

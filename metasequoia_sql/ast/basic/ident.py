@@ -16,6 +16,8 @@ __all__ = [
 class Ident(Expression):
     """标识符节点"""
 
+    __slots__ = ["_value"]
+
     def __init__(self, value: str):
         self._value = value
 
@@ -29,6 +31,8 @@ class Ident(Expression):
 
 class Ident2D(Expression):
     """ident.ident"""
+
+    __slots__ = ["_value1", "_value2"]
 
     def __init__(self, value1: Ident, value2: Ident):
         self._value1 = value1
@@ -45,6 +49,8 @@ class Ident2D(Expression):
 
 class Ident3D(Expression):
     """ident.ident.ident"""
+
+    __slots__ = ["_value1", "_value2", "_value3"]
 
     def __init__(self, value1: Ident, value2: Ident, value3: Ident):
         self._value1 = value1

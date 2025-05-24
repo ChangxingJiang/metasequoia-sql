@@ -1,8 +1,9 @@
 """
 窗口函数表达式（window function expression）
 """
+
 from enum import IntEnum, auto
-from typing import List, Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Expression, Node
 
@@ -49,6 +50,8 @@ class NullTreatment(IntEnum):
 class LeadOrLagInfo(Node):
     """LEAD 和 LAG 窗口函数中偏移量及默认值信息（解析过程中临时使用）"""
 
+    __slots__ = ["_offset", "_default_value"]
+
     def __init__(self, offset: Optional[Expression], default_value: Optional[Expression]):
         self._offset = offset
         self._default_value = default_value
@@ -64,6 +67,8 @@ class LeadOrLagInfo(Node):
 
 class FuncWindowBase(Expression):
     """窗口函数的基类"""
+
+    __slots__ = ["_window_clause"]
 
     def __init__(self, window_clause: "Window"):
         self._window_clause = window_clause
@@ -96,6 +101,8 @@ class FuncWindowPercentRank(FuncWindowBase):
 class FuncWindowNtile(FuncWindowBase):
     """NTILE 窗口函数"""
 
+    __slots__ = ["_param"]
+
     def __init__(self, param: Expression, window_clause: "Window"):
         super().__init__(window_clause)
         self._param = param
@@ -107,6 +114,8 @@ class FuncWindowNtile(FuncWindowBase):
 
 class FuncWindowLeadOrLag(FuncWindowBase):
     """LEAD 窗口函数和 LAG 窗口函数的抽象类"""
+
+    __slots__ = ["_param", "_offset", "_default_value", "_null_treatment"]
 
     def __init__(self, param: Expression, offset: Optional[Expression], default_value: Optional[Expression],
                  null_treatment: NullTreatment, window_clause: "Window"):
@@ -144,6 +153,8 @@ class FuncWindowLag(FuncWindowLeadOrLag):
 class FuncWindowFirstValueOrLastValue(FuncWindowBase):
     """FIRST_VALUE 窗口函数和 LAST_VALUE 窗口函数的抽象类"""
 
+    __slots__ = ["_param", "_null_treatment"]
+
     def __init__(self, param: Expression, null_treatment: NullTreatment, window_clause: "Window"):
         super().__init__(window_clause)
         self._param = param
@@ -167,6 +178,10 @@ class FuncWindowLastValue(FuncWindowFirstValueOrLastValue):
 
 
 class FuncWindowNthValue(FuncWindowBase):
+    """NTH_VALUE 窗口函数"""
+
+    __slots__ = ["_param1", "_param2", "_from_first_or_last", "_null_treatment"]
+
     def __init__(self, param_1: Expression, param_2: Expression, from_first_or_last: FromFirstOrLast,
                  null_treatment: NullTreatment, window_clause: "Window"):
         super().__init__(window_clause)

@@ -24,6 +24,8 @@ class EnumOlapOpt(IntEnum):
 class GroupByClause(Node):
     """GROUP BY 子句"""
 
+    __slots__ = ["_columns", "_olap_opt"]
+
     def __init__(self, columns: List[Expression], olap_opt: EnumOlapOpt) -> None:
         self._columns = columns
         self._olap_opt = olap_opt
