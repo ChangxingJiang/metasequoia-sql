@@ -52,6 +52,7 @@ __all__ = [
     "OperatorConcat",
     "FulltextOption",
     "OperatorMatch",
+    "OperatorBinary",
 ]
 
 
@@ -334,3 +335,7 @@ class OperatorMatch(Expression):
     @property
     def fulltext_options(self) -> FulltextOption:
         return self._fulltext_options
+
+
+class OperatorBinary(UnaryExpression):
+    """内置 BINARY 运算符"""

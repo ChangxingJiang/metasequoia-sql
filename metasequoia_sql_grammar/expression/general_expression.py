@@ -136,6 +136,11 @@ SIMPLE_EXPR = ms_parser.create_group(
             symbols=[TType.KEYWORD_MATCH, "match_column_list", TType.KEYWORD_AGAINST, TType.OPERATOR_LPAREN,
                      "binary_expr", "fulltext_options", TType.OPERATOR_RPAREN],
             action=lambda x: ast.OperatorMatch(column_list=x[1], sub_string=x[4], fulltext_options=x[5])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY, "simple_expr"],
+            action=lambda x: ast.OperatorBinary(operand=x[1]),
+            sr_priority_as=TType.NEG
         )
     ]
 )
