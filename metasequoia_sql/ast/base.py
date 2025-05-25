@@ -9,6 +9,7 @@ from typing import List, Optional
 __all__ = [
     "Node",
     "Expression",
+    "Table",
     "Literal",
     "UnaryExpression",
     "BinaryExpression",
@@ -51,6 +52,10 @@ class Node(ABC):
 
 class Expression(Node, ABC):
     """抽象语法树节点的抽象类：表达式"""
+
+
+class Table(Node, ABC):
+    """抽象语法树节点的抽象类：表"""
 
 
 class Literal(Expression, ABC):

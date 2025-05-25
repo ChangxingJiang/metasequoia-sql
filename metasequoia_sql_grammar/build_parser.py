@@ -34,6 +34,7 @@ from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.table import single_table
 
 
 def build_grammar():
@@ -192,6 +193,9 @@ def build_grammar():
         sum_function_expression,  # 表达式 - 聚集函数表达式
         window_function_expression,  # 表达式 - 窗口函数表达式
         function_expression,  # 表达式 - 普通函数表达式
+
+        # 表
+        single_table,  # 单表
 
         # 子句层级
         group_by_clause,  # GROUP BY 子句

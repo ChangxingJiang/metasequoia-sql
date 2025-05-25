@@ -7712,18 +7712,6 @@ table_reference_list_parens:
           }
         ;
 
-single_table_parens:
-          '(' single_table_parens ')' { $$= $2; }
-        | '(' single_table ')' { $$= $2; }
-        ;
-
-single_table:
-          table_ident opt_use_partition opt_table_alias opt_key_definition
-          {
-            $$= NEW_PTN PT_table_factor_table_ident(@$, $1, $2, $3, $4);
-          }
-        ;
-
 joined_table_parens:
           '(' joined_table_parens ')' { $$= $2; }
         | '(' joined_table ')' { $$= $2; }
