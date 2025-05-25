@@ -12,6 +12,7 @@ __all__ = [
     "CHARSET_UNICODE",
     "CHARSET_NAME",
     "OPT_CHARSET",
+    "OPT_COLLATE",
 ]
 
 # ASCII 相关字符集名称关键字
@@ -106,5 +107,16 @@ OPT_CHARSET = ms_parser.create_group(
             symbols=[TType.KEYWORD_BINARY, "keyword_charset", "charset_name"],
             action=lambda x: x[2].add_front_binary()
         )
+    ]
+)
+
+# 指定比较和排序规则
+OPT_COLLATE = ms_parser.create_group(
+    name="opt_collate",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COLLATE, "charset_name"]
+        ),
+        ms_parser.template.group.EMPTY_NULL
     ]
 )

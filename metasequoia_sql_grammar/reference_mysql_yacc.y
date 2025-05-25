@@ -5063,11 +5063,6 @@ old_or_new_charset_name_or_default:
         | DEFAULT_SYM    { $$=nullptr; }
         ;
 
-opt_collate:
-          %empty { $$ = nullptr; }
-        | COLLATE_SYM collation_name { $$ = $2; }
-        ;
-
 opt_default:
           %empty {}
         | DEFAULT_SYM {}
@@ -7738,76 +7733,6 @@ derived_table:
                          ER_THD(YYTHD, ER_DERIVED_MUST_HAVE_ALIAS), MYF(0));
 
             $$= NEW_PTN PT_derived_table(@$, true, $2, $3, &$4);
-          }
-        ;
-
-table_function:
-          JSON_TABLE_SYM '(' expr ',' text_literal columns_clause ')'
-          opt_table_alias
-          {
-            // Alias isn't optional, follow derived's behavior
-            if ($8 == NULL_CSTR)
-            {
-              my_message(ER_TF_MUST_HAVE_ALIAS,
-                         ER_THD(YYTHD, ER_TF_MUST_HAVE_ALIAS), MYF(0));
-              MYSQL_YYABORT;
-            }
-
-            $$= NEW_PTN PT_table_factor_function(@$, $3, $5, $6, to_lex_string($8));
-          }
-        ;
-
-columns_clause:
-          COLUMNS '(' columns_list ')'
-          {
-            $$= $3;
-          }
-        ;
-
-columns_list:
-          jt_column
-          {
-            $$= NEW_PTN Mem_root_array<PT_json_table_column *>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | columns_list ',' jt_column
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-jt_column:
-          ident FOR_SYM ORDINALITY_SYM
-          {
-            $$= NEW_PTN PT_json_table_column_for_ordinality(@$, $1);
-          }
-        | ident type opt_collate jt_column_type PATH_SYM text_literal
-          opt_on_empty_or_error_json_table
-          {
-            auto column = make_unique_destroy_only<Json_table_column>(
-                YYMEM_ROOT, $4, $6, $7.error.type, $7.error.default_string,
-                $7.empty.type, $7.empty.default_string);
-            if (column == nullptr) MYSQL_YYABORT;  // OOM
-            $$ = NEW_PTN PT_json_table_column_with_path(@$, std::move(column), $1,
-                                                        $2, $3);
-          }
-        | NESTED_SYM PATH_SYM text_literal columns_clause
-          {
-            $$= NEW_PTN PT_json_table_column_with_nested_path(@$, $3, $4);
-          }
-        ;
-
-jt_column_type:
-          %empty
-          {
-            $$= enum_jt_column::JTC_PATH;
-          }
-        | EXISTS
-          {
-            $$= enum_jt_column::JTC_EXISTS;
           }
         ;
 
