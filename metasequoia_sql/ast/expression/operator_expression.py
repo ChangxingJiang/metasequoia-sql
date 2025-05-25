@@ -2,17 +2,17 @@
 函数类型节点
 """
 
-from enum import IntFlag
+from enum import IntEnum, IntFlag, auto
 from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import BinaryExpression, Expression, TernaryExpression, UnaryExpression
-from metasequoia_sql.ast.other_operator import EnumOperatorCompare
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.ident import Ident
     from metasequoia_sql.ast.phrase.time_interval import TimeInterval
 
 __all__ = [
+    "EnumOperatorCompare",
     "OperatorNegative",
     "OperatorBitNot",
     "OperatorBitOr",
@@ -61,6 +61,18 @@ __all__ = [
     "OperatorInValues",
     "OperatorNotInValues",
 ]
+
+
+class EnumOperatorCompare(IntEnum):
+    """比较运算符的枚举类"""
+
+    EQ = auto()  # =
+    EQUAL = auto()  # <=>
+    GE = auto()  # >=
+    GT = auto()  # >
+    LE = auto()  # <=
+    LT = auto()  # <
+    NE = auto()  # <> 或 !=
 
 
 class OperatorNegative(UnaryExpression):

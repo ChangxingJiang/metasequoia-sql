@@ -7506,24 +7506,6 @@ select_item:
           }
         ;
 
-or:
-          OR_SYM
-       | OR2_SYM
-       ;
-
-and:
-          AND_SYM
-       | AND_AND_SYM
-         {
-           push_deprecated_warn(YYTHD, "&&", "AND");
-         }
-       ;
-
-not:
-          NOT_SYM
-        | NOT2_SYM
-        ;
-
 comp_op:
           EQ     { $$ = &comp_eq_creator; }
         | EQUAL_SYM { $$ = &comp_equal_creator; }
