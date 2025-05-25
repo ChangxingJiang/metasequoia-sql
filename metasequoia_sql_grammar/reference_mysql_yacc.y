@@ -7823,16 +7823,6 @@ jt_column_type:
           }
         ;
 
-opt_as:
-          %empty
-        | AS
-        ;
-
-opt_table_alias:
-          %empty { $$ = NULL_CSTR; }
-        | opt_as ident { $$ = to_lex_cstring($2); }
-        ;
-
 with_clause:
           WITH with_list
           {
