@@ -362,7 +362,7 @@ PREDICATE_EXPR = ms_parser.create_group(
     ]
 )
 
-# 布尔表达式 TODO 待完成
+# 布尔表达式
 BOOL_EXPR = ms_parser.create_group(
     name="bool_expr",
     rules=[
@@ -380,6 +380,7 @@ BOOL_EXPR = ms_parser.create_group(
             symbols=["bool_expr", "operator_compare", "predicate_expr"],
             action=lambda x: ast.OperatorCompare(left_operand=x[0], right_operand=x[2], operator=x[1])
         ),
+        # TODO : bool_pri comp_op all_or_any table_subquery %prec EQ
         ms_parser.create_rule(
             symbols=["predicate_expr"],
             sr_priority_as=TType.OPERATOR_COLON_EQ
@@ -387,7 +388,7 @@ BOOL_EXPR = ms_parser.create_group(
     ]
 )
 
-# 一般表达式 TODO 待完成
+# 一般表达式
 EXPR = ms_parser.create_group(
     name="expr",
     rules=[
