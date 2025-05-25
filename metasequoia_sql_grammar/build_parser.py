@@ -5,6 +5,8 @@
 """
 
 import metasequoia_parser as ms_parser
+
+from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
@@ -20,6 +22,7 @@ from metasequoia_sql_grammar.clause import limit_clause
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_by_clause
+from metasequoia_sql_grammar.clause import partition_clause
 from metasequoia_sql_grammar.clause import qualify_clause
 from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
@@ -31,7 +34,6 @@ from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
-from metasequoia_sql.terminal import SqlTerminalType as TType
 
 
 def build_grammar():
@@ -187,7 +189,7 @@ def build_grammar():
         alias,  # 短语 - 别名
         time_interval,  # 短语 - 时间间隔
         general_expression,  # 表达式 - 通用表达式
-        sum_expression,  # 表达式 - 聚集函数表达式
+        sum_function_expression,  # 表达式 - 聚集函数表达式
         window_function_expression,  # 表达式 - 窗口函数表达式
         function_expression,  # 表达式 - 普通函数表达式
 
@@ -197,6 +199,7 @@ def build_grammar():
         limit_clause,  # LIMIT 子句
         order_by_clause,  # ORDER BY 子句
         over_clause,  # OVER 子句
+        partition_clause,  # PARTITION 子句
         partition_by_clause,  # PARTITION BY 子句
         qualify_clause,  # QUALIFY 子句
         where_clause,  # WHERE 子句

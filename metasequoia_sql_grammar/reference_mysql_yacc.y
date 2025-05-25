@@ -7669,22 +7669,6 @@ opt_outer:
         | OUTER_SYM
         ;
 
-/*
-  table PARTITION (list of partitions), reusing using_list instead of creating
-  a new rule for partition_list.
-*/
-opt_use_partition:
-          %empty { $$= nullptr; }
-        | use_partition
-        ;
-
-use_partition:
-          PARTITION_SYM '(' using_list ')'
-          {
-            $$= $3;
-          }
-        ;
-
 /**
   MySQL has a syntax extension where a comma-separated list of table
   references is allowed as a table reference in itself, for instance
@@ -7836,31 +7820,6 @@ jt_column_type:
         | EXISTS
           {
             $$= enum_jt_column::JTC_EXISTS;
-          }
-        ;
-
-using_list:
-          ident_string_list
-        ;
-
-ident_string_list:
-          ident
-          {
-            $$= NEW_PTN List<String>;
-            String *s= NEW_PTN String(const_cast<const char *>($1.str),
-                                               $1.length,
-                                               system_charset_info);
-            if ($$ == nullptr || s == nullptr || $$->push_back(s))
-              MYSQL_YYABORT;
-          }
-        | ident_string_list ',' ident
-          {
-            String *s= NEW_PTN String(const_cast<const char *>($3.str),
-                                               $3.length,
-                                               system_charset_info);
-            if (s == nullptr || $1->push_back(s))
-              MYSQL_YYABORT;
-            $$= $1;
           }
         ;
 
