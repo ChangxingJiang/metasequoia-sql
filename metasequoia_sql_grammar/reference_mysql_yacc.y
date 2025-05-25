@@ -7506,16 +7506,6 @@ select_item:
           }
         ;
 
-comp_op:
-          EQ     { $$ = &comp_eq_creator; }
-        | EQUAL_SYM { $$ = &comp_equal_creator; }
-        | GE     { $$ = &comp_ge_creator; }
-        | GT_SYM { $$ = &comp_gt_creator; }
-        | LE     { $$ = &comp_le_creator; }
-        | LT     { $$ = &comp_lt_creator; }
-        | NE     { $$ = &comp_ne_creator; }
-        ;
-
 all_or_any:
           ALL     { $$ = 1; }
         | ANY_SYM { $$ = 0; }
