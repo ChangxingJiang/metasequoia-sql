@@ -58,6 +58,8 @@ __all__ = [
     "OperatorMatch",
     "OperatorBinary",
     "OperatorJsonSeparator",
+    "OperatorInValues",
+    "OperatorNotInValues",
 ]
 
 
@@ -425,3 +427,39 @@ class OperatorJsonSeparator(Expression):
     @property
     def is_unquoted(self) -> bool:
         return self._is_unquoted
+
+
+class OperatorInValues(Expression):
+    """内置 IN 运算符（判断目标值是否在备选值中存在）"""
+
+    __slots__ = ["_operand", "_value_list"]
+
+    def __init__(self, operand: Expression, value_list: List[Expression]):
+        self._operand = operand
+        self._value_list = value_list
+
+    @property
+    def operand(self) -> Expression:
+        return self._operand
+
+    @property
+    def value_list(self) -> List[Expression]:
+        return self._value_list
+
+
+class OperatorNotInValues(Expression):
+    """内置 NOT IN 运算符（判断目标值是否不在备选值中存在）"""
+
+    __slots__ = ["_operand", "_value_list"]
+
+    def __init__(self, operand: Expression, value_list: List[Expression]):
+        self._operand = operand
+        self._value_list = value_list
+
+    @property
+    def operand(self) -> Expression:
+        return self._operand
+
+    @property
+    def value_list(self) -> List[Expression]:
+        return self._value_list

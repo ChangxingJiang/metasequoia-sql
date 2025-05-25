@@ -285,10 +285,31 @@ BINARY_EXPR = ms_parser.create_group(
     ]
 )
 
-# 谓语表达式 TODO 未完成
+# 谓语表达式
 PREDICATE_EXPR = ms_parser.create_group(
     name="predicate_expr",
     rules=[
+        # TODO : bit_expr IN_SYM table_subquery
+        # TODO : bit_expr not IN_SYM table_subquery
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.OperatorInValues(operand=x[0], value_list=[x[3]])
+        ),
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr_list",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.OperatorInValues(operand=x[0], value_list=[x[3]] + x[5])
+        ),
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr",
+                     TType.OPERATOR_RPAREN],
+            action=lambda x: ast.OperatorNotInValues(operand=x[0], value_list=[x[3]])
+        ),
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr",
+                     TType.OPERATOR_COMMA, "expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.OperatorNotInValues(operand=x[0], value_list=[x[3]] + x[5])
+        ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_MEMBER, "opt_keyword_of", TType.OPERATOR_LPAREN, "simple_expr",
                      TType.OPERATOR_RPAREN],
