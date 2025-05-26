@@ -7358,21 +7358,6 @@ from_tables:
         | table_reference_list
         ;
 
-table_reference_list:
-          table_reference
-          {
-            $$.init(YYMEM_ROOT);
-            if ($$.push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | table_reference_list ',' table_reference
-          {
-            $$= $1;
-            if ($$.push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
 table_value_constructor:
           VALUES values_row_list
           {
@@ -7506,21 +7491,6 @@ all_or_any:
         | ANY_SYM { $$ = 0; }
         ;
 
-table_reference:
-          table_factor { $$= $1; }
-        | joined_table { $$= $1; }
-        | '{' OJ_SYM esc_table_reference '}'
-          {
-            /*
-              The ODBC escape syntax for Outer Join.
-
-              All productions from table_factor and joined_table can be escaped,
-              not only the '{LEFT | RIGHT} [OUTER] JOIN' syntax.
-            */
-            $$ = $3;
-          }
-        ;
-
 esc_table_reference:
           table_factor { $$= $1; }
         | joined_table { $$= $1; }
@@ -7652,59 +7622,6 @@ inner_join_type:
 outer_join_type:
           LEFT opt_outer JOIN_SYM          { $$= JTT_LEFT; }
         | RIGHT opt_outer JOIN_SYM         { $$= JTT_RIGHT; }
-        ;
-
-opt_inner:
-          %empty
-        | INNER_SYM
-        ;
-
-opt_outer:
-          %empty
-        | OUTER_SYM
-        ;
-
-/**
-  MySQL has a syntax extension where a comma-separated list of table
-  references is allowed as a table reference in itself, for instance
-
-    SELECT * FROM (t1, t2) JOIN t3 ON 1
-
-  which is not allowed in standard SQL. The syntax is equivalent to
-
-    SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
-
-  We call this rule table_reference_list_parens.
-
-  A <table_factor> may be a <single_table>, a <subquery>, a <derived_table>, a
-  <joined_table>, or the bespoke <table_reference_list_parens>, each of those
-  enclosed in any number of parentheses. This makes for an ambiguous grammar
-  since a <table_factor> may also be enclosed in parentheses. We get around
-  this by designing the grammar so that a <table_factor> does not have
-  parentheses, but all the sub-cases of it have their own parentheses-rules,
-  i.e. <single_table_parens>, <joined_table_parens> and
-  <table_reference_list_parens>. It's a bit tedious but the grammar is
-  unambiguous and doesn't have shift/reduce conflicts.
-*/
-table_factor:
-          single_table
-        | single_table_parens
-        | derived_table { $$ = $1; }
-        | joined_table_parens
-          { $$= NEW_PTN PT_table_factor_joined_table(@$, $1); }
-        | table_reference_list_parens
-          { $$= NEW_PTN PT_table_reference_list_parens(@$, $1); }
-        | table_function { $$ = $1; }
-        ;
-
-table_reference_list_parens:
-          '(' table_reference_list_parens ')' { $$= $2; }
-        | '(' table_reference_list ',' table_reference ')'
-          {
-            $$= $2;
-            if ($$.push_back($4))
-              MYSQL_YYABORT; // OOM
-          }
         ;
 
 joined_table_parens:
