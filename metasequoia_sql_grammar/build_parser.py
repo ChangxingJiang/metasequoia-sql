@@ -36,6 +36,8 @@ from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.table import single_table
 from metasequoia_sql_grammar.table import table_function
+from metasequoia_sql_grammar.table import general_table
+from metasequoia_sql_grammar.table import joined_table
 
 
 def build_grammar():
@@ -142,7 +144,7 @@ def build_grammar():
                 combine_type=ms_parser.COMBINE_LEFT
             ),
             ms_parser.create_sr_priority(
-                symbols=[TType.KEYWORD_JOIN, TType.KEYWORD_INNER, TType.STRAIGHT_JOIN, TType.KEYWORD_NATURAL,
+                symbols=[TType.KEYWORD_JOIN, TType.KEYWORD_INNER, TType.KEYWORD_STRAIGHT_JOIN, TType.KEYWORD_NATURAL,
                          TType.KEYWORD_LEFT, TType.KEYWORD_RIGHT, TType.KEYWORD_ON, TType.KEYWORD_USING],
                 combine_type=ms_parser.COMBINE_LEFT
             ),
@@ -196,7 +198,9 @@ def build_grammar():
         function_expression,  # 表达式 - 普通函数表达式
 
         # 表
+        general_table,  # 通用表逻辑
         single_table,  # 单表
+        joined_table,  # 关联表
         table_function,  # 生成表函数
 
         # 子句层级

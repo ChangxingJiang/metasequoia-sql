@@ -9,7 +9,9 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "TABLE_REFERENCE_LIST",
     "TABLE_REFERENCE",
-    "TABLE_FACTOR"
+    "ESC_TABLE_REFERENCE",
+    "TABLE_FACTOR",
+    "TABLE_REFERENCE_LIST_PARENS",
 ]
 
 # 在 DQL 和 DML 语句中的表元素的列表
@@ -34,8 +36,26 @@ TABLE_REFERENCE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["table_factor"]
         ),
-        # TODO : joined_table
-        # TODO : '{' OJ_SYM esc_table_reference '}'  -- $$ = $3;
+        ms_parser.create_rule(
+            symbols=["joined_table"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LBRACE, TType.KEYWORD_OJ, "esc_table_reference", TType.OPERATOR_RBRACE],
+            action=lambda x: x[2]
+        )
+    ]
+)
+
+# 不兼容 ODBC 语法的表元素
+ESC_TABLE_REFERENCE = ms_parser.create_group(
+    name="esc_table_reference",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["table_factor"]
+        ),
+        ms_parser.create_rule(
+            symbols=["joined_table"]
+        )
     ]
 )
 
