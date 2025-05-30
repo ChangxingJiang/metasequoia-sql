@@ -5053,11 +5053,6 @@ now_or_signed_literal:
         | signed_literal_or_null
         ;
 
-opt_load_data_charset:
-          %empty { $$= nullptr; }
-        | character_set charset_name { $$ = $2; }
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
@@ -7605,53 +7600,6 @@ opt_simple_limit:
         | LIMIT limit_option { $$= $2; }
         ;
 
-select_var_list:
-          select_var_list ',' select_var_ident
-          {
-            $$= $1;
-            if ($$ == nullptr || $$->push_back($3))
-              MYSQL_YYABORT;
-          }
-        | select_var_ident
-          {
-            $$= NEW_PTN PT_select_var_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        ;
-
-select_var_ident:
-          '@' ident_or_text
-          {
-            $$= NEW_PTN PT_select_var(@$, $2);
-          }
-        | ident_or_text
-          {
-            $$= NEW_PTN PT_select_sp_var(@$, $1);
-          }
-        ;
-
-into_clause:
-          INTO into_destination
-          {
-            $$= $2;
-          }
-        ;
-
-into_destination:
-          OUTFILE TEXT_STRING_filesystem
-          opt_load_data_charset
-          opt_field_term opt_line_term
-          {
-            $$= NEW_PTN PT_into_destination_outfile(@$, $2, $3, $4, $5);
-          }
-        | DUMPFILE TEXT_STRING_filesystem
-          {
-            $$= NEW_PTN PT_into_destination_dumpfile(@$, $2);
-          }
-        | select_var_list { $$= $1; }
-        ;
-
 /*
   DO statement
 */
@@ -9476,71 +9424,6 @@ opt_duplicate:
 duplicate:
           REPLACE_SYM { $$= On_duplicate::REPLACE_DUP; }
         | IGNORE_SYM  { $$= On_duplicate::IGNORE_DUP; }
-        ;
-
-opt_field_term:
-          %empty { $$.cleanup(); }
-        | COLUMNS field_term_list { $$= $2; }
-        ;
-
-field_term_list:
-          field_term_list field_term
-          {
-            $$= $1;
-            $$.merge_field_separators($2);
-          }
-        | field_term
-        ;
-
-field_term:
-          TERMINATED BY text_string
-          {
-            $$.cleanup();
-            $$.field_term= $3;
-          }
-        | OPTIONALLY ENCLOSED BY text_string
-          {
-            $$.cleanup();
-            $$.enclosed= $4;
-            $$.opt_enclosed= 1;
-          }
-        | ENCLOSED BY text_string
-          {
-            $$.cleanup();
-            $$.enclosed= $3;
-          }
-        | ESCAPED BY text_string
-          {
-            $$.cleanup();
-            $$.escaped= $3;
-          }
-        ;
-
-opt_line_term:
-          %empty { $$.cleanup(); }
-        | LINES line_term_list { $$= $2; }
-        ;
-
-line_term_list:
-          line_term_list line_term
-          {
-            $$= $1;
-            $$.merge_line_separators($2);
-          }
-        | line_term
-        ;
-
-line_term:
-          TERMINATED BY text_string
-          {
-            $$.cleanup();
-            $$.line_term= $3;
-          }
-        | STARTING BY text_string
-          {
-            $$.cleanup();
-            $$.line_start= $3;
-          }
         ;
 
 opt_xml_rows_identified_by:

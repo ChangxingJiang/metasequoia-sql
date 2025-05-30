@@ -8,6 +8,8 @@ from typing import Optional
 from metasequoia_sql.ast.base import Expression
 
 __all__ = [
+    "Variable",
+    "LocalVariable",
     "UserVariable",
     "EnumSystemVariableType",
     "SystemVariable",
@@ -15,8 +17,8 @@ __all__ = [
 ]
 
 
-class UserVariable(Expression):
-    """用户变量"""
+class Variable(Expression):
+    """变量的抽象基类"""
 
     __slots__ = ["_variable_name"]
 
@@ -28,6 +30,14 @@ class UserVariable(Expression):
         return self._variable_name
 
 
+class LocalVariable(Variable):
+    """本地变量（没有 @ 前缀）"""
+
+
+class UserVariable(Variable):
+    """用户变量（包含 @ 前缀）"""
+
+
 class EnumSystemVariableType(IntEnum):
     """系统变量的类型"""
 
@@ -37,15 +47,15 @@ class EnumSystemVariableType(IntEnum):
     SESSION = 3  # SESSION
 
 
-class SystemVariable(Expression):
-    """系统变量"""
+class SystemVariable(Variable):
+    """系统变量（包含 @@ 前缀）"""
 
-    __slots__ = ["_variable_type", "_variable_namespace", "_variable_name"]
+    __slots__ = ["_variable_type", "_variable_namespace"]
 
     def __init__(self, variable_type: EnumSystemVariableType, variable_namespace: Optional[str], variable_name: str):
+        super().__init__(variable_name)
         self._variable_type = variable_type
         self._variable_namespace = variable_namespace
-        self._variable_name = variable_name
 
     @property
     def variable_type(self) -> EnumSystemVariableType:
@@ -54,10 +64,6 @@ class SystemVariable(Expression):
     @property
     def variable_namespace(self) -> Optional[str]:
         return self._variable_namespace
-
-    @property
-    def variable_name(self) -> str:
-        return self._variable_name
 
 
 class UserVariableAssignment(Expression):

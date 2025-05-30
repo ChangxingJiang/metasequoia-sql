@@ -10,6 +10,8 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "VARIABLE_NAME",
     "USER_VARIABLE",
+    "USER_OR_LOCAL_VARIABLE_LIST",
+    "USER_OR_LOCAL_VARIABLE",
     "SYSTEM_VARIABLE_TYPE",
     "SYSTEM_VARIABLE",
     "SYSTEM_OR_USER_VARIABLE",
@@ -42,6 +44,35 @@ USER_VARIABLE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_AT, "variable_name"],
             action=lambda x: ast.UserVariable(variable_name=x[1])
+        )
+    ]
+)
+
+# 用户变量或本地变量的列表
+USER_OR_LOCAL_VARIABLE_LIST = ms_parser.create_group(
+    name="user_or_local_variable_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["user_or_local_variable_list", TType.OPERATOR_COMMA, "user_or_local_variable"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["user_or_local_variable"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 用户变量或本地变量
+USER_OR_LOCAL_VARIABLE = ms_parser.create_group(
+    name="user_or_local_variable",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["user_variable"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_or_text"],
+            action=lambda x: ast.LocalVariable(variable_name=x[0].get_str_value())
         )
     ]
 )

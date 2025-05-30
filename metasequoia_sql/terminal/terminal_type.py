@@ -23,7 +23,6 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_USED_AS_IDENT = enum.auto()
     KEYWORD_USED_AS_KEYWORD = enum.auto()
     CONDITIONLESS_JOIN = enum.auto()
-    STRAIGHT_JOIN = enum.auto()
     NEG = enum.auto()
     SUBQUERY_AS_EXPR = enum.auto()
     EMPTY_FROM_CLAUSE = enum.auto()
