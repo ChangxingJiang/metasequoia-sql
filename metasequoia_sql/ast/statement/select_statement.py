@@ -5,7 +5,7 @@ SELECT 语句（select statement）
 from enum import IntEnum, IntFlag
 from typing import List, Optional, TYPE_CHECKING
 
-from metasequoia_sql.ast.base import Expression, Query, Table
+from metasequoia_sql.ast.base import Expression, Node, QueryBody, Table
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.into_clause import IntoClause
@@ -13,6 +13,9 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.over_clause import Window
     from metasequoia_sql.ast.basic.ident import TableIdent
     from metasequoia_sql.ast.expression.general_expression import Row
+    from metasequoia_sql.ast.clause.order_by_clause import OrderByClause
+    from metasequoia_sql.ast.clause.limit_clause import LimitClause
+    from metasequoia_sql.ast.clause.locking_clause import LockingClause
 
 __all__ = [
     "SelectOption",
@@ -24,6 +27,7 @@ __all__ = [
     "Union",
     "Except",
     "Intersect",
+    "QueryExpression",
 ]
 
 
@@ -42,7 +46,7 @@ class SelectOption(IntFlag):
     SQL_NO_CACHE = 1 << 8  # SQL_NO_CACHE
 
 
-class SimpleQuery(Query):
+class SimpleQuery(QueryBody):
     """简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）"""
 
     __slots__ = ["_select_option", "_select_item_list", "_into_clause", "_from_clause", "_where_clause",
@@ -106,7 +110,7 @@ class SimpleQuery(Query):
         return self._qualify_clause
 
 
-class TableValueConstructor(Query):
+class TableValueConstructor(QueryBody):
     """通过值列表构造的表"""
 
     __slots__ = ["_row_list"]
@@ -119,7 +123,7 @@ class TableValueConstructor(Query):
         return self._row_list
 
 
-class ExplicitTable(Query):
+class ExplicitTable(QueryBody):
     """明确指定表的查询"""
 
     __slots__ = ["_table_ident"]
@@ -140,18 +144,18 @@ class UnionOption(IntEnum):
     ALL = 2  # ALL
 
 
-class UnionBase(Query):
+class UnionBase(QueryBody):
     """联合的抽象类"""
 
     __slots__ = ["_left_operand", "_union_option", "_right_operand"]
 
-    def __init__(self, left_operand: Query, union_option: UnionOption, right_operand: Query):
+    def __init__(self, left_operand: QueryBody, union_option: UnionOption, right_operand: QueryBody):
         self._left_operand = left_operand
         self._union_option = union_option
         self._right_operand = right_operand
 
     @property
-    def left_operand(self) -> Query:
+    def left_operand(self) -> QueryBody:
         return self._left_operand
 
     @property
@@ -159,7 +163,7 @@ class UnionBase(Query):
         return self._union_option
 
     @property
-    def right_operand(self) -> Query:
+    def right_operand(self) -> QueryBody:
         return self._right_operand
 
 
@@ -173,3 +177,42 @@ class Except(UnionBase):
 
 class Intersect(UnionBase):
     """INTERSECT 联合"""
+
+
+class QueryExpression(Node):
+    """查询表达式"""
+
+    __slots__ = ["_query_body", "_order_clause", "_limit_clause", "_locking_clause_list"]
+
+    def __init__(self,
+                 query_body: QueryBody,
+                 order_by_clause: Optional["OrderByClause"],
+                 limit_clause: Optional["LimitClause"],
+                 locking_clause_list: Optional[List["LockingClause"]] = None):
+        if locking_clause_list is None:
+            locking_clause_list = []
+
+        self._query_body = query_body
+        self._order_clause = order_by_clause
+        self._limit_clause = limit_clause
+        self._locking_clause_list: List["LockingClause"] = locking_clause_list
+
+    @property
+    def query_body(self) -> QueryBody:
+        return self._query_body
+
+    @property
+    def order_clause(self) -> Optional["OrderByClause"]:
+        return self._order_clause
+
+    @property
+    def limit_clause(self) -> Optional["LimitClause"]:
+        return self._limit_clause
+
+    @property
+    def locking_clause_list(self) -> List["LockingClause"]:
+        return self._locking_clause_list
+
+    def set_locking_clause(self, locking_clause_list: List["LockingClause"]) -> "QueryExpression":
+        self._locking_clause_list = locking_clause_list
+        return self

@@ -31,6 +31,9 @@ __all__ = [
     # 中级查询
     "QUERY_SECONDARY",
     "UNION_OPTION",
+
+    # 高级查询
+    "QUERY_EXPRESSION"
 ]
 
 # 简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）
@@ -242,21 +245,21 @@ QUERY_PRIMARY = ms_parser.create_group(
 
 # 中级查询（在初级查询的基础上，包含 `UNION`、`EXCEPT` 或 `INTERSECT`）
 QUERY_SECONDARY = ms_parser.create_group(
-    name="query_secondary",
+    name="query_expression_body",
     rules=[
         ms_parser.create_rule(
             symbols=["query_primary"]
         ),
         ms_parser.create_rule(
-            symbols=["query_secondary", TType.KEYWORD_UNION, "union_option", "query_secondary"],
+            symbols=["query_expression_body", TType.KEYWORD_UNION, "union_option", "query_expression_body"],
             action=lambda x: ast.Union(left_operand=x[0], union_option=x[2], right_operand=x[3])
         ),
         ms_parser.create_rule(
-            symbols=["query_secondary", TType.KEYWORD_EXCEPT, "union_option", "query_secondary"],
+            symbols=["query_expression_body", TType.KEYWORD_EXCEPT, "union_option", "query_expression_body"],
             action=lambda x: ast.Except(left_operand=x[0], union_option=x[2], right_operand=x[3])
         ),
         ms_parser.create_rule(
-            symbols=["query_secondary", TType.KEYWORD_INTERSECT, "union_option", "query_secondary"],
+            symbols=["query_expression_body", TType.KEYWORD_INTERSECT, "union_option", "query_expression_body"],
             action=lambda x: ast.Intersect(left_operand=x[0], union_option=x[2], right_operand=x[3])
         )
     ]
@@ -277,6 +280,17 @@ UNION_OPTION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[],
             action=lambda _: ast.UnionOption.DEFAULT
+        )
+    ]
+)
+
+# 高级查询（在中级查询的基础上，包含 `WITH`、`ORDER BY` 和 `LIMIT` 子句）
+QUERY_EXPRESSION = ms_parser.create_group(
+    name="query_expression",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["query_expression_body", "opt_order_by_clause", "opt_limit_clause"],
+            action=lambda x: ast.QueryExpression(query_body=x[0], order_by_clause=x[1], limit_clause=x[2])
         )
     ]
 )

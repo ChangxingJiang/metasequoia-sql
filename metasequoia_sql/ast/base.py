@@ -10,7 +10,7 @@ __all__ = [
     "Node",
     "Expression",
     "Table",
-    "Query",
+    "QueryBody",
     "Literal",
     "UnaryExpression",
     "BinaryExpression",
@@ -59,7 +59,7 @@ class Table(Node, ABC):
     """抽象语法树节点的抽象类：表"""
 
 
-class Query(Node, ABC):
+class QueryBody(Node, ABC):
     """抽象语法树节点的抽象类：查询"""
 
 
