@@ -11,6 +11,10 @@ __all__ = [
     "IDENT_SYS",
     "IDENT_2",
     "IDENT_3",
+    "TABLE_IDENT",
+    "TABLE_IDENT_OPT_WILD_LIST",
+    "TABLE_IDENT_OPT_WILD",
+    "OPT_WILD",
     "SIMPLE_IDENT",
     "SIMPLE_IDENT_LIST",
     "IDENT_LIST",
@@ -67,6 +71,42 @@ TABLE_IDENT = ms_parser.create_group(
             symbols=["ident_2"],
             action=lambda x: ast.TableIdent(schema_name=x[0].value1, table_name=x[0].value2)
         )
+    ]
+)
+
+# 表标识符及可选的 `.*` 的列表
+TABLE_IDENT_OPT_WILD_LIST = ms_parser.create_group(
+    name="table_ident_opt_wild_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["table_ident_opt_wild_list", TType.OPERATOR_COMMA, "table_ident_opt_wild"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=[""]
+        )
+    ]
+)
+
+# 表标识符及可选的 `.*`
+TABLE_IDENT_OPT_WILD = ms_parser.create_group(
+    name="table_ident_opt_wild",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["table_ident", "opt_wild"],
+            action=lambda x: x[0]
+        )
+    ]
+)
+
+# 可选的 `.*`
+OPT_WILD = ms_parser.create_group(
+    name="opt_wild",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_DOT, TType.OPERATOR_STAR]
+        ),
+        ms_parser.template.group.EMPTY_NULL
     ]
 )
 

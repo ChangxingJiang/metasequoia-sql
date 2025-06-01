@@ -7265,55 +7265,6 @@ query_expression_parens:
           }
         ;
 
-locking_clause_list:
-          locking_clause_list locking_clause
-          {
-            $$= $1;
-            if ($$->push_back($2))
-              MYSQL_YYABORT; // OOM
-          }
-        | locking_clause
-          {
-            $$= NEW_PTN PT_locking_clause_list(@$, YYTHD->mem_root);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-locking_clause:
-          FOR_SYM lock_strength opt_locked_row_action
-          {
-            $$= NEW_PTN PT_query_block_locking_clause(@$, $2, $3);
-          }
-        | FOR_SYM lock_strength table_locking_list opt_locked_row_action
-          {
-            $$= NEW_PTN PT_table_locking_clause(@$, $2, $3, $4);
-          }
-        | LOCK_SYM IN_SYM SHARE_SYM MODE_SYM
-          {
-            $$= NEW_PTN PT_query_block_locking_clause(@$, Lock_strength::SHARE);
-          }
-        ;
-
-lock_strength:
-          UPDATE_SYM { $$= Lock_strength::UPDATE; }
-        | SHARE_SYM  { $$= Lock_strength::SHARE; }
-        ;
-
-table_locking_list:
-          OF_SYM table_alias_ref_list { $$= $2; }
-        ;
-
-opt_locked_row_action:
-          %empty { $$= Locked_row_action::WAIT; }
-        | locked_row_action
-        ;
-
-locked_row_action:
-          SKIP_SYM LOCKED_SYM { $$= Locked_row_action::SKIP; }
-        | NOWAIT_SYM { $$= Locked_row_action::NOWAIT; }
-        ;
-
 all_or_any:
           ALL     { $$ = 1; }
         | ANY_SYM { $$ = 0; }
@@ -7723,21 +7674,6 @@ table_list:
           }
         ;
 
-table_alias_ref_list:
-          table_ident_opt_wild
-          {
-            $$.init(YYMEM_ROOT);
-            if ($$.push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | table_alias_ref_list ',' table_ident_opt_wild
-          {
-            $$= $1;
-            if ($$.push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
 if_exists:
           %empty { $$= 0; }
         | IF EXISTS { $$= 1; }
@@ -8143,11 +8079,6 @@ delete_stmt:
           {
             $$= NEW_PTN PT_delete(@$, $1, $2, $3, $5, $7, $8);
           }
-        ;
-
-opt_wild:
-          %empty
-        | '.' '*'
         ;
 
 opt_delete_options:
@@ -9324,23 +9255,6 @@ opt_load_memory:
 
 insert_column:
           simple_ident_nospvar
-        ;
-
-table_ident_opt_wild:
-          ident opt_wild
-          {
-            $$= NEW_PTN Table_ident(to_lex_cstring($1));
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | ident '.' ident opt_wild
-          {
-            $$= NEW_PTN Table_ident(YYTHD->get_protocol(),
-                                    to_lex_cstring($1),
-                                    to_lex_cstring($3), 0);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
         ;
 
 TEXT_STRING_hash:

@@ -6,5 +6,6 @@ from metasequoia_sql.ast.clause.group_by_clause import *
 from metasequoia_sql.ast.clause.index_hint_clause import *
 from metasequoia_sql.ast.clause.into_clause import *
 from metasequoia_sql.ast.clause.limit_clause import *
+from metasequoia_sql.ast.clause.locking_clause import *
 from metasequoia_sql.ast.clause.order_by_clause import *
 from metasequoia_sql.ast.clause.over_clause import *
