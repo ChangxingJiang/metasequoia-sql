@@ -38,7 +38,7 @@ IDENT_2 = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["ident", TType.OPERATOR_DOT, "ident"],
-            action=lambda x: ast.Ident2D(value1=x[0], value2=x[2])
+            action=lambda x: ast.Ident2D(value1=x[0].get_str_value(), value2=x[2].get_str_value())
         ),
     ]
 )
@@ -49,12 +49,28 @@ IDENT_3 = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["ident", TType.OPERATOR_DOT, "ident", TType.OPERATOR_DOT, "ident"],
-            action=lambda x: ast.Ident3D(value1=x[0], value2=x[2], value3=x[4])
+            action=lambda x: ast.Ident3D(value1=x[0].get_str_value(), value2=x[2].get_str_value(),
+                                         value3=x[4].get_str_value())
         ),
     ]
 )
 
-# 通用通配符（`ident` 或 `ident.ident` 或 `ident.ident.ident`）
+# 表标识符（`ident` 或 `ident.ident`）
+TABLE_IDENT = ms_parser.create_group(
+    name="table_ident",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident"],
+            action=lambda x: ast.TableIdent(schema_name=None, table_name=x[0].get_str_value())
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_2"],
+            action=lambda x: ast.TableIdent(schema_name=x[0].value1, table_name=x[0].value2)
+        )
+    ]
+)
+
+# 通用标识符（`ident` 或 `ident.ident` 或 `ident.ident.ident`）
 SIMPLE_IDENT = ms_parser.create_group(
     name="simple_ident",
     rules=[

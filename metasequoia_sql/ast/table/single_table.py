@@ -7,7 +7,7 @@ from typing import List, Optional, TYPE_CHECKING
 from metasequoia_sql.ast.base import Expression, Table
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.basic.ident import Ident
+    from metasequoia_sql.ast.basic.ident import TableIdent
     from metasequoia_sql.ast.clause.index_hint_clause import IndexHint
 
 __all__ = [
@@ -20,7 +20,7 @@ class SingleTable(Table):
 
     __slots__ = ["_table_ident", "_use_partition", "_table_alias", "_index_hints_list"]
 
-    def __init__(self, table_ident: "Ident",
+    def __init__(self, table_ident: "TableIdent",
                  use_partition: Optional[List[Expression]],
                  table_alias: Optional[str],
                  index_hints_list: List["IndexHint"]):
@@ -30,7 +30,7 @@ class SingleTable(Table):
         self._index_hints_list = index_hints_list
 
     @property
-    def table_ident(self) -> "Ident":
+    def table_ident(self) -> "TableIdent":
         return self._table_ident
 
     @property

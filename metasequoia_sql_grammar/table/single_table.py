@@ -32,7 +32,7 @@ SINGLE_TABLE = ms_parser.create_group(
     name="single_table",
     rules=[
         ms_parser.create_rule(
-            symbols=["ident", "opt_partition_clause", "opt_table_alias", "opt_index_hint_list"],
+            symbols=["table_ident", "opt_partition_clause", "opt_table_alias", "opt_index_hint_list"],
             action=lambda x: ast.SingleTable(table_ident=x[0], use_partition=x[1], table_alias=x[2],
                                              index_hints_list=x[3])
         )

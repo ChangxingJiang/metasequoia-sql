@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.into_clause import IntoClause
     from metasequoia_sql.ast.clause.group_by_clause import GroupByClause
     from metasequoia_sql.ast.clause.over_clause import Window
-    from metasequoia_sql.ast.basic.ident import Ident
+    from metasequoia_sql.ast.basic.ident import TableIdent
     from metasequoia_sql.ast.expression.general_expression import Row
 
 __all__ = [
@@ -119,9 +119,9 @@ class ExplicitTable(Query):
 
     __slots__ = ["_table_ident"]
 
-    def __init__(self, table_ident: "Ident"):
+    def __init__(self, table_ident: "TableIdent"):
         self._table_ident = table_ident
 
     @property
-    def table_ident(self) -> "Ident":
+    def table_ident(self) -> "TableIdent":
         return self._table_ident

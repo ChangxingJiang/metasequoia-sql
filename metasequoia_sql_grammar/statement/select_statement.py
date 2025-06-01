@@ -214,7 +214,7 @@ EXPLICIT_TABLE = ms_parser.create_group(
     name="explicit_table",
     rules=[
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_TABLE, "ident"],
+            symbols=[TType.KEYWORD_TABLE, "table_ident"],
             action=lambda x: ast.ExplicitTable(table_ident=x[1])
         )
     ]
