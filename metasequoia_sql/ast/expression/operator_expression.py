@@ -10,6 +10,7 @@ from metasequoia_sql.ast.base import BinaryExpression, Expression, TernaryExpres
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.ident import Ident
     from metasequoia_sql.ast.phrase.time_interval import TimeInterval
+    from metasequoia_sql.ast.statement.select_statement import QueryExpression
 
 __all__ = [
     "EnumOperatorCompare",
@@ -40,6 +41,9 @@ __all__ = [
     "OperatorIsNull",
     "OperatorIsNotNull",
     "OperatorCompare",
+    "OperatorCompareAllOrAnyBase",
+    "OperatorCompareAll",
+    "OperatorCompareAny",
     "OperatorOr",
     "OperatorXor",
     "OperatorAnd",
@@ -58,6 +62,8 @@ __all__ = [
     "OperatorMatch",
     "OperatorBinary",
     "OperatorJsonSeparator",
+    "OperatorInSubSelect",
+    "OperatorNotInSubSelect",
     "OperatorInValues",
     "OperatorNotInValues",
 ]
@@ -273,6 +279,37 @@ class OperatorCompare(BinaryExpression):
         return self._operator
 
 
+class OperatorCompareAllOrAnyBase(Expression):
+    """内置 compare_operator ALL 运算符或 compare_operator ANY 运算符"""
+
+    __slots__ = ["_operand", "_operator", "_subquery_expression"]
+
+    def __init__(self, operand: Expression, operator: EnumOperatorCompare, subquery_expression: "QueryExpression"):
+        self._operand = operand
+        self._operator = operator
+        self._subquery_expression = subquery_expression
+
+    @property
+    def operand(self) -> Expression:
+        return self._operand
+
+    @property
+    def operator(self) -> EnumOperatorCompare:
+        return self._operator
+
+    @property
+    def subquery_expression(self) -> "QueryExpression":
+        return self._subquery_expression
+
+
+class OperatorCompareAll(OperatorCompareAllOrAnyBase):
+    """内置 compare_operator ALL 运算符（与子查询中的所有值比较）"""
+
+
+class OperatorCompareAny(OperatorCompareAllOrAnyBase):
+    """内置 compare_operator Any 运算符（与子查询中的所有值比较）"""
+
+
 class OperatorOr(BinaryExpression):
     """内置函数：逻辑或
 
@@ -439,6 +476,42 @@ class OperatorJsonSeparator(Expression):
     @property
     def is_unquoted(self) -> bool:
         return self._is_unquoted
+
+
+class OperatorInSubSelect(Expression):
+    """内置 IN 子查询运算符（判断目标值是否在子查询结果集中存在）"""
+
+    __slots__ = ["_operand", "_subquery_expression"]
+
+    def __init__(self, operand: Expression, subquery_expression: "QueryExpression"):
+        self._operand = operand
+        self._subquery_expression = subquery_expression
+
+    @property
+    def operand(self) -> Expression:
+        return self._operand
+
+    @property
+    def subquery_expression(self) -> "QueryExpression":
+        return self._subquery_expression
+
+
+class OperatorNotInSubSelect(Expression):
+    """内置 NOT IN 子查询运算符（判断目标值是否在子查询结果集中存在）"""
+
+    __slots__ = ["_operand", "_subquery_expression"]
+
+    def __init__(self, operand: Expression, subquery_expression: "QueryExpression"):
+        self._operand = operand
+        self._subquery_expression = subquery_expression
+
+    @property
+    def operand(self) -> Expression:
+        return self._operand
+
+    @property
+    def subquery_expression(self) -> "QueryExpression":
+        return self._subquery_expression
 
 
 class OperatorInValues(Expression):

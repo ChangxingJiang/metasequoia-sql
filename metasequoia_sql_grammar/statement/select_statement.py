@@ -29,11 +29,15 @@ __all__ = [
     "QUERY_PRIMARY",
 
     # 中级查询
-    "QUERY_SECONDARY",
+    "QUERY_EXPRESSION_BODY",
     "UNION_OPTION",
 
     # 高级查询
-    "QUERY_EXPRESSION"
+    "QUERY_EXPRESSION_BARE",
+
+    # 查询表达式
+    "QUERY_EXPRESSION",
+    "QUERY_EXPRESSION_PARENS",
 ]
 
 # 简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）
@@ -244,11 +248,16 @@ QUERY_PRIMARY = ms_parser.create_group(
 )
 
 # 中级查询（在初级查询的基础上，包含 `UNION`、`EXCEPT` 或 `INTERSECT`）
-QUERY_SECONDARY = ms_parser.create_group(
+QUERY_EXPRESSION_BODY = ms_parser.create_group(
     name="query_expression_body",
     rules=[
         ms_parser.create_rule(
             symbols=["query_primary"]
+        ),
+        ms_parser.create_rule(
+            symbols=["query_expression_parens"],
+            action=lambda x: x[0],
+            sr_priority_as=TType.SUBQUERY_AS_EXPR
         ),
         ms_parser.create_rule(
             symbols=["query_expression_body", TType.KEYWORD_UNION, "union_option", "query_expression_body"],
@@ -285,12 +294,42 @@ UNION_OPTION = ms_parser.create_group(
 )
 
 # 高级查询（在中级查询的基础上，包含 `WITH`、`ORDER BY` 和 `LIMIT` 子句）
-QUERY_EXPRESSION = ms_parser.create_group(
-    name="query_expression",
+QUERY_EXPRESSION_BARE = ms_parser.create_group(
+    name="query_expression_bare",
     rules=[
         ms_parser.create_rule(
             symbols=["query_expression_body", "opt_order_by_clause", "opt_limit_clause"],
             action=lambda x: ast.QueryExpression(query_body=x[0], order_by_clause=x[1], limit_clause=x[2])
+        )
+    ]
+)
+
+# 查询表达式（在高级查询的基础上，包含可选的锁指定子句）
+QUERY_EXPRESSION = ms_parser.create_group(
+    name="query_expression",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["query_expression_bare"],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=["query_expression_bare", "locking_clause_list"],
+            action=lambda x: x[0].set_locking_clause(locking_clause_list=x[1])
+        )
+    ]
+)
+
+# 嵌套任意层括号的查询表达式
+QUERY_EXPRESSION_PARENS = ms_parser.create_group(
+    name="query_expression_parens",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "query_expression_parens", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "query_expression", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
         )
     ]
 )

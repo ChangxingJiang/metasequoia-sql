@@ -2,9 +2,12 @@
 表达式相关抽象语法树节点
 """
 
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Expression, Node
+
+if TYPE_CHECKING:
+    from metasequoia_sql.ast.statement.select_statement import QueryExpression
 
 __all__ = [
     "UdfExpression",
@@ -16,6 +19,8 @@ __all__ = [
     "ExpressionWithAlias",
     "Wild",
     "DefaultValue",
+    "SingleRowSubSelect",
+    "ExistsSubSelect",
 ]
 
 
@@ -158,3 +163,29 @@ class Wild(Expression):
 
 class DefaultValue(Expression):
     """DEFAULT 关键字表示的默认值"""
+
+
+class SingleRowSubSelect(Expression):
+    """单行子查询表达式"""
+
+    __slots__ = ["_query_expression"]
+
+    def __init__(self, query_expression: "QueryExpression"):
+        self._query_expression = query_expression
+
+    @property
+    def query_expression(self) -> "QueryExpression":
+        return self._query_expression
+
+
+class ExistsSubSelect(Expression):
+    """存在子查询表达式"""
+
+    __slots__ = ["_query_expression"]
+
+    def __init__(self, query_expression: "QueryExpression"):
+        self._query_expression = query_expression
+
+    @property
+    def query_expression(self) -> "QueryExpression":
+        return self._query_expression

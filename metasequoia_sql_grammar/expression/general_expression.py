@@ -30,6 +30,7 @@ __all__ = [
     "OPT_EXPR_OR_DEFAULT_LIST",
     "EXPR_OR_DEFAULT_LIST",
     "EXPR_OR_DEFAULT",
+    "SUBQUERY",
 ]
 
 # 比较运算符
@@ -124,7 +125,10 @@ SIMPLE_EXPR = ms_parser.create_group(
             action=lambda x: ast.OperatorTruthTransform(operand=x[1]),
             sr_priority_as=TType.NEG
         ),
-        # TODO : row_subquery
+        ms_parser.create_rule(
+            symbols=["subquery"],
+            action=lambda x: ast.SingleRowSubSelect(query_expression=x[0])
+        ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
             action=lambda x: x[1]
@@ -138,7 +142,10 @@ SIMPLE_EXPR = ms_parser.create_group(
                      TType.OPERATOR_RPAREN],
             action=lambda x: ast.Row(value_list=[x[2]] + x[4])
         ),
-        # TODO : EXISTS table_subquery
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXISTS, "subquery"],
+            action=lambda x: ast.ExistsSubSelect(query_expression=x[1])
+        ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LBRACE, "ident", "expr", TType.OPERATOR_RBRACE],
             action=lambda x: ast.OdbcDate(odbc_type=x[1].get_str_value(), odbc_value=x[2])
@@ -292,8 +299,14 @@ BINARY_EXPR = ms_parser.create_group(
 PREDICATE_EXPR = ms_parser.create_group(
     name="predicate_expr",
     rules=[
-        # TODO : bit_expr IN_SYM table_subquery
-        # TODO : bit_expr not IN_SYM table_subquery
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.KEYWORD_IN, "subquery"],
+            action=lambda x: ast.OperatorInSubSelect(operand=x[0], subquery_expression=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_IN, "subquery"],
+            action=lambda x: ast.OperatorNotInSubSelect(operand=x[0], subquery_expression=x[2])
+        ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
             action=lambda x: ast.OperatorInValues(operand=x[0], value_list=[x[3]])
@@ -383,7 +396,16 @@ BOOL_EXPR = ms_parser.create_group(
             symbols=["bool_expr", "operator_compare", "predicate_expr"],
             action=lambda x: ast.OperatorCompare(left_operand=x[0], right_operand=x[2], operator=x[1])
         ),
-        # TODO : bool_pri comp_op all_or_any table_subquery %prec EQ
+        ms_parser.create_rule(
+            symbols=["bool_expr", "operator_compare", TType.KEYWORD_ALL, "subquery"],
+            action=lambda x: ast.OperatorCompareAll(operand=x[0], operator=x[1], subquery_expression=x[3]),
+            sr_priority_as=TType.OPERATOR_EQ
+        ),
+        ms_parser.create_rule(
+            symbols=["bool_expr", "operator_compare", TType.KEYWORD_ANY, "subquery"],
+            action=lambda x: ast.OperatorCompareAny(operand=x[0], operator=x[1], subquery_expression=x[3]),
+            sr_priority_as=TType.OPERATOR_EQ
+        ),
         ms_parser.create_rule(
             symbols=["predicate_expr"],
             sr_priority_as=TType.OPERATOR_COLON_EQ
@@ -685,6 +707,18 @@ EXPR_OR_DEFAULT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DEFAULT],
             action=lambda _: ast.DefaultValue()
+        )
+    ]
+)
+
+# 子查询表达式
+SUBQUERY = ms_parser.create_group(
+    name="subquery",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["query_expression_parens"],
+            action=lambda x: x[0],
+            sr_priority_as=TType.SUBQUERY_AS_EXPR
         )
     ]
 )

@@ -7228,17 +7228,6 @@ query_expression:
           }
         ;
 
-query_expression_parens:
-          '(' query_expression_parens ')'
-          { $$ = $2;
-            if ($$ != nullptr) $$->m_pos = @$;
-          }
-        | '(' query_expression_with_opt_locking_clauses')'
-          { $$ = $2;
-            if ($$ != nullptr) $$->m_pos = @$;
-          }
-        ;
-
 all_or_any:
           ALL     { $$ = 1; }
         | ANY_SYM { $$ = 0; }
@@ -7888,14 +7877,6 @@ insert_values:
           }
         ;
 
-query_expression_with_opt_locking_clauses:
-          query_expression                      { $$ = $1; }
-        | query_expression locking_clause_list
-          {
-            $$ = NEW_PTN PT_locking(@$, $1, $2);
-          }
-        ;
-
 value_or_values:
           VALUE_SYM
         | VALUES
@@ -8191,7 +8172,6 @@ show_columns_stmt:
           opt_db                /* 6 */
           opt_wild_or_where     /* 7 */
           {
-            // TODO: error if table_ident is <db>.<table> and opt_db is set.
             if ($6)
               $5->change_db($6);
 
@@ -8248,7 +8228,6 @@ show_keys_stmt:
           opt_db                /* #6 */
           opt_where_clause      /* #7 */
           {
-            // TODO: error if table_ident is <db>.<table> and opt_db is set.
             if ($6)
               $5->change_db($6);
 
@@ -10845,25 +10824,6 @@ release:
           }
         ;
 
-/*
-   UNIONS : glue selects together
-*/
-
-row_subquery:
-          subquery
-        ;
-
-table_subquery:
-          subquery
-        ;
-
-subquery:
-          query_expression_parens %prec SUBQUERY_AS_EXPR
-          {
-            $$= NEW_PTN PT_subquery(@$, $1);
-          }
-        ;
-
 /**************************************************************************
 
  CREATE VIEW | TRIGGER | PROCEDURE statements.
@@ -11029,9 +10989,6 @@ view_query_block:
               Backup it and clean the table list for the processing of
               the query expression and push `v' back to the beginning of the
               m_table_list finally.
-
-              @todo: Don't save the CREATE destination table in
-                     Query_block::m_table_list and remove this backup & restore.
 
               The following work only with the local list, the global list
               is created correctly in this case
