@@ -12,10 +12,12 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.group_by_clause import GroupByClause
     from metasequoia_sql.ast.clause.over_clause import Window
     from metasequoia_sql.ast.basic.ident import Ident
+    from metasequoia_sql.ast.expression.general_expression import Row
 
 __all__ = [
     "SelectOption",
     "SimpleQuery",
+    "TableValueConstructor",
     "ExplicitTable",
 ]
 
@@ -36,7 +38,7 @@ class SelectOption(IntFlag):
 
 
 class SimpleQuery(Query):
-    """基础查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）"""
+    """简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）"""
 
     __slots__ = ["_select_option", "_select_item_list", "_into_clause", "_from_clause", "_where_clause",
                  "_group_by_clause", "_having_clause", "_window_clause", "_qualify_clause"]
@@ -97,6 +99,19 @@ class SimpleQuery(Query):
     @property
     def quality_clause(self) -> Optional[Expression]:
         return self._qualify_clause
+
+
+class TableValueConstructor(Query):
+    """通过值列表构造的表"""
+
+    __slots__ = ["_row_list"]
+
+    def __init__(self, row_list: List["Row"]):
+        self._row_list = row_list
+
+    @property
+    def row_list(self) -> List["Row"]:
+        return self._row_list
 
 
 class ExplicitTable(Query):

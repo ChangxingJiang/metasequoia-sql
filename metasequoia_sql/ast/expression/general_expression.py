@@ -15,6 +15,7 @@ __all__ = [
     "TableWild",
     "ExpressionWithAlias",
     "Wild",
+    "DefaultValue",
 ]
 
 
@@ -153,3 +154,7 @@ class ExpressionWithAlias(Expression):
 
 class Wild(Expression):
     """通配符"""
+
+
+class DefaultValue(Expression):
+    """DEFAULT 关键字表示的默认值"""

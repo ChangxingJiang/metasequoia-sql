@@ -27,6 +27,9 @@ __all__ = [
     "OPT_KEYWORD_ARRAY",
     "OPT_KEYWORD_INTERVAL",
     "WHEN_LIST",
+    "OPT_EXPR_OR_DEFAULT_LIST",
+    "EXPR_OR_DEFAULT_LIST",
+    "EXPR_OR_DEFAULT",
 ]
 
 # 比较运算符
@@ -643,5 +646,45 @@ OPT_CASE_ELSE = ms_parser.create_group(
             action=lambda x: x[1]
         ),
         ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
+# 可选的一般表达式或 `DEFAULT` 关键字的列表
+OPT_EXPR_OR_DEFAULT_LIST = ms_parser.create_group(
+    name="opt_expr_or_default_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr_or_default_list"]
+        ),
+        ms_parser.template.group.EMPTY_LIST
+    ]
+)
+
+# 一般表达式或 `DEFAULT` 关键字的列表
+EXPR_OR_DEFAULT_LIST = ms_parser.create_group(
+    name="expr_or_default_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr_or_default_list", TType.OPERATOR_COMMA, "expr_or_default"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["expr_or_default"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 一般表达式或 `DEFAULT 关键字
+EXPR_OR_DEFAULT = ms_parser.create_group(
+    name="expr_or_default",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT],
+            action=lambda _: ast.DefaultValue()
+        )
     ]
 )

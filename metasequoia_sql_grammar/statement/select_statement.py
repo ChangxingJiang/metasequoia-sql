@@ -8,6 +8,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    # 初级查询的第 1 种结构：简单查询
     "SIMPLE_QUERY",
     "OPT_SELECT_OPTION_LIST",
     "SELECT_OPTION_LIST",
@@ -15,10 +16,20 @@ __all__ = [
     "SELECT_ITEM_LIST",
     "SELECT_ITEM",
     "TABLE_WILD",
+
+    # 初级查询的第 2 种结构：值列表构造
+    "TABLE_VALUE_CONSTRUCTOR",
+    "ROW_VALUE_EXPLICIT_LIST",
+    "ROW_VALUE_EXPLICIT",
+
+    # 初级查询的第 3 种结构：表名称指定
     "EXPLICIT_TABLE",
+
+    # 初级查询
+    "QUERY_PRIMARY",
 ]
 
-# 基础查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）
+# 简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）
 SIMPLE_QUERY = ms_parser.create_group(
     name="simple_query",
     rules=[
@@ -161,6 +172,43 @@ TABLE_WILD = ms_parser.create_group(
     ]
 )
 
+# 通过值列表构造的表
+TABLE_VALUE_CONSTRUCTOR = ms_parser.create_group(
+    name="table_value_constructor",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_VALUES, "row_value_explicit_list"],
+            action=lambda x: ast.TableValueConstructor(row_list=x[1])
+        )
+    ]
+)
+
+# `ROW` 关键字引导的值列表的列表
+ROW_VALUE_EXPLICIT_LIST = ms_parser.create_group(
+    name="row_value_explicit_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["row_value_explicit_list", TType.OPERATOR_COMMA, "row_value_explicit"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["row_value_explicit"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# `ROW` 关键字引导的值列表
+ROW_VALUE_EXPLICIT = ms_parser.create_group(
+    name="row_value_explicit",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ROW, TType.OPERATOR_LPAREN, "opt_expr_or_default_list", TType.OPERATOR_RPAREN],
+            action=lambda x: ast.Row(value_list=x[2])
+        )
+    ]
+)
+
 # 明确指定表的查询
 EXPLICIT_TABLE = ms_parser.create_group(
     name="explicit_table",
@@ -168,6 +216,22 @@ EXPLICIT_TABLE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_TABLE, "ident"],
             action=lambda x: ast.ExplicitTable(table_ident=x[1])
+        )
+    ]
+)
+
+# 初级查询
+QUERY_PRIMARY = ms_parser.create_group(
+    name="query_primary",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["simple_query"]
+        ),
+        ms_parser.create_rule(
+            symbols=["table_value_constructor"]
+        ),
+        ms_parser.create_rule(
+            symbols=["explicit_table"]
         )
     ]
 )

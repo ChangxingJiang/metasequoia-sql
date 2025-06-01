@@ -7265,35 +7265,6 @@ query_expression_parens:
           }
         ;
 
-query_primary:
-          query_specification
-          {
-            // Bison doesn't get polymorphism.
-            $$= $1;
-          }
-        | table_value_constructor
-          {
-            $$= NEW_PTN PT_table_value_constructor(@$, $1);
-          }
-        | explicit_table
-          {
-            // Pass empty position because asterisk is not user-supplied.
-            auto item_list= NEW_PTN PT_select_item_list(POS());
-            auto asterisk= NEW_PTN Item_asterisk(POS(), nullptr, nullptr);
-            if (item_list == nullptr || asterisk == nullptr ||
-                item_list->push_back(asterisk))
-              MYSQL_YYABORT;
-            $$= NEW_PTN PT_explicit_table(@$, {}, item_list, $1);
-          }
-        ;
-
-table_value_constructor:
-          VALUES values_row_list
-          {
-            $$= $2;
-          }
-        ;
-
 locking_clause_list:
           locking_clause_list locking_clause
           {
@@ -8035,22 +8006,6 @@ values_list:
           }
         ;
 
-
-values_row_list:
-          values_row_list ',' row_value_explicit
-          {
-            if ($$->push_back(&$3->value))
-              MYSQL_YYABORT;
-            $$->m_pos = @$;
-          }
-        | row_value_explicit
-          {
-            $$= NEW_PTN PT_insert_values_list(@$, YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back(&$1->value))
-              MYSQL_YYABORT;
-          }
-        ;
-
 equal:
           EQ
         | SET_VAR
@@ -8063,44 +8018,6 @@ opt_equal:
 
 row_value:
           '(' opt_values ')' { $$= $2; }
-        ;
-
-row_value_explicit:
-          ROW_SYM '(' opt_values ')' { $$= $3; }
-        ;
-
-opt_values:
-          %empty
-          {
-            $$= NEW_PTN PT_item_list(POS());
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | values
-        ;
-
-values:
-          values ','  expr_or_default
-          {
-            if ($1->push_back($3))
-              MYSQL_YYABORT;
-            $$= $1;
-            $$->m_pos = @$;
-          }
-        | expr_or_default
-          {
-            $$= NEW_PTN PT_item_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        ;
-
-expr_or_default:
-          expr
-        | DEFAULT_SYM
-          {
-            $$= NEW_PTN Item_default_value(@$);
-          }
         ;
 
 opt_values_reference:
