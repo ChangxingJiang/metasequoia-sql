@@ -7287,72 +7287,6 @@ query_primary:
           }
         ;
 
-query_specification:
-          SELECT_SYM
-          select_options
-          select_item_list
-          into_clause
-          opt_from_clause
-          opt_where_clause
-          opt_group_clause
-          opt_having_clause
-          opt_window_clause
-          opt_qualify_clause
-          {
-            $$= NEW_PTN PT_query_specification(
-                                      @$,
-                                      $1,  // SELECT_SYM
-                                      $2,  // select_options
-                                      $3,  // select_item_list
-                                      $4,  // into_clause
-                                      $5,  // from
-                                      $6,  // where
-                                      $7,  // group
-                                      $8,  // having
-                                      $9,  // windows
-                                      $10, // qualify
-                                      @5.raw.is_empty()); // implicit FROM
-          }
-        | SELECT_SYM
-          select_options
-          select_item_list
-          opt_from_clause
-          opt_where_clause
-          opt_group_clause
-          opt_having_clause
-          opt_window_clause
-          opt_qualify_clause
-          {
-            $$= NEW_PTN PT_query_specification(
-                                      @$,
-                                      $1,  // SELECT_SYM
-                                      $2,  // select_options
-                                      $3,  // select_item_list
-                                      nullptr,// no INTO clause
-                                      $4,  // from
-                                      $5,  // where
-                                      $6,  // group
-                                      $7,  // having
-                                      $8,  // windows
-                                      $9,  // qualify
-                                      @4.raw.is_empty()); // implicit FROM
-          }
-        ;
-
-opt_from_clause:
-          %empty %prec EMPTY_FROM_CLAUSE { $$.init(YYMEM_ROOT); }
-        | from_clause
-        ;
-
-from_clause:
-          FROM from_tables { $$= $2; }
-        ;
-
-from_tables:
-          DUAL_SYM { $$.init(YYMEM_ROOT); }
-        | table_reference_list
-        ;
-
 table_value_constructor:
           VALUES values_row_list
           {
@@ -7368,36 +7302,6 @@ explicit_table:
                 PT_table_factor_table_ident(@$, $2, nullptr, NULL_CSTR, nullptr);
             if ($$.push_back(table))
               MYSQL_YYABORT; // OOM
-          }
-        ;
-
-select_options:
-          %empty
-          {
-            $$.query_spec_options= 0;
-          }
-        | select_option_list
-        ;
-
-select_option_list:
-          select_option_list select_option
-          {
-            if ($$.merge($1, $2))
-              MYSQL_YYABORT;
-          }
-        | select_option
-        ;
-
-select_option:
-          query_spec_option
-          {
-            $$.query_spec_options= $1;
-          }
-        | SQL_NO_CACHE_SYM
-          {
-            push_deprecated_warn_no_replacement(YYTHD, "SQL_NO_CACHE");
-            /* Ignored since MySQL 8.0. */
-            $$.query_spec_options= 0;
           }
         ;
 
@@ -7448,37 +7352,6 @@ opt_locked_row_action:
 locked_row_action:
           SKIP_SYM LOCKED_SYM { $$= Locked_row_action::SKIP; }
         | NOWAIT_SYM { $$= Locked_row_action::NOWAIT; }
-        ;
-
-select_item_list:
-          select_item_list ',' select_item
-          {
-            if ($1 == nullptr || $1->push_back($3))
-              MYSQL_YYABORT;
-            $$= $1;
-            $$->m_pos = @$;
-          }
-        | select_item
-          {
-            $$= NEW_PTN PT_select_item_list(@$);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        | '*'
-          {
-            Item *item = NEW_PTN Item_asterisk(@$, nullptr, nullptr);
-            $$ = NEW_PTN PT_select_item_list(@$);
-            if ($$ == nullptr || item == nullptr || $$->push_back(item))
-              MYSQL_YYABORT;
-          }
-        ;
-
-select_item:
-          table_wild { $$= $1; }
-        | expr select_alias
-          {
-            $$= NEW_PTN PTI_expr_with_alias(@$, $1, @1.cpp, to_lex_cstring($2));
-          }
         ;
 
 all_or_any:
@@ -9547,20 +9420,6 @@ insert_column:
           simple_ident_nospvar
         ;
 
-table_wild:
-          ident '.' '*'
-          {
-            $$ = NEW_PTN Item_asterisk(@$, nullptr, $1.str);
-          }
-        | ident '.' ident '.' '*'
-          {
-            if (check_and_convert_db_name(&$1, false) != Ident_name_check::OK)
-              MYSQL_YYABORT;
-            auto schema_name = YYCLIENT_NO_SCHEMA ? nullptr : $1.str;
-            $$ = NEW_PTN Item_asterisk(@$, schema_name, $3.str);
-          }
-        ;
-
 table_ident_opt_wild:
           ident opt_wild
           {
@@ -11216,22 +11075,6 @@ subquery:
           {
             $$= NEW_PTN PT_subquery(@$, $1);
           }
-        ;
-
-query_spec_option:
-          STRAIGHT_JOIN       { $$= SELECT_STRAIGHT_JOIN; }
-        | HIGH_PRIORITY       { $$= SELECT_HIGH_PRIORITY; }
-        | DISTINCT            { $$= SELECT_DISTINCT; }
-        | SQL_SMALL_RESULT    { $$= SELECT_SMALL_RESULT; }
-        | SQL_BIG_RESULT      { $$= SELECT_BIG_RESULT; }
-        | SQL_BUFFER_RESULT   { $$= OPTION_BUFFER_RESULT; }
-        | SQL_CALC_FOUND_ROWS {
-            push_warning(YYTHD, Sql_condition::SL_WARNING,
-                         ER_WARN_DEPRECATED_SYNTAX,
-                         ER_THD(YYTHD, ER_WARN_DEPRECATED_SQL_CALC_FOUND_ROWS));
-            $$= OPTION_FOUND_ROWS;
-          }
-        | ALL                 { $$= SELECT_ALL; }
         ;
 
 /**************************************************************************

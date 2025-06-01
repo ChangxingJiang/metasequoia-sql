@@ -15,9 +15,11 @@ from metasequoia_sql_grammar.basic import literal
 from metasequoia_sql_grammar.basic import param
 from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
+from metasequoia_sql_grammar.clause import from_clause
 from metasequoia_sql_grammar.clause import group_by_clause
 from metasequoia_sql_grammar.clause import having_clause
 from metasequoia_sql_grammar.clause import index_hint_clause
+from metasequoia_sql_grammar.clause import into_clause
 from metasequoia_sql_grammar.clause import limit_clause
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
@@ -34,10 +36,11 @@ from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
-from metasequoia_sql_grammar.table import single_table
-from metasequoia_sql_grammar.table import table_function
+from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
+from metasequoia_sql_grammar.table import single_table
+from metasequoia_sql_grammar.table import table_function
 
 
 def build_grammar():
@@ -204,8 +207,10 @@ def build_grammar():
         table_function,  # 生成表函数
 
         # 子句层级
+        from_clause,  # FROM 子句
         group_by_clause,  # GROUP BY 子句
         having_clause,  # HAVING 子句
+        into_clause,  # INTO 子句
         limit_clause,  # LIMIT 子句
         order_by_clause,  # ORDER BY 子句
         over_clause,  # OVER 子句
@@ -215,6 +220,9 @@ def build_grammar():
         where_clause,  # WHERE 子句
         window_clause,  # WINDOW 子句
         index_hint_clause,  # 索引指定子句
+
+        # 语句
+        select_statement,  # SELECT 语句
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))

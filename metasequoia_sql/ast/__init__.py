@@ -2,4 +2,5 @@ from metasequoia_sql.ast.basic import *
 from metasequoia_sql.ast.clause import *
 from metasequoia_sql.ast.expression import *
 from metasequoia_sql.ast.phrase import *
+from metasequoia_sql.ast.statement import *
 from metasequoia_sql.ast.table import *

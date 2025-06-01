@@ -12,6 +12,9 @@ __all__ = [
     "OdbcDate",
     "WhenItem",
     "Case",
+    "TableWild",
+    "ExpressionWithAlias",
+    "Wild",
 ]
 
 
@@ -106,3 +109,47 @@ class Case(Expression):
     @property
     def else_expression(self) -> Expression:
         return self._else_expression
+
+
+class TableWild(Expression):
+    """表中所有字段的通配符
+
+    table_name.*
+    schema_name.table_name.*
+    """
+
+    __slots__ = ["_schema_name", "_table_name"]
+
+    def __init__(self, schema_name: Optional[str], table_name: str):
+        self._schema_name = schema_name
+        self._table_name = table_name
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
+
+    @property
+    def table_name(self) -> Optional[str]:
+        return self._table_name
+
+
+class ExpressionWithAlias(Expression):
+    """包含别名的表达式"""
+
+    __slots__ = ["_expression", "_alias"]
+
+    def __init__(self, expression: Expression, alias: Optional[str]):
+        self._expression = expression
+        self._alias = alias
+
+    @property
+    def expression(self) -> Expression:
+        return self._expression
+
+    @property
+    def alias(self) -> Optional[str]:
+        return self._alias
+
+
+class Wild(Expression):
+    """通配符"""

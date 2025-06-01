@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 __all__ = [
     "FileFieldOption",
     "FileLineOption",
-    "IntoClauseBase",
+    "IntoClause",
     "IntoClauseOutfile",
     "IntoClauseDumpfile",
     "IntoClauseVariable",
@@ -90,11 +90,11 @@ class FileLineOption(Node):
         return self
 
 
-class IntoClauseBase(Node):
+class IntoClause(Node):
     """INTO 子句的抽象类"""
 
 
-class IntoClauseOutfile(IntoClauseBase):
+class IntoClauseOutfile(IntoClause):
     """INTO 子句（导出结果集到外部格式化文件）"""
 
     __slots__ = ["_file_path", "_charset", "_field_option", "_line_option"]
@@ -123,7 +123,7 @@ class IntoClauseOutfile(IntoClauseBase):
         return self._line_option
 
 
-class IntoClauseDumpfile(IntoClauseBase):
+class IntoClauseDumpfile(IntoClause):
     """INTO 子句（导出结果集到外部文件）"""
 
     __slots__ = ["_file_path"]
@@ -136,7 +136,7 @@ class IntoClauseDumpfile(IntoClauseBase):
         return self._file_path
 
 
-class IntoClauseVariable(IntoClauseBase):
+class IntoClauseVariable(IntoClause):
     """INTO 子句（导出结果集到变量）"""
 
     __slots__ = ["_variable_list"]

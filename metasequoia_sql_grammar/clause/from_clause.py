@@ -21,7 +21,7 @@ OPT_FROM_CLAUSE = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[],
-            action=lambda _: [],
+            action=lambda _: None,
             sr_priority_as=TType.EMPTY_FROM_CLAUSE
         )
     ]
