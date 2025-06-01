@@ -2,7 +2,7 @@
 SELECT 语句（select statement）
 """
 
-from enum import IntFlag
+from enum import IntEnum, IntFlag
 from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Expression, Query, Table
@@ -19,6 +19,11 @@ __all__ = [
     "SimpleQuery",
     "TableValueConstructor",
     "ExplicitTable",
+    "UnionOption",
+    "UnionBase",
+    "Union",
+    "Except",
+    "Intersect",
 ]
 
 
@@ -125,3 +130,46 @@ class ExplicitTable(Query):
     @property
     def table_ident(self) -> "TableIdent":
         return self._table_ident
+
+
+class UnionOption(IntEnum):
+    """联合类型"""
+
+    DEFAULT = 0  # %empty
+    DISTINCT = 1  # DISTINCT
+    ALL = 2  # ALL
+
+
+class UnionBase(Query):
+    """联合的抽象类"""
+
+    __slots__ = ["_left_operand", "_union_option", "_right_operand"]
+
+    def __init__(self, left_operand: Query, union_option: UnionOption, right_operand: Query):
+        self._left_operand = left_operand
+        self._union_option = union_option
+        self._right_operand = right_operand
+
+    @property
+    def left_operand(self) -> Query:
+        return self._left_operand
+
+    @property
+    def union_option(self) -> UnionOption:
+        return self._union_option
+
+    @property
+    def right_operand(self) -> Query:
+        return self._right_operand
+
+
+class Union(UnionBase):
+    """UNION 联合"""
+
+
+class Except(UnionBase):
+    """EXCEPT 联合"""
+
+
+class Intersect(UnionBase):
+    """INTERSECT 联合"""

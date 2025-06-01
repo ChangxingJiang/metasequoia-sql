@@ -7228,32 +7228,6 @@ query_expression:
           }
         ;
 
-query_expression_body:
-          query_primary
-          {
-            $$ = {$1, false};
-          }
-        | query_expression_parens %prec SUBQUERY_AS_EXPR
-          {
-            $$ = {$1, true};
-          }
-        | query_expression_body UNION_SYM union_option query_expression_body
-          {
-            $$ = {NEW_PTN PT_union(@$, $1.body, $3, $4.body, $4.is_parenthesized),
-                  false};
-          }
-        | query_expression_body EXCEPT_SYM union_option query_expression_body
-          {
-            $$ = {NEW_PTN PT_except(@$, $1.body, $3, $4.body, $4.is_parenthesized),
-                  false};
-          }
-        | query_expression_body INTERSECT_SYM union_option query_expression_body
-          {
-            $$ = {NEW_PTN PT_intersect(@$, $1.body, $3, $4.body, $4.is_parenthesized),
-                  false};
-          }
-        ;
-
 query_expression_parens:
           '(' query_expression_parens ')'
           { $$ = $2;
@@ -10874,13 +10848,6 @@ release:
 /*
    UNIONS : glue selects together
 */
-
-
-union_option:
-          %empty    { $$=1; }
-        | DISTINCT  { $$=1; }
-        | ALL       { $$=0; }
-        ;
 
 row_subquery:
           subquery
