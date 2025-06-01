@@ -5,7 +5,7 @@ SELECT 语句（select statement）
 from enum import IntFlag
 from typing import List, Optional, TYPE_CHECKING
 
-from metasequoia_sql.ast.base import Expression, Node, Table
+from metasequoia_sql.ast.base import Expression, Query, Table
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.into_clause import IntoClause
@@ -33,7 +33,7 @@ class SelectOption(IntFlag):
     SQL_NO_CACHE = 1 << 8  # SQL_NO_CACHE
 
 
-class SimpleQuery(Node):
+class SimpleQuery(Query):
     """基础查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）"""
 
     __slots__ = ["_select_option", "_select_item_list", "_into_clause", "_from_clause", "_where_clause",

@@ -10,6 +10,7 @@ __all__ = [
     "Node",
     "Expression",
     "Table",
+    "Query",
     "Literal",
     "UnaryExpression",
     "BinaryExpression",
@@ -56,6 +57,10 @@ class Expression(Node, ABC):
 
 class Table(Node, ABC):
     """抽象语法树节点的抽象类：表"""
+
+
+class Query(Node, ABC):
+    """抽象语法树节点的抽象类：查询"""
 
 
 class Literal(Expression, ABC):
