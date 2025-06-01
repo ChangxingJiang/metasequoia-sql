@@ -29,6 +29,7 @@ from metasequoia_sql_grammar.clause import partition_clause
 from metasequoia_sql_grammar.clause import qualify_clause
 from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
+from metasequoia_sql_grammar.clause import with_clause
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
@@ -222,6 +223,7 @@ def build_grammar():
         qualify_clause,  # QUALIFY 子句
         where_clause,  # WHERE 子句
         window_clause,  # WINDOW 子句
+        with_clause,  # WITH 子句
 
         # 语句
         select_statement,  # SELECT 语句

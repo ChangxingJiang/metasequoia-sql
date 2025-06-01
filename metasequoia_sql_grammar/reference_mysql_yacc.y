@@ -7180,59 +7180,6 @@ select_stmt_with_into:
           }
         ;
 
-/**
-  A <query_expression> within parentheses can be used as an <expr>. Now,
-  because both a <query_expression> and an <expr> can appear syntactically
-  within any number of parentheses, we get an ambiguous grammar: Where do the
-  parentheses belong? Techically, we have to tell Bison by which rule to
-  reduce the extra pair of parentheses. We solve it in a somewhat tedious way
-  by defining a query_expression so that it can't have enclosing
-  parentheses. This forces us to be very explicit about exactly where we allow
-  parentheses; while the standard defines only one rule for <query expression>
-  parentheses, we have to do it in several places. But this is a blessing in
-  disguise, as we are able to define our syntax in a more fine-grained manner,
-  and this is necessary in order to support some MySQL extensions, for example
-  as in the last two sub-rules here.
-
-  Even if we define a query_expression not to have outer parentheses, we still
-  get a shift/reduce conflict for the <subquery> rule, but we solve this by
-  using an artifical token SUBQUERY_AS_EXPR that has less priority than
-  parentheses. This ensures that the parser consumes as many parentheses as it
-  can, and only when that fails will it try to reduce, and by then it will be
-  clear from the lookahead token whether we have a subquery or just a
-  query_expression within parentheses. For example, if the lookahead token is
-  UNION it's just a query_expression within parentheses and the parentheses
-  don't mean it's a subquery. If the next token is PLUS, we know it must be an
-  <expr> and the parentheses really mean it's a subquery.
-
-  A word about CTE's: The rules below are duplicated, one with a with_clause
-  and one without, instead of using a single rule with an opt_with_clause. The
-  reason we do this is because it would make Bison try to cram both rules into
-  a single state, where it would have to decide whether to reduce a with_clause
-  before seeing the rest of the input. This way we force Bison to parse the
-  entire query expression before trying to reduce.
-*/
-query_expression:
-          query_expression_body
-          opt_order_clause
-          opt_limit_clause
-          {
-            $$ = NEW_PTN PT_query_expression(@$, $1.body, $2, $3);
-          }
-        | with_clause
-          query_expression_body
-          opt_order_clause
-          opt_limit_clause
-          {
-            $$= NEW_PTN PT_query_expression(@$, $1, $2.body, $3, $4);
-          }
-        ;
-
-all_or_any:
-          ALL     { $$ = 1; }
-        | ANY_SYM { $$ = 0; }
-        ;
-
 derived_table:
           table_subquery opt_table_alias opt_derived_column_list
           {
@@ -7254,64 +7201,6 @@ derived_table:
                          ER_THD(YYTHD, ER_DERIVED_MUST_HAVE_ALIAS), MYF(0));
 
             $$= NEW_PTN PT_derived_table(@$, true, $2, $3, &$4);
-          }
-        ;
-
-with_clause:
-          WITH with_list
-          {
-            $$= NEW_PTN PT_with_clause(@$, $2, false);
-          }
-        | WITH RECURSIVE_SYM with_list
-          {
-            $$= NEW_PTN PT_with_clause(@$, $3, true);
-          }
-        ;
-
-with_list:
-          with_list ',' common_table_expr
-          {
-            if ($1->push_back($3))
-              MYSQL_YYABORT;
-            $$->m_pos = @$;
-          }
-        | common_table_expr
-          {
-            $$= NEW_PTN PT_with_list(@$, YYTHD->mem_root);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;    /* purecov: inspected */
-          }
-        ;
-
-common_table_expr:
-          ident opt_derived_column_list AS table_subquery
-          {
-            LEX_STRING subq_text;
-            subq_text.length= @4.cpp.length();
-            subq_text.str= YYTHD->strmake(@4.cpp.start, subq_text.length);
-            if (subq_text.str == nullptr)
-              MYSQL_YYABORT;   /* purecov: inspected */
-            uint subq_text_offset= @4.cpp.start - YYLIP->get_cpp_buf();
-            $$= NEW_PTN PT_common_table_expr(@$, $1, subq_text, subq_text_offset,
-                                             $4, &$2, YYTHD->mem_root);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;   /* purecov: inspected */
-          }
-        ;
-
-opt_derived_column_list:
-          %empty
-          {
-            /*
-              Because () isn't accepted by the rule of
-              simple_ident_list, we can use an empty array to
-              designates that the parenthesised list was omitted.
-            */
-            $$.init(YYTHD->mem_root);
-          }
-        | '(' simple_ident_list ')'
-          {
-            $$= $2;
           }
         ;
 

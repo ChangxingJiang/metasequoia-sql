@@ -299,7 +299,13 @@ QUERY_EXPRESSION_BARE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["query_expression_body", "opt_order_by_clause", "opt_limit_clause"],
-            action=lambda x: ast.QueryExpression(query_body=x[0], order_by_clause=x[1], limit_clause=x[2])
+            action=lambda x: ast.QueryExpression(with_clause=None, query_body=x[0], order_by_clause=x[1],
+                                                 limit_clause=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=["with_clause", "query_expression_body", "opt_order_by_clause", "opt_limit_clause"],
+            action=lambda x: ast.QueryExpression(with_clause=x[0], query_body=x[1], order_by_clause=x[2],
+                                                 limit_clause=x[3])
         )
     ]
 )

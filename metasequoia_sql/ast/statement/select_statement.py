@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.order_by_clause import OrderByClause
     from metasequoia_sql.ast.clause.limit_clause import LimitClause
     from metasequoia_sql.ast.clause.locking_clause import LockingClause
+    from metasequoia_sql.ast.clause.with_clause import WithClause
 
 __all__ = [
     "SelectOption",
@@ -182,9 +183,10 @@ class Intersect(UnionBase):
 class QueryExpression(Node):
     """查询表达式"""
 
-    __slots__ = ["_query_body", "_order_clause", "_limit_clause", "_locking_clause_list"]
+    __slots__ = ["_with_clause", "_query_body", "_order_clause", "_limit_clause", "_locking_clause_list"]
 
     def __init__(self,
+                 with_clause: Optional["WithClause"],
                  query_body: QueryBody,
                  order_by_clause: Optional["OrderByClause"],
                  limit_clause: Optional["LimitClause"],
@@ -192,10 +194,15 @@ class QueryExpression(Node):
         if locking_clause_list is None:
             locking_clause_list = []
 
+        self._with_clause = with_clause
         self._query_body = query_body
         self._order_clause = order_by_clause
         self._limit_clause = limit_clause
         self._locking_clause_list: List["LockingClause"] = locking_clause_list
+
+    @property
+    def with_clause(self) -> Optional["WithClause"]:
+        return self._with_clause
 
     @property
     def query_body(self) -> QueryBody:

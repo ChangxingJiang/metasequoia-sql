@@ -141,18 +141,30 @@ SIMPLE_IDENT_LIST = ms_parser.create_group(
     ]
 )
 
-# 一般场景标识符的列表
+# 单个标识符（`ident`）的列表
 IDENT_LIST = ms_parser.create_group(
     name="ident_list",
     rules=[
         ms_parser.create_rule(
             symbols=["ident_list", TType.OPERATOR_COMMA, "ident"],
-            action=ms_parser.template.action.LIST_APPEND_2
+            action=lambda x: x[0] + [x[2].get_str_value()]
         ),
         ms_parser.create_rule(
             symbols=["ident"],
-            action=ms_parser.template.action.LIST_INIT_0
+            action=lambda x: [x[0].get_str_value()]
         )
+    ]
+)
+
+# 可选的括号嵌套的单个标识符（`ident`）的列表
+OPT_IDENT_LIST_PARENS = ms_parser.create_group(
+    name="opt_ident_list_parens",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "ident_list", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        ),
+        ms_parser.template.group.EMPTY_LIST
     ]
 )
 
