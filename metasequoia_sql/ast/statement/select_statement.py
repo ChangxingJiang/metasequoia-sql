@@ -11,10 +11,12 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.into_clause import IntoClause
     from metasequoia_sql.ast.clause.group_by_clause import GroupByClause
     from metasequoia_sql.ast.clause.over_clause import Window
+    from metasequoia_sql.ast.basic.ident import Ident
 
 __all__ = [
     "SelectOption",
     "SimpleQuery",
+    "ExplicitTable",
 ]
 
 
@@ -95,3 +97,16 @@ class SimpleQuery(Query):
     @property
     def quality_clause(self) -> Optional[Expression]:
         return self._qualify_clause
+
+
+class ExplicitTable(Query):
+    """明确指定表的查询"""
+
+    __slots__ = ["_table_ident"]
+
+    def __init__(self, table_ident: "Ident"):
+        self._table_ident = table_ident
+
+    @property
+    def table_ident(self) -> "Ident":
+        return self._table_ident

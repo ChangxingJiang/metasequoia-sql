@@ -15,6 +15,7 @@ __all__ = [
     "SELECT_ITEM_LIST",
     "SELECT_ITEM",
     "TABLE_WILD",
+    "EXPLICIT_TABLE",
 ]
 
 # 基础查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）
@@ -156,6 +157,17 @@ TABLE_WILD = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["ident", TType.OPERATOR_DOT, "ident", TType.OPERATOR_DOT, TType.OPERATOR_STAR],
             action=lambda x: ast.TableWild(schema_name=x[0].get_str_value(), table_name=x[2].get_str_value())
+        )
+    ]
+)
+
+# 明确指定表的查询
+EXPLICIT_TABLE = ms_parser.create_group(
+    name="explicit_table",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE, "ident"],
+            action=lambda x: ast.ExplicitTable(table_ident=x[1])
         )
     ]
 )

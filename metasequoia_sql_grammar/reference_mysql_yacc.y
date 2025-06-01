@@ -7294,17 +7294,6 @@ table_value_constructor:
           }
         ;
 
-explicit_table:
-          TABLE_SYM table_ident
-          {
-            $$.init(YYMEM_ROOT);
-            auto table= NEW_PTN
-                PT_table_factor_table_ident(@$, $2, nullptr, NULL_CSTR, nullptr);
-            if ($$.push_back(table))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
 locking_clause_list:
           locking_clause_list locking_clause
           {
