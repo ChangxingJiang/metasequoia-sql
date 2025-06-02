@@ -74,8 +74,12 @@ TABLE_FACTOR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["single_table_parens"]
         ),
-        # TODO : derived_table
-        # TODO : joined_table_parens
+        ms_parser.create_rule(
+            symbols=["derived_table"]
+        ),
+        ms_parser.create_rule(
+            symbols=["joined_table_parens"]
+        ),
         ms_parser.create_rule(
             symbols=["table_reference_list_parens"]
         ),

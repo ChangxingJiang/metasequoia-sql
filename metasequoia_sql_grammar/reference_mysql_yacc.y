@@ -7180,30 +7180,6 @@ select_stmt_with_into:
           }
         ;
 
-derived_table:
-          table_subquery opt_table_alias opt_derived_column_list
-          {
-            /*
-              The alias is actually not optional at all, but being MySQL we
-              are friendly and give an informative error message instead of
-              just 'syntax error'.
-            */
-            if ($2.str == nullptr)
-              my_message(ER_DERIVED_MUST_HAVE_ALIAS,
-                         ER_THD(YYTHD, ER_DERIVED_MUST_HAVE_ALIAS), MYF(0));
-
-            $$= NEW_PTN PT_derived_table(@$, false, $1, $2, &$3);
-          }
-        | LATERAL_SYM table_subquery opt_table_alias opt_derived_column_list
-          {
-            if ($3.str == nullptr)
-              my_message(ER_DERIVED_MUST_HAVE_ALIAS,
-                         ER_THD(YYTHD, ER_DERIVED_MUST_HAVE_ALIAS), MYF(0));
-
-            $$= NEW_PTN PT_derived_table(@$, true, $2, $3, &$4);
-          }
-        ;
-
 /*
   Order by statement in ALTER TABLE
 */
