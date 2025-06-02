@@ -5,7 +5,7 @@ SELECT 语句（select statement）
 from enum import IntEnum, IntFlag
 from typing import List, Optional, TYPE_CHECKING
 
-from metasequoia_sql.ast.base import Expression, Node, QueryBody, Table
+from metasequoia_sql.ast.base import Expression, Node, QueryBody, Statement, Table
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.into_clause import IntoClause
@@ -226,7 +226,7 @@ class QueryExpression(Node):
         return self
 
 
-class SelectStatement(Node):
+class SelectStatement(Statement):
     """SELECT 语句
 
     【不兼容】不允许在 `SELECT` 语句的最外层添加 `INTO` 子句，仅允许在`FROM` 子句前添加 `INTO` 子句。

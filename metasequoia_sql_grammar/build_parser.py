@@ -7,6 +7,7 @@
 import metasequoia_parser as ms_parser
 
 from metasequoia_sql.terminal import SqlTerminalType as TType
+from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
@@ -48,18 +49,9 @@ from metasequoia_sql_grammar.table import table_function
 
 def build_grammar():
     grammar_builder = ms_parser.create_grammar(
-        groups=[
-            ms_parser.create_group(
-                name="entry",
-                rules=[
-                    # ms_parser.create_rule(symbols=["simple_ident_list"]),
-                    # ms_parser.create_rule(symbols=["text_literal"]),
-                    ms_parser.create_rule(symbols=["function_expression"]),
-                ]
-            )
-        ],
+        groups=[],
         terminal_type_enum=TType,
-        start="entry",
+        start="start_entry",
         sr_priority=[
             ms_parser.create_sr_priority(
                 symbols=[TType.KEYWORD_INTO],
@@ -229,6 +221,9 @@ def build_grammar():
 
         # 语句
         select_statement,  # SELECT 语句
+
+        # 顶层节点
+        top_level_node
     ]:
         for group_name in module.__all__:
             grammar_builder.group_append(getattr(module, group_name))
