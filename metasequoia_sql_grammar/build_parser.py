@@ -237,7 +237,7 @@ if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(__file__))
     parser_path = os.path.join(repository_path, "metasequoia_sql", "syntax", "parser.py")
 
-    parser = ms_parser.parser.ParserLALR1(build_grammar())
+    parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True)
     source_code = ms_parser.compiler.compile_lalr1(parser, import_list=[
         "from metasequoia_sql import ast"
     ])
