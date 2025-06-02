@@ -69,7 +69,7 @@ TABLE_FACTOR = ms_parser.create_group(
     name="table_factor",
     rules=[
         ms_parser.create_rule(
-            symbols=["simple_table"]
+            symbols=["single_table"]
         ),
         ms_parser.create_rule(
             symbols=["single_table_parens"]

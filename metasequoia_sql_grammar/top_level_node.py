@@ -9,6 +9,8 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "START_ENTRY",
     "SQL_STATEMENT_ENTRY",
+    "SQL_STATEMENT",
+    "OPT_END_OF_INPUT",
 ]
 
 # 入口语义组 TODO 待补充其他备选规则
@@ -45,7 +47,7 @@ SQL_STATEMENT = ms_parser.create_group(
     name="sql_statement",
     rules=[
         ms_parser.create_rule(
-            symbols=["select_stmt"]
+            symbols=["select_statement"]
         )
     ]
 )

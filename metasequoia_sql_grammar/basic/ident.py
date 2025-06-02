@@ -18,6 +18,7 @@ __all__ = [
     "SIMPLE_IDENT",
     "SIMPLE_IDENT_LIST",
     "IDENT_LIST",
+    "OPT_IDENT_LIST_PARENS",
     "OPT_IDENT",
 ]
 
@@ -83,7 +84,8 @@ TABLE_IDENT_OPT_WILD_LIST = ms_parser.create_group(
             action=ms_parser.template.action.LIST_APPEND_2
         ),
         ms_parser.create_rule(
-            symbols=[""]
+            symbols=["table_ident_opt_wild"],
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )

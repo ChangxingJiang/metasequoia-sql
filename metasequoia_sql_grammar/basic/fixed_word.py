@@ -14,6 +14,7 @@ __all__ = [
     "KEYWORD_NCHAR",
     "KEYWORD_VARCHAR",
     "KEYWORD_NVARCHAR",
+    "KEYWORD_KEY_OR_INDEX",
 ]
 
 # 可选的 `OPT` 关键字

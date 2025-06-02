@@ -141,9 +141,9 @@ class IntoClauseVariable(IntoClause):
 
     __slots__ = ["_variable_list"]
 
-    def __init__(self, variable_list: List[Variable]):
+    def __init__(self, variable_list: List["Variable"]):
         self._variable_list = variable_list
 
     @property
-    def variable_list(self) -> List[Variable]:
+    def variable_list(self) -> List["Variable"]:
         return self._variable_list
