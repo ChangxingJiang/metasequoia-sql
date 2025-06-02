@@ -38,6 +38,9 @@ __all__ = [
     # 查询表达式
     "QUERY_EXPRESSION",
     "QUERY_EXPRESSION_PARENS",
+
+    # SELECT 语句
+    "SELECT_STATEMENT",
 ]
 
 # 简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）
@@ -336,6 +339,17 @@ QUERY_EXPRESSION_PARENS = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "query_expression", TType.OPERATOR_RPAREN],
             action=lambda x: x[1]
+        )
+    ]
+)
+
+# SELECT 语句
+SELECT_STATEMENT = ms_parser.create_group(
+    name="select_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["query_expression"],
+            action=lambda x: ast.SelectStatement(query_expression=x[0])
         )
     ]
 )

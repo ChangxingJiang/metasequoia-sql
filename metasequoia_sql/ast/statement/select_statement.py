@@ -29,6 +29,7 @@ __all__ = [
     "Except",
     "Intersect",
     "QueryExpression",
+    "SelectStatement",
 ]
 
 
@@ -223,3 +224,19 @@ class QueryExpression(Node):
     def set_locking_clause(self, locking_clause_list: List["LockingClause"]) -> "QueryExpression":
         self._locking_clause_list = locking_clause_list
         return self
+
+
+class SelectStatement(Node):
+    """SELECT 语句
+
+    【不兼容】不允许在 `SELECT` 语句的最外层添加 `INTO` 子句，仅允许在`FROM` 子句前添加 `INTO` 子句。
+    """
+
+    __slots__ = ["_query_expression"]
+
+    def __init__(self, query_expression: QueryExpression):
+        self._query_expression = query_expression
+
+    @property
+    def query_expression(self) -> QueryExpression:
+        return self._query_expression
