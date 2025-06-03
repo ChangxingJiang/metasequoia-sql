@@ -6439,11 +6439,6 @@ opt_column:
         | COLUMN_SYM
         ;
 
-opt_ignore:
-          %empty      { $$= false; }
-        | IGNORE_SYM  { $$= true; }
-        ;
-
 opt_restrict:
           %empty      { $$= DROP_DEFAULT; }
         | RESTRICT    { $$= DROP_RESTRICT; }
@@ -7100,11 +7095,6 @@ alter_order_item:
           }
         ;
 
-opt_simple_limit:
-          %empty { $$= nullptr; }
-        | LIMIT limit_option { $$= $2; }
-        ;
-
 /*
   DO statement
 */
@@ -7655,11 +7645,6 @@ values_list:
           }
         ;
 
-equal:
-          EQ
-        | SET_VAR
-        ;
-
 opt_equal:
           %empty
         | equal
@@ -7697,112 +7682,6 @@ opt_insert_update_list:
           {
             $$= $5;
           }
-        ;
-
-/* Update rows in a table */
-
-update_stmt:
-          opt_with_clause
-          UPDATE_SYM            /* #1 */
-          opt_low_priority      /* #2 */
-          opt_ignore            /* #3 */
-          table_reference_list  /* #4 */
-          SET_SYM               /* #5 */
-          update_list           /* #6 */
-          opt_where_clause      /* #7 */
-          opt_order_clause      /* #8 */
-          opt_simple_limit      /* #9 */
-          {
-            $$= NEW_PTN PT_update(@$, $1, $2, $3, $4, $5, $7.column_list, $7.value_list,
-                                  $8, $9, $10);
-          }
-        ;
-
-opt_with_clause:
-          %empty { $$= nullptr; }
-        | with_clause { $$= $1; }
-        ;
-
-update_list:
-          update_list ',' update_elem
-          {
-            $$= $1;
-            if ($$.column_list->push_back($3.column) ||
-                $$.value_list->push_back($3.value))
-              MYSQL_YYABORT; // OOM
-          }
-        | update_elem
-          {
-            $$.column_list= NEW_PTN PT_item_list(@$);
-            $$.value_list= NEW_PTN PT_item_list(@$);
-            if ($$.column_list == nullptr || $$.value_list == nullptr ||
-                $$.column_list->push_back($1.column) ||
-                $$.value_list->push_back($1.value))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-update_elem:
-          simple_ident_nospvar equal expr_or_default
-          {
-            $$.column= $1;
-            $$.value= $3;
-          }
-        ;
-
-opt_low_priority:
-          %empty { $$= TL_WRITE_DEFAULT; }
-        | LOW_PRIORITY { $$= TL_WRITE_LOW_PRIORITY; }
-        ;
-
-/* Delete rows from a table */
-
-delete_stmt:
-          opt_with_clause
-          DELETE_SYM
-          opt_delete_options
-          FROM
-          table_ident
-          opt_table_alias
-          opt_use_partition
-          opt_where_clause
-          opt_order_clause
-          opt_simple_limit
-          {
-            $$= NEW_PTN PT_delete(@$, $1, $2, $3, $5, $6, $7, $8, $9, $10);
-          }
-        | opt_with_clause
-          DELETE_SYM
-          opt_delete_options
-          table_alias_ref_list
-          FROM
-          table_reference_list
-          opt_where_clause
-          {
-            $$= NEW_PTN PT_delete(@$, $1, $2, $3, $4, $6, $7);
-          }
-        | opt_with_clause
-          DELETE_SYM
-          opt_delete_options
-          FROM
-          table_alias_ref_list
-          USING
-          table_reference_list
-          opt_where_clause
-          {
-            $$= NEW_PTN PT_delete(@$, $1, $2, $3, $5, $7, $8);
-          }
-        ;
-
-opt_delete_options:
-          %empty { $$= 0; }
-        | opt_delete_option opt_delete_options { $$= $1 | $2; }
-        ;
-
-opt_delete_option:
-          QUICK        { $$= DELETE_QUICK; }
-        | LOW_PRIORITY { $$= DELETE_LOW_PRIORITY; }
-        | IGNORE_SYM   { $$= DELETE_IGNORE; }
         ;
 
 truncate_stmt:

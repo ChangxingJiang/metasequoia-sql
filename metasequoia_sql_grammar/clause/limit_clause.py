@@ -10,6 +10,7 @@ from metasequoia_sql.terminal.terminal_type import SqlTerminalType as TType
 __all__ = [
     "OPT_LIMIT_CLAUSE",
     "LIMIT_CLAUSE",
+    "OPT_SIMPLE_LIMIT_CLAUSE",
     "LIMIT_OPTION"
 ]
 
@@ -40,6 +41,18 @@ LIMIT_CLAUSE = ms_parser.create_group(
             symbols=[TType.KEYWORD_LIMIT, "limit_option", TType.KEYWORD_OFFSET, "limit_option"],
             action=lambda x: ast.LimitClause(offset=x[3], limit=x[1])
         )
+    ]
+)
+
+# 可选的简单 LIMIT 子句（不支持指定偏移量）
+OPT_SIMPLE_LIMIT_CLAUSE = ms_parser.create_group(
+    name="opt_simple_limit_clause",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LIMIT, "limit_option"],
+            action=lambda x: ast.LimitClause(offset=None, limit=x[1])
+        ),
+        ms_parser.template.group.EMPTY_NULL
     ]
 )
 

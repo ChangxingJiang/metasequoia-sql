@@ -8,10 +8,22 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "OPT_WITH_CLAUSE",
     "WITH_CLAUSE",
     "WITH_TABLE_LIST",
     "WITH_TABLE",
 ]
+
+# 可选的 `WITH` 子句
+OPT_WITH_CLAUSE = ms_parser.create_group(
+    name="opt_with_clause",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["with_clause"],
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
 
 # `WITH` 子句
 WITH_CLAUSE = ms_parser.create_group(
