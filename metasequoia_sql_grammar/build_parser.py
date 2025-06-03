@@ -36,10 +36,13 @@ from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
+from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import select_statement
+from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -186,10 +189,15 @@ def build_grammar():
         param,  # 基础元素 - 参数
         variable,  # 基础元素 - 变量
         time_unit,  # 基础元素 - 时间单位类型
+
+        # 短语
         field_type,  # 短语 - 字段类型
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
         time_interval,  # 短语 - 时间间隔
+        dml_option,  # DML 选项
+
+        # 表达式
         general_expression,  # 表达式 - 通用表达式
         sum_function_expression,  # 表达式 - 聚集函数表达式
         window_function_expression,  # 表达式 - 窗口函数表达式
@@ -220,7 +228,9 @@ def build_grammar():
         with_clause,  # WITH 子句
 
         # 语句
+        delete_statement,  # DELETE 语句
         select_statement,  # SELECT 语句
+        update_statement,  # UPDATE 语句
 
         # 顶层节点
         top_level_node
@@ -237,7 +247,7 @@ if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(__file__))
     parser_path = os.path.join(repository_path, "metasequoia_sql", "syntax", "parser.py")
 
-    parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True, profile_4=10000)
+    parser = ms_parser.parser.ParserLALR1(build_grammar())
     source_code = ms_parser.compiler.compile_lalr1(parser, import_list=[
         "from metasequoia_sql import ast"
     ])
