@@ -9,6 +9,7 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "OPT_KEYWORD_OF",
     "OPT_KEYWORD_ALL",
+    "OPT_KEYWORD_INTO",
     "OPT_BRACES",
     "KEYWORD_CHARSET",
     "KEYWORD_NCHAR",
@@ -35,6 +36,17 @@ OPT_KEYWORD_ALL = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALL]
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
+# 可选的 `INTO` 关键字
+OPT_KEYWORD_INTO = ms_parser.create_group(
+    name="opt_keyword_into",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INTO]
         ),
         ms_parser.template.group.EMPTY_NULL
     ]

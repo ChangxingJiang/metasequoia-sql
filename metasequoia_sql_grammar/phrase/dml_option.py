@@ -13,6 +13,8 @@ __all__ = [
     "OPT_DELETE_OPTION_LIST",
     "DELETE_OPTION_LIST",
     "DELETE_OPTION",
+    "OPT_INSERT_OPTION",
+    "OPT_REPLACE_OPTION",
 ]
 
 # 可选的 `IGNORE` 关键字
@@ -90,5 +92,47 @@ DELETE_OPTION = ms_parser.create_group(
             symbols=[TType.KEYWORD_IGNORE],
             action=lambda _: ast.DmlOption.IGNORE
         ),
+    ]
+)
+
+# 可选的 `INSERT` 语句中的选项
+OPT_INSERT_OPTION = ms_parser.create_group(
+    name="opt_insert_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOW_PRIORITY],
+            action=lambda _: ast.DmlOption.LOW_PRIORITY
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DELAYED],
+            action=lambda _: ast.DmlOption.DELAYED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_HIGH_PRIORITY],
+            action=lambda _: ast.DmlOption.HIGH_PRIORITY
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.DmlOption.DEFAULT
+        )
+    ]
+)
+
+# 可选的 `REPLACE` 语句中的选项
+OPT_REPLACE_OPTION = ms_parser.create_group(
+    name="opt_replace_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOW_PRIORITY],
+            action=lambda _: ast.DmlOption.LOW_PRIORITY
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DELAYED],
+            action=lambda _: ast.DmlOption.DELAYED
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.DmlOption.DEFAULT
+        )
     ]
 )

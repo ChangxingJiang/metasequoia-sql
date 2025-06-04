@@ -41,6 +41,7 @@ from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import delete_statement
+from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.table import derived_table
@@ -231,6 +232,7 @@ def build_grammar():
         delete_statement,  # DELETE 语句
         select_statement,  # SELECT 语句
         update_statement,  # UPDATE 语句
+        insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句
 
         # 顶层节点
         top_level_node
@@ -247,7 +249,7 @@ if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(__file__))
     parser_path = os.path.join(repository_path, "metasequoia_sql", "syntax", "parser.py")
 
-    parser = ms_parser.parser.ParserLALR1(build_grammar())
+    parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True)
     source_code = ms_parser.compiler.compile_lalr1(parser, import_list=[
         "from metasequoia_sql import ast"
     ])
