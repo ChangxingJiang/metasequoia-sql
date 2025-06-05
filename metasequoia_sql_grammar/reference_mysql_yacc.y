@@ -4727,22 +4727,6 @@ table_element:
         | table_constraint_def  { $$= $1; }
         ;
 
-column_def:
-          ident field_def opt_references
-          {
-            $$= NEW_PTN PT_column_def(@$, $1, $2, $3);
-          }
-        ;
-
-opt_references:
-           %empty { $$= nullptr; }
-        |  references
-          {
-            /* Currently we ignore FK references here: */
-            $$= nullptr;
-          }
-        ;
-
 table_constraint_def:
           key_or_index opt_index_name_and_type '(' key_list_with_expression ')'
           opt_index_options
@@ -4800,43 +4784,6 @@ constraint_enforcement:
           opt_not ENFORCED_SYM  { $$= !($1); }
         ;
 
-field_def:
-          type opt_column_attribute_list
-          {
-            $$= NEW_PTN PT_field_def(@$, $1, $2);
-          }
-        | type opt_collate opt_generated_always
-          AS '(' expr ')'
-          opt_stored_attribute opt_column_attribute_list
-          {
-            auto *opt_attrs= $9;
-            if ($2 != nullptr)
-            {
-              if (opt_attrs == nullptr)
-              {
-                opt_attrs= NEW_PTN
-                  Mem_root_array<PT_column_attr_base *>(YYMEM_ROOT);
-              }
-              auto *collation= NEW_PTN PT_collate_column_attr(@2, $2);
-              if (opt_attrs == nullptr || collation == nullptr ||
-                  opt_attrs->push_back(collation))
-                MYSQL_YYABORT; // OOM
-            }
-            $$= NEW_PTN PT_generated_field_def(@$, $1, $6, $8, opt_attrs);
-          }
-        ;
-
-opt_generated_always:
-          %empty
-        | GENERATED ALWAYS_SYM
-        ;
-
-opt_stored_attribute:
-          %empty      { $$= Virtual_or_stored::VIRTUAL; }
-        | VIRTUAL_SYM { $$= Virtual_or_stored::VIRTUAL; }
-        | STORED_SYM  { $$= Virtual_or_stored::STORED; }
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
@@ -4845,88 +4792,6 @@ old_or_new_charset_name_or_default:
 opt_default:
           %empty {}
         | DEFAULT_SYM {}
-        ;
-
-references:
-          REFERENCES
-          table_ident
-          opt_ref_list
-          opt_match_clause
-          opt_on_update_delete
-          {
-            $$.table_name= $2;
-            $$.reference_list= $3;
-            $$.fk_match_option= $4;
-            $$.fk_update_opt= $5.fk_update_opt;
-            $$.fk_delete_opt= $5.fk_delete_opt;
-          }
-        ;
-
-opt_ref_list:
-          %empty { $$= nullptr; }
-        | '(' reference_list ')' { $$= $2; }
-        ;
-
-reference_list:
-          reference_list ',' ident
-          {
-            $$= $1;
-            auto key= NEW_PTN Key_part_spec(to_lex_cstring($3), 0, ORDER_ASC);
-            if (key == nullptr || $$->push_back(key))
-              MYSQL_YYABORT;
-          }
-        | ident
-          {
-            $$= NEW_PTN List<Key_part_spec>;
-            auto key= NEW_PTN Key_part_spec(to_lex_cstring($1), 0, ORDER_ASC);
-            if ($$ == nullptr || key == nullptr || $$->push_back(key))
-              MYSQL_YYABORT;
-          }
-        ;
-
-opt_match_clause:
-          %empty { $$= FK_MATCH_UNDEF; }
-        | MATCH FULL       { $$= FK_MATCH_FULL; }
-        | MATCH PARTIAL    { $$= FK_MATCH_PARTIAL; }
-        | MATCH SIMPLE_SYM { $$= FK_MATCH_SIMPLE; }
-        ;
-
-opt_on_update_delete:
-          %empty
-          {
-            $$.fk_update_opt= FK_OPTION_UNDEF;
-            $$.fk_delete_opt= FK_OPTION_UNDEF;
-          }
-        | ON_SYM UPDATE_SYM delete_option
-          {
-            $$.fk_update_opt= $3;
-            $$.fk_delete_opt= FK_OPTION_UNDEF;
-          }
-        | ON_SYM DELETE_SYM delete_option
-          {
-            $$.fk_update_opt= FK_OPTION_UNDEF;
-            $$.fk_delete_opt= $3;
-          }
-        | ON_SYM UPDATE_SYM delete_option
-          ON_SYM DELETE_SYM delete_option
-          {
-            $$.fk_update_opt= $3;
-            $$.fk_delete_opt= $6;
-          }
-        | ON_SYM DELETE_SYM delete_option
-          ON_SYM UPDATE_SYM delete_option
-          {
-            $$.fk_update_opt= $6;
-            $$.fk_delete_opt= $3;
-          }
-        ;
-
-delete_option:
-          RESTRICT      { $$= FK_OPTION_RESTRICT; }
-        | CASCADE       { $$= FK_OPTION_CASCADE; }
-        | SET_SYM NULL_SYM  { $$= FK_OPTION_SET_NULL; }
-        | NO_SYM ACTION { $$= FK_OPTION_NO_ACTION; }
-        | SET_SYM DEFAULT_SYM { $$= FK_OPTION_DEFAULT;  }
         ;
 
 constraint_key_type:
