@@ -193,7 +193,7 @@ class Window(Node):
     __slots__ = ["_name", "_partition_clause", "_order_clause", "_frame_clause"]
 
     def __init__(self,
-                 name: Optional[Expression],
+                 name: Optional[str],
                  partition_clause: Optional[List[Expression]],
                  order_clause: Optional[OrderByClause],
                  frame_clause: Optional[WindowFrame]):
@@ -203,7 +203,7 @@ class Window(Node):
         self._frame_clause = frame_clause
 
     @staticmethod
-    def create_by_name(name: Expression) -> "Window":
+    def create_by_name(name: str) -> "Window":
         return Window(
             name=name,
             partition_clause=None,
@@ -212,7 +212,7 @@ class Window(Node):
         )
 
     @property
-    def name(self) -> Optional[Expression]:
+    def name(self) -> Optional[str]:
         return self._name
 
     @property

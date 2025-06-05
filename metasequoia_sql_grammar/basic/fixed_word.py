@@ -16,6 +16,7 @@ __all__ = [
     "KEYWORD_VARCHAR",
     "KEYWORD_NVARCHAR",
     "KEYWORD_KEY_OR_INDEX",
+    "OPT_EQUAL",
     "EQUAL",
 ]
 
@@ -146,6 +147,17 @@ KEYWORD_KEY_OR_INDEX = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INDEX]
         )
+    ]
+)
+
+# 可选的 `=` 运算符或 `:=` 运算符
+OPT_EQUAL = ms_parser.create_group(
+    name="opt_equal",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["equal"]
+        ),
+        ms_parser.template.group.EMPTY_NULL
     ]
 )
 

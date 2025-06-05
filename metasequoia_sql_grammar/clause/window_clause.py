@@ -47,7 +47,8 @@ WINDOW_DEFINITION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["ident", TType.KEYWORD_AS, TType.OPERATOR_LPAREN, "opt_ident", "opt_partition_by_clause",
                      "opt_order_by_clause", "opt_window_frame_clause", TType.OPERATOR_RPAREN],
-            action=lambda x: ast.Window(name=x[0], partition_clause=x[4], order_clause=x[5], frame_clause=x[6])
+            action=lambda x: ast.Window(name=x[0].get_str_value(), partition_clause=x[4], order_clause=x[5],
+                                        frame_clause=x[6])
         ),
     ]
 )

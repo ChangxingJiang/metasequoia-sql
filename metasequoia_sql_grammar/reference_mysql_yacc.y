@@ -4786,15 +4786,6 @@ table_constraint_def:
           }
         ;
 
-check_constraint:
-          CHECK_SYM '(' expr ')' { $$= $3; }
-        ;
-
-opt_constraint_name:
-          %empty { $$= NULL_STR; }
-        | CONSTRAINT opt_ident { $$= $2; }
-        ;
-
 opt_not:
           %empty       { $$= false; }
         | NOT_SYM      { $$= true; }
@@ -4846,171 +4837,6 @@ opt_stored_attribute:
         | STORED_SYM  { $$= Virtual_or_stored::STORED; }
         ;
 
-opt_column_attribute_list:
-          %empty { $$= nullptr; }
-        | column_attribute_list
-        ;
-
-column_attribute_list:
-          column_attribute_list column_attribute
-          {
-            $$= $1;
-            if ($2 == nullptr)
-              MYSQL_YYABORT; // OOM
-
-            if ($2->has_constraint_enforcement()) {
-              // $2 is `[NOT] ENFORCED`
-              if ($1->back()->set_constraint_enforcement(
-                      $2->is_constraint_enforced())) {
-                // $1 is not `CHECK(...)`
-                YYTHD->syntax_error_at(@2);
-                MYSQL_YYABORT;
-              }
-            } else {
-              if ($$->push_back($2))
-                MYSQL_YYABORT; // OOM
-            }
-          }
-        | column_attribute
-          {
-            if ($1 == nullptr)
-              MYSQL_YYABORT; // OOM
-
-            if ($1->has_constraint_enforcement()) {
-              // [NOT] ENFORCED doesn't follow the CHECK clause
-              YYTHD->syntax_error_at(@1);
-              MYSQL_YYABORT;
-            }
-
-            $$=
-              NEW_PTN Mem_root_array<PT_column_attr_base *>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-column_attribute:
-          NULL_SYM
-          {
-            $$= NEW_PTN PT_null_column_attr(@$);
-          }
-        | not NULL_SYM
-          {
-            $$= NEW_PTN PT_not_null_column_attr(@$);
-          }
-        | not SECONDARY_SYM
-          {
-            $$= NEW_PTN PT_secondary_column_attr(@$);
-          }
-        | DEFAULT_SYM now_or_signed_literal
-          {
-            $$= NEW_PTN PT_default_column_attr(@$, $2);
-          }
-        | DEFAULT_SYM '(' expr ')'
-          {
-            $$= NEW_PTN PT_generated_default_val_column_attr(@$, $3);
-          }
-        | ON_SYM UPDATE_SYM now
-          {
-            $$= NEW_PTN PT_on_update_column_attr(@$, static_cast<uint8>($3));
-          }
-        | AUTO_INC
-          {
-            $$= NEW_PTN PT_auto_increment_column_attr(@$);
-          }
-        | SERIAL_SYM DEFAULT_SYM VALUE_SYM
-          {
-            $$= NEW_PTN PT_serial_default_value_column_attr(@$);
-          }
-        | opt_primary KEY_SYM
-          {
-            $$= NEW_PTN PT_primary_key_column_attr(@$);
-          }
-        | UNIQUE_SYM
-          {
-            $$= NEW_PTN PT_unique_key_column_attr(@$);
-          }
-        | UNIQUE_SYM KEY_SYM
-          {
-            $$= NEW_PTN PT_unique_key_column_attr(@$);
-          }
-        | COMMENT_SYM TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_comment_column_attr(@$, to_lex_cstring($2));
-          }
-        | COLLATE_SYM collation_name
-          {
-            $$= NEW_PTN PT_collate_column_attr(@$, $2);
-          }
-        | COLUMN_FORMAT_SYM column_format
-          {
-            $$= NEW_PTN PT_column_format_column_attr(@$, $2);
-          }
-        | STORAGE_SYM storage_media
-          {
-            $$= NEW_PTN PT_storage_media_column_attr(@$, $2);
-          }
-        | SRID_SYM real_ulonglong_num
-          {
-            if ($2 > std::numeric_limits<gis::srid_t>::max())
-            {
-              my_error(ER_DATA_OUT_OF_RANGE, MYF(0), "SRID", "SRID");
-              MYSQL_YYABORT;
-            }
-            $$= NEW_PTN PT_srid_column_attr(@$, static_cast<gis::srid_t>($2));
-          }
-        | opt_constraint_name check_constraint
-          /* See the next branch for [NOT] ENFORCED. */
-          {
-            $$= NEW_PTN PT_check_constraint_column_attr(@$, $1, $2);
-          }
-        | constraint_enforcement
-          /*
-            This branch is needed to workaround the need of a lookahead of 2 for
-            the grammar:
-
-             { [NOT] NULL | CHECK(...) [NOT] ENFORCED } ...
-
-            Note: the column_attribute_list rule rejects all unexpected
-                  [NOT] ENFORCED sequences.
-          */
-          {
-            $$ = NEW_PTN PT_constraint_enforcement_attr(@$, $1);
-          }
-        | ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_column_engine_attribute(YYMEM_ROOT, $3);
-          }
-        | SECONDARY_ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_column_secondary_engine_attribute(YYMEM_ROOT, $3);
-          }
-        | visibility
-          {
-            $$ = NEW_PTN PT_column_visibility_attr(@$, $1);
-          }
-        ;
-
-column_format:
-          DEFAULT_SYM { $$= COLUMN_FORMAT_TYPE_DEFAULT; }
-        | FIXED_SYM   { $$= COLUMN_FORMAT_TYPE_FIXED; }
-        | DYNAMIC_SYM { $$= COLUMN_FORMAT_TYPE_DYNAMIC; }
-        ;
-
-storage_media:
-          DEFAULT_SYM { $$= HA_SM_DEFAULT; }
-        | DISK_SYM    { $$= HA_SM_DISK; }
-        | MEMORY_SYM  { $$= HA_SM_MEMORY; }
-        ;
-
-now_or_signed_literal:
-          now
-          {
-            $$= NEW_PTN Item_func_now_local(@$, static_cast<uint8>($1));
-          }
-        | signed_literal_or_null
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
@@ -5019,11 +4845,6 @@ old_or_new_charset_name_or_default:
 opt_default:
           %empty {}
         | DEFAULT_SYM {}
-        ;
-
-opt_primary:
-          %empty
-        | PRIMARY_SYM
         ;
 
 references:
@@ -7423,11 +7244,6 @@ drop_ts_option_list:
 drop_ts_option:
           ts_option_engine
         | ts_option_wait
-        ;
-
-opt_equal:
-          %empty
-        | equal
         ;
 
 truncate_stmt:

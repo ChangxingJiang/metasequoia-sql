@@ -36,6 +36,7 @@ from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
+from metasequoia_sql_grammar.phrase import column_attribute
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
@@ -197,6 +198,7 @@ def build_grammar():
         alias,  # 短语 - 别名
         time_interval,  # 短语 - 时间间隔
         dml_option,  # DML 选项
+        column_attribute,  # DDL 字段属性
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式

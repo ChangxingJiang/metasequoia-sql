@@ -175,7 +175,8 @@ OPT_IDENT = ms_parser.create_group(
     name="opt_ident",
     rules=[
         ms_parser.create_rule(
-            symbols=["ident"]
+            symbols=["ident"],
+            action=lambda x: x[0].get_str_value()
         ),
         ms_parser.template.group.EMPTY_NULL
     ]
