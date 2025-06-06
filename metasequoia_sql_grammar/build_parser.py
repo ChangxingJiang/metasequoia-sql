@@ -37,11 +37,12 @@ from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import column_attribute
+from metasequoia_sql_grammar.phrase import ddl_index_attribute
+from metasequoia_sql_grammar.phrase import ddl_table_element
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import time_interval
-from metasequoia_sql_grammar.phrase import ddl_table_element
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import select_statement
@@ -201,6 +202,7 @@ def build_grammar():
         dml_option,  # DML 选项
         column_attribute,  # DDL 字段属性
         ddl_table_element,  # DDL 表元素
+        ddl_index_attribute,  # DDL 索引属性
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式

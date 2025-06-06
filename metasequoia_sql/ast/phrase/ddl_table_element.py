@@ -12,13 +12,15 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.column_attribute import ColumnAttribute
     from metasequoia_sql.ast.basic.charset_name import Charset
     from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.phrase.ddl_index_attribute import EnumIndexStructureType
 
 __all__ = [
     "FieldDefinition",
     "GeneratedFieldDefinition",
     "ReferencesDefinition",
-    "TempOnUpdateOnDelete",
     "ColumnDefinition",
+    "TempOnUpdateOnDelete",
+    "TempIndexNameAndType",
     "EnumStoredAttribute",
     "EnumReferenceMatch",
     "EnumReferenceActionOption",
@@ -208,3 +210,26 @@ class ColumnDefinition(Node):
     @property
     def references_definition(self) -> Optional[ReferencesDefinition]:
         return self._references_definition
+
+
+class TempIndexNameAndType(Node):
+    """【临时】索引名称和数据结构类型"""
+
+    __slots__ = (
+        "_index_name",
+        "_index_structure_type"
+    )
+
+    def __init__(self,
+                 index_name: Optional[str],
+                 index_structure_type: "EnumIndexStructureType"):
+        self._index_name = index_name
+        self._index_structure_type = index_structure_type
+
+    @property
+    def index_name(self) -> Optional[str]:
+        return self._index_name
+
+    @property
+    def index_structure_type(self) -> "EnumIndexStructureType":
+        return self._index_structure_type

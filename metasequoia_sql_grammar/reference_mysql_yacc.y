@@ -4815,153 +4815,14 @@ opt_unique:
         | UNIQUE_SYM   { $$= KEYTYPE_UNIQUE; }
         ;
 
-opt_fulltext_index_options:
-          %empty { $$.init(YYMEM_ROOT); }
-        | fulltext_index_options
-        ;
-
-fulltext_index_options:
-          fulltext_index_option
-          {
-            $$.init(YYMEM_ROOT);
-            if ($$.push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | fulltext_index_options fulltext_index_option
-          {
-            if ($1.push_back($2))
-              MYSQL_YYABORT; // OOM
-            $$= $1;
-          }
-        ;
-
-fulltext_index_option:
-          common_index_option
-        | WITH PARSER_SYM IDENT_sys
-          {
-            LEX_CSTRING plugin_name= {$3.str, $3.length};
-            if (!plugin_is_ready(plugin_name, MYSQL_FTPARSER_PLUGIN))
-            {
-              my_error(ER_FUNCTION_NOT_DEFINED, MYF(0), $3.str);
-              MYSQL_YYABORT;
-            }
-            else
-              $$= NEW_PTN PT_fulltext_index_parser_name(@$, to_lex_cstring($3));
-          }
-        ;
-
-opt_spatial_index_options:
-          %empty { $$.init(YYMEM_ROOT); }
-        | spatial_index_options
-        ;
-
-spatial_index_options:
-          spatial_index_option
-          {
-            $$.init(YYMEM_ROOT);
-            if ($$.push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | spatial_index_options spatial_index_option
-          {
-            if ($1.push_back($2))
-              MYSQL_YYABORT; // OOM
-            $$= $1;
-          }
-        ;
-
-spatial_index_option:
-          common_index_option
-        ;
-
-opt_index_options:
-          %empty { $$.init(YYMEM_ROOT); }
-        | index_options
-        ;
-
-index_options:
-          index_option
-          {
-            $$.init(YYMEM_ROOT);
-            if ($$.push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | index_options index_option
-          {
-            if ($1.push_back($2))
-              MYSQL_YYABORT; // OOM
-            $$= $1;
-          }
-        ;
-
-index_option:
-          common_index_option { $$= $1; }
-        | index_type_clause { $$= $1; }
-        ;
-
-// These options are common for all index types.
-common_index_option:
-          KEY_BLOCK_SIZE opt_equal ulong_num { $$= NEW_PTN PT_block_size(@$, $3); }
-        | COMMENT_SYM TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_index_comment(@$, to_lex_cstring($2));
-          }
-        | visibility
-          {
-            $$= NEW_PTN PT_index_visibility(@$, $1);
-          }
-        | ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_index_engine_attribute(YYMEM_ROOT, $3);
-          }
-        | SECONDARY_ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_index_secondary_engine_attribute(YYMEM_ROOT, $3);
-          }
-        ;
-
-/*
-  The syntax for defining an index is:
-
-    ... INDEX [index_name] [USING|TYPE] <index_type> ...
-
-  The problem is that whereas USING is a reserved word, TYPE is not. We can
-  still handle it if an index name is supplied, i.e.:
-
-    ... INDEX type TYPE <index_type> ...
-
-  here the index's name is unmbiguously 'type', but for this:
-
-    ... INDEX TYPE <index_type> ...
-
-  it's impossible to know what this actually mean - is 'type' the name or the
-  type? For this reason we accept the TYPE syntax only if a name is supplied.
-*/
-opt_index_name_and_type:
-          opt_ident                  { $$= {$1, nullptr}; }
-        | opt_ident USING index_type { $$= {$1, NEW_PTN PT_index_type(@$, $3)}; }
-        | ident TYPE_SYM index_type  { $$= {$1, NEW_PTN PT_index_type(@$, $3)}; }
-        ;
-
 opt_index_type_clause:
           %empty { $$ = nullptr; }
         | index_type_clause
         ;
 
-index_type_clause:
-          USING index_type    { $$= NEW_PTN PT_index_type(@$, $2); }
-        | TYPE_SYM index_type { $$= NEW_PTN PT_index_type(@$, $2); }
-        ;
-
 visibility:
           VISIBLE_SYM { $$= true; }
         | INVISIBLE_SYM { $$= false; }
-        ;
-
-index_type:
-          BTREE_SYM { $$= HA_KEY_ALG_BTREE; }
-        | RTREE_SYM { $$= HA_KEY_ALG_RTREE; }
-        | HASH_SYM  { $$= HA_KEY_ALG_HASH; }
         ;
 
 key_list:
@@ -5025,11 +4886,6 @@ key_part_with_expression:
             if ($$ == nullptr)
               MYSQL_YYABORT;
           }
-        ;
-
-opt_ident:
-          %empty { $$= NULL_STR; }
-        | ident
         ;
 
 /*

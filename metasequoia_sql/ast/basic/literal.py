@@ -14,6 +14,7 @@ __all__ = [
     "StringLiteral",
     "HexStringLiteral",
     "BinStringLiteral",
+    "NumberLiteral",
     "IntLiteral",
     "DecimalLiteral",
     "FloatLiteral",

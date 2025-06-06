@@ -8,6 +8,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    # 字段信息
     "COLUMN_DEFINITION",
     "FIELD_DEFINITION",
     "OPT_GENERATED_ALWAYS",
@@ -17,6 +18,9 @@ __all__ = [
     "OPT_MATCH_CLAUSE",
     "OPT_ON_UPDATE_ON_DELETE",
     "REFERENCE_ACTION_OPTION",
+
+    # 索引信息
+    "OPT_INDEX_NAME_AND_TYPE",
 ]
 
 # DDL 的字段定义信息（含外键约束）
@@ -215,5 +219,25 @@ REFERENCE_ACTION_OPTION = ms_parser.create_group(
             symbols=[TType.KEYWORD_SET, TType.KEYWORD_DEFAULT],
             action=lambda _: ast.EnumReferenceActionOption.SET_DEFAULT
         )
+    ]
+)
+
+# 可选的索引名称和索引数据结构
+OPT_INDEX_NAME_AND_TYPE = ms_parser.create_group(
+    name="opt_index_name_and_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["opt_ident"],
+            action=lambda x: ast.TempIndexNameAndType(index_name=x[0],
+                                                      index_structure_type=ast.EnumIndexStructureType.DEFAULT)
+        ),
+        ms_parser.create_rule(
+            symbols=["opt_ident", TType.KEYWORD_USING, "index_structure_type"],
+            action=lambda x: ast.TempIndexNameAndType(index_name=x[0], index_structure_type=x[2])
+        ),
+        ms_parser.create_rule(
+            symbols=["ident", TType.KEYWORD_TYPE, "index_structure_type"],
+            action=lambda x: ast.TempIndexNameAndType(index_name=x[0], index_structure_type=x[2])
+        ),
     ]
 )
