@@ -2,7 +2,7 @@
 基础元素
 """
 
-from metasequoia_sql.ast.phrase.column_attribute import *
+from metasequoia_sql.ast.phrase.ddl_column_attribute import *
 from metasequoia_sql.ast.phrase.ddl_index_attribute import *
 from metasequoia_sql.ast.phrase.ddl_table_element import *
 from metasequoia_sql.ast.phrase.ddl_table_option import *

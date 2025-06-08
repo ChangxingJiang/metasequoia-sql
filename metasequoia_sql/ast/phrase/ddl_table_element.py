@@ -9,7 +9,7 @@ from metasequoia_sql.ast.base import Expression, Node
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.field_type import FieldType
-    from metasequoia_sql.ast.phrase.column_attribute import ColumnAttribute
+    from metasequoia_sql.ast.phrase.ddl_column_attribute import ColumnAttribute
     from metasequoia_sql.ast.basic.charset_name import Charset
     from metasequoia_sql.ast.basic.ident import TableIdent
     from metasequoia_sql.ast.phrase.ddl_index_attribute import EnumIndexStructureType
