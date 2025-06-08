@@ -93,6 +93,9 @@ if __name__ == "__main__":
     # print(parse(LexFSM("ALL 3 + 5 * 2")))
 
     # 测试 sum_expr
-    print(parse(LexFSM("max(distinct a)")))
-    print(parse(LexFSM("min(3 + 5 * 2)")))
-    print(parse(LexFSM("group_concat(distinct 3 + 5 * 2, field1 order by field1 separator ',')")))
+    # print(parse(LexFSM("max(distinct a)")))
+    # print(parse(LexFSM("min(3 + 5 * 2)")))
+    # print(parse(LexFSM("group_concat(distinct 3 + 5 * 2, field1 order by field1 separator ',')")))
+
+    #
+    print(parse(LexFSM("SELECT * FROM table_name")))

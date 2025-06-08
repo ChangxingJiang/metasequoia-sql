@@ -4707,83 +4707,6 @@ udf_type:
         | INT_SYM {$$ = (int) INT_RESULT; }
         ;
 
-table_element_list:
-          table_element
-          {
-            $$= NEW_PTN Mem_root_array<PT_table_element *>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | table_element_list ',' table_element
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-table_element:
-          column_def            { $$= $1; }
-        | table_constraint_def  { $$= $1; }
-        ;
-
-table_constraint_def:
-          key_or_index opt_index_name_and_type '(' key_list_with_expression ')'
-          opt_index_options
-          {
-            $$= NEW_PTN PT_inline_index_definition(@$, KEYTYPE_MULTIPLE,
-                                                   $2.name, $2.type, $4, $6);
-          }
-        | FULLTEXT_SYM opt_key_or_index opt_ident '(' key_list_with_expression ')'
-          opt_fulltext_index_options
-          {
-            $$= NEW_PTN PT_inline_index_definition(@$, KEYTYPE_FULLTEXT, $3, nullptr,
-                                                   $5, $7);
-          }
-        | SPATIAL_SYM opt_key_or_index opt_ident '(' key_list_with_expression ')'
-          opt_spatial_index_options
-          {
-            $$= NEW_PTN PT_inline_index_definition(@$, KEYTYPE_SPATIAL, $3, nullptr, $5, $7);
-          }
-        | opt_constraint_name constraint_key_type opt_index_name_and_type
-          '(' key_list_with_expression ')' opt_index_options
-          {
-            /*
-              Constraint-implementing indexes are named by the constraint type
-              by default.
-            */
-            LEX_STRING name= $3.name.str != nullptr ? $3.name : $1;
-            $$= NEW_PTN PT_inline_index_definition(@$, $2, name, $3.type, $5, $7);
-          }
-        | opt_constraint_name FOREIGN KEY_SYM opt_ident '(' key_list ')' references
-          {
-            $$= NEW_PTN PT_foreign_key_definition(@$, $1, $4, $6, $8.table_name,
-                                                  $8.reference_list,
-                                                  $8.fk_match_option,
-                                                  $8.fk_update_opt,
-                                                  $8.fk_delete_opt);
-          }
-        | opt_constraint_name check_constraint opt_constraint_enforcement
-          {
-            $$= NEW_PTN PT_check_constraint(@$, $1, $2, $3);
-            if ($$ == nullptr) MYSQL_YYABORT; // OOM
-          }
-        ;
-
-opt_not:
-          %empty       { $$= false; }
-        | NOT_SYM      { $$= true; }
-        ;
-
-opt_constraint_enforcement:
-          %empty { $$= true; }
-        | constraint_enforcement { $$= $1; }
-        ;
-
-constraint_enforcement:
-          opt_not ENFORCED_SYM  { $$= !($1); }
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
@@ -4792,22 +4715,6 @@ old_or_new_charset_name_or_default:
 opt_default:
           %empty {}
         | DEFAULT_SYM {}
-        ;
-
-constraint_key_type:
-          PRIMARY_SYM KEY_SYM { $$= KEYTYPE_PRIMARY; }
-        | UNIQUE_SYM opt_key_or_index { $$= KEYTYPE_UNIQUE; }
-        ;
-
-opt_key_or_index:
-          %empty {}
-        | key_or_index
-        ;
-
-keys_or_index:
-          KEYS {}
-        | INDEX_SYM {}
-        | INDEXES {}
         ;
 
 opt_unique:
@@ -4823,69 +4730,6 @@ opt_index_type_clause:
 visibility:
           VISIBLE_SYM { $$= true; }
         | INVISIBLE_SYM { $$= false; }
-        ;
-
-key_list:
-          key_list ',' key_part
-          {
-            if ($1->push_back($3))
-              MYSQL_YYABORT; // OOM
-            $$= $1;
-          }
-        | key_part
-          {
-            // The order is ignored.
-            $$= NEW_PTN List<PT_key_part_specification>;
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-key_part:
-          ident opt_ordering_direction
-          {
-            $$= NEW_PTN PT_key_part_specification(@$, to_lex_cstring($1), $2, 0);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | ident '(' NUM ')' opt_ordering_direction
-          {
-            int key_part_length= atoi($3.str);
-            if (!key_part_length)
-            {
-              my_error(ER_KEY_PART_0, MYF(0), $1.str);
-            }
-            $$= NEW_PTN PT_key_part_specification(@$, to_lex_cstring($1), $5,
-                                                  key_part_length);
-            if ($$ == nullptr)
-              MYSQL_YYABORT; /* purecov: deadcode */
-          }
-        ;
-
-key_list_with_expression:
-          key_list_with_expression ',' key_part_with_expression
-          {
-            if ($1->push_back($3))
-              MYSQL_YYABORT; /* purecov: deadcode */
-            $$= $1;
-          }
-        | key_part_with_expression
-          {
-            // The order is ignored.
-            $$= NEW_PTN List<PT_key_part_specification>;
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; /* purecov: deadcode */
-          }
-        ;
-
-key_part_with_expression:
-          key_part
-        | '(' expr ')' opt_ordering_direction
-          {
-            $$= NEW_PTN PT_key_part_specification(@$, $2, $4);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
         ;
 
 /*

@@ -13,17 +13,33 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.charset_name import Charset
     from metasequoia_sql.ast.basic.ident import TableIdent
     from metasequoia_sql.ast.phrase.ddl_index_attribute import EnumIndexStructureType
+    from metasequoia_sql.ast.clause.order_by_clause import EnumOrderDirection
+    from metasequoia_sql.ast.phrase.ddl_index_attribute import IndexAttribute
 
 __all__ = [
+    "TableElement",
+
+    # 字段定义
     "FieldDefinition",
     "GeneratedFieldDefinition",
     "ReferencesDefinition",
     "ColumnDefinition",
+
+    # 索引定义
+    "IndexDefinition",
+    "IndexKeyDefinition",
+    "ForeignKeyDefinition",
+    "CheckConstraintDefinition",
+
+    # 临时对象
     "TempOnUpdateOnDelete",
     "TempIndexNameAndType",
+
+    # 枚举类
     "EnumStoredAttribute",
     "EnumReferenceMatch",
     "EnumReferenceActionOption",
+    "EnumIndexType",
 ]
 
 
@@ -35,7 +51,11 @@ class EnumStoredAttribute(IntEnum):
     STORED = 3  # STORED
 
 
-class FieldDefinition(Node):
+class TableElement(Node):
+    """DDL 表元素"""
+
+
+class FieldDefinition(TableElement):
     """DDL 字段定义信息"""
 
     __slots__ = (
@@ -233,3 +253,174 @@ class TempIndexNameAndType(Node):
     @property
     def index_structure_type(self) -> "EnumIndexStructureType":
         return self._index_structure_type
+
+
+class IndexKeyDefinition(Node):
+    """索引字段定义"""
+
+    __slots__ = (
+        "_column_name",
+        "_index_length",
+        "_expression",
+        "_order_direction"
+    )
+
+    def __init__(self,
+                 column_name: Optional[str],
+                 index_length: Optional[int],
+                 expression: Optional[Expression],
+                 order_direction: "EnumOrderDirection"):
+        self._column_name = column_name
+        self._index_length = index_length
+        self._expression = expression
+        self._order_direction = order_direction
+
+    @staticmethod
+    def create_by_column(column_name: str, index_length: Optional[int],
+                         order_direction: "EnumOrderDirection") -> "IndexKeyDefinition":
+        return IndexKeyDefinition(column_name, index_length, None, order_direction)
+
+    @staticmethod
+    def create_by_expression(expression: Expression,
+                             order_direction: "EnumOrderDirection") -> "IndexKeyDefinition":
+        return IndexKeyDefinition(None, None, expression, order_direction)
+
+    @property
+    def column_name(self) -> str:
+        return self._column_name
+
+    @property
+    def index_length(self) -> Optional[int]:
+        return self._index_length
+
+    @property
+    def expression(self) -> Optional[Expression]:
+        return self._expression
+
+    @property
+    def order_direction(self) -> "EnumOrderDirection":
+        return self._order_direction
+
+
+class EnumIndexType(IntEnum):
+    """索引类型"""
+
+    KEY = 1  # KEY、INDEX、INDEXES
+    FULLTEXT = 2  # FULLTEXT、FULLTEXT KEY、FULLTEXT INDEX、FULLTEXT INDEXES
+    SPATIAL = 3  # SPATIAL、SPATIAL KEY、SPATIAL INDEX、SPATIAL INDEXES
+    PRIMARY = 4  # PRIMARY KEY
+    UNIQUE = 5  # UNIQUE KEY、UNIQUE INDEX、UNIQUE INDEXES
+
+
+class IndexDefinition(TableElement):
+    """索引定义信息"""
+
+    __slots__ = (
+        "_index_type",
+        "_index_name",
+        "_index_structure_type",
+        "_index_key_list",
+        "_index_options"
+    )
+
+    def __init__(self,
+                 index_type: EnumIndexType,
+                 index_name: Optional[str],
+                 index_structure_type: Optional["EnumIndexStructureType"],
+                 index_key_list: List[IndexKeyDefinition],
+                 index_options: List[IndexAttribute]
+                 ):
+        self._index_type = index_type
+        self._index_name = index_name
+        self._index_structure_type = index_structure_type
+        self._index_key_list = index_key_list
+        self._index_options = index_options
+
+    @property
+    def index_type(self) -> EnumIndexType:
+        return self._index_type
+
+    @property
+    def index_name(self) -> Optional[str]:
+        return self._index_name
+
+    @property
+    def index_structure_type(self) -> "EnumIndexStructureType":
+        return self._index_structure_type
+
+    @property
+    def index_key_list(self) -> List[IndexKeyDefinition]:
+        return self._index_key_list
+
+    @property
+    def index_options(self) -> List[IndexAttribute]:
+        return self._index_options
+
+
+class ForeignKeyDefinition(TableElement):
+    """外键定义信息"""
+
+    __slots__ = (
+        "_constraint_name",
+        "_index_name",
+        "_column_list",
+        "_references"
+    )
+
+    def __init__(self,
+                 constraint_name: Optional[str],
+                 index_name: Optional[str],
+                 column_list: Optional[IndexKeyDefinition],
+                 references: ReferencesDefinition
+                 ):
+        self._constraint_name = constraint_name
+        self._index_name = index_name
+        self._column_list = column_list
+        self._references = references
+
+    @property
+    def constraint_name(self) -> Optional[str]:
+        return self._constraint_name
+
+    @property
+    def index_name(self) -> Optional[str]:
+        return self._index_name
+
+    @property
+    def column_list(self) -> Optional[IndexKeyDefinition]:
+        return self._column_list
+
+    @property
+    def references(self) -> ReferencesDefinition:
+        return self._references
+
+
+class CheckConstraintDefinition(TableElement):
+    """CHECK 约束"""
+
+    __slots__ = (
+        "_constraint_name",
+        "_check_expression",
+        "_enforced"
+    )
+
+    def __init__(self,
+                 constraint_name: Optional[str],
+                 check_expression: Expression,
+                 enforced: Optional[bool]
+                 ):
+        self._constraint_name = constraint_name
+        self._check_expression = check_expression
+        self._enforced = enforced
+
+    @property
+    def constraint_name(self) -> Optional[str]:
+        return self._constraint_name
+
+    @property
+    def check_expression(self) -> Expression:
+        return self._check_expression
+
+    @property
+    def enforced(self) -> Optional[bool]:
+        return self._enforced
