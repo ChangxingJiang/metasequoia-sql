@@ -4383,41 +4383,6 @@ opt_if_not_exists:
         | IF not EXISTS { $$= true; }
         ;
 
-create_table_options_space_separated:
-          create_table_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_ddl_table_option *>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | create_table_options_space_separated create_table_option
-          {
-            $$= $1;
-            if ($$->push_back($2))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-create_table_options:
-          create_table_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_create_table_option *>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | create_table_options opt_comma create_table_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-opt_comma:
-          %empty
-        | ','
-        ;
-
 default_encryption:
           opt_default ENCRYPTION_SYM opt_equal TEXT_STRING_sys { $$ = $4;}
         ;

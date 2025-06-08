@@ -8,6 +8,8 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "CREATE_TABLE_OPTION_LIST",
+    "CREATE_TABLE_OPTION_LIST_SPACE_SEPARATED",
     "CREATE_TABLE_OPTION",
     "TERNARY_OPTION",
     "ROW_FORMAT",
@@ -16,6 +18,36 @@ __all__ = [
     "MERGE_INSERT_TYPE",
     "AUTOEXTEND_SIZE_OPTION",
 ]
+
+# 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表
+CREATE_TABLE_OPTION_LIST = ms_parser.create_group(
+    name="create_table_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_table_option_list", "opt_comma", "create_table_option"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["create_table_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 空格分隔的 `CREATE TABLE` 语句中的表属性的列表
+CREATE_TABLE_OPTION_LIST_SPACE_SEPARATED = ms_parser.create_group(
+    name="create_table_option_list_space_separated",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_table_option_list_space_separated", "create_table_option"],
+            action=ms_parser.template.action.LIST_APPEND_1
+        ),
+        ms_parser.create_rule(
+            symbols=["create_table_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
 
 # `CREATE TABLE` 语句中的表属性
 CREATE_TABLE_OPTION = ms_parser.create_group(

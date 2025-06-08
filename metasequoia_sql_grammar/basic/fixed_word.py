@@ -74,6 +74,17 @@ OPT_BRACES = ms_parser.create_group(
     ]
 )
 
+# 可选的逗号
+OPT_COMMA = ms_parser.create_group(
+    name="opt_comma",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_COMMA]
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
 # `CHARSET` 关键字或 `CHAR SET` 关键字
 KEYWORD_CHARSET = ms_parser.create_group(
     name="keyword_charset",
