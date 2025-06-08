@@ -3844,17 +3844,6 @@ ts_option_initial_size:
           }
         ;
 
-ts_option_autoextend_size:
-          option_autoextend_size
-          {
-            $$ = NEW_PTN PT_alter_tablespace_option_autoextend_size(@$, $1);
-          }
-        ;
-
-option_autoextend_size:
-          AUTOEXTEND_SIZE_SYM opt_equal size_number { $$ = $3; }
-	;
-
 ts_option_max_size:
           MAX_SIZE_SYM opt_equal size_number
           {
@@ -3933,56 +3922,6 @@ ts_option_engine_attribute:
           ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
           {
             $$ = make_tablespace_engine_attribute(YYMEM_ROOT, $3);
-          }
-        ;
-
-size_number:
-          real_ulonglong_num { $$= $1;}
-        | IDENT_sys
-          {
-            ulonglong number;
-            uint text_shift_number= 0;
-            longlong prefix_number;
-            const char *start_ptr= $1.str;
-            size_t str_len= $1.length;
-            const char *end_ptr= start_ptr + str_len;
-            int error;
-            prefix_number= my_strtoll10(start_ptr, &end_ptr, &error);
-            if ((start_ptr + str_len - 1) == end_ptr)
-            {
-              switch (end_ptr[0])
-              {
-                case 'g':
-                case 'G':
-                  text_shift_number+=10;
-                  [[fallthrough]];
-                case 'm':
-                case 'M':
-                  text_shift_number+=10;
-                  [[fallthrough]];
-                case 'k':
-                case 'K':
-                  text_shift_number+=10;
-                  break;
-                default:
-                {
-                  my_error(ER_WRONG_SIZE_NUMBER, MYF(0));
-                  MYSQL_YYABORT;
-                }
-              }
-              if (prefix_number >> 31)
-              {
-                my_error(ER_SIZE_OVERFLOW_ERROR, MYF(0));
-                MYSQL_YYABORT;
-              }
-              number= prefix_number << text_shift_number;
-            }
-            else
-            {
-              my_error(ER_WRONG_SIZE_NUMBER, MYF(0));
-              MYSQL_YYABORT;
-            }
-            $$= number;
           }
         ;
 
@@ -4479,226 +4418,9 @@ opt_comma:
         | ','
         ;
 
-create_table_option:
-          ENGINE_SYM opt_equal ident_or_text
-          {
-            $$= NEW_PTN PT_create_table_engine_option(@$, to_lex_cstring($3));
-          }
-        | SECONDARY_ENGINE_SYM opt_equal NULL_SYM
-          {
-            $$= NEW_PTN PT_create_table_secondary_engine_option(@$);
-          }
-        | SECONDARY_ENGINE_SYM opt_equal ident_or_text
-          {
-            $$= NEW_PTN PT_create_table_secondary_engine_option(@$, to_lex_cstring($3));
-          }
-        | MAX_ROWS opt_equal ulonglong_num
-          {
-            $$= NEW_PTN PT_create_max_rows_option(@$, $3);
-          }
-        | MIN_ROWS opt_equal ulonglong_num
-          {
-            $$= NEW_PTN PT_create_min_rows_option(@$, $3);
-          }
-        | AVG_ROW_LENGTH opt_equal ulonglong_num
-          {
-            // The frm-format only allocated 4 bytes for avg_row_length, and
-            // there is code which assumes it can be represented as an uint,
-            // so we constrain it here.
-            if ($3 > std::numeric_limits<std::uint32_t>::max()) {
-              YYTHD->syntax_error_at(@3,
-              "The valid range for avg_row_length is [0,4294967295]. Error"
-              );
-              MYSQL_YYABORT;
-            }
-            $$= NEW_PTN PT_create_avg_row_length_option(@$, $3);
-          }
-        | PASSWORD opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_password_option(@$, $3.str);
-          }
-        | COMMENT_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_commen_option(@$, $3);
-          }
-        | COMPRESSION_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_compress_option(@$, $3);
-          }
-        | ENCRYPTION_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_encryption_option(@$, $3);
-          }
-        | AUTO_INC opt_equal ulonglong_num
-          {
-            $$= NEW_PTN PT_create_auto_increment_option(@$, $3);
-          }
-        | PACK_KEYS_SYM opt_equal ternary_option
-          {
-            $$= NEW_PTN PT_create_pack_keys_option(@$, $3);
-          }
-        | STATS_AUTO_RECALC_SYM opt_equal ternary_option
-          {
-            $$= NEW_PTN PT_create_stats_auto_recalc_option(@$, $3);
-          }
-        | STATS_PERSISTENT_SYM opt_equal ternary_option
-          {
-            $$= NEW_PTN PT_create_stats_persistent_option(@$, $3);
-          }
-        | STATS_SAMPLE_PAGES_SYM opt_equal ulong_num
-          {
-            /* From user point of view STATS_SAMPLE_PAGES can be specified as
-            STATS_SAMPLE_PAGES=N (where 0<N<=65535, it does not make sense to
-            scan 0 pages) or STATS_SAMPLE_PAGES=default. Internally we record
-            =default as 0. See create_frm() in sql/table.cc, we use only two
-            bytes for stats_sample_pages and this is why we do not allow
-            larger values. 65535 pages, 16kb each means to sample 1GB, which
-            is impractical. If at some point this needs to be extended, then
-            we can store the higher bits from stats_sample_pages in .frm too. */
-            if ($3 == 0 || $3 > 0xffff)
-            {
-              YYTHD->syntax_error_at(@3,
-              "The valid range for stats_sample_pages is [1, 65535]. Error");
-              MYSQL_YYABORT;
-            }
-            $$= NEW_PTN PT_create_stats_stable_pages(@$, $3);
-          }
-        | STATS_SAMPLE_PAGES_SYM opt_equal DEFAULT_SYM
-          {
-            $$= NEW_PTN PT_create_stats_stable_pages(@$);
-          }
-        | CHECKSUM_SYM opt_equal ulong_num
-          {
-            $$= NEW_PTN PT_create_checksum_option(@$, $3);
-          }
-        | TABLE_CHECKSUM_SYM opt_equal ulong_num
-          {
-            $$= NEW_PTN PT_create_checksum_option(@$, $3);
-          }
-        | DELAY_KEY_WRITE_SYM opt_equal ulong_num
-          {
-            $$= NEW_PTN PT_create_delay_key_write_option(@$, $3);
-          }
-        | ROW_FORMAT_SYM opt_equal row_types
-          {
-            $$= NEW_PTN PT_create_row_format_option(@$, $3);
-          }
-        | UNION_SYM opt_equal '(' opt_table_list ')'
-          {
-            $$= NEW_PTN PT_create_union_option(@$, $4);
-          }
-        | default_charset
-          {
-            $$= NEW_PTN PT_create_table_default_charset(@$, $1);
-          }
-        | default_collation
-          {
-            $$= NEW_PTN PT_create_table_default_collation(@$, $1);
-          }
-        | INSERT_METHOD opt_equal merge_insert_types
-          {
-            $$= NEW_PTN PT_create_insert_method_option(@$, $3);
-          }
-        | DATA_SYM DIRECTORY_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_data_directory_option(@$, $4.str);
-          }
-        | INDEX_SYM DIRECTORY_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_index_directory_option(@$, $4.str);
-          }
-        | TABLESPACE_SYM opt_equal ident
-          {
-            $$= NEW_PTN PT_create_tablespace_option(@$, $3.str);
-          }
-        | STORAGE_SYM DISK_SYM
-          {
-            $$= NEW_PTN PT_create_storage_option(@$, HA_SM_DISK);
-          }
-        | STORAGE_SYM MEMORY_SYM
-          {
-            $$= NEW_PTN PT_create_storage_option(@$, HA_SM_MEMORY);
-          }
-        | CONNECTION_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_create_connection_option(@$, $3);
-          }
-        | KEY_BLOCK_SIZE opt_equal ulonglong_num
-          {
-            // The frm-format only allocated 2 bytes for key_block_size,
-            // even if it is represented as std::uint32_t in HA_CREATE_INFO and
-            // elsewhere.
-            if ($3 > std::numeric_limits<std::uint16_t>::max()) {
-              YYTHD->syntax_error_at(@3,
-              "The valid range for key_block_size is [0,65535]. Error");
-              MYSQL_YYABORT;
-            }
-
-            $$= NEW_PTN
-            PT_create_key_block_size_option(@$, static_cast<std::uint32_t>($3));
-          }
-        | START_SYM TRANSACTION_SYM
-          {
-            $$= NEW_PTN PT_create_start_transaction_option(@$, true);
-	  }
-        | ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_table_engine_attribute(YYMEM_ROOT, $3);
-          }
-        | SECONDARY_ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_table_secondary_engine_attribute(YYMEM_ROOT, $3);
-          }
-        | option_autoextend_size
-          {
-            $$ = NEW_PTN PT_create_ts_autoextend_size_option(@$, $1);
-          }
-        ;
-
-ternary_option:
-          ulong_num
-          {
-            switch($1) {
-            case 0:
-                $$= Ternary_option::OFF;
-                break;
-            case 1:
-                $$= Ternary_option::ON;
-                break;
-            default:
-                YYTHD->syntax_error();
-                MYSQL_YYABORT;
-            }
-          }
-        | DEFAULT_SYM { $$= Ternary_option::DEFAULT; }
-        ;
-
-default_charset:
-          opt_default character_set opt_equal charset_name { $$ = $4; }
-        ;
-
-default_collation:
-          opt_default COLLATE_SYM opt_equal collation_name { $$ = $4;}
-        ;
-
 default_encryption:
           opt_default ENCRYPTION_SYM opt_equal TEXT_STRING_sys { $$ = $4;}
         ;
-
-row_types:
-          DEFAULT_SYM    { $$= ROW_TYPE_DEFAULT; }
-        | FIXED_SYM      { $$= ROW_TYPE_FIXED; }
-        | DYNAMIC_SYM    { $$= ROW_TYPE_DYNAMIC; }
-        | COMPRESSED_SYM { $$= ROW_TYPE_COMPRESSED; }
-        | REDUNDANT_SYM  { $$= ROW_TYPE_REDUNDANT; }
-        | COMPACT_SYM    { $$= ROW_TYPE_COMPACT; }
-        ;
-
-merge_insert_types:
-         NO_SYM          { $$= MERGE_INSERT_DISABLED; }
-       | FIRST_SYM       { $$= MERGE_INSERT_TO_FIRST; }
-       | LAST_SYM        { $$= MERGE_INSERT_TO_LAST; }
-       ;
 
 udf_type:
           STRING_SYM {$$ = (int) STRING_RESULT; }
@@ -4710,11 +4432,6 @@ udf_type:
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
-        ;
-
-opt_default:
-          %empty {}
-        | DEFAULT_SYM {}
         ;
 
 opt_unique:
@@ -6756,21 +6473,6 @@ drop_role_stmt:
           }
         ;
 
-table_list:
-          table_ident
-          {
-            $$= NEW_PTN Mem_root_array<Table_ident *>(YYMEM_ROOT);
-            if ($$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | table_list ',' table_ident
-          {
-            $$= $1;
-            if ($$ == nullptr || $$->push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
 if_exists:
           %empty { $$= 0; }
         | IF EXISTS { $$= 1; }
@@ -7547,11 +7249,6 @@ flush_option:
           { Lex->type|= REFRESH_USER_RESOURCES; }
         | OPTIMIZER_COSTS_SYM
           { Lex->type|= REFRESH_OPTIMIZER_COSTS; }
-        ;
-
-opt_table_list:
-          %empty { $$= nullptr; }
-        | table_list
         ;
 
 reset:

@@ -11,6 +11,8 @@ __all__ = [
     "IDENT_SYS",
     "IDENT_2",
     "IDENT_3",
+    "OPT_TABLE_IDENT_LIST",
+    "TABLE_IDENT_LIST",
     "TABLE_IDENT",
     "TABLE_IDENT_OPT_WILD_LIST",
     "TABLE_IDENT_OPT_WILD",
@@ -57,6 +59,32 @@ IDENT_3 = ms_parser.create_group(
             action=lambda x: ast.Ident3D(value1=x[0].get_str_value(), value2=x[2].get_str_value(),
                                          value3=x[4].get_str_value())
         ),
+    ]
+)
+
+# 可选的表标识符的列表
+OPT_TABLE_IDENT_LIST = ms_parser.create_group(
+    name="opt_table_ident_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["table_ident_list"],
+        ),
+        ms_parser.template.group.EMPTY_LIST
+    ]
+)
+
+# 表标识符的列表
+TABLE_IDENT_LIST = ms_parser.create_group(
+    name="table_ident_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["table_ident_list", TType.OPERATOR_COMMA, "table_ident"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["table_ident"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
     ]
 )
 

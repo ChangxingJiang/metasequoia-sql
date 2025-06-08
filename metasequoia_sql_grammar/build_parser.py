@@ -5,7 +5,6 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -39,6 +38,7 @@ from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import column_attribute
 from metasequoia_sql_grammar.phrase import ddl_index_attribute
 from metasequoia_sql_grammar.phrase import ddl_table_element
+from metasequoia_sql_grammar.phrase import ddl_table_option
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
@@ -203,6 +203,7 @@ def build_grammar():
         column_attribute,  # DDL 字段属性
         ddl_table_element,  # DDL 表元素
         ddl_index_attribute,  # DDL 索引属性
+        ddl_table_option,  # DDL 表属性
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -251,14 +252,18 @@ def build_grammar():
 
 if __name__ == "__main__":
     import os
+    import time
 
     repository_path = os.path.dirname(os.path.dirname(__file__))
     parser_path = os.path.join(repository_path, "metasequoia_sql", "syntax", "parser.py")
 
+    start_time = time.time()
     parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True)
     source_code = ms_parser.compiler.compile_lalr1(parser, import_list=[
         "from metasequoia_sql import ast"
     ])
+    end_time = time.time()
+    print(f"编译完成，耗时：{end_time - start_time:.3f} 秒")
     with open(parser_path, "w+", encoding="UTF-8") as file:
         for row in source_code:
             file.write(f"{row}\n")

@@ -58,6 +58,7 @@ __all__ = [
     "SIGNED_LITERAL",
     "SIGNED_LITERAL_OR_NULL",
     "IDENT_OR_TEXT",
+    "SIZE_NUMBER",
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
@@ -324,6 +325,19 @@ IDENT_OR_TEXT = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["text_literal_sys"]
+        )
+    ]
+)
+
+# 磁盘大小的数值
+SIZE_NUMBER = ms_parser.create_group(
+    name="size_number",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["int_literal_or_hex"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_sys"],
         )
     ]
 )

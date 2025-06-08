@@ -327,8 +327,8 @@ class IndexDefinition(TableElement):
                  index_type: EnumIndexType,
                  index_name: Optional[str],
                  index_structure_type: Optional["EnumIndexStructureType"],
-                 index_key_list: List[IndexKeyDefinition],
-                 index_options: List[IndexAttribute]
+                 index_key_list: List["IndexKeyDefinition"],
+                 index_options: List["IndexAttribute"]
                  ):
         self._index_type = index_type
         self._index_name = index_name
@@ -349,11 +349,11 @@ class IndexDefinition(TableElement):
         return self._index_structure_type
 
     @property
-    def index_key_list(self) -> List[IndexKeyDefinition]:
+    def index_key_list(self) -> List["IndexKeyDefinition"]:
         return self._index_key_list
 
     @property
-    def index_options(self) -> List[IndexAttribute]:
+    def index_options(self) -> List["IndexAttribute"]:
         return self._index_options
 
 

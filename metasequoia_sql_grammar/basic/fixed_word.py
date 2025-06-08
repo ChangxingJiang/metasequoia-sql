@@ -15,7 +15,6 @@ __all__ = [
     "KEYWORD_NCHAR",
     "KEYWORD_VARCHAR",
     "KEYWORD_NVARCHAR",
-    "KEYWORD_KEY_OR_INDEX",
     "OPT_EQUAL",
     "EQUAL",
 ]
@@ -48,6 +47,17 @@ OPT_KEYWORD_INTO = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INTO]
+        ),
+        ms_parser.template.group.EMPTY_NULL
+    ]
+)
+
+# 可选的 `DEFAULT` 关键字
+OPT_KEYWORD_DEFAULT = ms_parser.create_group(
+    name="opt_keyword_default",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT]
         ),
         ms_parser.template.group.EMPTY_NULL
     ]
@@ -133,19 +143,6 @@ KEYWORD_NVARCHAR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_NCHAR, TType.KEYWORD_VARYING],
             action=lambda _: None
-        )
-    ]
-)
-
-# KEY 关键字或 INDEX 关键字
-KEYWORD_KEY_OR_INDEX = ms_parser.create_group(
-    name="keyword_key_or_index",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_KEY]
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_INDEX]
         )
     ]
 )
