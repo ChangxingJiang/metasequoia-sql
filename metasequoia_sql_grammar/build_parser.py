@@ -200,7 +200,7 @@ def build_grammar():
         alias,  # 短语 - 别名
         time_interval,  # 短语 - 时间间隔
         dml_option,  # DML 选项
-        column_attribute,  # DDL 字段属性
+        ddl_column_attribute,  # DDL 字段属性
         ddl_table_element,  # DDL 表元素
         ddl_index_attribute,  # DDL 索引属性
         ddl_table_option,  # DDL 表属性
@@ -229,7 +229,7 @@ def build_grammar():
         order_by_clause,  # ORDER BY 子句
         over_clause,  # OVER 子句
         partition_clause,  # PARTITION 子句
-        partition_by_clause,  # PARTITION BY 子句
+        window_partition_by_clause,  # PARTITION BY 子句
         qualify_clause,  # QUALIFY 子句
         where_clause,  # WHERE 子句
         window_clause,  # WINDOW 子句
