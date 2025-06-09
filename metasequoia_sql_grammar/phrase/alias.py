@@ -19,7 +19,7 @@ OPT_KEYWORD_AS = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AS]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -35,7 +35,7 @@ OPT_SELECT_ALIAS = ms_parser.create_group(
             symbols=["opt_keyword_as", "text_literal_sys"],
             action=lambda x: x[1].get_str_value()
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -47,6 +47,6 @@ OPT_TABLE_ALIAS = ms_parser.create_group(
             symbols=["opt_keyword_as", "ident"],
             action=lambda x: x[1].get_str_value()
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
