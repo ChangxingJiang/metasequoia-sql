@@ -11,6 +11,7 @@ __all__ = [
     "OPT_KEYWORD_ALL",
     "OPT_KEYWORD_INTO",
     "OPT_KEYWORD_DEFAULT",
+    "OPT_KEYWORD_STORAGE",
     "OPT_BRACES",
     "OPT_COMMA",
     "KEYWORD_CHARSET",
@@ -60,6 +61,17 @@ OPT_KEYWORD_DEFAULT = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DEFAULT]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `STORAGE` 关键字
+OPT_KEYWORD_STORAGE = ms_parser.create_group(
+    name="opt_keyword_storage",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_STORAGE]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

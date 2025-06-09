@@ -19,6 +19,7 @@ __all__ = [
     "OPT_WILD",
     "SIMPLE_IDENT",
     "SIMPLE_IDENT_LIST",
+    "OPT_IDENT_LIST",
     "IDENT_LIST",
     "OPT_IDENT_LIST_PARENS",
     "OPT_IDENT",
@@ -168,6 +169,17 @@ SIMPLE_IDENT_LIST = ms_parser.create_group(
             symbols=["simple_ident"],
             action=ms_parser.template.action.LIST_INIT_0
         )
+    ]
+)
+
+# 可选的单个标识符（`ident`）的列表
+OPT_IDENT_LIST = ms_parser.create_group(
+    name="opt_ident_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
