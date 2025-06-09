@@ -28,7 +28,7 @@ OPT_GROUP_BY_CLAUSE = ms_parser.create_group(
             symbols=[TType.KEYWORD_GROUP, TType.KEYWORD_BY, TType.KEYWORD_CUBE, "expr_list"],
             action=lambda x: ast.GroupByClause(columns=x[3], olap_opt=ast.EnumOlapOpt.CUBE)
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

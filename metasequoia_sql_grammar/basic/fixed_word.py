@@ -28,7 +28,7 @@ OPT_KEYWORD_OF = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_OF]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -39,7 +39,7 @@ OPT_KEYWORD_ALL = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALL]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -50,7 +50,7 @@ OPT_KEYWORD_INTO = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INTO]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -61,7 +61,7 @@ OPT_KEYWORD_DEFAULT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DEFAULT]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -72,7 +72,7 @@ OPT_BRACES = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, TType.OPERATOR_RPAREN]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -83,7 +83,7 @@ OPT_COMMA = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_COMMA]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -167,7 +167,7 @@ OPT_EQUAL = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["equal"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

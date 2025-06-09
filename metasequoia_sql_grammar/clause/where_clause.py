@@ -18,7 +18,7 @@ OPT_WHERE_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["where_clause"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

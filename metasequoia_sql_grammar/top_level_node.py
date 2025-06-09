@@ -60,6 +60,6 @@ OPT_END_OF_INPUT = ms_parser.create_group(
             symbols=[TType.SYSTEM_END_OF_INPUT],
             action=lambda _: None
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

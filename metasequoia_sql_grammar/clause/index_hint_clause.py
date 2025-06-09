@@ -140,6 +140,6 @@ OPT_INDEX_HINT_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["index_hint_list"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

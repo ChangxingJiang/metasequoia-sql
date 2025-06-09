@@ -117,6 +117,6 @@ OPT_COLLATE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_COLLATE, "charset_name"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

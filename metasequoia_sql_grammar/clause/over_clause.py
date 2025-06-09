@@ -147,7 +147,7 @@ OPT_WINDOW_FRAME_CLAUSE = ms_parser.create_group(
             symbols=["window_border_type", "window_frame_extent", "opt_window_exclude"],
             action=lambda x: ast.WindowFrame(border_type=x[0], borders=x[1], exclusion=x[2])
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -188,6 +188,6 @@ OPT_WINDOWING_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["windowing_clause"],
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

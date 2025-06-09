@@ -25,7 +25,7 @@ OPT_COLUMN_ATTRIBUTE_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["column_attribute_list"]
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
@@ -206,7 +206,7 @@ OPT_CONSTRAINT_NAME = ms_parser.create_group(
             symbols=[TType.KEYWORD_CONSTRAINT, "opt_ident"],
             action=lambda x: x[1]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

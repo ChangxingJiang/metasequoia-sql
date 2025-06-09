@@ -482,7 +482,7 @@ OPT_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["expr"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -668,7 +668,7 @@ OPT_CASE_ELSE = ms_parser.create_group(
             symbols=[TType.KEYWORD_ELSE, "expr"],
             action=lambda x: x[1]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -679,7 +679,7 @@ OPT_EXPR_OR_DEFAULT_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["expr_or_default_list"]
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 

@@ -21,7 +21,7 @@ OPT_LIMIT_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["limit_clause"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -52,7 +52,7 @@ OPT_SIMPLE_LIMIT_CLAUSE = ms_parser.create_group(
             symbols=[TType.KEYWORD_LIMIT, "limit_option"],
             action=lambda x: ast.LimitClause(offset=None, limit=x[1])
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

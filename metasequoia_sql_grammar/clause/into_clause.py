@@ -27,7 +27,7 @@ OPT_INTO_CLAUSE = ms_parser.create_group(
             symbols=[TType.KEYWORD_INTO, "into_destination"],
             action=lambda x: x[1]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -59,7 +59,7 @@ OPT_LOAD_DATA_CHARSET = ms_parser.create_group(
             symbols=["keyword_charset", "charset_name"],
             action=lambda x: x[1]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

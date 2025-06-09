@@ -21,7 +21,7 @@ OPT_WITH_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["with_clause"],
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

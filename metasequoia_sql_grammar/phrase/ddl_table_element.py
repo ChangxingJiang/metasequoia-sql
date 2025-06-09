@@ -486,7 +486,7 @@ OPT_KEYWORD_KEY_OR_INDEX = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["keyword_key_or_index"],
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -513,7 +513,7 @@ OPT_CONSTRAINT_ENFORCEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["constraint_enforcement"],
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

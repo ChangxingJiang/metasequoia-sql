@@ -131,7 +131,7 @@ OPT_KEYWORD_INNER = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INNER]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -142,6 +142,6 @@ OPT_KEYWORD_OUTER = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_OUTER]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

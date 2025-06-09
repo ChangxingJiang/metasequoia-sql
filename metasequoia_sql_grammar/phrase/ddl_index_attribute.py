@@ -29,7 +29,7 @@ OPT_SPATIAL_INDEX_ATTRIBUTE_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["spatial_index_attribute_list"]
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
@@ -65,7 +65,7 @@ OPT_FULLTEXT_INDEX_ATTRIBUTE_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["fulltext_index_attribute_list"]
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
@@ -105,7 +105,7 @@ OPT_NORMAL_INDEX_ATTRIBUTE_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["normal_index_attribute_list"]
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 

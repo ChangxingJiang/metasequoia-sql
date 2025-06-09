@@ -18,6 +18,6 @@ OPT_QUALIFY_CLAUSE = ms_parser.create_group(
             symbols=[TType.KEYWORD_QUALIFY, "expr"],
             action=lambda x: x[1]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

@@ -69,7 +69,7 @@ OPT_TABLE_IDENT_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["table_ident_list"],
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
@@ -136,7 +136,7 @@ OPT_WILD = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_DOT, TType.OPERATOR_STAR]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -194,7 +194,7 @@ OPT_IDENT_LIST_PARENS = ms_parser.create_group(
             symbols=[TType.OPERATOR_LPAREN, "ident_list", TType.OPERATOR_RPAREN],
             action=lambda x: x[1]
         ),
-        ms_parser.template.group.EMPTY_LIST
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
@@ -206,6 +206,6 @@ OPT_IDENT = ms_parser.create_group(
             symbols=["ident"],
             action=lambda x: x[0].get_str_value()
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

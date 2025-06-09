@@ -20,7 +20,7 @@ OPT_PARTITION_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["partition_clause"]
         ),
-        ms_parser.template.group.EMPTY_NULL
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
