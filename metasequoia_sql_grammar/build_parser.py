@@ -45,11 +45,13 @@ from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import update_statement
+from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -208,6 +210,7 @@ def build_grammar():
         ddl_index_attribute,  # DDL 索引属性
         ddl_table_option,  # DDL 表属性
         on_duplicate,  # 重复值处理规则
+        ddl_alter_option,  # DDL 修改表选项
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -240,6 +243,7 @@ def build_grammar():
         with_clause,  # WITH 子句
 
         # 语句
+        create_index_statement,  # CREATE INDEX 语句
         create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句
         select_statement,  # SELECT 语句

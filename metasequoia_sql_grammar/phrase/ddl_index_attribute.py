@@ -8,16 +8,24 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    # SPATIAL 类型索引选项
     "OPT_SPATIAL_INDEX_ATTRIBUTE_LIST",
     "SPATIAL_INDEX_ATTRIBUTE_LIST",
     "SPATIAL_INDEX_ATTRIBUTE",
+
+    # FULLTEXT 类型索引选项
     "OPT_FULLTEXT_INDEX_ATTRIBUTE_LIST",
     "FULLTEXT_INDEX_ATTRIBUTE_LIST",
     "FULLTEXT_INDEX_ATTRIBUTE",
+
+    # 普通类型索引选项
     "OPT_NORMAL_INDEX_ATTRIBUTE_LIST",
     "NORMAL_INDEX_ATTRIBUTE_LIST",
     "NORMAL_INDEX_ATTRIBUTE",
+
+    # 通用索引选项
     "COMMON_INDEX_ATTRIBUTE",
+    "OPT_INDEX_TYPE_CLAUSE",
     "INDEX_TYPE_CLAUSE",
     "INDEX_STRUCTURE_TYPE",
 ]
@@ -165,6 +173,17 @@ COMMON_INDEX_ATTRIBUTE = ms_parser.create_group(
             symbols=[TType.KEYWORD_SECONDARY_ENGINE_ATTRIBUTE, "opt_equal", "text_literal_sys"],
             action=lambda x: ast.IndexAttrSecondaryEngineAttribute(attribute=x[2].get_str_value())
         )
+    ]
+)
+
+# 可选的指定索引数据结构类型的子句
+OPT_INDEX_TYPE_CLAUSE = ms_parser.create_group(
+    name="opt_index_type_clause",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["index_type_clause"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

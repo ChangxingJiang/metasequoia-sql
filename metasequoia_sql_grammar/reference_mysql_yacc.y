@@ -1363,34 +1363,6 @@ default_role_clause:
           }
         ;
 
-create_index_stmt:
-          CREATE opt_unique INDEX_SYM ident opt_index_type_clause
-          ON_SYM table_ident '(' key_list_with_expression ')' opt_index_options
-          opt_index_lock_and_algorithm
-          {
-            $$= NEW_PTN PT_create_index_stmt(@$, YYMEM_ROOT, $2, $4, $5,
-                                             $7, $9, $11,
-                                             $12.algo.get_or_default(),
-                                             $12.lock.get_or_default());
-          }
-        | CREATE FULLTEXT_SYM INDEX_SYM ident ON_SYM table_ident
-          '(' key_list_with_expression ')' opt_fulltext_index_options opt_index_lock_and_algorithm
-          {
-            $$= NEW_PTN PT_create_index_stmt(@$, YYMEM_ROOT, KEYTYPE_FULLTEXT, $4,
-                                             nullptr, $6, $8, $10,
-                                             $11.algo.get_or_default(),
-                                             $11.lock.get_or_default());
-          }
-        | CREATE SPATIAL_SYM INDEX_SYM ident ON_SYM table_ident
-          '(' key_list_with_expression ')' opt_spatial_index_options opt_index_lock_and_algorithm
-          {
-            $$= NEW_PTN PT_create_index_stmt(@$, YYMEM_ROOT, KEYTYPE_SPATIAL, $4,
-                                             nullptr, $6, $8, $10,
-                                             $11.algo.get_or_default(),
-                                             $11.lock.get_or_default());
-          }
-        ;
-
 server_options_list:
           server_option
         | server_options_list ',' server_option
@@ -3974,16 +3946,6 @@ old_or_new_charset_name_or_default:
         | DEFAULT_SYM    { $$=nullptr; }
         ;
 
-opt_unique:
-          %empty { $$= KEYTYPE_MULTIPLE; }
-        | UNIQUE_SYM   { $$= KEYTYPE_UNIQUE; }
-        ;
-
-opt_index_type_clause:
-          %empty { $$ = nullptr; }
-        | index_type_clause
-        ;
-
 visibility:
           VISIBLE_SYM { $$= true; }
         | INVISIBLE_SYM { $$= false; }
@@ -4998,82 +4960,6 @@ alter_commands_modifier:
           {
             $$.init();
             $$.validation.set($1);
-          }
-        ;
-
-opt_index_lock_and_algorithm:
-          %empty { $$.init(); }
-        | alter_lock_option
-          {
-            $$.init();
-            $$.lock.set($1);
-          }
-        | alter_algorithm_option
-          {
-            $$.init();
-            $$.algo.set($1);
-          }
-        | alter_lock_option alter_algorithm_option
-          {
-            $$.init();
-            $$.lock.set($1);
-            $$.algo.set($2);
-          }
-        | alter_algorithm_option alter_lock_option
-          {
-            $$.init();
-            $$.algo.set($1);
-            $$.lock.set($2);
-          }
-        ;
-
-alter_algorithm_option:
-          ALGORITHM_SYM opt_equal alter_algorithm_option_value { $$= $3; }
-        ;
-
-alter_algorithm_option_value:
-          DEFAULT_SYM
-          {
-            $$= Alter_info::ALTER_TABLE_ALGORITHM_DEFAULT;
-          }
-        | ident
-          {
-            if (is_identifier($1, "INPLACE"))
-              $$= Alter_info::ALTER_TABLE_ALGORITHM_INPLACE;
-            else if (is_identifier($1, "INSTANT"))
-              $$= Alter_info::ALTER_TABLE_ALGORITHM_INSTANT;
-            else if (is_identifier($1, "COPY"))
-              $$= Alter_info::ALTER_TABLE_ALGORITHM_COPY;
-            else
-            {
-              my_error(ER_UNKNOWN_ALTER_ALGORITHM, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
-          }
-        ;
-
-alter_lock_option:
-          LOCK_SYM opt_equal alter_lock_option_value { $$= $3; }
-        ;
-
-alter_lock_option_value:
-          DEFAULT_SYM
-          {
-            $$= Alter_info::ALTER_TABLE_LOCK_DEFAULT;
-          }
-        | ident
-          {
-            if (is_identifier($1, "NONE"))
-              $$= Alter_info::ALTER_TABLE_LOCK_NONE;
-            else if (is_identifier($1, "SHARED"))
-              $$= Alter_info::ALTER_TABLE_LOCK_SHARED;
-            else if (is_identifier($1, "EXCLUSIVE"))
-              $$= Alter_info::ALTER_TABLE_LOCK_EXCLUSIVE;
-            else
-            {
-              my_error(ER_UNKNOWN_ALTER_LOCK, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
           }
         ;
 
