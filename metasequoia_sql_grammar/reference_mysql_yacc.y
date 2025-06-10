@@ -4763,22 +4763,6 @@ standalone_alter_commands:
           }
         ;
 
-opt_with_validation:
-          %empty { $$= Alter_info::ALTER_VALIDATION_DEFAULT; }
-        | with_validation
-        ;
-
-with_validation:
-          WITH VALIDATION_SYM
-          {
-            $$= Alter_info::ALTER_WITH_VALIDATION;
-          }
-        | WITHOUT_SYM VALIDATION_SYM
-          {
-            $$= Alter_info::ALTER_WITHOUT_VALIDATION;
-          }
-        ;
-
 all_or_alt_part_name_list:
           ALL                   { $$= nullptr; }
         | ident_string_list
@@ -4817,15 +4801,6 @@ alter_list:
               if ($1.actions->push_back(option))
                 MYSQL_YYABORT; // OOM
             }
-          }
-        ;
-
-alter_commands_modifier_list:
-          alter_commands_modifier
-        | alter_commands_modifier_list ',' alter_commands_modifier
-          {
-            $$= $1;
-            $$.merge($3);
           }
         ;
 
@@ -4942,24 +4917,6 @@ alter_list_item:
         | ORDER_SYM BY alter_order_list
           {
             $$= NEW_PTN PT_alter_table_order(@$, $3);
-          }
-        ;
-
-alter_commands_modifier:
-          alter_algorithm_option
-          {
-            $$.init();
-            $$.algo.set($1);
-          }
-        | alter_lock_option
-          {
-            $$.init();
-            $$.lock.set($1);
-          }
-        | with_validation
-          {
-            $$.init();
-            $$.validation.set($1);
           }
         ;
 

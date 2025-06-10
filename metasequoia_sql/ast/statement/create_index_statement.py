@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.ddl_table_element import EnumIndexType, IndexKeyDefinition
     from metasequoia_sql.ast.phrase.ddl_index_attribute import IndexAttrUsingIndexType, IndexAttribute
     from metasequoia_sql.ast.basic.ident import TableIdent
-    from metasequoia_sql.ast.phrase.ddl_alter_option import AlterLockOption, AlterAlgorithmOption
+    from metasequoia_sql.ast.phrase.ddl_alter_option import AlterOptionLock, AlterOptionAlgorithm
 
 __all__ = [
     "CreateIndexStmt"
@@ -38,8 +38,8 @@ class CreateIndexStmt(Node):
                  table_name: "TableIdent",
                  index_key_list: List[IndexKeyDefinition],
                  index_options: List[IndexAttribute],
-                 alter_lock: Optional["AlterLockOption"],
-                 alter_algorithm: Optional["AlterAlgorithmOption"]
+                 alter_lock: Optional["AlterOptionLock"],
+                 alter_algorithm: Optional["AlterOptionAlgorithm"]
                  ):
         self._index_type = index_type
         self._index_name = index_name
@@ -75,9 +75,9 @@ class CreateIndexStmt(Node):
         return self._index_options
 
     @property
-    def alter_lock(self) -> Optional["AlterLockOption"]:
+    def alter_lock(self) -> Optional["AlterOptionLock"]:
         return self._alter_lock
 
     @property
-    def alter_algorithm(self) -> Optional["AlterAlgorithmOption"]:
+    def alter_algorithm(self) -> Optional["AlterOptionAlgorithm"]:
         return self._alter_algorithm
