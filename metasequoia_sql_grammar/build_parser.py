@@ -5,6 +5,7 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -24,11 +25,11 @@ from metasequoia_sql_grammar.clause import limit_clause
 from metasequoia_sql_grammar.clause import locking_clause
 from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
-from metasequoia_sql_grammar.clause import window_partition_by_clause
 from metasequoia_sql_grammar.clause import partition_clause
 from metasequoia_sql_grammar.clause import qualify_clause
 from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
+from metasequoia_sql_grammar.clause import window_partition_by_clause
 from metasequoia_sql_grammar.clause import with_clause
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
@@ -42,7 +43,9 @@ from metasequoia_sql_grammar.phrase import ddl_table_option
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
+from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import select_statement
@@ -204,6 +207,7 @@ def build_grammar():
         ddl_table_element,  # DDL 表元素
         ddl_index_attribute,  # DDL 索引属性
         ddl_table_option,  # DDL 表属性
+        on_duplicate,  # 重复值处理规则
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -236,6 +240,7 @@ def build_grammar():
         with_clause,  # WITH 子句
 
         # 语句
+        create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句
         select_statement,  # SELECT 语句
         update_statement,  # UPDATE 语句

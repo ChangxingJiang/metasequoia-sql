@@ -1153,39 +1153,6 @@ opt_channel:
           { $$ = to_lex_cstring($3); }
         ;
 
-create_table_stmt:
-          CREATE opt_temporary TABLE_SYM opt_if_not_exists table_ident
-          '(' table_element_list ')' opt_create_table_options_etc
-          {
-            $$= NEW_PTN PT_create_table_stmt(@$, YYMEM_ROOT, $2, $4, $5,
-                                             $7,
-                                             $9.opt_create_table_options,
-                                             $9.opt_partitioning,
-                                             $9.on_duplicate,
-                                             $9.opt_query_expression);
-          }
-        | CREATE opt_temporary TABLE_SYM opt_if_not_exists table_ident
-          opt_create_table_options_etc
-          {
-            $$= NEW_PTN PT_create_table_stmt(@$, YYMEM_ROOT, $2, $4, $5,
-                                             nullptr,
-                                             $6.opt_create_table_options,
-                                             $6.opt_partitioning,
-                                             $6.on_duplicate,
-                                             $6.opt_query_expression);
-          }
-        | CREATE opt_temporary TABLE_SYM opt_if_not_exists table_ident
-          LIKE table_ident
-          {
-            $$= NEW_PTN PT_create_table_stmt(@$, YYMEM_ROOT, $2, $4, $5, $7);
-          }
-        | CREATE opt_temporary TABLE_SYM opt_if_not_exists table_ident
-          '(' LIKE table_ident ')'
-          {
-            $$= NEW_PTN PT_create_table_stmt(@$, YYMEM_ROOT, $2, $4, $5, $8);
-          }
-        ;
-
 create_role_stmt:
           CREATE ROLE_SYM opt_if_not_exists role_list
           {
@@ -3929,81 +3896,6 @@ ts_option_engine_attribute:
   End tablespace part
 */
 
-/*
-  To avoid grammar conflicts, we introduce the next few rules in very details:
-  we workaround empty rules for optional AS and DUPLICATE clauses by expanding
-  them in place of the caller rule:
-
-  opt_create_table_options_etc ::=
-    create_table_options opt_create_partitioning_etc
-  | opt_create_partitioning_etc
-
-  opt_create_partitioning_etc ::=
-    partitioin [opt_duplicate_as_qe] | [opt_duplicate_as_qe]
-
-  opt_duplicate_as_qe ::=
-    duplicate as_create_query_expression
-  | as_create_query_expression
-
-  as_create_query_expression ::=
-    AS query_expression_with_opt_locking_clauses
-  | query_expression_with_opt_locking_clauses
-
-*/
-
-opt_create_table_options_etc:
-          create_table_options
-          opt_create_partitioning_etc
-          {
-            $$= $2;
-            $$.opt_create_table_options= $1;
-          }
-        | opt_create_partitioning_etc
-        ;
-
-opt_create_partitioning_etc:
-          partition_clause opt_duplicate_as_qe
-          {
-            $$= $2;
-            $$.opt_partitioning= $1;
-          }
-        | opt_duplicate_as_qe
-        ;
-
-opt_duplicate_as_qe:
-          %empty
-          {
-            $$.opt_create_table_options= nullptr;
-            $$.opt_partitioning= nullptr;
-            $$.on_duplicate= On_duplicate::ERROR;
-            $$.opt_query_expression= nullptr;
-          }
-        | duplicate
-          as_create_query_expression
-          {
-            $$.opt_create_table_options= nullptr;
-            $$.opt_partitioning= nullptr;
-            $$.on_duplicate= $1;
-            $$.opt_query_expression= $2;
-          }
-        | as_create_query_expression
-          {
-            $$.opt_create_table_options= nullptr;
-            $$.opt_partitioning= nullptr;
-            $$.on_duplicate= On_duplicate::ERROR;
-            $$.opt_query_expression= $1;
-          }
-        ;
-
-as_create_query_expression:
-          AS query_expression_with_opt_locking_clauses { $$ = $2; }
-        | query_expression_with_opt_locking_clauses    { $$ = $1; }
-        ;
-
-/*
- End of partition parser part
-*/
-
 alter_database_options:
           alter_database_option
         | alter_database_options alter_database_option
@@ -4064,11 +3956,6 @@ create_database_option:
             Lex->create_info->encrypt_type= $1;
             Lex->create_info->used_fields |= HA_CREATE_USED_DEFAULT_ENCRYPTION;
           }
-        ;
-
-opt_if_not_exists:
-          %empty { $$= false; }
-        | IF not EXISTS { $$= true; }
         ;
 
 default_encryption:
@@ -6136,11 +6023,6 @@ opt_ignore_unknown_user:
         | IGNORE_SYM UNKNOWN_SYM USER { $$= 1; }
         ;
 
-opt_temporary:
-          %empty { $$= false; }
-        | TEMPORARY   { $$= true; }
-        ;
-
 opt_drop_ts_options:
         %empty { $$= nullptr; }
       | drop_ts_option_list
@@ -7186,16 +7068,6 @@ opt_source_count:
 opt_source_order:
           %empty { $$= false; }
         | IN_SYM PRIMARY_SYM KEY_SYM ORDER_SYM { $$= true; }
-        ;
-
-opt_duplicate:
-          %empty { $$= On_duplicate::ERROR; }
-        | duplicate
-        ;
-
-duplicate:
-          REPLACE_SYM { $$= On_duplicate::REPLACE_DUP; }
-        | IGNORE_SYM  { $$= On_duplicate::IGNORE_DUP; }
         ;
 
 opt_xml_rows_identified_by:

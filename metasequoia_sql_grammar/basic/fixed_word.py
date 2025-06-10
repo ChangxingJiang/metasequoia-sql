@@ -12,6 +12,8 @@ __all__ = [
     "OPT_KEYWORD_INTO",
     "OPT_KEYWORD_DEFAULT",
     "OPT_KEYWORD_STORAGE",
+    "OPT_KEYWORD_TEMPORARY",
+    "OPT_KEYWORD_IF_NOT_EXISTS",
     "OPT_BRACES",
     "OPT_COMMA",
     "KEYWORD_CHARSET",
@@ -74,6 +76,36 @@ OPT_KEYWORD_STORAGE = ms_parser.create_group(
             symbols=[TType.KEYWORD_STORAGE]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `TEMPORARY` 关键字
+OPT_KEYWORD_TEMPORARY = ms_parser.create_group(
+    name="opt_keyword_temporary",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TEMPORARY],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `IF NOT EXISTS` 关键字
+OPT_KEYWORD_IF_NOT_EXISTS = ms_parser.create_group(
+    name="opt_keyword_if_not_exists",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IF, TType.KEYWORD_NOT, TType.KEYWORD_EXISTS],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
     ]
 )
 
