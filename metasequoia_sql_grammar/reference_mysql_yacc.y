@@ -5069,59 +5069,6 @@ start_replica_stmt:
           }
         ;
 
-start:
-          START_SYM TRANSACTION_SYM opt_start_transaction_option_list
-          {
-            LEX *lex= Lex;
-            lex->sql_command= SQLCOM_BEGIN;
-            /* READ ONLY and READ WRITE are mutually exclusive. */
-            if (($3 & MYSQL_START_TRANS_OPT_READ_WRITE) &&
-                ($3 & MYSQL_START_TRANS_OPT_READ_ONLY))
-            {
-              YYTHD->syntax_error();
-              MYSQL_YYABORT;
-            }
-            lex->start_transaction_opt= $3;
-          }
-        ;
-
-opt_start_transaction_option_list:
-          %empty
-          {
-            $$= 0;
-          }
-        | start_transaction_option_list
-          {
-            $$= $1;
-          }
-        ;
-
-start_transaction_option_list:
-          start_transaction_option
-          {
-            $$= $1;
-          }
-        | start_transaction_option_list ',' start_transaction_option
-          {
-            $$= $1 | $3;
-          }
-        ;
-
-start_transaction_option:
-          WITH CONSISTENT_SYM SNAPSHOT_SYM
-          {
-            $$= MYSQL_START_TRANS_OPT_WITH_CONS_SNAPSHOT;
-          }
-        | READ_SYM ONLY_SYM
-          {
-            $$= MYSQL_START_TRANS_OPT_READ_ONLY;
-          }
-        | READ_SYM WRITE_SYM
-          {
-            $$= MYSQL_START_TRANS_OPT_READ_WRITE;
-          }
-        ;
-
 opt_user_option:
           %empty {}
         | USER EQ TEXT_STRING_sys
