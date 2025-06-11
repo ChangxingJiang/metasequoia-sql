@@ -168,7 +168,7 @@ REFERENCES_DEFINITION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[
                 TType.KEYWORD_REFERENCES,  # 0
-                "table_ident",  # 1
+                "identifier",  # 1
                 "opt_ident_list_parens",  # 2
                 "opt_match_clause",  # 3
                 "opt_on_update_on_delete"  # 4

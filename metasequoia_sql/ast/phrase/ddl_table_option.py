@@ -8,7 +8,7 @@ from typing import List, Optional, TYPE_CHECKING
 from metasequoia_sql.ast.base import Expression, Node
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.basic.charset_name import Charset
 
 __all__ = [
@@ -220,11 +220,11 @@ class TableOptionUnion(TableOption):
         "_table_list"
     )
 
-    def __init__(self, table_list: List["TableIdent"]):
+    def __init__(self, table_list: List["Identifier"]):
         self._table_list = table_list
 
     @property
-    def table_list(self) -> List["TableIdent"]:
+    def table_list(self) -> List["Identifier"]:
         return self._table_list
 
 

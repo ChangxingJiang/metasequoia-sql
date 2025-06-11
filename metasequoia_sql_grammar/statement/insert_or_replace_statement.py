@@ -30,7 +30,7 @@ INSERT_STATEMENT = ms_parser.create_group(
                 "opt_insert_option",  # 1
                 "opt_keyword_ignore",  # 2
                 "opt_keyword_into",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 "opt_partition_clause",  # 5
                 "insert_from_constructor",  # 6
                 "opt_insert_alias",  # 7
@@ -53,7 +53,7 @@ INSERT_STATEMENT = ms_parser.create_group(
                 "opt_insert_option",  # 1
                 "opt_keyword_ignore",  # 2
                 "opt_keyword_into",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 "opt_partition_clause",  # 5
                 TType.KEYWORD_SET,  # 6
                 "update_element_list",  # 7
@@ -76,7 +76,7 @@ INSERT_STATEMENT = ms_parser.create_group(
                 "opt_insert_option",  # 1
                 "opt_keyword_ignore",  # 2
                 "opt_keyword_into",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 "opt_partition_clause",  # 5
                 "insert_from_query",  # 6
                 "opt_insert_update_list",  # 7
@@ -102,7 +102,7 @@ REPLACE_STATEMENT = ms_parser.create_group(
                 TType.KEYWORD_REPLACE,  # 0
                 "opt_replace_option",  # 1
                 "opt_keyword_into",  # 2
-                "table_ident",  # 3
+                "identifier",  # 3
                 "opt_partition_clause",  # 4
                 "insert_from_constructor",  # 5
             ],
@@ -119,7 +119,7 @@ REPLACE_STATEMENT = ms_parser.create_group(
                 TType.KEYWORD_REPLACE,  # 0
                 "opt_replace_option",  # 1
                 "opt_keyword_into",  # 2
-                "table_ident",  # 3
+                "identifier",  # 3
                 "opt_partition_clause",  # 4
                 TType.KEYWORD_SET,  # 5
                 "update_element_list",  # 6
@@ -136,7 +136,7 @@ REPLACE_STATEMENT = ms_parser.create_group(
                 TType.KEYWORD_REPLACE,  # 0
                 "opt_replace_option",  # 1
                 "opt_keyword_into",  # 2
-                "table_ident",  # 3
+                "identifier",  # 3
                 "opt_partition_clause",  # 4
                 "insert_from_query",  # 5
             ],

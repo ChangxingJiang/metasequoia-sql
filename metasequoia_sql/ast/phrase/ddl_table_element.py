@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.field_type import FieldType
     from metasequoia_sql.ast.phrase.ddl_column_attribute import ColumnAttribute
     from metasequoia_sql.ast.basic.charset_name import Charset
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.phrase.ddl_index_attribute import EnumIndexStructureType
     from metasequoia_sql.ast.clause.order_by_clause import EnumOrderDirection
     from metasequoia_sql.ast.phrase.ddl_index_attribute import IndexAttribute
@@ -170,7 +170,7 @@ class ReferencesDefinition(Node):
     )
 
     def __init__(self,
-                 table_ident: "TableIdent",
+                 table_ident: "Identifier",
                  column_list: List[str],
                  match_clause: EnumReferenceMatch,
                  on_update: EnumReferenceActionOption,
@@ -182,7 +182,7 @@ class ReferencesDefinition(Node):
         self._on_delete = on_delete
 
     @property
-    def table_ident(self) -> "TableIdent":
+    def table_ident(self) -> "Identifier":
         return self._table_ident
 
     @property

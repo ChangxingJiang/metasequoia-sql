@@ -130,7 +130,7 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
             action=lambda x: ast.TableOptionRowFormat(value=x[2])
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_UNION, "opt_equal", TType.OPERATOR_LPAREN, "opt_table_ident_list",
+            symbols=[TType.KEYWORD_UNION, "opt_equal", TType.OPERATOR_LPAREN, "opt_identifier_list",
                      TType.OPERATOR_RPAREN],
             action=lambda x: ast.TableOptionUnion(table_list=x[3])
         ),

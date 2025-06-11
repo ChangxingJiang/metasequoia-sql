@@ -8,7 +8,7 @@ from typing import List, TYPE_CHECKING
 from metasequoia_sql.ast.base import Node
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
 
 __all__ = [
     "LockStrength",
@@ -40,7 +40,7 @@ class LockingClause(Node):
 
     __slots__ = ["_lock_strength", "_table_list", "_locked_row_action"]
 
-    def __init__(self, lock_strength: LockStrength, table_list: List["TableIdent"], locked_row_action: LockedRowAction):
+    def __init__(self, lock_strength: LockStrength, table_list: List["Identifier"], locked_row_action: LockedRowAction):
         self._lock_strength = lock_strength
         self._table_list = table_list
         self._locked_row_action = locked_row_action
@@ -50,7 +50,7 @@ class LockingClause(Node):
         return self._lock_strength
 
     @property
-    def table_list(self) -> List["TableIdent"]:
+    def table_list(self) -> List["Identifier"]:
         return self._table_list
 
     @property

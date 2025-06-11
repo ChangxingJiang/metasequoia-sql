@@ -25,7 +25,7 @@ CREATE_TABLE_STATEMENT = ms_parser.create_group(
                 "opt_keyword_temporary",  # 1
                 TType.KEYWORD_TABLE,  # 2
                 "opt_keyword_if_not_exists",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 TType.OPERATOR_LPAREN,  # 5
                 "table_element_list",  # 6
                 TType.OPERATOR_RPAREN,  # 7
@@ -48,7 +48,7 @@ CREATE_TABLE_STATEMENT = ms_parser.create_group(
                 "opt_keyword_temporary",  # 1
                 TType.KEYWORD_TABLE,  # 2
                 "opt_keyword_if_not_exists",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 "opt_create_table_option_1"  # 5
             ],
             action=lambda x: ast.CreateTableStatementAsDefinition(
@@ -68,9 +68,9 @@ CREATE_TABLE_STATEMENT = ms_parser.create_group(
                 "opt_keyword_temporary",  # 1
                 TType.KEYWORD_TABLE,  # 2
                 "opt_keyword_if_not_exists",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 TType.KEYWORD_LIKE,  # 5
-                "table_ident"  # 6
+                "identifier"  # 6
             ],
             action=lambda x: ast.CreateTableStatementAsLike(
                 temporary=x[1],
@@ -85,10 +85,10 @@ CREATE_TABLE_STATEMENT = ms_parser.create_group(
                 "opt_keyword_temporary",  # 1
                 TType.KEYWORD_TABLE,  # 2
                 "opt_keyword_if_not_exists",  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 TType.OPERATOR_LPAREN,  # 5
                 TType.KEYWORD_LIKE,  # 6
-                "table_ident",  # 7
+                "identifier",  # 7
                 TType.OPERATOR_RPAREN  # 8
             ],
             action=lambda x: ast.CreateTableStatementAsLike(

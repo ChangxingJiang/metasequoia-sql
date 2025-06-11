@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.ddl_partition_by_clause import DdlPartitionByClause
     from metasequoia_sql.ast.phrase.on_duplicate import OnDuplicate
     from metasequoia_sql.ast.statement.select_statement import QueryExpression
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.phrase.ddl_table_element import TableElement
 
 __all__ = [
@@ -76,7 +76,7 @@ class CreateTableStatement(Statement):
         "_table_ident"
     )
 
-    def __init__(self, temporary: bool, if_not_exists: bool, table_ident: "TableIdent"):
+    def __init__(self, temporary: bool, if_not_exists: bool, table_ident: "Identifier"):
         self._temporary = temporary
         self._if_not_exists = if_not_exists
         self._table_ident = table_ident
@@ -90,7 +90,7 @@ class CreateTableStatement(Statement):
         return self._if_not_exists
 
     @property
-    def table_ident(self) -> "TableIdent":
+    def table_ident(self) -> "Identifier":
         return self._table_ident
 
 
@@ -108,7 +108,7 @@ class CreateTableStatementAsDefinition(CreateTableStatement):
     def __init__(self,
                  temporary: bool,
                  if_not_exists: bool,
-                 table_ident: "TableIdent",
+                 table_ident: "Identifier",
                  table_element_list: List["TableElement"],
                  opt_create_table_option_list: List["TableOption"],
                  opt_partition_clause: Optional["DdlPartitionByClause"],
@@ -152,11 +152,11 @@ class CreateTableStatementAsLike(CreateTableStatement):
     def __init__(self,
                  temporary: bool,
                  if_not_exists: bool,
-                 table_ident: "TableIdent",
-                 like_table_ident: "TableIdent"):
+                 table_ident: "Identifier",
+                 like_table_ident: "Identifier"):
         super().__init__(temporary, if_not_exists, table_ident)
         self._like_table_ident = like_table_ident
 
     @property
-    def like_table_ident(self) -> "TableIdent":
+    def like_table_ident(self) -> "Identifier":
         return self._like_table_ident

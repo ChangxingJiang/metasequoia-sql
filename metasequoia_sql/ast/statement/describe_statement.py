@@ -7,7 +7,7 @@ from typing import Optional, TYPE_CHECKING
 from metasequoia_sql.ast.base import Statement
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
 
 __all__ = [
     "DescribeStatement"
@@ -23,13 +23,13 @@ class DescribeStatement(Statement):
     )
 
     def __init__(self,
-                 table_name: "TableIdent",
+                 table_name: "Identifier",
                  describe_column: Optional[str]):
         self._table_name = table_name
         self._describe_column = describe_column
 
     @property
-    def table_name(self) -> "TableIdent":
+    def table_name(self) -> "Identifier":
         return self._table_name
 
     @property

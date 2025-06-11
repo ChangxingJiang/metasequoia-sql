@@ -9,7 +9,7 @@ from metasequoia_sql.ast.base import Statement
 if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.ddl_table_element import EnumIndexType, IndexKeyDefinition
     from metasequoia_sql.ast.phrase.ddl_index_attribute import IndexAttrUsingIndexType, IndexAttribute
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.phrase.ddl_alter_option import AlterOptionLock, AlterOptionAlgorithm
 
 __all__ = [
@@ -35,9 +35,9 @@ class CreateIndexStmt(Statement):
                  index_type: "EnumIndexType",
                  index_name: str,
                  index_structure_type: Optional["IndexAttrUsingIndexType"],
-                 table_name: "TableIdent",
-                 index_key_list: List[IndexKeyDefinition],
-                 index_options: List[IndexAttribute],
+                 table_name: "Identifier",
+                 index_key_list: List["IndexKeyDefinition"],
+                 index_options: List["IndexAttribute"],
                  alter_lock: Optional["AlterOptionLock"],
                  alter_algorithm: Optional["AlterOptionAlgorithm"]
                  ):
@@ -63,7 +63,7 @@ class CreateIndexStmt(Statement):
         return self._index_structure_type
 
     @property
-    def table_name(self) -> "TableIdent":
+    def table_name(self) -> "Identifier":
         return self._table_name
 
     @property

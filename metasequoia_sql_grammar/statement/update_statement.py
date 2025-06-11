@@ -8,6 +8,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "UPDATE_STATEMENT",
     "UPDATE_ELEMENT_LIST",
     "UPDATE_ELEMENT",
 ]

@@ -11,9 +11,9 @@ __all__ = [
     "IDENT_SYS",
     "IDENT_2",
     "IDENT_3",
-    "OPT_TABLE_IDENT_LIST",
-    "TABLE_IDENT_LIST",
-    "TABLE_IDENT",
+    "OPT_IDENTIFIER_LIST",
+    "IDENTIFIER_LIST",
+    "IDENTIFIER",
     "TABLE_IDENT_OPT_WILD_LIST",
     "TABLE_IDENT_OPT_WILD",
     "OPT_WILD",
@@ -63,43 +63,43 @@ IDENT_3 = ms_parser.create_group(
     ]
 )
 
-# 可选的表标识符的列表
-OPT_TABLE_IDENT_LIST = ms_parser.create_group(
-    name="opt_table_ident_list",
+# 可选的通用标识符的列表
+OPT_IDENTIFIER_LIST = ms_parser.create_group(
+    name="opt_identifier_list",
     rules=[
         ms_parser.create_rule(
-            symbols=["table_ident_list"],
+            symbols=["identifier_list"],
         ),
         ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
-# 表标识符的列表
-TABLE_IDENT_LIST = ms_parser.create_group(
-    name="table_ident_list",
+# 通用标识符的列表
+IDENTIFIER_LIST = ms_parser.create_group(
+    name="identifier_list",
     rules=[
         ms_parser.create_rule(
-            symbols=["table_ident_list", TType.OPERATOR_COMMA, "table_ident"],
+            symbols=["identifier_list", TType.OPERATOR_COMMA, "identifier"],
             action=ms_parser.template.action.LIST_APPEND_2
         ),
         ms_parser.create_rule(
-            symbols=["table_ident"],
+            symbols=["identifier"],
             action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )
 
-# 表标识符（`ident` 或 `ident.ident`）
-TABLE_IDENT = ms_parser.create_group(
-    name="table_ident",
+# 通用标识符（`ident` 或 `ident.ident`）
+IDENTIFIER = ms_parser.create_group(
+    name="identifier",
     rules=[
         ms_parser.create_rule(
             symbols=["ident"],
-            action=lambda x: ast.TableIdent(schema_name=None, table_name=x[0].get_str_value())
+            action=lambda x: ast.Identifier(schema_name=None, object_name=x[0].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=["ident_2"],
-            action=lambda x: ast.TableIdent(schema_name=x[0].value1, table_name=x[0].value2)
+            action=lambda x: ast.Identifier(schema_name=x[0].value1, object_name=x[0].value2)
         )
     ]
 )
@@ -124,7 +124,7 @@ TABLE_IDENT_OPT_WILD = ms_parser.create_group(
     name="table_ident_opt_wild",
     rules=[
         ms_parser.create_rule(
-            symbols=["table_ident", "opt_wild"],
+            symbols=["identifier", "opt_wild"],
             action=lambda x: x[0]
         )
     ]

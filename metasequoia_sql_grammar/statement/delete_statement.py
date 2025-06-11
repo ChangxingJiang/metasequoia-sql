@@ -21,7 +21,7 @@ DELETE_STATEMENT = ms_parser.create_group(
                 TType.KEYWORD_DELETE,  # 1
                 "opt_delete_option_list",  # 2
                 TType.KEYWORD_FROM,  # 3
-                "table_ident",  # 4
+                "identifier",  # 4
                 "opt_table_alias",  # 5
                 "opt_partition_clause",  # 6
                 "opt_where_clause",  # 7

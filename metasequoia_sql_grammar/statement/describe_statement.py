@@ -16,7 +16,7 @@ DESCRIBE_STATEMENT = ms_parser.create_group(
     name="describe_statement",
     rules=[
         ms_parser.create_rule(
-            symbols=["keyword_describe_or_explain", "table_ident", "opt_describe_column"],
+            symbols=["keyword_describe_or_explain", "identifier", "opt_describe_column"],
             action=lambda x: ast.DescribeStatement(table_name=x[1], describe_column=x[2])
         )
     ]

@@ -24,7 +24,7 @@ CREATE_INDEX_STATEMENT = ms_parser.create_group(
                 "ident",  # 3
                 "opt_index_type_clause",  # 4
                 TType.KEYWORD_ON,  # 5
-                "table_ident",  # 6
+                "identifier",  # 6
                 TType.OPERATOR_LPAREN,  # 7
                 "index_key_definition_with_expr_list",  # 8
                 TType.OPERATOR_RPAREN,  # 9
@@ -49,7 +49,7 @@ CREATE_INDEX_STATEMENT = ms_parser.create_group(
                 TType.KEYWORD_INDEX,  # 2
                 "ident",  # 3
                 TType.KEYWORD_ON,  # 4
-                "table_ident",  # 5
+                "identifier",  # 5
                 TType.OPERATOR_LPAREN,  # 6
                 "index_key_definition_with_expr_list",  # 7
                 TType.OPERATOR_RPAREN,  # 8
@@ -74,7 +74,7 @@ CREATE_INDEX_STATEMENT = ms_parser.create_group(
                 TType.KEYWORD_INDEX,  # 2
                 "ident",  # 3
                 TType.KEYWORD_ON,  # 4
-                "table_ident",  # 5
+                "identifier",  # 5
                 TType.OPERATOR_LPAREN,  # 6
                 "index_key_definition_with_expr_list",  # 7
                 TType.OPERATOR_RPAREN,  # 8

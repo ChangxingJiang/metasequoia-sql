@@ -10,7 +10,7 @@ __all__ = [
     "Ident",
     "Ident2D",
     "Ident3D",
-    "TableIdent",
+    "Identifier",
 ]
 
 
@@ -71,23 +71,27 @@ class Ident3D(Expression):
         return self._value3
 
 
-class TableIdent(Expression):
-    """表标识符
+class Identifier(Expression):
+    """通用标识符
 
-    格式 1: schema_name . table_name
-    格式 2: table_name
+    应用场景：
+    1. 表标识符
+    2. 存储过程名称
+
+    格式 1: schema_name . [table_name | sp_name]
+    格式 2: [table_name | sp_name]
     """
 
-    __slots__ = ["_schema_name", "_table_name"]
+    __slots__ = ["_schema_name", "_object_name"]
 
-    def __init__(self, schema_name: Optional[str], table_name: str):
+    def __init__(self, schema_name: Optional[str], object_name: str):
         self._schema_name = schema_name
-        self._table_name = table_name
+        self._object_name = object_name
 
     @property
     def schema_name(self) -> Optional[str]:
         return self._schema_name
 
     @property
-    def table_name(self) -> str:
-        return self._table_name
+    def object_name(self) -> str:
+        return self._object_name

@@ -30,6 +30,7 @@ from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
 from metasequoia_sql_grammar.clause import window_partition_by_clause
 from metasequoia_sql_grammar.clause import with_clause
+from metasequoia_sql_grammar.clause import ddl_partition_by_clause
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
@@ -244,6 +245,7 @@ def build_grammar():
         where_clause,  # WHERE 子句
         window_clause,  # WINDOW 子句
         with_clause,  # WITH 子句
+        ddl_partition_by_clause,  # DDL 分区子句
 
         # 语句
         alter_table_statement,  # ALTER TABLE 语句

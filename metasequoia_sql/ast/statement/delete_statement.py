@@ -7,7 +7,7 @@ from typing import List, Optional, TYPE_CHECKING
 from metasequoia_sql.ast.base import Expression, Statement, Table
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.clause.order_by_clause import OrderByClause
     from metasequoia_sql.ast.clause.limit_clause import LimitClause
     from metasequoia_sql.ast.clause.with_clause import WithClause
@@ -42,7 +42,7 @@ class DeleteFromStatement(DeleteStatement):
     def __init__(self,
                  with_clause: Optional["WithClause"],
                  options: "DmlOption",
-                 table_name: "TableIdent",
+                 table_name: "Identifier",
                  table_alias: Optional[str],
                  use_partition: Optional[List[Expression]],
                  where_clause: Optional[Expression],
@@ -66,7 +66,7 @@ class DeleteFromStatement(DeleteStatement):
         return self._options
 
     @property
-    def table_name(self) -> "TableIdent":
+    def table_name(self) -> "Identifier":
         return self._table_name
 
     @property
@@ -104,7 +104,7 @@ class DeleteColumnFromStatement(DeleteStatement):
     def __init__(self,
                  with_clause: Optional["WithClause"],
                  options: "DmlOption",
-                 wild_table_list: List["TableIdent"],
+                 wild_table_list: List["Identifier"],
                  from_table_list: List[Table],
                  where_clause: Optional[Expression]
                  ):
@@ -123,7 +123,7 @@ class DeleteColumnFromStatement(DeleteStatement):
         return self._options
 
     @property
-    def wild_table_list(self) -> List["TableIdent"]:
+    def wild_table_list(self) -> List["Identifier"]:
         return self._wild_table_list
 
     @property
@@ -149,7 +149,7 @@ class DeleteFromUsingStatement(DeleteStatement):
     def __init__(self,
                  with_clause: Optional["WithClause"],
                  options: "DmlOption",
-                 from_table_list: List["TableIdent"],
+                 from_table_list: List["Identifier"],
                  using_table_list: List[Table],
                  where_clause: Optional[Expression]
                  ):
@@ -168,7 +168,7 @@ class DeleteFromUsingStatement(DeleteStatement):
         return self._options
 
     @property
-    def from_table_list(self) -> List["TableIdent"]:
+    def from_table_list(self) -> List["Identifier"]:
         return self._from_table_list
 
     @property

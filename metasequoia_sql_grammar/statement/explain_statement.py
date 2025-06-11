@@ -31,7 +31,7 @@ EXPLAIN_STATEMENT = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["keyword_describe_or_explain", "opt_explain_options", "opt_explain_for_schema",
-                     "replace_stmt"],
+                     "replace_statement"],
             action=lambda x: ast.ExplainStatementForStatement(options=x[1], schema_name=x[2], statement=x[3])
         ),
         ms_parser.create_rule(

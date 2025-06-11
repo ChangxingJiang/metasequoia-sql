@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.statement.select_statement import QueryExpression
     from metasequoia_sql.ast.phrase.dml_option import DmlOption
     from metasequoia_sql.ast.statement.update_statement import UpdateElement
-    from metasequoia_sql.ast.basic.ident import TableIdent
+    from metasequoia_sql.ast.basic.ident import Identifier
 
 __all__ = [
     "RowValue",
@@ -122,7 +122,7 @@ class InsertOrReplaceStatement(Node):
     def __init__(self,
                  is_replace: bool,
                  dml_option: "DmlOption",
-                 table_name: "TableIdent",
+                 table_name: "Identifier",
                  use_partition: Optional[List[Expression]],
                  column_list: List[Expression],
                  value_list: List[RowValue],
@@ -146,7 +146,7 @@ class InsertOrReplaceStatement(Node):
 
     @staticmethod
     def create_insert_by_values(dml_option: "DmlOption",
-                                table_name: "TableIdent",
+                                table_name: "Identifier",
                                 use_partition: Optional[List[Expression]],
                                 column_list: List[Expression],
                                 value_list: List[RowValue],
@@ -171,7 +171,7 @@ class InsertOrReplaceStatement(Node):
 
     @staticmethod
     def create_insert_by_set(dml_option: "DmlOption",
-                             table_name: "TableIdent",
+                             table_name: "Identifier",
                              use_partition: Optional[List[Expression]],
                              set_update_list: List["UpdateElement"],
                              table_alias: Optional[str],
@@ -195,7 +195,7 @@ class InsertOrReplaceStatement(Node):
 
     @staticmethod
     def create_insert_by_query(dml_option: "DmlOption",
-                               table_name: "TableIdent",
+                               table_name: "Identifier",
                                use_partition: Optional[List[Expression]],
                                column_list: List[Expression],
                                query_expression: "QueryExpression",
@@ -217,7 +217,7 @@ class InsertOrReplaceStatement(Node):
 
     @staticmethod
     def create_replace_by_values(dml_option: "DmlOption",
-                                 table_name: "TableIdent",
+                                 table_name: "Identifier",
                                  use_partition: Optional[List[Expression]],
                                  column_list: List[Expression],
                                  value_list: List[RowValue]):
@@ -238,7 +238,7 @@ class InsertOrReplaceStatement(Node):
 
     @staticmethod
     def create_replace_by_set(dml_option: "DmlOption",
-                              table_name: "TableIdent",
+                              table_name: "Identifier",
                               use_partition: Optional[List[Expression]],
                               set_update_list: List["UpdateElement"]):
         """构造第 2 种格式的 REPLACE 语句"""
@@ -258,7 +258,7 @@ class InsertOrReplaceStatement(Node):
 
     @staticmethod
     def create_replace_by_query(dml_option: "DmlOption",
-                                table_name: "TableIdent",
+                                table_name: "Identifier",
                                 use_partition: Optional[List[Expression]],
                                 column_list: List[Expression],
                                 query_expression: "QueryExpression"):
@@ -286,7 +286,7 @@ class InsertOrReplaceStatement(Node):
         return self._dml_option
 
     @property
-    def table_name(self) -> "TableIdent":
+    def table_name(self) -> "Identifier":
         return self._table_name
 
     @property
