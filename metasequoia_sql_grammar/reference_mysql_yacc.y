@@ -3758,7 +3758,7 @@ alter_logfile_group_option_list:
         ;
 
 alter_logfile_group_option:
-          ts_option_initial_size
+          ts_option_initial_sizets_option_initial_size
         | ts_option_engine
         | ts_option_wait
         ;
@@ -5405,12 +5405,6 @@ optimize_table_stmt:
           {
             $$= NEW_PTN PT_optimize_table_stmt(@$, YYMEM_ROOT, $2, $4);
           }
-        ;
-
-opt_no_write_to_binlog:
-          %empty { $$= 0; }
-        | NO_WRITE_TO_BINLOG { $$= 1; }
-        | LOCAL_SYM { $$= 1; }
         ;
 
 rename:

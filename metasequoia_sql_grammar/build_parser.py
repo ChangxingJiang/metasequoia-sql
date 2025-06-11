@@ -46,6 +46,7 @@ from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
@@ -245,6 +246,7 @@ def build_grammar():
         with_clause,  # WITH 子句
 
         # 语句
+        alter_table_statement,  # ALTER TABLE 语句
         create_index_statement,  # CREATE INDEX 语句
         create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句
