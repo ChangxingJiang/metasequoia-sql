@@ -36,6 +36,7 @@ from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
+from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.phrase import ddl_column_attribute
 from metasequoia_sql_grammar.phrase import ddl_index_attribute
 from metasequoia_sql_grammar.phrase import ddl_table_element
@@ -45,13 +46,14 @@ from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
-from metasequoia_sql_grammar.phrase import ddl_alter_option
+from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
+from metasequoia_sql_grammar.statement import describe_statement
+from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import update_statement
-from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -246,6 +248,8 @@ def build_grammar():
         create_index_statement,  # CREATE INDEX 语句
         create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句
+        describe_statement,  # DESCRIBE 语句
+        explain_statement,  # EXPLAIN 语句
         select_statement,  # SELECT 语句
         update_statement,  # UPDATE 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句

@@ -14,6 +14,7 @@ __all__ = [
     "OPT_KEYWORD_STORAGE",
     "OPT_KEYWORD_TEMPORARY",
     "OPT_KEYWORD_IF_NOT_EXISTS",
+    "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "OPT_BRACES",
     "OPT_COMMA",
     "KEYWORD_CHARSET",
@@ -90,6 +91,25 @@ OPT_KEYWORD_TEMPORARY = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[],
             action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# `DESCRIBE` 关键字或 `EXPLAIN` 关键字
+KEYWORD_DESCRIBE_OR_EXPLAIN = ms_parser.create_group(
+    name="keyword_describe_or_explain",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DESCRIBE],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DESC],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXPLAIN],
+            action=lambda _: None
         )
     ]
 )

@@ -4,7 +4,7 @@ CREATE INDEX 语句（create index statement）
 
 from typing import List, Optional, TYPE_CHECKING
 
-from metasequoia_sql.ast.base import Node
+from metasequoia_sql.ast.base import Statement
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.ddl_table_element import EnumIndexType, IndexKeyDefinition
@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 
-class CreateIndexStmt(Node):
+class CreateIndexStmt(Statement):
     """CREATE INDEX 语句"""
 
     __slots__ = (
