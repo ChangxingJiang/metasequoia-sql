@@ -5,9 +5,11 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
+from metasequoia_sql_grammar.basic import fixed_enum
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
 from metasequoia_sql_grammar.basic import ident_mysql
@@ -15,6 +17,7 @@ from metasequoia_sql_grammar.basic import literal
 from metasequoia_sql_grammar.basic import param
 from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
+from metasequoia_sql_grammar.clause import ddl_partition_by_clause
 from metasequoia_sql_grammar.clause import from_clause
 from metasequoia_sql_grammar.clause import group_by_clause
 from metasequoia_sql_grammar.clause import having_clause
@@ -30,7 +33,6 @@ from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
 from metasequoia_sql_grammar.clause import window_partition_by_clause
 from metasequoia_sql_grammar.clause import with_clause
-from metasequoia_sql_grammar.clause import ddl_partition_by_clause
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
@@ -51,11 +53,13 @@ from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import describe_statement
+from metasequoia_sql_grammar.statement import drop_statement
 from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
 from metasequoia_sql_grammar.statement import update_statement
+from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -202,6 +206,7 @@ def build_grammar():
         param,  # 基础元素 - 参数
         variable,  # 基础元素 - 变量
         time_unit,  # 基础元素 - 时间单位类型
+        fixed_enum,  # 固定的枚举类型
 
         # 短语
         field_type,  # 短语 - 字段类型
@@ -253,11 +258,13 @@ def build_grammar():
         create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句
         describe_statement,  # DESCRIBE 语句
+        drop_statement,  # DROP 语句
         explain_statement,  # EXPLAIN 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句
         select_statement,  # SELECT 语句
         start_transaction_statement,  # START TRANSACTION 语句
         update_statement,  # UPDATE 语句
+        show_statement,  # SHOW 语句
 
         # 顶层节点
         top_level_node

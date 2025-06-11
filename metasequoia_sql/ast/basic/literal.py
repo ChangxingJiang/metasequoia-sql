@@ -7,8 +7,7 @@ from decimal import Decimal
 from enum import IntEnum
 from typing import Optional
 
-from metasequoia_sql.ast.base import Expression
-from metasequoia_sql.ast.base import Literal
+from metasequoia_sql.ast.base import Expression, Literal, Node
 
 __all__ = [
     "StringLiteral",
@@ -24,6 +23,8 @@ __all__ = [
     "NullLiteral",
     "Param",
     "Hostname",
+    "RoleName",
+    "UserName",
 ]
 
 
@@ -213,3 +214,59 @@ class Hostname(Expression):
 
     def get_str_value(self) -> Optional[str]:
         return self._value
+
+
+class RoleName(Node):
+    """角色名称"""
+
+    __slots__ = (
+        "_role_name",
+        "_role_host"
+    )
+
+    def __init__(self, role_name: str, role_host: Optional[str]):
+        self._role_name = role_name
+        self._role_host = role_host
+
+    @property
+    def role_name(self) -> str:
+        return self._role_name
+
+    @property
+    def role_host(self) -> Optional[str]:
+        return self._role_host
+
+
+class UserName(Node):
+    """用户名称"""
+
+    __slots__ = (
+        "_is_current",
+        "_user_name",
+        "_user_host"
+    )
+
+    def __init__(self, is_current: bool, user_name: Optional[str], user_host: Optional[str]):
+        self._is_current = is_current
+        self._user_name = user_name
+        self._user_host = user_host
+
+    @staticmethod
+    def create_by_user_name(user_name: str, user_host: Optional[str]) -> "UserName":
+        return UserName(is_current=False, user_name=user_name, user_host=user_host)
+
+    @staticmethod
+    def create_by_current_user() -> "UserName":
+        return UserName(is_current=True, user_name=None, user_host=None)
+
+    @property
+    def is_current(self) -> bool:
+        return self._is_current
+
+    @property
+    def user_name(self) -> str:
+        return self._user_name
+
+    @property
+    def user_host(self) -> Optional[str]:
+        return self._user_host

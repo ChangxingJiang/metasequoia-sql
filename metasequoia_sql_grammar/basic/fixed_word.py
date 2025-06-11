@@ -14,6 +14,8 @@ __all__ = [
     "OPT_KEYWORD_STORAGE",
     "OPT_KEYWORD_TEMPORARY",
     "OPT_KEYWORD_IF_NOT_EXISTS",
+    "OPT_KEYWORD_IF_EXISTS",
+    "OPT_KEYWORD_FORCE",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "OPT_BRACES",
     "OPT_COMMA",
@@ -114,12 +116,55 @@ KEYWORD_DESCRIBE_OR_EXPLAIN = ms_parser.create_group(
     ]
 )
 
+# `TABLE` 关键字或 `TABLES` 关键字
+KEYWORD_TABLE_OR_TABLES = ms_parser.create_group(
+    name="keyword_table_or_tables",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE],
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLES],
+        )
+    ]
+)
+
 # 可选的 `IF NOT EXISTS` 关键字
 OPT_KEYWORD_IF_NOT_EXISTS = ms_parser.create_group(
     name="opt_keyword_if_not_exists",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_IF, TType.KEYWORD_NOT, TType.KEYWORD_EXISTS],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `IF EXISTS` 关键字
+OPT_KEYWORD_IF_EXISTS = ms_parser.create_group(
+    name="opt_keyword_if_exists",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IF, TType.KEYWORD_EXISTS],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `FORCE` 关键字
+OPT_KEYWORD_FORCE = ms_parser.create_group(
+    name="opt_keyword_force",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FORCE],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(

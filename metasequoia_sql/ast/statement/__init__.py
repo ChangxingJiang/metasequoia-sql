@@ -3,8 +3,10 @@ from metasequoia_sql.ast.statement.create_index_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.delete_statement import *
 from metasequoia_sql.ast.statement.describe_statement import *
+from metasequoia_sql.ast.statement.drop_statement import *
 from metasequoia_sql.ast.statement.explain_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *
 from metasequoia_sql.ast.statement.select_statement import *
+from metasequoia_sql.ast.statement.show_statement import *
 from metasequoia_sql.ast.statement.start_transaction_statement import *
 from metasequoia_sql.ast.statement.update_statement import *

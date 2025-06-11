@@ -3,6 +3,7 @@
 """
 
 from metasequoia_sql.ast.basic.charset_name import *
+from metasequoia_sql.ast.basic.fixed_enum import *
 from metasequoia_sql.ast.basic.ident import *
 from metasequoia_sql.ast.basic.literal import *
 from metasequoia_sql.ast.basic.time_unit import *

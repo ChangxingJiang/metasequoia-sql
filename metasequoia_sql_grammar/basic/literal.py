@@ -59,6 +59,16 @@ __all__ = [
     "SIGNED_LITERAL_OR_NULL",
     "IDENT_OR_TEXT",
     "SIZE_NUMBER",
+
+    # 角色名字面值
+    "ROLE_NAME_LIST",
+    "ROLE_NAME",
+    "ROLE_IDENT_OR_TEXT",
+
+    # 用户名字面值
+    "USER_NAME_LIST",
+    "USER_NAME",
+    "EXPLICIT_USER_NAME",
 ]
 
 # 字符串字面值（不包括 Unicode 字符串）
@@ -338,6 +348,99 @@ SIZE_NUMBER = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["ident_sys"],
+        )
+    ]
+)
+
+# 角色名称的列表
+ROLE_NAME_LIST = ms_parser.create_group(
+    name="role_name_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["role_name_list", TType.OPERATOR_COMMA, "role_name"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["role_name"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 角色名称
+ROLE_NAME = ms_parser.create_group(
+    name="role_name",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["role_ident_or_text"],
+            action=lambda x: ast.RoleName(role_name=x[0], role_host=None)
+        ),
+        ms_parser.create_rule(
+            symbols=["role_ident_or_text", TType.OPERATOR_AT, "variable_name"],
+            action=lambda x: ast.RoleName(role_name=x[0], role_host=x[2])
+        )
+    ]
+)
+
+# 标识符或字符串字面值表示的角色名
+ROLE_IDENT_OR_TEXT = ms_parser.create_group(
+    name="role_ident_or_text",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["role_ident"],
+            action=lambda x: x[0].get_str_value()
+        ),
+        ms_parser.create_rule(
+            symbols=["text_literal_sys"],
+            action=lambda x: x[0].get_str_value()
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.LEX_HOSTNAME],
+            action=lambda x: x[0]
+        )
+    ]
+)
+
+# 用户名称的列表
+USER_NAME_LIST = ms_parser.create_group(
+    name="user_name_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["user_name_list", TType.OPERATOR_COMMA, "user_name"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["user_name"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 用户名称
+USER_NAME = ms_parser.create_group(
+    name="user_name",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["explicit_user_name"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CURRENT_USER, "opt_braces"],
+            action=lambda x: ast.UserName.create_by_current_user()
+        )
+    ]
+)
+
+# 用户名称（不匹配 `CURRENT_USER` 关键字）
+EXPLICIT_USER_NAME = ms_parser.create_group(
+    name="explicit_user_name",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_or_text"],
+            action=lambda x: ast.UserName.create_by_user_name(user_name=x[0], user_host=None)
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_or_text", TType.OPERATOR_AT, "variable_name"],
+            action=lambda x: ast.UserName.create_by_user_name(user_name=x[0], user_host=x[2])
         )
     ]
 )

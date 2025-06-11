@@ -15,6 +15,20 @@ __all__ = [
     "ALTER_OPTION_LOCK",
     "OPT_ALTER_OPTION_WITH_VALIDATION",
     "ALTER_OPTION_WITH_VALIDATION",
+
+    # TABLESPACE 选项列表
+    "OPT_DROP_TABLESPACE_OPTION_LIST",
+    "DROP_TABLESPACE_OPTION_LIST",
+    "DROP_TABLESPACE_OPTION",
+
+    # UNDO TABLESPACE 选项列表
+    "OPT_DROP_UNDO_TABLESPACE_OPTION_LIST",
+    "DROP_UNDO_TABLESPACE_OPTION_LIST",
+    "DROP_UNDO_TABLESPACE_OPTION",
+
+    # ALTER TABLESPACE 选项
+    "ALTER_OPTION_ENGINE",
+    "ALTER_OPTION_WAIT",
 ]
 
 # `ALTER` 命令的修饰选项的列表
@@ -152,6 +166,107 @@ ALTER_OPTION_WITH_VALIDATION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_WITHOUT, TType.KEYWORD_VALIDATION],
             action=lambda _: ast.AlterOptionWithValidation(value=False)
+        )
+    ]
+)
+
+# 可选的 `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表
+OPT_DROP_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="opt_drop_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_option_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表
+DROP_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="drop_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_option_list", "opt_comma", "drop_tablespace_option"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项
+DROP_TABLESPACE_OPTION = ms_parser.create_group(
+    name="drop_tablespace_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["alter_option_engine"]
+        ),
+        ms_parser.create_rule(
+            symbols=["alter_option_wait"]
+        )
+    ]
+)
+
+# 可选的 `UNDO TABLESPACE` 的选项的列表
+OPT_DROP_UNDO_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="opt_drop_undo_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_option_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# `UNDO TABLESPACE` 的选项的列表
+DROP_UNDO_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="drop_undo_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_option_list", "opt_comma", "drop_undo_tablespace_option"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# `UNDO TABLESPACE` 的选项
+DROP_UNDO_TABLESPACE_OPTION = ms_parser.create_group(
+    name="drop_undo_tablespace_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["alter_option_engine"]
+        )
+    ]
+)
+
+# ALTER 选项：ENGINE
+ALTER_OPTION_ENGINE = ms_parser.create_group(
+    name="alter_option_engine",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["opt_keyword_storage", TType.KEYWORD_ENGINE, "opt_equal", "ident_or_text"],
+            action=lambda x: ast.AlterOptionEngine(value=x[3].get_str_value())
+        )
+    ]
+)
+
+# ALTER 选项：`WAIT` 或 `NO_WAIT`
+ALTER_OPTION_WAIT = ms_parser.create_group(
+    name="alter_option_wait",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WAIT],
+            action=lambda _: ast.AlterOptionWait(value=True)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NO_WAIT],
+            action=lambda _: ast.AlterOptionWait(value=False)
         )
     ]
 )

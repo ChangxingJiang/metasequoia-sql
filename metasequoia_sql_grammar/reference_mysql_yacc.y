@@ -1614,39 +1614,6 @@ ev_sql_stmt_inner:
         | sp_proc_stmt_close
         ;
 
-sp_name:
-          ident '.' ident
-          {
-            if (!$1.str ||
-                (check_and_convert_db_name(&$1, false) != Ident_name_check::OK))
-              MYSQL_YYABORT;
-            if (sp_check_name(&$3))
-            {
-              MYSQL_YYABORT;
-            }
-            $$= new (YYMEM_ROOT) sp_name(to_lex_cstring($1), $3, true);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-            $$->init_qname(YYTHD);
-          }
-        | ident
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            LEX_CSTRING db;
-            if (sp_check_name(&$1))
-            {
-              MYSQL_YYABORT;
-            }
-            if (lex->copy_db_to(&db.str, &db.length))
-              MYSQL_YYABORT;
-            $$= new (YYMEM_ROOT) sp_name(db, $1, false);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-            $$->init_qname(thd);
-          }
-        ;
-
 sp_a_chistics:
           %empty {}
         | sp_a_chistics sp_chistic {}
@@ -3683,30 +3650,6 @@ alter_tablespace_option:
         | ts_option_engine_attribute
         ;
 
-opt_undo_tablespace_options:
-          %empty { $$= nullptr; }
-        | undo_tablespace_option_list
-        ;
-
-undo_tablespace_option_list:
-          undo_tablespace_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | undo_tablespace_option_list opt_comma undo_tablespace_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-undo_tablespace_option:
-          ts_option_engine
-        ;
-
 opt_logfile_group_options:
           %empty { $$= nullptr; }
         | logfile_group_option_list
@@ -3825,28 +3768,10 @@ ts_option_comment:
           }
         ;
 
-ts_option_engine:
-          opt_storage ENGINE_SYM opt_equal ident_or_text
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_engine(@$, to_lex_cstring($4));
-          }
-        ;
-
 ts_option_file_block_size:
           FILE_BLOCK_SIZE_SYM opt_equal size_number
           {
             $$= NEW_PTN PT_alter_tablespace_option_file_block_size(@$, $3);
-          }
-        ;
-
-ts_option_wait:
-          WAIT_SYM
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_wait_until_completed(@$, true);
-          }
-        | NO_WAIT_SYM
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_wait_until_completed(@$, false);
           }
         ;
 
@@ -4925,12 +4850,6 @@ opt_column:
         | COLUMN_SYM
         ;
 
-opt_restrict:
-          %empty      { $$= DROP_DEFAULT; }
-        | RESTRICT    { $$= DROP_RESTRICT; }
-        | CASCADE     { $$= DROP_CASCADE; }
-        ;
-
 opt_place:
           %empty                { $$= nullptr; }
         | AFTER_SYM ident       { $$= $2.str; }
@@ -5535,301 +5454,9 @@ do_stmt:
           }
         ;
 
-/*
-  Drop : delete tables or index or user or role
-*/
-
-drop_table_stmt:
-          DROP opt_temporary table_or_tables if_exists table_list opt_restrict
-          {
-            // Note: opt_restrict ($6) is ignored!
-            LEX *lex=Lex;
-            lex->sql_command = SQLCOM_DROP_TABLE;
-            lex->drop_temporary= $2;
-            lex->drop_if_exists= $4;
-            YYPS->m_lock_type= TL_UNLOCK;
-            YYPS->m_mdl_type= MDL_EXCLUSIVE;
-            if (Select->add_tables(YYTHD, $5, TL_OPTION_UPDATING,
-                                   YYPS->m_lock_type, YYPS->m_mdl_type))
-              MYSQL_YYABORT;
-
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_drop_table();
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ //OOM
-          }
-        ;
-
-drop_index_stmt:
-          DROP INDEX_SYM ident ON_SYM table_ident opt_index_lock_and_algorithm
-          {
-            $$= NEW_PTN PT_drop_index_stmt(@$, YYMEM_ROOT, $3.str, $5,
-                                           $6.algo.get_or_default(),
-                                           $6.lock.get_or_default());
-          }
-        ;
-
-drop_database_stmt:
-          DROP DATABASE if_exists ident
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_DROP_DB;
-            lex->drop_if_exists=$3;
-            lex->name= $4;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-drop_function_stmt:
-          DROP FUNCTION_SYM if_exists ident '.' ident
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            sp_name *spname;
-            if ($4.str &&
-                (check_and_convert_db_name(&$4, false) != Ident_name_check::OK))
-               MYSQL_YYABORT;
-            if (sp_check_name(&$6))
-               MYSQL_YYABORT;
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_DROP_SP, MYF(0), "FUNCTION");
-              MYSQL_YYABORT;
-            }
-            lex->sql_command = SQLCOM_DROP_FUNCTION;
-            lex->drop_if_exists= $3;
-            spname= new (YYMEM_ROOT) sp_name(to_lex_cstring($4), $6, true);
-            if (spname == nullptr)
-              MYSQL_YYABORT;
-            spname->init_qname(thd);
-            lex->spname= spname;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        | DROP FUNCTION_SYM if_exists ident
-          {
-            /*
-              Unlike DROP PROCEDURE, "DROP FUNCTION ident" should work
-              even if there is no current database. In this case it
-              applies only to UDF.
-              Hence we can't merge rules for "DROP FUNCTION ident.ident"
-              and "DROP FUNCTION ident" into one "DROP FUNCTION sp_name"
-              rule. sp_name assumes that database name should be always
-              provided - either explicitly or implicitly.
-            */
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            LEX_STRING db= NULL_STR;
-            sp_name *spname;
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_DROP_SP, MYF(0), "FUNCTION");
-              MYSQL_YYABORT;
-            }
-            if (thd->db().str && lex->copy_db_to(&db.str, &db.length))
-              MYSQL_YYABORT;
-            if (sp_check_name(&$4))
-               MYSQL_YYABORT;
-            lex->sql_command = SQLCOM_DROP_FUNCTION;
-            lex->drop_if_exists= $3;
-            spname= new (YYMEM_ROOT) sp_name(to_lex_cstring(db), $4, false);
-            if (spname == nullptr)
-              MYSQL_YYABORT;
-            spname->init_qname(thd);
-            lex->spname= spname;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-drop_resource_group_stmt:
-          DROP RESOURCE_SYM GROUP_SYM ident opt_force
-          {
-            $$= NEW_PTN PT_drop_resource_group(@$, to_lex_cstring($4), $5);
-          }
-         ;
-
-drop_procedure_stmt:
-          DROP PROCEDURE_SYM if_exists sp_name
-          {
-            LEX *lex=Lex;
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_DROP_SP, MYF(0), "PROCEDURE");
-              MYSQL_YYABORT;
-            }
-            lex->sql_command = SQLCOM_DROP_PROCEDURE;
-            lex->drop_if_exists= $3;
-            lex->spname= $4;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-drop_user_stmt:
-          DROP USER if_exists user_list
-          {
-             LEX *lex=Lex;
-             lex->sql_command= SQLCOM_DROP_USER;
-             lex->drop_if_exists= $3;
-             lex->users_list= *$4;
-             MAKE_CMD_DCL_DUMMY();
-          }
-        ;
-
-drop_view_stmt:
-          DROP VIEW_SYM if_exists table_list opt_restrict
-          {
-            // Note: opt_restrict ($5) is ignored!
-            LEX *lex= Lex;
-            lex->sql_command= SQLCOM_DROP_VIEW;
-            lex->drop_if_exists= $3;
-            YYPS->m_lock_type= TL_UNLOCK;
-            YYPS->m_mdl_type= MDL_EXCLUSIVE;
-            if (Select->add_tables(YYTHD, $4, TL_OPTION_UPDATING,
-                                   YYPS->m_lock_type, YYPS->m_mdl_type))
-              MYSQL_YYABORT;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-drop_event_stmt:
-          DROP EVENT_SYM if_exists sp_name
-          {
-            Lex->drop_if_exists= $3;
-            Lex->spname= $4;
-            Lex->sql_command = SQLCOM_DROP_EVENT;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-drop_trigger_stmt:
-          DROP TRIGGER_SYM if_exists sp_name
-          {
-            LEX *lex= Lex;
-            lex->sql_command= SQLCOM_DROP_TRIGGER;
-            lex->drop_if_exists= $3;
-            lex->spname= $4;
-            Lex->m_sql_cmd= new (YYTHD->mem_root) Sql_cmd_drop_trigger();
-          }
-        ;
-
-drop_tablespace_stmt:
-          DROP TABLESPACE_SYM ident opt_drop_ts_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($4 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $4))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_drop_tablespace{$3, pc};
-            if (!cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
-
-drop_undo_tablespace_stmt:
-          DROP UNDO_SYM TABLESPACE_SYM ident opt_undo_tablespace_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; // OOM
-
-            if ($5 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $5))
-                MYSQL_YYABORT;
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_drop_undo_tablespace{
-              DROP_UNDO_TABLESPACE, $4, {nullptr, 0},  pc};
-            if (!cmd)
-              MYSQL_YYABORT; // OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
-        ;
-
-drop_logfile_stmt:
-          DROP LOGFILE_SYM GROUP_SYM ident opt_drop_ts_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($5 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $5))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_logfile_group{DROP_LOGFILE_GROUP,
-                                                    $4, pc};
-            if (!cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
-
-        ;
-
-drop_server_stmt:
-          DROP SERVER_SYM if_exists ident_or_text
-          {
-            Lex->sql_command = SQLCOM_DROP_SERVER;
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_drop_server($4, $3);
-          }
-        ;
-
-drop_srs_stmt:
-          DROP SPATIAL_SYM REFERENCE_SYM SYSTEM_SYM if_exists real_ulonglong_num
-          {
-            $$= NEW_PTN PT_drop_srs(@$, $6, $5);
-          }
-        ;
-
-drop_role_stmt:
-          DROP ROLE_SYM if_exists role_list
-          {
-            $$= NEW_PTN PT_drop_role(@$, $3, $4);
-          }
-        ;
-
-if_exists:
-          %empty { $$= 0; }
-        | IF EXISTS { $$= 1; }
-        ;
-
 opt_ignore_unknown_user:
           %empty { $$= 0; }
         | IGNORE_SYM UNKNOWN_SYM USER { $$= 1; }
-        ;
-
-opt_drop_ts_options:
-        %empty { $$= nullptr; }
-      | drop_ts_option_list
-      ;
-
-drop_ts_option_list:
-          drop_ts_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        | drop_ts_option_list opt_comma drop_ts_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        ;
-
-drop_ts_option:
-          ts_option_engine
-        | ts_option_wait
         ;
 
 truncate_stmt:
@@ -6830,55 +6457,6 @@ TEXT_STRING_hash:
           }
         ;
 
-role_ident_or_text:
-          role_ident
-        | TEXT_STRING_sys
-        | LEX_HOSTNAME
-        ;
-
-user_ident_or_text:
-          ident_or_text
-          {
-            if (!($$= LEX_USER::alloc(YYTHD, &$1, nullptr)))
-              MYSQL_YYABORT;
-          }
-        | ident_or_text '@' ident_or_text
-          {
-            if (!($$= LEX_USER::alloc(YYTHD, &$1, &$3)))
-              MYSQL_YYABORT;
-          }
-        ;
-
-user:
-          user_ident_or_text
-          {
-            $$=$1;
-          }
-        | CURRENT_USER optional_braces
-          {
-            if (!($$= LEX_USER::alloc(YYTHD)))
-              MYSQL_YYABORT;
-            /*
-              empty LEX_USER means current_user and
-              will be handled in the  get_current_user() function
-              later
-            */
-          }
-        ;
-
-role:
-          role_ident_or_text
-          {
-            if (!($$= LEX_USER::alloc(YYTHD, &$1, nullptr)))
-              MYSQL_YYABORT;
-          }
-        | role_ident_or_text '@' ident_or_text
-          {
-            if (!($$= LEX_USER::alloc(YYTHD, &$1, &$3)))
-              MYSQL_YYABORT;
-          }
-        ;
-
 schema:
           ident
           {
@@ -7256,11 +6834,6 @@ lock:
             if (Lex->m_sql_cmd == nullptr)
               MYSQL_YYABORT; // OOM
           }
-        ;
-
-table_or_tables:
-          TABLE_SYM
-        | TABLES
         ;
 
 table_lock_list:
@@ -7842,36 +7415,6 @@ grant_ident:
               MYSQL_YYABORT;
             if (lex->grant == GLOBAL_ACLS)
               lex->grant =  TABLE_OP_ACLS;
-          }
-        ;
-
-user_list:
-          user
-          {
-            $$= new (YYMEM_ROOT) List<LEX_USER>;
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        | user_list ',' user
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT;
-          }
-        ;
-
-role_list:
-          role
-          {
-            $$= new (YYMEM_ROOT) List<LEX_USER>;
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT;
-          }
-        | role_list ',' role
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT;
           }
         ;
 
@@ -9391,9 +8934,4 @@ opt_resource_group_enable_disable:
             $$.is_default= false;
             $$.value= false;
           }
-        ;
-
-opt_force:
-          %empty      { $$= false; }
-        | FORCE_SYM   { $$= true; }
         ;

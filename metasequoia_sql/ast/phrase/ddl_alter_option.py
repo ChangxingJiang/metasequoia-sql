@@ -9,10 +9,13 @@ from metasequoia_sql.ast.base import Node
 __all__ = [
     "AlterOption",
     "AlterStrOptionBase",
+    "AlterBoolOptionBase",
     "AlterOptionLock",
     "AlterOptionAlgorithm",
     "AlterOptionWithValidation",
-    "TempAlterOptionList"
+    "TempAlterOptionList",
+    "AlterOptionEngine",
+    "AlterOptionWait",
 ]
 
 
@@ -21,7 +24,7 @@ class AlterOption(Node):
 
 
 class AlterStrOptionBase(AlterOption):
-    """字符串类型的 DDL 修改表选项"""
+    """字符串类型的 DDL 修改选项"""
 
     __slots__ = (
         "_value"
@@ -32,6 +35,21 @@ class AlterStrOptionBase(AlterOption):
 
     @property
     def value(self) -> str:
+        return self._value
+
+
+class AlterBoolOptionBase(AlterOption):
+    """布尔值类型的 DDL 修改选项"""
+
+    __slots__ = (
+        "_value"
+    )
+
+    def __init__(self, value: bool):
+        self._value = value
+
+    @property
+    def value(self) -> bool:
         return self._value
 
 
@@ -99,3 +117,11 @@ class TempAlterOptionList(Node):
             algorithm=other.algorithm or self.algorithm,
             validation=other.validation or self.validation
         )
+
+
+class AlterOptionEngine(AlterStrOptionBase):
+    """ALTER 选项：`ENGINE`"""
+
+
+class AlterOptionWait(AlterBoolOptionBase):
+    """ALTER 选项：`WAIT` 或 `NO_WAIT`"""
