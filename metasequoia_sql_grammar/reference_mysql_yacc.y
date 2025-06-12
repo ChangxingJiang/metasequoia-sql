@@ -5632,21 +5632,6 @@ show_privileges_stmt:
           }
         ;
 
-show_grants_stmt:
-          SHOW GRANTS
-          {
-            $$ = NEW_PTN PT_show_grants(@$, nullptr, nullptr);
-          }
-        | SHOW GRANTS FOR_SYM user
-          {
-            $$ = NEW_PTN PT_show_grants(@$, $4, nullptr);
-          }
-        | SHOW GRANTS FOR_SYM user USING user_list
-          {
-            $$ = NEW_PTN PT_show_grants(@$, $4, $6);
-          }
-        ;
-
 show_master_status_stmt:
           SHOW MASTER_SYM STATUS_SYM
           {

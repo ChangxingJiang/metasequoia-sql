@@ -27,6 +27,7 @@ __all__ = [
     "SHOW_DATABASES_STATEMENT",
     "SHOW_EVENTS_STATEMENT",
     "SHOW_FUNCTION_STATUS_STATEMENT",
+    "SHOW_GRANTS_STATEMENT",
 
     # SHOW 语句的组成部分
     "OPT_BINLOG_IN",
@@ -336,6 +337,15 @@ SHOW_GRANTS_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_GRANTS],
             action=lambda _: ast.ShowEnginesStatement()
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_GRANTS, TType.KEYWORD_FOR, "user_name"],
+            action=lambda x: ast.ShowGrantsStatement(for_user=x[3])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_GRANTS, TType.KEYWORD_FOR, "user_name", TType.KEYWORD_USING,
+                     "user_name_list"],
+            action=lambda x: ast.ShowGrantsStatement(for_user=x[3], using_user_list=x[5])
         )
     ]
 )

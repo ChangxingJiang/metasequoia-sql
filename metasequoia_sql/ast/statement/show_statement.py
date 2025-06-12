@@ -415,17 +415,17 @@ class ShowGrantsStatement(Statement):
     """SHOW GRANTS 语句"""
 
     __slots__ = (
-        "_from_user",
+        "_for_user",
         "_using_user_list"
     )
 
-    def __init__(self, from_user: Optional["UserName"] = None, using_user_list: List["UserName"] = None):
-        self._from_user = from_user
+    def __init__(self, for_user: Optional["UserName"] = None, using_user_list: List["UserName"] = None):
+        self._for_user = for_user
         self._using_user_list = using_user_list
 
     @property
-    def from_user(self) -> Optional["UserName"]:
-        return self._from_user
+    def for_user(self) -> Optional["UserName"]:
+        return self._for_user
 
     @property
     def using_user_list(self) -> List["UserName"]:
