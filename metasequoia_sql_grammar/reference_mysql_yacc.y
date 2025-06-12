@@ -5200,14 +5200,6 @@ binlog_base64_event:
           }
         ;
 
-check_table_stmt:
-          CHECK_SYM table_or_tables table_list opt_mi_check_types
-          {
-            $$= NEW_PTN PT_check_table_stmt(@$, YYMEM_ROOT, $3,
-                                            $4.flags, $4.sql_flags);
-          }
-        ;
-
 optimize_table_stmt:
           OPTIMIZE opt_no_write_to_binlog table_or_tables table_list
           {
