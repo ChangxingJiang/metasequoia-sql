@@ -17,6 +17,9 @@ __all__ = [
     "OPT_KEYWORD_IF_EXISTS",
     "OPT_KEYWORD_FORCE",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
+    "KEYWORD_TABLE_OR_TABLES",
+    "KEYWORD_MASTER_OR_BINARY",
+    "KEYWORD_FROM_OR_IN",
     "OPT_BRACES",
     "OPT_COMMA",
     "KEYWORD_CHARSET",
@@ -103,15 +106,12 @@ KEYWORD_DESCRIBE_OR_EXPLAIN = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DESCRIBE],
-            action=lambda _: None
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DESC],
-            action=lambda _: None
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EXPLAIN],
-            action=lambda _: None
         )
     ]
 )
@@ -125,6 +125,32 @@ KEYWORD_TABLE_OR_TABLES = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_TABLES],
+        )
+    ]
+)
+
+# `MASTER` 关键字或 `BINARY` 关键字
+KEYWORD_MASTER_OR_BINARY = ms_parser.create_group(
+    name="keyword_master_or_binary",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER],
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY],
+        )
+    ]
+)
+
+# `FROM` 关键字或 `IN` 关键字
+KEYWORD_FROM_OR_IN = ms_parser.create_group(
+    name="keyword_from_or_in",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FROM],
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IN],
         )
     ]
 )

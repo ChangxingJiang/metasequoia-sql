@@ -5,7 +5,8 @@
 from enum import IntEnum
 
 __all__ = [
-    "EnumDropRestrict"
+    "EnumDropRestrict",
+    "EnumShowCommandType",
 ]
 
 
@@ -15,3 +16,12 @@ class EnumDropRestrict(IntEnum):
     DEFAULT = 0
     CASCADE = 1  # 如果尝试删除一个有其他对象依赖的对象，则删除该对象的同时删除依赖该对象的其他对象
     RESTRICT = 2  # 如果尝试删除一个有其他对象依赖的对象，则会报错
+
+
+class EnumShowCommandType(IntEnum):
+    """枚举类型：SHOW 语句的命令类型"""
+
+    DEFAULT = 0
+    FULL = 1  # FULL
+    EXTENDED = 2  # EXTENDED
+    EXTENDED_FULL = 3  # EXTENDED FULL

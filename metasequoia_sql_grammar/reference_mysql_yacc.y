@@ -5506,12 +5506,6 @@ opt_for_query:
 
 /* SHOW statements */
 
-show_databases_stmt:
-           SHOW DATABASES opt_wild_or_where
-           {
-             $$ = NEW_PTN PT_show_databases(@$, $3.wild, $3.where);
-           }
-
 show_tables_stmt:
           SHOW opt_show_cmd_type TABLES opt_db opt_wild_or_where
           {
@@ -5523,13 +5517,6 @@ show_triggers_stmt:
           SHOW opt_full TRIGGERS_SYM opt_db opt_wild_or_where
           {
             $$ = NEW_PTN PT_show_triggers(@$, $2, $4, $5.wild, $5.where);
-          }
-        ;
-
-show_events_stmt:
-          SHOW EVENTS_SYM opt_db opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_events(@$, $3, $4.wild, $4.where);
           }
         ;
 
@@ -5554,54 +5541,6 @@ show_plugins_stmt:
           }
         ;
 
-show_engine_logs_stmt:
-          SHOW ENGINE_SYM engine_or_all LOGS_SYM
-          {
-            $$ = NEW_PTN PT_show_engine_logs(@$, $3);
-          }
-        ;
-
-show_engine_mutex_stmt:
-          SHOW ENGINE_SYM engine_or_all MUTEX_SYM
-          {
-            $$ = NEW_PTN PT_show_engine_mutex(@$, $3);
-          }
-        ;
-
-show_engine_status_stmt:
-          SHOW ENGINE_SYM engine_or_all STATUS_SYM
-          {
-            $$ = NEW_PTN PT_show_engine_status(@$, $3);
-          }
-        ;
-
-show_columns_stmt:
-          SHOW                  /* 1 */
-          opt_show_cmd_type     /* 2 */
-          COLUMNS               /* 3 */
-          from_or_in            /* 4 */
-          table_ident           /* 5 */
-          opt_db                /* 6 */
-          opt_wild_or_where     /* 7 */
-          {
-            if ($6)
-              $5->change_db($6);
-
-            $$ = NEW_PTN PT_show_fields(@$, $2, $5, $7.wild, $7.where);
-          }
-        ;
-
-show_binary_logs_stmt:
-          SHOW master_or_binary LOGS_SYM
-          {
-            if (Lex->is_replication_deprecated_syntax_used())
-            {
-              push_deprecated_warn(YYTHD, "SHOW MASTER LOGS", "SHOW BINARY LOGS");
-            }
-            $$ = NEW_PTN PT_show_binlogs(@$);
-          }
-        ;
-
 show_replicas_stmt:
           SHOW SLAVE HOSTS_SYM
           {
@@ -5613,13 +5552,6 @@ show_replicas_stmt:
         | SHOW REPLICAS_SYM
           {
             $$ = NEW_PTN PT_show_replicas(@$);
-          }
-        ;
-
-show_binlog_events_stmt:
-          SHOW BINLOG_SYM EVENTS_SYM opt_binlog_in binlog_from opt_limit_clause
-          {
-            $$ = NEW_PTN PT_show_binlog_events(@$, $4, $6);
           }
         ;
 
@@ -5647,38 +5579,10 @@ show_keys_stmt:
           }
         ;
 
-show_engines_stmt:
-          SHOW opt_storage ENGINES_SYM
-          {
-            $$ = NEW_PTN PT_show_engines(@$);
-          }
-        ;
-
-show_count_warnings_stmt:
-          SHOW COUNT_SYM '(' '*' ')' WARNINGS
-          {
-            $$ = NEW_PTN PT_show_count_warnings(@$);
-          }
-        ;
-
-show_count_errors_stmt:
-          SHOW COUNT_SYM '(' '*' ')' ERRORS
-          {
-            $$ = NEW_PTN PT_show_count_errors(@$);
-          }
-        ;
-
 show_warnings_stmt:
           SHOW WARNINGS opt_limit_clause
           {
             $$ = NEW_PTN PT_show_warnings(@$, $3);
-          }
-        ;
-
-show_errors_stmt:
-          SHOW ERRORS opt_limit_clause
-          {
-            $$ = NEW_PTN PT_show_errors(@$, $3);
           }
         ;
 
@@ -5721,20 +5625,6 @@ show_variables_stmt:
           }
         ;
 
-show_character_set_stmt:
-          SHOW character_set opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_charsets(@$, $3.wild, $3.where);
-          }
-        ;
-
-show_collation_stmt:
-          SHOW COLLATION_SYM opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_collations(@$, $3.wild, $3.where);
-          }
-        ;
-
 show_privileges_stmt:
           SHOW PRIVILEGES
           {
@@ -5757,38 +5647,10 @@ show_grants_stmt:
           }
         ;
 
-show_create_database_stmt:
-          SHOW CREATE DATABASE opt_if_not_exists ident
-          {
-            $$ = NEW_PTN PT_show_create_database(@$, $4, $5);
-          }
-        ;
-
-show_create_table_stmt:
-          SHOW CREATE TABLE_SYM table_ident
-          {
-            $$ = NEW_PTN PT_show_create_table(@$, $4);
-          }
-        ;
-
-show_create_view_stmt:
-          SHOW CREATE VIEW_SYM table_ident
-          {
-            $$ = NEW_PTN PT_show_create_view(@$, $4);
-          }
-        ;
-
 show_master_status_stmt:
           SHOW MASTER_SYM STATUS_SYM
           {
             push_deprecated_warn(YYTHD, "SHOW MASTER STATUS", "SHOW BINARY LOG STATUS");
-            $$ = NEW_PTN PT_show_binary_log_status(@$);
-          }
-        ;
-
-show_binary_log_status_stmt:
-          SHOW BINARY_SYM LOG_SYM STATUS_SYM
-          {
             $$ = NEW_PTN PT_show_binary_log_status(@$);
           }
         ;
@@ -5802,27 +5664,6 @@ show_replica_status_stmt:
           }
         ;
 
-show_create_procedure_stmt:
-          SHOW CREATE PROCEDURE_SYM sp_name
-          {
-            $$ = NEW_PTN PT_show_create_procedure(@$, $4);
-          }
-        ;
-
-show_create_function_stmt:
-          SHOW CREATE FUNCTION_SYM sp_name
-          {
-            $$ = NEW_PTN PT_show_create_function(@$, $4);
-          }
-        ;
-
-show_create_trigger_stmt:
-          SHOW CREATE TRIGGER_SYM sp_name
-          {
-            $$ = NEW_PTN PT_show_create_trigger(@$, $4);
-          }
-        ;
-
 show_procedure_status_stmt:
           SHOW PROCEDURE_SYM STATUS_SYM opt_wild_or_where
           {
@@ -5830,38 +5671,10 @@ show_procedure_status_stmt:
           }
         ;
 
-show_function_status_stmt:
-          SHOW FUNCTION_SYM STATUS_SYM opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_status_func(@$, $4.wild, $4.where);
-          }
-        ;
-
 show_procedure_code_stmt:
           SHOW PROCEDURE_SYM CODE_SYM sp_name
           {
             $$ = NEW_PTN PT_show_procedure_code(@$, $4);
-          }
-        ;
-
-show_function_code_stmt:
-          SHOW FUNCTION_SYM CODE_SYM sp_name
-          {
-            $$ = NEW_PTN PT_show_function_code(@$, $4);
-          }
-        ;
-
-show_create_event_stmt:
-          SHOW CREATE EVENT_SYM sp_name
-          {
-            $$ = NEW_PTN PT_show_create_event(@$, $4);
-          }
-        ;
-
-show_create_user_stmt:
-          SHOW CREATE USER user
-          {
-            $$ = NEW_PTN PT_show_create_user(@$, $4);
           }
         ;
 
@@ -5876,30 +5689,12 @@ show_parse_tree_stmt:
           }
         ;
 
-engine_or_all:
-          ident_or_text
-        | ALL           { $$ = {}; }
-        ;
-
-master_or_binary:
-          MASTER_SYM
-          {
-            Lex->set_replication_deprecated_syntax_used();
-          }
-        | BINARY_SYM
-        ;
-
 master_or_binary_logs_and_gtids:
           MASTER_SYM
           {
             Lex->set_replication_deprecated_syntax_used();
           }
         | BINARY_SYM LOGS_SYM AND_SYM GTIDS_SYM
-        ;
-
-opt_db:
-          %empty { $$= nullptr; }
-        | from_or_in ident { $$= $2.str; }
         ;
 
 opt_full:
@@ -5910,34 +5705,6 @@ opt_full:
 opt_extended:
           %empty        { $$= 0; }
         | EXTENDED_SYM  { $$= 1; }
-        ;
-
-opt_show_cmd_type:
-          %empty               { $$= Show_cmd_type::STANDARD; }
-        | FULL                 { $$= Show_cmd_type::FULL_SHOW; }
-        | EXTENDED_SYM         { $$= Show_cmd_type::EXTENDED_SHOW; }
-        | EXTENDED_SYM FULL    { $$= Show_cmd_type::EXTENDED_FULL_SHOW; }
-        ;
-
-from_or_in:
-          FROM
-        | IN_SYM
-        ;
-
-opt_binlog_in:
-          %empty                 { $$ = {}; }
-        | IN_SYM TEXT_STRING_sys { $$ = $2; }
-        ;
-
-binlog_from:
-          %empty { Lex->mi.pos = 4; /* skip magic number */ }
-        | FROM ulonglong_num { Lex->mi.pos = $2; }
-        ;
-
-opt_wild_or_where:
-          %empty                        { $$ = {}; }
-        | LIKE TEXT_STRING_literal      { $$ = { $2, {} }; }
-        | where_clause                  { $$ = { {}, $1 }; }
         ;
 
 /* flush things */
