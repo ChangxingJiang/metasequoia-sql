@@ -8,6 +8,7 @@ __all__ = [
     "EnumDropRestrict",
     "EnumShowCommandType",
     "EnumRepairType",
+    "EnumCheckType",
 ]
 
 
@@ -35,3 +36,15 @@ class EnumRepairType(IntFlag):
     QUICK = (1 << 0)  # QUICK
     EXTENDED = (1 << 1)  # EXTENDED
     USE = (1 << 2)  # USE
+
+
+class EnumCheckType(IntFlag):
+    """枚举类型：CHECK 语句的命令类型"""
+
+    DEFAULT = 0
+    QUICK = (1 << 0)  # QUICK
+    FAST = (1 << 1)  # FAST
+    MEDIUM = (1 << 2)  # MEDIUM
+    EXTENDED = (1 << 3)  # EXTENDED
+    CHANGED = (1 << 4)  # CHANGED
+    FOR_UPGRADE = (1 << 5)  # FOR UPGRADE

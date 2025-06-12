@@ -5208,35 +5208,6 @@ check_table_stmt:
           }
         ;
 
-opt_mi_check_types:
-          %empty { $$.flags = T_MEDIUM; $$.sql_flags= 0; }
-        | mi_check_types
-        ;
-
-mi_check_types:
-          mi_check_type
-        | mi_check_type mi_check_types
-          {
-            $$.flags= $1.flags | $2.flags;
-            $$.sql_flags= $1.sql_flags | $2.sql_flags;
-          }
-        ;
-
-mi_check_type:
-          QUICK
-          { $$.flags= T_QUICK;              $$.sql_flags= 0; }
-        | FAST_SYM
-          { $$.flags= T_FAST;               $$.sql_flags= 0; }
-        | MEDIUM_SYM
-          { $$.flags= T_MEDIUM;             $$.sql_flags= 0; }
-        | EXTENDED_SYM
-          { $$.flags= T_EXTEND;             $$.sql_flags= 0; }
-        | CHANGED
-          { $$.flags= T_CHECK_ONLY_CHANGED; $$.sql_flags= 0; }
-        | FOR_SYM UPGRADE_SYM
-          { $$.flags= 0;                    $$.sql_flags= TT_FOR_UPGRADE; }
-        ;
-
 optimize_table_stmt:
           OPTIMIZE opt_no_write_to_binlog table_or_tables table_list
           {

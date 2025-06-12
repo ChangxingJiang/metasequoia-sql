@@ -13,6 +13,9 @@ __all__ = [
     "OPT_REPAIR_TYPE_LIST",
     "REPAIR_TYPE_LIST",
     "REPAIR_TYPE",
+    "OPT_CHECK_TYPE_LIST",
+    "CHECK_TYPE_LIST",
+    "CHECK_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -101,6 +104,66 @@ REPAIR_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_USE],
             action=lambda x: ast.EnumRepairType.USE
+        )
+    ]
+)
+
+# 可选的 `CHECK` 语句命令类型的枚举值的列表
+OPT_CHECK_TYPE_LIST = ms_parser.create_group(
+    name="opt_check_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["check_type_list"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumCheckType.DEFAULT
+        )
+    ]
+)
+
+# `CHECK` 语句命令类型的枚举值的列表
+CHECK_TYPE_LIST = ms_parser.create_group(
+    name="check_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["check_type_list", "check_type"],
+            action=lambda x: x[0] | x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=["check_type"],
+            action=lambda x: x[0]
+        )
+    ]
+)
+
+# `CHECK` 语句命令类型的枚举值
+CHECK_TYPE = ms_parser.create_group(
+    name="check_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_QUICK],
+            action=lambda x: ast.EnumCheckType.QUICK
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FAST],
+            action=lambda x: ast.EnumCheckType.FAST
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MEDIUM],
+            action=lambda x: ast.EnumCheckType.MEDIUM
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXTENDED],
+            action=lambda x: ast.EnumCheckType.EXTENDED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CHANGED],
+            action=lambda x: ast.EnumCheckType.CHANGED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FOR, TType.KEYWORD_UPGRADE],
+            action=lambda x: ast.EnumCheckType.FOR_UPGRADE
         )
     ]
 )
