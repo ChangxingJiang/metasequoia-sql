@@ -5,7 +5,6 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -56,10 +55,11 @@ from metasequoia_sql_grammar.statement import describe_statement
 from metasequoia_sql_grammar.statement import drop_statement
 from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
+from metasequoia_sql_grammar.statement import repair_table_statement
 from metasequoia_sql_grammar.statement import select_statement
+from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
 from metasequoia_sql_grammar.statement import update_statement
-from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -264,6 +264,7 @@ def build_grammar():
         select_statement,  # SELECT 语句
         start_transaction_statement,  # START TRANSACTION 语句
         update_statement,  # UPDATE 语句
+        repair_table_statement,  # REPAIR TABLE 语句
         show_statement,  # SHOW 语句
 
         # 顶层节点

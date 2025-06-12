@@ -5122,35 +5122,6 @@ opt_checksum_type:
         | EXTENDED_SYM  { $$= T_EXTEND; }
         ;
 
-repair_table_stmt:
-          REPAIR opt_no_write_to_binlog table_or_tables
-          table_list opt_mi_repair_types
-          {
-            $$= NEW_PTN PT_repair_table_stmt(@$, YYMEM_ROOT, $2, $4,
-                                             $5.flags, $5.sql_flags);
-          }
-        ;
-
-opt_mi_repair_types:
-          %empty { $$.flags = T_MEDIUM; $$.sql_flags= 0; }
-        | mi_repair_types
-        ;
-
-mi_repair_types:
-          mi_repair_type
-        | mi_repair_types mi_repair_type
-          {
-            $$.flags= $1.flags | $2.flags;
-            $$.sql_flags= $1.sql_flags | $2.sql_flags;
-          }
-        ;
-
-mi_repair_type:
-          QUICK        { $$.flags= T_QUICK;  $$.sql_flags= 0; }
-        | EXTENDED_SYM { $$.flags= T_EXTEND; $$.sql_flags= 0; }
-        | USE_FRM      { $$.flags= 0;        $$.sql_flags= TT_USEFRM; }
-        ;
-
 analyze_table_stmt:
           ANALYZE_SYM opt_no_write_to_binlog table_or_tables table_list
           opt_histogram

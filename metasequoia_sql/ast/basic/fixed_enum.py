@@ -2,11 +2,12 @@
 固定的枚举类型（fixed enum）
 """
 
-from enum import IntEnum
+from enum import IntEnum, IntFlag
 
 __all__ = [
     "EnumDropRestrict",
     "EnumShowCommandType",
+    "EnumRepairType",
 ]
 
 
@@ -25,3 +26,12 @@ class EnumShowCommandType(IntEnum):
     FULL = 1  # FULL
     EXTENDED = 2  # EXTENDED
     EXTENDED_FULL = 3  # EXTENDED FULL
+
+
+class EnumRepairType(IntFlag):
+    """枚举类型：REPAIR 语句的命令类型"""
+
+    DEFAULT = 0
+    QUICK = (1 << 0)  # QUICK
+    EXTENDED = (1 << 1)  # EXTENDED
+    USE = (1 << 2)  # USE
