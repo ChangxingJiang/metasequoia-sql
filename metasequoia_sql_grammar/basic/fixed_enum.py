@@ -16,6 +16,7 @@ __all__ = [
     "OPT_CHECK_TYPE_LIST",
     "CHECK_TYPE_LIST",
     "CHECK_TYPE",
+    "OPT_CHECKSUM_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -164,6 +165,25 @@ CHECK_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_FOR, TType.KEYWORD_UPGRADE],
             action=lambda x: ast.EnumCheckType.FOR_UPGRADE
+        )
+    ]
+)
+
+# 可选的 `CHECKSUM` 语句命令类型的枚举值
+OPT_CHECKSUM_TYPE = ms_parser.create_group(
+    name="opt_checksum_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumChecksumType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_QUICK],
+            action=lambda x: ast.EnumChecksumType.QUICK
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXTENDED],
+            action=lambda x: ast.EnumChecksumType.EXTENDED
         )
     ]
 )

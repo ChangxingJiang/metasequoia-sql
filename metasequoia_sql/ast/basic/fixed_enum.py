@@ -9,6 +9,7 @@ __all__ = [
     "EnumShowCommandType",
     "EnumRepairType",
     "EnumCheckType",
+    "EnumChecksumType",
 ]
 
 
@@ -48,3 +49,11 @@ class EnumCheckType(IntFlag):
     EXTENDED = (1 << 3)  # EXTENDED
     CHANGED = (1 << 4)  # CHANGED
     FOR_UPGRADE = (1 << 5)  # FOR UPGRADE
+
+
+class EnumChecksumType(IntEnum):
+    """`CHECKSUM` 语句命令类型的枚举值"""
+
+    DEFAULT = 0
+    QUICK = 1  # QUICK
+    EXTENDED = 2  # EXTENDED

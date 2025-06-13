@@ -5047,26 +5047,6 @@ replica_until:
           }
         ;
 
-checksum:
-          CHECKSUM_SYM table_or_tables table_list opt_checksum_type
-          {
-            LEX *lex=Lex;
-            lex->sql_command = SQLCOM_CHECKSUM;
-            /* Will be overriden during execution. */
-            YYPS->m_lock_type= TL_UNLOCK;
-            if (Select->add_tables(YYTHD, $3, TL_OPTION_UPDATING,
-                                   YYPS->m_lock_type, YYPS->m_mdl_type))
-              MYSQL_YYABORT;
-            Lex->check_opt.flags= $4;
-          }
-        ;
-
-opt_checksum_type:
-          %empty        { $$= 0; }
-        | QUICK         { $$= T_QUICK; }
-        | EXTENDED_SYM  { $$= T_EXTEND; }
-        ;
-
 binlog_base64_event:
           BINLOG_SYM TEXT_STRING_sys
           {
