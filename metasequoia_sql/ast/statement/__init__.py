@@ -1,4 +1,5 @@
 from metasequoia_sql.ast.statement.alter_table_statement import *
+from metasequoia_sql.ast.statement.call_statement import *
 from metasequoia_sql.ast.statement.check_table_statement import *
 from metasequoia_sql.ast.statement.create_index_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *

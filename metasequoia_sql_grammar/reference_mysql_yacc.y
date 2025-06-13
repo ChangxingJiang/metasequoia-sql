@@ -1,45 +1,5 @@
 %start start_entry
 
-%parse-param { class THD *YYTHD }
-%parse-param { class Parse_tree_root **parse_tree }
-
-%lex-param { class THD *YYTHD }
-%define api.pure
-%define api.prefix {my_sql_parser_}
-
-%expect 63
-
-%left KEYWORD_USED_AS_IDENT
-%nonassoc TEXT_STRING
-%left KEYWORD_USED_AS_KEYWORD
-%right UNIQUE_SYM KEY_SYM
-%left UNION_SYM EXCEPT_SYM
-%left INTERSECT_SYM
-%left CONDITIONLESS_JOIN
-%left   JOIN_SYM INNER_SYM CROSS STRAIGHT_JOIN NATURAL LEFT RIGHT ON_SYM USING
-%left   SET_VAR
-%left   OR_SYM OR2_SYM
-%left   XOR
-%left   AND_SYM AND_AND_SYM
-%left   BETWEEN_SYM CASE_SYM WHEN_SYM THEN_SYM ELSE
-%left   EQ EQUAL_SYM GE GT_SYM LE LT NE IS LIKE REGEXP IN_SYM
-%left   '|'
-%left   '&'
-%left   SHIFT_LEFT SHIFT_RIGHT
-%left   '-' '+'
-%left   '*' '/' '%' DIV_SYM MOD_SYM
-%left   '^'
-%left   OR_OR_SYM
-%left   NEG '~'
-%right  NOT_SYM NOT2_SYM
-%right  BINARY_SYM COLLATE_SYM
-%left  INTERVAL_SYM
-%left SUBQUERY_AS_EXPR
-%left '(' ')'
-
-%left EMPTY_FROM_CLAUSE
-%right INTO
-
 %%
 
 start_entry:
@@ -1661,21 +1621,6 @@ sp_suid:
             Lex->sp_chistics.suid= SP_IS_NOT_SUID;
           }
         ;
-
-call_stmt:
-          CALL_SYM sp_name opt_paren_expr_list
-          {
-            $$= NEW_PTN PT_call(@$, $2, $3);
-          }
-        ;
-
-opt_paren_expr_list:
-            %empty { $$= nullptr; }
-          | '(' opt_expr_list ')'
-            {
-              $$= $2;
-            }
-          ;
 
 /* Stored FUNCTION parameter declaration list */
 sp_fdparam_list:
@@ -6140,15 +6085,6 @@ TEXT_STRING_hash:
         | HEX_NUM
           {
             $$= to_lex_string(Item_hex_string::make_hex_str($1.str, $1.length));
-          }
-        ;
-
-schema:
-          ident
-          {
-            $$ = $1;
-            if (check_and_convert_db_name(&$$, false) != Ident_name_check::OK)
-              MYSQL_YYABORT;
           }
         ;
 

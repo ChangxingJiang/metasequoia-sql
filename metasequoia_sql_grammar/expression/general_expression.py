@@ -15,8 +15,8 @@ __all__ = [
     "BOOL_EXPR",
     "EXPR",
     "OPT_EXPR",
-    "EXPR_LIST",
     "OPT_EXPR_LIST",
+    "EXPR_LIST",
     "UDF_EXPRESSION",
     "UDF_EXPR_LIST",
     "OPT_UDF_EXPR_LIST",
@@ -486,18 +486,15 @@ OPT_EXPR = ms_parser.create_group(
     ]
 )
 
-# 逗号分隔的一般表达式列表
-EXPR_LIST = ms_parser.create_group(
-    name="expr_list",
+# 可选的嵌套括号内可选的逗号分隔的一般表达式列表
+OPT_PAREN_EXPR_LIST = ms_parser.create_group(
+    name="opt_paren_expr_list",
     rules=[
         ms_parser.create_rule(
-            symbols=["expr_list", TType.OPERATOR_COMMA, "expr"],
-            action=ms_parser.template.action.LIST_APPEND_2
+            symbols=[TType.OPERATOR_LPAREN, "opt_expr_list", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
         ),
-        ms_parser.create_rule(
-            symbols=["expr"],
-            action=ms_parser.template.action.LIST_INIT_0
-        )
+        ms_parser.template.rule.EMPTY_RETURN_LIST
     ]
 )
 
@@ -511,6 +508,21 @@ OPT_EXPR_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[],
             action=lambda _: []
+        )
+    ]
+)
+
+# 逗号分隔的一般表达式列表
+EXPR_LIST = ms_parser.create_group(
+    name="expr_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["expr_list", TType.OPERATOR_COMMA, "expr"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["expr"],
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )

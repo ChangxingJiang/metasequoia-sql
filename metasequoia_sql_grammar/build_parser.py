@@ -48,6 +48,8 @@ from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_table_statement
+from metasequoia_sql_grammar.statement import call_statement
+from metasequoia_sql_grammar.statement import check_table_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
@@ -60,7 +62,6 @@ from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
 from metasequoia_sql_grammar.statement import update_statement
-from metasequoia_sql_grammar.statement import check_table_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -255,6 +256,7 @@ def build_grammar():
 
         # 语句
         alter_table_statement,  # ALTER TABLE 语句
+        call_statement,  # ALTER TABLE 语句
         check_table_statement,  # CHECK TABLE 语句
         create_index_statement,  # CREATE INDEX 语句
         create_table_statement,  # CREATE TABLE 语句
