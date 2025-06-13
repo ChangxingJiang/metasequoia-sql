@@ -16,6 +16,7 @@ __all__ = [
     "OPT_KEYWORD_IF_NOT_EXISTS",
     "OPT_KEYWORD_IF_EXISTS",
     "OPT_KEYWORD_FORCE",
+    "OPT_KEYWORD_NO_WRITE_TO_BINLOG",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
     "KEYWORD_MASTER_OR_BINARY",
@@ -191,6 +192,25 @@ OPT_KEYWORD_FORCE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_FORCE],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字
+OPT_KEYWORD_NO_WRITE_TO_BINLOG = ms_parser.create_group(
+    name="opt_keyword_no_write_to_binlog",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NO_WRITE_TO_BINLOG],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOCAL],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(

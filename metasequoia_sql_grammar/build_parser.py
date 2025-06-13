@@ -48,6 +48,7 @@ from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_table_statement
+from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import call_statement
 from metasequoia_sql_grammar.statement import check_table_statement
 from metasequoia_sql_grammar.statement import create_index_statement
@@ -255,6 +256,7 @@ def build_grammar():
         ddl_partition_by_clause,  # DDL 分区子句
 
         # 语句
+        analyze_statement,  # ANALYZE TABLE 语句
         alter_table_statement,  # ALTER TABLE 语句
         call_statement,  # ALTER TABLE 语句
         check_table_statement,  # CHECK TABLE 语句
