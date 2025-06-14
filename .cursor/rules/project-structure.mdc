@@ -1,0 +1,100 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# MetaSequoia SQL 项目结构规范
+
+## 项目目录结构
+
+本项目采用模块化的目录结构，各目录的职责如下：
+
+### 核心目录
+- [metasequoia_sql/](mdc:metasequoia_sql/) - 主要源代码目录
+  - 包含核心SQL解析和处理逻辑
+  - 实现主要的语法解析器和语义分析器
+  
+- [metasequoia_sql_grammar/](mdc:metasequoia_sql_grammar/) - SQL语法定义目录
+  - 存放语法规则和词法分析器定义
+  - 包含ANTLR或其他解析器生成器的语法文件
+
+### 测试和示例
+- [metasequoia_sql_test/](mdc:metasequoia_sql_test/) - 测试用例目录
+  - 单元测试
+  - 集成测试
+  - 性能测试
+
+- [demo/](mdc:demo/) - 示例代码目录
+  - 展示项目使用方法的示例
+  - 快速入门的演示代码
+
+### 文档和配置
+- [docs/](mdc:docs/) - 项目文档目录
+  - API文档
+  - 使用指南
+  - 设计文档
+
+- [scripts/](mdc:scripts/) - 工具脚本目录
+  - 构建脚本
+  - 开发辅助工具
+  - 自动化脚本
+
+### 项目配置文件
+- [setup.py](mdc:setup.py) - Python包配置文件
+- [requirements.txt](mdc:requirements.txt) - 项目依赖配置
+- [README.md](mdc:README.md) - 项目说明文档
+- [LICENSE](mdc:LICENSE) - 开源许可证
+
+## 代码规范
+
+### 命名规范
+1. 类名：使用大驼峰命名法（PascalCase）
+   - 例如：`SQLParser`, `QueryAnalyzer`
+
+2. 函数和变量：使用小写字母和下划线（snake_case）
+   - 例如：`parse_query()`, `table_name`
+
+3. 常量：使用大写字母和下划线
+   - 例如：`MAX_QUERY_LENGTH`, `DEFAULT_TIMEOUT`
+
+### 文档规范
+1. 所有公共接口必须有文档字符串（docstring）
+2. 文档字符串应包含：
+   - 功能描述
+   - 参数说明
+   - 返回值说明
+   - 异常说明（如适用）
+
+### 代码格式
+1. 遵循PEP 8规范
+2. 使用4个空格进行缩进
+3. 最大行长度限制为120字符
+4. 类和函数之间空两行
+5. 相关的导入语句应该分组
+
+### 测试规范
+1. 新功能必须包含单元测试
+2. 测试文件命名：`test_*.py`
+3. 测试类命名：`Test*`
+4. 每个测试用例应该只测试一个功能点
+
+### 注释规范
+1. 代码注释使用中文
+2. 注释应该解释为什么这样做，而不是做了什么
+3. 复杂的算法需要详细的注释说明
+4. TODO注释格式：`# TODO(开发者名): 说明`
+
+### 错误处理
+1. 使用自定义异常类
+2. 异常类应该有明确的层次结构
+3. 错误信息应该清晰明确
+4. 关键操作需要做好日志记录
+
+### 版本控制
+1. 提交信息要清晰明确
+2. 每个提交只做一件事
+3. 分支命名规范：
+   - 特性分支：`feature/功能名`
+   - 修复分支：`fix/问题描述`
+
+   - 发布分支：`release/版本号`
