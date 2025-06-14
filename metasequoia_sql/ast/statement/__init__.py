@@ -4,6 +4,7 @@ from metasequoia_sql.ast.statement.binlog_statement import *
 from metasequoia_sql.ast.statement.call_statement import *
 from metasequoia_sql.ast.statement.check_table_statement import *
 from metasequoia_sql.ast.statement.checksum_statement import *
+from metasequoia_sql.ast.statement.clone_statement import *
 from metasequoia_sql.ast.statement.create_index_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.delete_statement import *

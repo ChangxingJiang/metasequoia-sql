@@ -96,6 +96,13 @@
 | -------------------- | --------------- | ----------------------- | ---------------- |
 | `checksum_statement` | `CHECKSUM` 语句 | `ast.ChecksumStatement` | `checksum`       |
 
+#### CLONE 语句（clone statement）
+
+| 水杉解析器语义组名称 | 语义组类型                                | 返回值类型       | MySQL 语义组名称  |
+| -------------------- | ----------------------------------------- | ---------------- | ----------------- |
+| `clone_statement`    | `CLONE` 语句                              | `CloneStatement` | `clone_stmt`      |
+| `opt_datadir_ssl`    | `CLONE` 语句的临时数据目录和 SSL 选项信息 | `TempDatadirSsl` | `opt_datadir_ssl` |
+
 #### CREATE INDEX 语句（create index statement）
 
 | 水杉解析器语义组名称     | 语义组类型             | 返回值类型            | MySQL 语义组名称    |
@@ -800,6 +807,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type` |
 | `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`         |
 | `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`         |
+| `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`           | `opt_ssl`             |
 
 ## 固定的词语组合（fixed word）
 

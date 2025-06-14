@@ -7843,21 +7843,6 @@ opt_datadir_ssl:
           }
         ;
 
-opt_ssl:
-          %empty
-          {
-            Lex->ssl_type= SSL_TYPE_NOT_SPECIFIED;
-          }
-        | REQUIRE_SYM SSL_SYM
-          {
-            Lex->ssl_type= SSL_TYPE_SPECIFIED;
-          }
-        | REQUIRE_SYM NO_SYM SSL_SYM
-          {
-            Lex->ssl_type= SSL_TYPE_NONE;
-          }
-        ;
-
 resource_group_types:
           USER { $$= resourcegroups::Type::USER_RESOURCE_GROUP; }
         | SYSTEM_SYM { $$= resourcegroups::Type::SYSTEM_RESOURCE_GROUP; }

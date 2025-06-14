@@ -24,6 +24,7 @@ __all__ = [
     "INSTALL_OPTION_TYPE",
     "KILL_OPTION_TYPE",
     "LOCK_OPTION_TYPE",
+    "OPT_OPEN_SSL_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -347,6 +348,25 @@ LOCK_OPTION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_READ, TType.KEYWORD_LOCAL],
             action=lambda _: ast.EnumLockOptionType.READ_LOCAL
+        )
+    ]
+)
+
+# SSL 选项的枚举值
+OPT_OPEN_SSL_TYPE = ms_parser.create_group(
+    name="opt_open_ssl_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumOpenSslType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REQUIRE, TType.KEYWORD_SSL],
+            action=lambda _: ast.EnumOpenSslType.REQUIRED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REQUIRE, TType.KEYWORD_NO, TType.KEYWORD_SSL],
+            action=lambda _: ast.EnumOpenSslType.REQUIRED_NO_SSL
         )
     ]
 )

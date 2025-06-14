@@ -53,6 +53,7 @@ from metasequoia_sql_grammar.statement import binlog_statement
 from metasequoia_sql_grammar.statement import call_statement
 from metasequoia_sql_grammar.statement import check_table_statement
 from metasequoia_sql_grammar.statement import checksum_statement
+from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
@@ -270,6 +271,7 @@ def build_grammar():
         call_statement,  # ALTER TABLE 语句
         check_table_statement,  # CHECK TABLE 语句
         checksum_statement,  # CHECKSUM 语句
+        clone_statement,  # CLONE 语句
         create_index_statement,  # CREATE INDEX 语句
         create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句

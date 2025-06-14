@@ -15,6 +15,7 @@ __all__ = [
     "EnumInstallOptionType",
     "EnumKillOptionType",
     "EnumLockOptionType",
+    "EnumOpenSslType",
 ]
 
 
@@ -112,3 +113,11 @@ class EnumLockOptionType(IntEnum):
     WRITE = 2  # WRITE
     LOW_PRIORITY_WRITE = 3  # LOW_PRIORITY WRITE
     READ_LOCAL = 4  # READ LOCAL
+
+
+class EnumOpenSslType(IntEnum):
+    """SSL 选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    REQUIRED = 1  # REQUIRE SSL
+    REQUIRED_NO_SSL = 2  # REQUIRE NO SSL
