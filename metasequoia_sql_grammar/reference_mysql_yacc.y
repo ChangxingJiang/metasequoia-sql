@@ -5957,30 +5957,6 @@ option_value_no_option_type:
           }
         ;
 
-lvalue_variable:
-          lvalue_ident
-          {
-            $$ = Bipartite_name{{}, to_lex_cstring($1)};
-          }
-        | lvalue_ident '.' ident
-          {
-            /*
-              Reject names prefixed by `GLOBAL.`, `LOCAL.`, or `SESSION.` --
-              if one of those prefixes is there then we are parsing something
-              like `GLOBAL.GLOBAL.foo` or `LOCAL.SESSION.bar` etc.
-            */
-            if (check_reserved_words($1.str)) {
-              YYTHD->syntax_error_at(@1);
-              MYSQL_YYABORT;
-            }
-            $$ = Bipartite_name{to_lex_cstring($1), to_lex_cstring($3)};
-          }
-        | DEFAULT_SYM '.' ident
-          {
-            $$ = Bipartite_name{{STRING_WITH_LEN("default")}, to_lex_cstring($3)};
-          }
-        ;
-
 transaction_characteristics:
           transaction_access_mode opt_isolation_level
           {

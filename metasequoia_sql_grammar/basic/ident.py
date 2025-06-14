@@ -23,6 +23,7 @@ __all__ = [
     "IDENT_LIST",
     "OPT_IDENT_LIST_PARENS",
     "OPT_IDENT",
+    "VARIABLE_IDENTIFIER",
 ]
 
 # 不是保留字或非保留关键字的标识符
@@ -219,5 +220,24 @@ OPT_IDENT = ms_parser.create_group(
             action=lambda x: x[0].get_str_value()
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 变量名标识符（`ident` 或 `ident.ident` 或 `DEFAULT.ident`）
+VARIABLE_IDENTIFIER = ms_parser.create_group(
+    name="variable_identifier",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["variable_ident"],
+            action=lambda x: ast.Identifier(schema_name=None, object_name=x[0].get_str_value())
+        ),
+        ms_parser.create_rule(
+            symbols=["variable_ident", TType.OPERATOR_DOT, "ident"],
+            action=lambda x: ast.Identifier(schema_name=x[0].get_str_value(), object_name=x[2].get_str_value())
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT, TType.OPERATOR_DOT, "ident"],
+            action=lambda x: ast.Identifier(schema_name="default", object_name=x[2].get_str_value())
+        )
     ]
 )

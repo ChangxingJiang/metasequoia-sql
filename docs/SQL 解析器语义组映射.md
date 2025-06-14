@@ -149,9 +149,9 @@
 
 #### IMPORT TABLE 语句（import table statement）
 
-| 水杉解析器语义组名称 | 语义组类型          | 返回值类型                 | MySQL 语义组名称 |
-| -------------------- | ------------------- | -------------------------- | ---------------- |
-| `insert_statement`   | `IMPORT TABLE` 语句 | `ast.ImportTableStatement` | `insert_stmt`    |
+| 水杉解析器语义组名称     | 语义组类型          | 返回值类型                 | MySQL 语义组名称 |
+| ------------------------ | ------------------- | -------------------------- | ---------------- |
+| `import_table_statement` | `IMPORT TABLE` 语句 | `ast.ImportTableStatement` | `insert_stmt`    |
 
 #### INSERT 语句和 REPLACE 语句（insert or replace statement）
 
@@ -819,6 +819,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_ident_list_parens`                                | 可选的括号嵌套的单个标识符（`ident`）的列表                  | `List[str]`            | `opt_derived_column_list`<br />`opt_ref_list`                |
 | `label_ident`（MySQL）                                 | 表示存储过程名称的标识符                                     | `ast.Ident`            | `label_ident`                                                |
 | `role_ident`（MySQL）                                  | 表示角色的标识符                                             | `ast.Ident`            | `role_ident`                                                 |
+| `variable_identifier`                                  | 变量名标识符                                                 | `ast.Identifier`       | `lvalue_variable`                                            |
 | `variable_ident`（MySQL）                              | 表示变量名或变量名前缀的标识符                               | `ast.Ident`            | `lvalue_ident`                                               |
 | `ident_2`                                              | 点分隔的两个标识符（`ident.ident`）                          | `ast.Ident`            | `simple_ident_q`【部分】                                     |
 | `ident_3`                                              | 点分隔的三个标识符（`ident.ident.ident`）                    | `ast.Ident`            | `simple_ident_q`【部分】                                     |
