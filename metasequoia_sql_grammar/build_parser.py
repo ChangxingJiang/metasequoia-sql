@@ -37,6 +37,7 @@ from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
+from metasequoia_sql_grammar.phrase import cpu_range
 from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.phrase import ddl_column_attribute
 from metasequoia_sql_grammar.phrase import ddl_index_attribute
@@ -233,6 +234,7 @@ def build_grammar():
         ddl_table_option,  # DDL 表属性
         on_duplicate,  # 重复值处理规则
         ddl_alter_option,  # DDL 修改表选项
+        cpu_range,
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式

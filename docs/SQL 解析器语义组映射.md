@@ -506,7 +506,7 @@
 | `merge_insert_type`                        | 向 MERGE 表插入数据的类型的枚举值                    | `ast.EnumMergeInsertType`       | `merge_insert_types`                                      |
 | `autoextend_size_option`                   | 指定表空间每次自动扩展的大小属性                     | `ast.TableOptionAutoextendSize` | `option_autoextend_size`<br />`ts_option_autoextend_size` |
 
-## 字段类型（field type）
+#### 字段类型（field type）
 
 | 水杉解析器语义组名称       | 语义组含义                                                   | 返回值类型            | MySQL 语义组名称                                 |
 | -------------------------- | ------------------------------------------------------------ | --------------------- | ------------------------------------------------ |
@@ -523,7 +523,7 @@
 | `opt_field_option_list`    | 可选的多个字段选项（`SIGNED`、`UNSIGNED` 或 `ZEROFILL`）     | `ast.FieldOption`     | `field_options`                                  |
 | `field_type`               | DDL 语句中的字段类型                                         | `ast.FieldType`       | `type`                                           |
 
-## DDL 表元素（ddl table element）
+#### DDL 表元素（ddl table element）
 
 | 水杉解析器语义组名称                  | 语义组含义                                                   | 返回值类型                           | MySQL 语义组名称                                |
 | ------------------------------------- | ------------------------------------------------------------ | ------------------------------------ | ----------------------------------------------- |
@@ -551,7 +551,7 @@
 | `opt_constraint_enforcement`          | 可选的 `ENFORCED`、`NOT ENFORCED` 关键字                     | `Optional[bool]`                     | `opt_constraint_enforcement`                    |
 | `constraint_enforcement`              | `ENFORCED`、`NOT ENFORCED` 关键字                            | `bool`                               | `constraint_enforcement`<br />`opt_not`【包含】 |
 
-## DDL 字段属性（ddl column attribute）
+#### DDL 字段属性（ddl column attribute）
 
 | 水杉解析器语义组名称        | 语义组含义                               | 返回值类型                  | MySQL 语义组名称                                             |
 | --------------------------- | ---------------------------------------- | --------------------------- | ------------------------------------------------------------ |
@@ -564,7 +564,7 @@
 | `opt_constraint_name`       | 可选的 `CONSTRAINT` 关键字引导的约束名称 | `Optional[str]`             | `opt_constraint_name`                                        |
 | `check_constraint`          | 指定约束条件的 `CHECK` 子句              | `ast.Expression`            | `check_constraint`                                           |
 
-## DDL 索引属性（ddl index attribute）
+#### DDL 索引属性（ddl index attribute）
 
 | 水杉解析器语义组名称                | 语义组含义                             | 返回值类型                              | MySQL 语义组名称             |
 | ----------------------------------- | -------------------------------------- | --------------------------------------- | ---------------------------- |
@@ -584,7 +584,7 @@
 
 `spatial_index_option` 语义组与 `common_index_attribute` 语义组逻辑一致，但为保证可拓展性将其拆分为两个语义组。
 
-## 别名（alias）
+#### 别名（alias）
 
 | 水杉解析器语义组名称 | 语义组含义                          | 返回值类型      | MySQL 语义组名称  |
 | -------------------- | ----------------------------------- | --------------- | ----------------- |
@@ -592,7 +592,7 @@
 | `opt_select_alias`   | 可选的字段表达式和 UDF 表达式的别名 | `Optional[str]` | `select_alias`    |
 | `opt_table_alias`    | 可选的表表达式的别名                | `Optional[str]` | `opt_table_alias` |
 
-## JSON 表选项（json table option）
+#### JSON 表选项（json table option）
 
 | 水杉解析器语义组名称     | 语义组含义                          | 返回值类型               | MySQL 语义组名称                                             |
 | ------------------------ | ----------------------------------- | ------------------------ | ------------------------------------------------------------ |
@@ -601,13 +601,13 @@
 | `json_on_error`          | Json 解析遇到错误时的处理方法       | `ast.JsonOnResponse`     | `on_error`                                                   |
 | `json_on_empty_on_error` | Json 解析遇到空值或错误时的处理方法 | `ast.JsonOnEmptyOnError` | `opt_on_empty_or_error`<br />`opt_on_empty_or_error_json_table` |
 
-## 时间间隔（time interval）
+#### 时间间隔（time interval）
 
 | 水杉解析器语义组名称 | 语义组含义     | 返回值类型         | MySQL 语义组名称                             |
 | -------------------- | -------------- | ------------------ | -------------------------------------------- |
 | `time_interval`      | 时间间隔表达式 | `ast.TimeInterval` | 无对应语义组（`INTERVAL_SYM expr interval`） |
 
-## DML 语句选项（dml option）
+#### DML 语句选项（dml option）
 
 | 水杉解析器语义组名称       | 语义组含义                                                   | 返回值类型      | MySQL 语义组名称      |
 | -------------------------- | ------------------------------------------------------------ | --------------- | --------------------- |
@@ -619,14 +619,14 @@
 | `opt_insert_option`        | 可选的 `INSERT` 语句中的选项                                 | `ast.DmlOption` | `insert_lock_option`  |
 | `opt_replace_option`       | 可选的 `REPLACE` 语句中的选项                                | `ast.DmlOption` | `replace_lock_option` |
 
-## 重复值处理规则（on duplicate）
+#### 重复值处理规则（on duplicate）
 
 | 水杉解析器语义组名称 | 语义组含义                                              | 返回值类型        | MySQL 语义组名称 |
 | -------------------- | ------------------------------------------------------- | ----------------- | ---------------- |
 | `opt_on_duplicate`   | 可选的指定重复值处理规则的 `REPLACE` 或 `IGNORE` 关键字 | `ast.OnDuplicate` | `opt_duplicate`  |
 | `on_duplicate`       | 指定重复值处理规则的 `REPLACE` 或 `IGNORE` 关键字       | `ast.OnDuplicate` | `duplicate`      |
 
-## DDL 修改表选项（ddl alter option）
+#### DDL 修改表选项（ddl alter option）
 
 | 水杉解析器语义组名称                   | 语义组含义                                                   | 返回值类型                      | MySQL 语义组名称                                             |
 | -------------------------------------- | ------------------------------------------------------------ | ------------------------------- | ------------------------------------------------------------ |
@@ -647,6 +647,14 @@
 | `alter_option_wait`                    | ALTER 选项：`WAIT` 或 `NO_WAIT`                              | `ast.AlterOptionWait`           | `ts_option_wait`                                             |
 
 `drop_undo_tablespace_option` 语义组与 `alter_option_engine` 语义组一致，但考虑可拓展性保留单独的 `drop_undo_tablespace_option` 语义组。
+
+#### CPU 范围（cpu range）
+
+| 水杉解析器语义组名称           | 语义组含义                                       | 返回值类型       | MySQL 语义组名称               |
+| ------------------------------ | ------------------------------------------------ | ---------------- | ------------------------------ |
+| `opt_resource_group_vcpu_list` | `VCPU` 关键字引导的指定 CPU 编号或范围列表的等式 | `List[CpuRange]` | `opt_resource_group_vcpu_list` |
+| `cpu_num_or_range_list`        | CPU 编号或范围的列表                             | `List[CpuRange]` | `vcpu_range_spec_list`         |
+| `cpu_num_or_range`             | CPU 编号或范围                                   | `CpuRange`       | `vcpu_num_or_range`            |
 
 # 表（table）
 

@@ -7767,54 +7767,6 @@ opt_suspend:
           { $$= XA_FOR_MIGRATE; }
         ;
 
-opt_resource_group_vcpu_list:
-          %empty
-          {
-            /* Make an empty list. */
-            $$= NEW_PTN Mem_root_array<resourcegroups::Range>(YYMEM_ROOT);
-            if ($$ == nullptr)
-              MYSQL_YYABORT;
-          }
-        | VCPU_SYM opt_equal vcpu_range_spec_list { $$= $3; }
-        ;
-
-vcpu_range_spec_list:
-          vcpu_num_or_range
-          {
-            resourcegroups::Range r($1.start, $1.end);
-            $$= NEW_PTN Mem_root_array<resourcegroups::Range>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back(r))
-              MYSQL_YYABORT;
-          }
-        | vcpu_range_spec_list opt_comma vcpu_num_or_range
-          {
-            resourcegroups::Range r($3.start, $3.end);
-            $$= $1;
-            if ($$ == nullptr || $$->push_back(r))
-              MYSQL_YYABORT;
-          }
-        ;
-
-vcpu_num_or_range:
-          NUM
-          {
-            auto cpu_id= my_strtoull($1.str, nullptr, 10);
-            $$.start= $$.end=
-              static_cast<resourcegroups::platform::cpu_id_t>(cpu_id);
-            assert($$.start == cpu_id); // truncation check
-          }
-        | NUM '-' NUM
-          {
-            auto start= my_strtoull($1.str, nullptr, 10);
-            $$.start= static_cast<resourcegroups::platform::cpu_id_t>(start);
-            assert($$.start == start); // truncation check
-
-            auto end= my_strtoull($3.str, nullptr, 10);
-            $$.end= static_cast<resourcegroups::platform::cpu_id_t>(end);
-            assert($$.end == end); // truncation check
-          }
-        ;
-
 signed_num:
           NUM     { $$= static_cast<int>(my_strtoll($1.str, nullptr, 10)); }
         | '-' NUM { $$= -static_cast<int>(my_strtoll($2.str, nullptr, 10)); }
