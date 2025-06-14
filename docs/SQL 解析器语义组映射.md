@@ -50,9 +50,9 @@
 
 #### ALTER TABLE 语句（alter table statement）
 
-| 水杉解析器语义组名称 | 语义组类型 | 返回值类型 | MySQL 语义组名称 |
-| -------------------- | ---------- | ---------- | ---------------- |
-|                      |            |            |                  |
+| 水杉解析器语义组名称 | 语义组类型    | 返回值类型            | MySQL 语义组名称      |
+| -------------------- | ------------- | --------------------- | --------------------- |
+| `binlog_statement`   | `BINLOG` 语句 | `ast.BinlogStatement` | `binlog_base64_event` |
 
 #### ANALYZE TABLE 语句（analyze table statement）
 
@@ -61,6 +61,12 @@
 | `analyze_table_statement`    | `ANALYZE TABLE` 语句 | `ast.AnalyzeTableStatement` | `analyze_table_stmt`         |
 | `opt_histogram`              | 可选的直方图参数     | `ast.Histogram`             | `opt_histogram`              |
 | `opt_histogram_update_param` | 直方图的更新参数     | `ast.HistogramUpdateParam`  | `opt_histogram_update_param` |
+
+#### BINLOG 语句（binlog statement）
+
+| 水杉解析器语义组名称 | 语义组类型  | 返回值类型          | MySQL 语义组名称 |
+| -------------------- | ----------- | ------------------- | ---------------- |
+| `call_statement`     | `CALL` 语句 | `ast.CallStatement` | `call_stmt`      |
 
 #### CALL 语句（call statement）
 
@@ -155,6 +161,12 @@
 | `insert_from_query`       | 通过查询构造的多行数据                            | `ast.TempInsertColumnAndQuery` | `insert_query_expression` |
 | `opt_insert_alias`        | `INSERT` 语句中 `AS` 关键字引导的表别名和字段别名 | `ast.TempInsertAlias`          | `opt_values_reference`    |
 | `opt_insert_update_list`  | 可选的 `ON DUPLICATE KEY UPDATE` 子句             | `List[ast.UpdateElement]`      | `opt_insert_update_list`  |
+
+#### OPTIMIZE TABLE 语句（optimize table statement）
+
+| 水杉解析器语义组名称       | 语义组类型            | 返回值类型                   | MySQL 语义组名称      |
+| -------------------------- | --------------------- | ---------------------------- | --------------------- |
+| `optimize_table_statement` | `OPTIMIZE TABLE` 语句 | `ast.OptimizeTableStatement` | `optimize_table_stmt` |
 
 #### REPAIR TABLE 语句（repair table statement）
 
