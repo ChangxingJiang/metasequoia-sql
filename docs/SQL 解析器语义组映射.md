@@ -156,6 +156,13 @@
 | `drop_user_statement`            | `DROP USER` 语句                     | `ast.DropUserStatement`           | `drop_user_stmt`            |
 | `drop_view_statement`            | `DROP VIEW` 语句                     | `ast.DropViewStatement`           | `drop_view_stmt`            |
 
+#### EXECUTE 语句（execute statement）
+
+| 水杉解析器语义组名称 | 语义组类型                    | 返回值类型           | MySQL 语义组名称 |
+| -------------------- | ----------------------------- | -------------------- | ---------------- |
+|                      |                               |                      |                  |
+| `execute_using`      | `EXECUTE` 语句的 `USING` 子句 | `List[UserVariable]` | `execute_using`  |
+
 #### EXPLAIN 语句（explain statement）
 
 | 水杉解析器语义组名称     | 语义组类型                                     | 返回值类型                   | MySQL 语义组名称                               |

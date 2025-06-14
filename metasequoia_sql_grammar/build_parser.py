@@ -62,6 +62,7 @@ from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import describe_statement
 from metasequoia_sql_grammar.statement import do_statement
 from metasequoia_sql_grammar.statement import drop_statement
+from metasequoia_sql_grammar.statement import execute_statement
 from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import import_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
@@ -284,6 +285,7 @@ def build_grammar():
         describe_statement,  # DESCRIBE 语句
         do_statement,  # DO 语句
         drop_statement,  # DROP 语句
+        execute_statement,  # EXECUTE 语句
         explain_statement,  # EXPLAIN 语句
         import_statement,  # IMPORT TABLE 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句

@@ -236,23 +236,6 @@ prepare_src:
           }
         ;
 
-execute:
-          EXECUTE_SYM ident
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            lex->sql_command= SQLCOM_EXECUTE;
-            lex->prepared_stmt_name= to_lex_cstring($2);
-          }
-          execute_using
-          {}
-        ;
-
-execute_using:
-          %empty
-        | USING execute_var_list
-        ;
-
 /* help */
 
 help:

@@ -12,6 +12,7 @@ from metasequoia_sql.ast.statement.delete_statement import *
 from metasequoia_sql.ast.statement.describe_statement import *
 from metasequoia_sql.ast.statement.do_statement import *
 from metasequoia_sql.ast.statement.drop_statement import *
+from metasequoia_sql.ast.statement.execute_statement import *
 from metasequoia_sql.ast.statement.explain_statement import *
 from metasequoia_sql.ast.statement.import_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *
