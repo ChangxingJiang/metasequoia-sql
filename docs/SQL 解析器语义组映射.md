@@ -103,6 +103,12 @@
 | `clone_statement`    | `CLONE` 语句                              | `CloneStatement` | `clone_stmt`      |
 | `opt_datadir_ssl`    | `CLONE` 语句的临时数据目录和 SSL 选项信息 | `TempDatadirSsl` | `opt_datadir_ssl` |
 
+#### COMMIT 语句（commit statement）
+
+| 水杉解析器语义组名称 | 语义组类型    | 返回值类型        | MySQL 语义组名称 |
+| -------------------- | ------------- | ----------------- | ---------------- |
+| `commit_statement`   | `COMMIT` 语句 | `CommitStatement` | `commit`         |
+
 #### CREATE INDEX 语句（create index statement）
 
 | 水杉解析器语义组名称     | 语义组类型             | 返回值类型            | MySQL 语义组名称    |
@@ -787,7 +793,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 除 `base` 中的抽象节点外，不继承其他任何节点。
 
-## 固定的枚举类型（fixed enum）
+#### 固定的枚举类型（fixed enum）
 
 | 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                  | MySQL 语义组名称      |
 | ----------------------- | ------------------------------------------------------ | --------------------------- | --------------------- |
@@ -808,8 +814,10 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`         |
 | `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`         |
 | `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`           | `opt_ssl`             |
+| `opt_chain_type`        | `CHAIN` 选项的枚举值                                   | `EnumChainType`             | `opt_chain`           |
+| `opt_release_type`      | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`           | `opt_release`         |
 
-## 固定的词语组合（fixed word）
+#### 固定的词语组合（fixed word）
 
 | 水杉解析器语义组名称             | 语义组类型                                                   | 返回值类型 | MySQL 语义组名称         |
 | -------------------------------- | ------------------------------------------------------------ | ---------- | ------------------------ |
@@ -824,6 +832,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_if_exists`          | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`              |
 | `opt_keyword_force`              | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`              |
 | `opt_keyword_full`               | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`               |
+| `opt_keyword_work`               | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`               |
 | `opt_keyword_no_write_to_binlog` | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog` |
 | `keyword_describe_or_explain`    | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`       |
 | `keyword_table_or_tables`        | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`        |

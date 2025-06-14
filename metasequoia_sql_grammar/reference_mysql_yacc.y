@@ -7013,38 +7013,9 @@ begin_stmt:
           opt_work {}
         ;
 
-opt_work:
-          %empty {}
-        | WORK_SYM  {}
-        ;
-
-opt_chain:
-          %empty                   { $$= TVL_UNKNOWN; }
-        | AND_SYM NO_SYM CHAIN_SYM { $$= TVL_NO; }
-        | AND_SYM CHAIN_SYM        { $$= TVL_YES; }
-        ;
-
-opt_release:
-          %empty             { $$= TVL_UNKNOWN; }
-        | RELEASE_SYM        { $$= TVL_YES; }
-        | NO_SYM RELEASE_SYM { $$= TVL_NO; }
-;
-
 opt_savepoint:
           %empty {}
         | SAVEPOINT_SYM {}
-        ;
-
-commit:
-          COMMIT_SYM opt_work opt_chain opt_release
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_COMMIT;
-            /* Don't allow AND CHAIN RELEASE. */
-            MYSQL_YYABORT_UNLESS($3 != TVL_YES || $4 != TVL_YES);
-            lex->tx_chain= $3;
-            lex->tx_release= $4;
-          }
         ;
 
 rollback:

@@ -16,6 +16,8 @@ __all__ = [
     "EnumKillOptionType",
     "EnumLockOptionType",
     "EnumOpenSslType",
+    "EnumChainType",
+    "EnumReleaseType",
 ]
 
 
@@ -121,3 +123,19 @@ class EnumOpenSslType(IntEnum):
     DEFAULT = 0  # 默认值
     REQUIRED = 1  # REQUIRE SSL
     REQUIRED_NO_SSL = 2  # REQUIRE NO SSL
+
+
+class EnumChainType(IntEnum):
+    """CHAIN 选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    YES = 1  # AND CHAIN
+    NO = 2  # AND NO CHAIN
+
+
+class EnumReleaseType(IntEnum):
+    """RELEASE 选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    YES = 1  # RELEASE
+    NO = 2  # NO RELEASE

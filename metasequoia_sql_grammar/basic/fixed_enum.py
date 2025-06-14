@@ -25,6 +25,8 @@ __all__ = [
     "KILL_OPTION_TYPE",
     "LOCK_OPTION_TYPE",
     "OPT_OPEN_SSL_TYPE",
+    "OPT_CHAIN_TYPE",
+    "OPT_RELEASE_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -367,6 +369,44 @@ OPT_OPEN_SSL_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_REQUIRE, TType.KEYWORD_NO, TType.KEYWORD_SSL],
             action=lambda _: ast.EnumOpenSslType.REQUIRED_NO_SSL
+        )
+    ]
+)
+
+# `CHAIN` 选项的枚举值
+OPT_CHAIN_TYPE = ms_parser.create_group(
+    name="opt_chain_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumChainType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AND, TType.KEYWORD_NO, TType.KEYWORD_CHAIN],
+            action=lambda _: ast.EnumChainType.NO
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AND, TType.KEYWORD_CHAIN],
+            action=lambda _: ast.EnumChainType.YES
+        )
+    ]
+)
+
+# `RELEASE` 选项的枚举值
+OPT_RELEASE_TYPE = ms_parser.create_group(
+    name="opt_release_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumReleaseType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RELEASE],
+            action=lambda _: ast.EnumReleaseType.YES
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NO, TType.KEYWORD_RELEASE],
+            action=lambda _: ast.EnumReleaseType.NO
         )
     ]
 )
