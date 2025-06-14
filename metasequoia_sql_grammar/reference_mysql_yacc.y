@@ -5036,58 +5036,6 @@ replica_until:
           }
         ;
 
-binlog_base64_event:
-          BINLOG_SYM TEXT_STRING_sys
-          {
-            Lex->sql_command = SQLCOM_BINLOG_BASE64_EVENT;
-            Lex->binlog_stmt_arg= $2;
-          }
-        ;
-
-rename:
-          RENAME table_or_tables
-          {
-            Lex->sql_command= SQLCOM_RENAME_TABLE;
-          }
-          table_to_table_list
-          {}
-        | RENAME USER rename_list
-          {
-            Lex->sql_command = SQLCOM_RENAME_USER;
-          }
-        ;
-
-rename_list:
-          user TO_SYM user
-          {
-            if (Lex->users_list.push_back($1) || Lex->users_list.push_back($3))
-              MYSQL_YYABORT;
-          }
-        | rename_list ',' user TO_SYM user
-          {
-            if (Lex->users_list.push_back($3) || Lex->users_list.push_back($5))
-              MYSQL_YYABORT;
-          }
-        ;
-
-table_to_table_list:
-          table_to_table
-        | table_to_table_list ',' table_to_table
-        ;
-
-table_to_table:
-          table_ident TO_SYM table_ident
-          {
-            LEX *lex=Lex;
-            Query_block *sl= Select;
-            if (!sl->add_table_to_list(lex->thd, $1,nullptr,TL_OPTION_UPDATING,
-                                       TL_IGNORE, MDL_EXCLUSIVE) ||
-                !sl->add_table_to_list(lex->thd, $3,nullptr,TL_OPTION_UPDATING,
-                                       TL_IGNORE, MDL_EXCLUSIVE))
-              MYSQL_YYABORT;
-          }
-        ;
-
 keycache_stmt:
           CACHE_SYM INDEX_SYM keycache_list IN_SYM key_cache_name
           {

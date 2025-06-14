@@ -8,7 +8,6 @@ __all__ = [
     "BinlogStatement"
 ]
 
-
 class BinlogStatement(Statement):
     """
     二进制日志语句的抽象语法树节点。
@@ -16,6 +15,10 @@ class BinlogStatement(Statement):
     语法规则：
         BINLOG base64_event_string
     """
+
+    __slots__ = (
+        "_event_string"
+    )
 
     def __init__(self, event_string: str) -> None:
         """
@@ -26,4 +29,15 @@ class BinlogStatement(Statement):
         event_string: str
             Base64 编码的二进制日志事件字符串
         """
-        self.base64_event_string = event_string
+        self._event_string = event_string
+
+    @property
+    def event_string(self) -> str:
+        """
+        获取二进制日志事件字符串。
+        Returns
+        -------
+        str
+            Base64 编码的二进制日志事件字符串
+        """
+        return self._event_string

@@ -168,6 +168,15 @@
 | -------------------------- | --------------------- | ---------------------------- | --------------------- |
 | `optimize_table_statement` | `OPTIMIZE TABLE` 语句 | `ast.OptimizeTableStatement` | `optimize_table_stmt` |
 
+#### RENAME 语句（rename statement）
+
+| 水杉解析器语义组名称 | 语义组类型                          | 返回值类型                            | MySQL 语义组名称      |
+| -------------------- | ----------------------------------- | ------------------------------------- | --------------------- |
+| `rename_statement`   | `RENAME` 语句                       | `ast.RenameStatement`                 | `rename`              |
+| `rename_user_list`   | `RENAME` 语句中的用户重命名对的列表 | `List[Tuple[UserName, UserName]]`     | `rename_list`         |
+| `rename_table_list`  | `RENAME` 语句中的表重命名对的列表   | `List[Tuple[Identifier, Identifier]]` | `table_to_table_list` |
+| `rename_table_item`  | `RENAME` 语句中的表重命名对         | `Tuple[Identifier, Identifier]`       | `table_to_table`      |
+
 #### REPAIR TABLE 语句（repair table statement）
 
 | 水杉解析器语义组名称     | 语义组类型          | 返回值类型                 | MySQL 语义组名称    |

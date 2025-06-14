@@ -61,6 +61,7 @@ from metasequoia_sql_grammar.statement import drop_statement
 from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import optimize_table_statement
+from metasequoia_sql_grammar.statement import rename_statement
 from metasequoia_sql_grammar.statement import repair_table_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import show_statement
@@ -276,6 +277,7 @@ def build_grammar():
         select_statement,  # SELECT 语句
         start_transaction_statement,  # START TRANSACTION 语句
         update_statement,  # UPDATE 语句
+        rename_statement,
         repair_table_statement,  # REPAIR TABLE 语句
         show_statement,  # SHOW 语句
 
