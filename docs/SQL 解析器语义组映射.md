@@ -840,6 +840,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 | 水杉解析器语义组名称       | 语义组含义                                                   | 返回值类型                | MySQL 语义组名称                                             |
 | -------------------------- | ------------------------------------------------------------ | ------------------------- | ------------------------------------------------------------ |
+| `text_literal_sys_list`    | 字符串字面值的列表                                           | `List[str]`               | `TEXT_STRING_sys_list`                                       |
 | `text_literal_sys`         | 字符串字面值（不包括 Unicode 字符串）                        | `ast.StringLiteral`       | `TEXT_STRING_sys`<br />`TEXT_STRING_literal`<br />`TEXT_STRING_filesystem`<br />`TEXT_STRING_password`<br />`TEXT_STRING_validated`<br />`TEXT_STRING_sys_nonewline`<br />`filter_wild_db_table_string`<br />`json_attribute` |
 | `int_literal`              | 整数字面值                                                   | `ast.IntLiteral`          | `int64_literal`                                              |
 | `int_literal_or_hex`       | 整数字面值或十六进制字面值                                   | `ast.IntLiteral`          | `real_ulong_num`<br />`real_ulonglong_num`                   |

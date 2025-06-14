@@ -8008,21 +8008,6 @@ uninstall:
           }
         ;
 
-TEXT_STRING_sys_list:
-          TEXT_STRING_sys
-          {
-            $$.init(YYTHD->mem_root);
-            if ($$.push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | TEXT_STRING_sys_list ',' TEXT_STRING_sys
-          {
-            $$= $1;
-            if ($$.push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
 import_stmt:
           IMPORT TABLE_SYM FROM TEXT_STRING_sys_list
           {

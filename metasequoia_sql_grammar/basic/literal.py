@@ -42,6 +42,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "TEXT_LITERAL_SYS_LIST",
     "TEXT_LITERAL_SYS",
     "INT_LITERAL",
     "INT_LITERAL_OR_HEX",
@@ -70,6 +71,21 @@ __all__ = [
     "USER_NAME",
     "EXPLICIT_USER_NAME",
 ]
+
+# 字符串字面值的列表
+TEXT_LITERAL_SYS_LIST = ms_parser.create_group(
+    name="text_literal_sys_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["text_literal_sys"],
+            action=lambda x: [x[0].get_str_value()]
+        ),
+        ms_parser.create_rule(
+            symbols=["text_literal_sys_list", TType.OPERATOR_COMMA, "text_literal_sys"],
+            action=lambda x: x[0] + [x[2].get_str_value()]
+        )
+    ]
+)
 
 # 字符串字面值（不包括 Unicode 字符串）
 TEXT_LITERAL_SYS = ms_parser.create_group(
