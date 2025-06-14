@@ -878,7 +878,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_equal`                      | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`              |
 | `equal`                          | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                  |
 
-## 标识符（ident）
+#### 标识符（ident）
 
 | 水杉解析器语义组名称                                   | 语义组类型                                                   | 返回值类型             | MySQL 语义组名称                                             |
 | ------------------------------------------------------ | ------------------------------------------------------------ | ---------------------- | ------------------------------------------------------------ |
@@ -893,9 +893,9 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `ident_role_keyword`（MySQL）                          | 非保留关键字，可以用作角色名称（role name）                  | `ast.Ident`            | `role_keyword`                                               |
 | `ident_variable_keyword`（MySQL）                      | 非保留关键字，可以作为 SET 语句中赋值操作左侧的变量名以及变量前缀 | `ast.Ident`            | `lvalue_keyword`                                             |
 | `opt_ident_list`                                       | 可选的单个标识符（`ident`）的列表                            | `List[str]`            | `opt_name_list`                                              |
-| `ident_list`                                           | 单个标识符（`ident`）的列表                                  | `List[str]`            | `simple_ident_list`<br />`ident_string_list`<br />`using_list`<br />`reference_list`<br />`name_list` |
+| `ident_list`                                           | 单个标识符（`ident`）的列表                                  | `List[str]`            | `simple_ident_list`<br />`ident_string_list`<br />`using_list`<br />`reference_list`<br />`name_list`<br />`column_list`<br />`sp_fetch_list`<br />`sp_decl_idents` |
 | `ident`（MySQL）                                       | 单个标识符（`ident`）                                        | `ast.Ident`            | `ident`<br />`schema`<br />`window_name`                     |
-| `opt_ident_list_parens`                                | 可选的括号嵌套的单个标识符（`ident`）的列表                  | `List[str]`            | `opt_derived_column_list`<br />`opt_ref_list`                |
+| `opt_ident_list_parens`                                | 可选的括号嵌套的单个标识符（`ident`）的列表                  | `List[str]`            | `opt_derived_column_list`<br />`opt_ref_list`<br />`opt_column_list` |
 | `label_ident`（MySQL）                                 | 表示存储过程名称的标识符                                     | `ast.Ident`            | `label_ident`                                                |
 | `role_ident`（MySQL）                                  | 表示角色的标识符                                             | `ast.Ident`            | `role_ident`                                                 |
 | `variable_identifier`                                  | 变量名标识符                                                 | `ast.Identifier`       | `lvalue_variable`                                            |

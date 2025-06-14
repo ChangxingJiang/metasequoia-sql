@@ -2429,49 +2429,6 @@ condition_information_item_name:
           { $$= Condition_information_item::RETURNED_SQLSTATE; }
         ;
 
-sp_decl_idents:
-          ident
-          {
-            /* NOTE: field definition is filled in sp_decl section. */
-
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            sp_pcontext *pctx= lex->get_sp_current_parsing_ctx();
-
-            if (pctx->find_variable($1.str, $1.length, true))
-            {
-              my_error(ER_SP_DUP_VAR, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
-
-            pctx->add_variable(thd,
-                               $1,
-                               MYSQL_TYPE_DECIMAL,
-                               sp_variable::MODE_IN);
-            $$= 1;
-          }
-        | sp_decl_idents ',' ident
-          {
-            /* NOTE: field definition is filled in sp_decl section. */
-
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            sp_pcontext *pctx= lex->get_sp_current_parsing_ctx();
-
-            if (pctx->find_variable($3.str, $3.length, true))
-            {
-              my_error(ER_SP_DUP_VAR, MYF(0), $3.str);
-              MYSQL_YYABORT;
-            }
-
-            pctx->add_variable(thd,
-                               $3,
-                               MYSQL_TYPE_DECIMAL,
-                               sp_variable::MODE_IN);
-            $$= $1 + 1;
-          }
-        ;
-
 sp_opt_default:
           %empty
           {
@@ -2834,45 +2791,6 @@ sp_opt_fetch_noise:
           %empty
         | NEXT_SYM FROM
         | FROM
-        ;
-
-sp_fetch_list:
-          ident
-          {
-            LEX *lex= Lex;
-            sp_head *sp= lex->sphead;
-            sp_pcontext *pctx= lex->get_sp_current_parsing_ctx();
-            sp_variable *spv;
-
-            if (!pctx || !(spv= pctx->find_variable($1.str, $1.length, false)))
-            {
-              my_error(ER_SP_UNDECLARED_VAR, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
-
-            /* An SP local variable */
-            sp_instr_cfetch *i= (sp_instr_cfetch *)sp->last_instruction();
-
-            i->add_to_varlist(spv);
-          }
-        | sp_fetch_list ',' ident
-          {
-            LEX *lex= Lex;
-            sp_head *sp= lex->sphead;
-            sp_pcontext *pctx= lex->get_sp_current_parsing_ctx();
-            sp_variable *spv;
-
-            if (!pctx || !(spv= pctx->find_variable($3.str, $3.length, false)))
-            {
-              my_error(ER_SP_UNDECLARED_VAR, MYF(0), $3.str);
-              MYSQL_YYABORT;
-            }
-
-            /* An SP local variable */
-            sp_instr_cfetch *i= (sp_instr_cfetch *)sp->last_instruction();
-
-            i->add_to_varlist(spv);
-          }
         ;
 
 sp_if:
@@ -6869,26 +6787,6 @@ alter_user_list:
           {
             if (Lex->users_list.push_back($3))
               MYSQL_YYABORT;
-          }
-        ;
-
-opt_column_list:
-          %empty { $$= nullptr; }
-        | '(' column_list ')' { $$= $2; }
-        ;
-
-column_list:
-          ident
-          {
-            $$= NEW_PTN Mem_root_array<LEX_CSTRING>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back(to_lex_cstring($1)))
-              MYSQL_YYABORT; // OOM
-          }
-        | column_list ',' ident
-          {
-            $$= $1;
-            if ($$->push_back(to_lex_cstring($3)))
-              MYSQL_YYABORT; // OOM
           }
         ;
 
