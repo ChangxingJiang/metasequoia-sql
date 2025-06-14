@@ -952,16 +952,17 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 ## 变量（variable）
 
-| 水杉解析器语义组名称          | 语义组含义                 | 返回值类型                   | MySQL 语义组名称                         |
-| ----------------------------- | -------------------------- | ---------------------------- | ---------------------------------------- |
-| `variable_name`               | 用户变量或系统变量的变量名 | `str`                        | `ident_or_text`                          |
-| `user_variable`               | 用户变量                   | `ast.UserVariable`           | （对应 `'@' ident_or_text`）             |
-| `user_or_local_variable_list` | 用户变量或本地变量的列表   | `List[ast.Variable]`         | `select_var_list`                        |
-| `user_or_local_variable`      | 用户变量或本地变量         | `ast.Variable`               | `select_var_ident`                       |
-| `system_variable_type`        | 系统变量类型               | `ast.EnumSystemVariableType` | `opt_rvalue_system_variable_type`        |
-| `system_variable`             | 系统变量                   | `ast.SystemVariable`         | `rvalue_system_variable`【包含】         |
-| `system_or_user_variable`     | 系统变量或用户变量         | `ast.Variable`               | `rvalue_system_or_user_variable`         |
-| `user_variable_assignment`    | 用户变量赋值语句           | `ast.UserVariableAssignment` | `in_expression_user_variable_assignment` |
+| 水杉解析器语义组名称          | 语义组含义                 | 返回值类型                   | MySQL 语义组名称                                |
+| ----------------------------- | -------------------------- | ---------------------------- | ----------------------------------------------- |
+| `variable_name`               | 用户变量或系统变量的变量名 | `str`                        | `ident_or_text`                                 |
+| `user_variable_list`          | 用户变量的列表             | `List[UserVariable]`         | `execute_var_list`                              |
+| `user_variable`               | 用户变量                   | `UserVariable`               | `execute_var_ident`（对应 `'@' ident_or_text`） |
+| `user_or_local_variable_list` | 用户变量或本地变量的列表   | `List[ast.Variable]`         | `select_var_list`                               |
+| `user_or_local_variable`      | 用户变量或本地变量         | `ast.Variable`               | `select_var_ident`                              |
+| `system_variable_type`        | 系统变量类型               | `ast.EnumSystemVariableType` | `opt_rvalue_system_variable_type`               |
+| `system_variable`             | 系统变量                   | `ast.SystemVariable`         | `rvalue_system_variable`【包含】                |
+| `system_or_user_variable`     | 系统变量或用户变量         | `ast.Variable`               | `rvalue_system_or_user_variable`                |
+| `user_variable_assignment`    | 用户变量赋值语句           | `ast.UserVariableAssignment` | `in_expression_user_variable_assignment`        |
 
 ## 时间单位类型（time_unit）
 

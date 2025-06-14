@@ -253,21 +253,6 @@ execute_using:
         | USING execute_var_list
         ;
 
-execute_var_list:
-          execute_var_list ',' execute_var_ident
-        | execute_var_ident
-        ;
-
-execute_var_ident:
-          '@' ident_or_text
-          {
-            LEX *lex=Lex;
-            LEX_STRING *lexstr= (LEX_STRING*)sql_memdup(&$2, sizeof(LEX_STRING));
-            if (!lexstr || lex->prepared_stmt_params.push_back(lexstr))
-              MYSQL_YYABORT;
-          }
-        ;
-
 /* help */
 
 help:

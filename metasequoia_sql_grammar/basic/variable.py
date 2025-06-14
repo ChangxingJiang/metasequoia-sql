@@ -9,6 +9,7 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
     "VARIABLE_NAME",
+    "USER_VARIABLE_LIST",
     "USER_VARIABLE",
     "USER_OR_LOCAL_VARIABLE_LIST",
     "USER_OR_LOCAL_VARIABLE",
@@ -33,6 +34,21 @@ VARIABLE_NAME = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.LEX_HOSTNAME],
             action=lambda x: x[0]
+        )
+    ]
+)
+
+# 用户变量的列表
+USER_VARIABLE_LIST = ms_parser.create_group(
+    name="user_variable_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["user_variable_list", TType.OPERATOR_COMMA, "user_variable"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["user_variable"],
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )
