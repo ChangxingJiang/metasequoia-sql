@@ -10,6 +10,7 @@ from metasequoia_sql.ast.statement.describe_statement import *
 from metasequoia_sql.ast.statement.drop_statement import *
 from metasequoia_sql.ast.statement.explain_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *
+from metasequoia_sql.ast.statement.optimize_table_statement import *
 from metasequoia_sql.ast.statement.repair_table_statement import *
 from metasequoia_sql.ast.statement.select_statement import *
 from metasequoia_sql.ast.statement.show_statement import *

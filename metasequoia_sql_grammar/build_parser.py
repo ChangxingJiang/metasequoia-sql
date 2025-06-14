@@ -50,8 +50,8 @@ from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import call_statement
-from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import check_table_statement
+from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
@@ -59,11 +59,11 @@ from metasequoia_sql_grammar.statement import describe_statement
 from metasequoia_sql_grammar.statement import drop_statement
 from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
+from metasequoia_sql_grammar.statement import optimize_table_statement
 from metasequoia_sql_grammar.statement import repair_table_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
-from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
@@ -270,6 +270,7 @@ def build_grammar():
         drop_statement,  # DROP 语句
         explain_statement,  # EXPLAIN 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句
+        optimize_table_statement,  # OPTIMIZE TABLE 语句
         select_statement,  # SELECT 语句
         start_transaction_statement,  # START TRANSACTION 语句
         update_statement,  # UPDATE 语句

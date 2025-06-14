@@ -10,31 +10,36 @@ alwaysApply: true
 本项目采用模块化的目录结构，各目录的职责如下：
 
 ### 核心目录
-- [metasequoia_sql/](mdc:metasequoia_sql/) - 主要源代码目录
+- [metasequoia_sql/](mdc:metasequoia_sql) - 主要源代码目录
   - 包含核心SQL解析和处理逻辑
   - 实现主要的语法解析器和语义分析器
   
-- [metasequoia_sql_grammar/](mdc:metasequoia_sql_grammar/) - SQL语法定义目录
+- [metasequoia_sql/ast/](mdc:metasequoia_sql/ast) - 抽象语法树(AST)目录
+  - 定义所有SQL语句的AST节点类
+  - 包含节点访问者模式相关实现
+  - 负责SQL语句的树形结构表示
+  
+- [metasequoia_sql_grammar/](mdc:metasequoia_sql_grammar) - SQL语法定义目录
   - 存放语法规则和词法分析器定义
   - 包含ANTLR或其他解析器生成器的语法文件
 
 ### 测试和示例
-- [metasequoia_sql_test/](mdc:metasequoia_sql_test/) - 测试用例目录
+- [metasequoia_sql_test/](mdc:metasequoia_sql_test) - 测试用例目录
   - 单元测试
   - 集成测试
   - 性能测试
 
-- [demo/](mdc:demo/) - 示例代码目录
+- [demo/](mdc:demo) - 示例代码目录
   - 展示项目使用方法的示例
   - 快速入门的演示代码
 
 ### 文档和配置
-- [docs/](mdc:docs/) - 项目文档目录
+- [docs/](mdc:docs) - 项目文档目录
   - API文档
   - 使用指南
   - 设计文档
 
-- [scripts/](mdc:scripts/) - 工具脚本目录
+- [scripts/](mdc:scripts) - 工具脚本目录
   - 构建脚本
   - 开发辅助工具
   - 自动化脚本
@@ -96,5 +101,8 @@ alwaysApply: true
 3. 分支命名规范：
    - 特性分支：`feature/功能名`
    - 修复分支：`fix/问题描述`
+
+
+
 
    - 发布分支：`release/版本号`

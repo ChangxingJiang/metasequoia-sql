@@ -5044,13 +5044,6 @@ binlog_base64_event:
           }
         ;
 
-optimize_table_stmt:
-          OPTIMIZE opt_no_write_to_binlog table_or_tables table_list
-          {
-            $$= NEW_PTN PT_optimize_table_stmt(@$, YYMEM_ROOT, $2, $4);
-          }
-        ;
-
 rename:
           RENAME table_or_tables
           {
