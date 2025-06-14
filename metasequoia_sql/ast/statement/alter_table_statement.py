@@ -39,20 +39,20 @@ class AlterTableAddPartitionByDefinitionList(AlterTableCommand):
 
     __slots__ = (
         "_no_write_to_binlog",
-        "_partition_definition_list"
+        "_partition_list"
     )
 
-    def __init__(self, no_write_to_binlog: bool, partition_definition_list: list):
+    def __init__(self, no_write_to_binlog: bool, partition_list: List[str]):
         self._no_write_to_binlog = no_write_to_binlog
-        self._partition_definition_list = partition_definition_list
+        self._partition_list = partition_list
 
     @property
     def no_write_to_binlog(self) -> bool:
         return self._no_write_to_binlog
 
     @property
-    def partition_definition_list(self) -> list:
-        return self._partition_definition_list
+    def partition_list(self) -> list:
+        return self._partition_list
 
 
 class AlterTableAddPartitionByPartitionNum(AlterTableCommand):
@@ -85,6 +85,27 @@ class AlterTableDropPartition(AlterTableCommand):
 
     def __init__(self, partition_list: List[str]):
         self._partition_list = partition_list
+
+    @property
+    def partition_list(self) -> List[str]:
+        return self._partition_list
+
+
+class AlterTableRebuildPartition(AlterTableCommand):
+    """ALTER TABLE 命令：REBUILD PARTITION"""
+
+    __slots__ = (
+        "_no_write_to_binlog",
+        "_partition_list"
+    )
+
+    def __init__(self, no_write_to_binlog: bool, partition_list: List[str]):
+        self._no_write_to_binlog = no_write_to_binlog
+        self._partition_list = partition_list
+
+    @property
+    def no_write_to_binlog(self) -> bool:
+        return self._no_write_to_binlog
 
     @property
     def partition_list(self) -> List[str]:

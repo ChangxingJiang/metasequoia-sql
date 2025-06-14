@@ -13,14 +13,18 @@ __all__ = [
     "OPT_KEYWORD_DEFAULT",
     "OPT_KEYWORD_STORAGE",
     "OPT_KEYWORD_TEMPORARY",
+    "OPT_KEYWORD_EXTENDED",
     "OPT_KEYWORD_IF_NOT_EXISTS",
     "OPT_KEYWORD_IF_EXISTS",
     "OPT_KEYWORD_FORCE",
+    "OPT_KEYWORD_FULL",
     "OPT_KEYWORD_NO_WRITE_TO_BINLOG",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
     "KEYWORD_MASTER_OR_BINARY",
     "KEYWORD_FROM_OR_IN",
+    "KEYWORD_KEYS_OR_INDEX",
+    "KEYWORD_REPLICA_OR_SLAVE",
     "OPT_BRACES",
     "OPT_COMMA",
     "KEYWORD_CHARSET",
@@ -101,6 +105,21 @@ OPT_KEYWORD_TEMPORARY = ms_parser.create_group(
     ]
 )
 
+# 可选的 `EXTENDED` 关键字
+OPT_KEYWORD_EXTENDED = ms_parser.create_group(
+    name="opt_keyword_extended",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXTENDED],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
 # `DESCRIBE` 关键字或 `EXPLAIN` 关键字
 KEYWORD_DESCRIBE_OR_EXPLAIN = ms_parser.create_group(
     name="keyword_describe_or_explain",
@@ -156,6 +175,35 @@ KEYWORD_FROM_OR_IN = ms_parser.create_group(
     ]
 )
 
+# `KEYS`、`INDEX` 或 `INDEXES` 关键字
+KEYWORD_KEYS_OR_INDEX = ms_parser.create_group(
+    name="keyword_keys_or_index",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_KEYS]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INDEX]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INDEXES]
+        )
+    ]
+)
+
+# `REPLICA` 或 `SLAVE` 关键字
+KEYWORD_REPLICA_OR_SLAVE = ms_parser.create_group(
+    name="keyword_replica_or_slave",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REPLICA]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SLAVE]
+        )
+    ]
+)
+
 # 可选的 `IF NOT EXISTS` 关键字
 OPT_KEYWORD_IF_NOT_EXISTS = ms_parser.create_group(
     name="opt_keyword_if_not_exists",
@@ -192,6 +240,21 @@ OPT_KEYWORD_FORCE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_FORCE],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `FULL` 关键字
+OPT_KEYWORD_FULL = ms_parser.create_group(
+    name="opt_keyword_full",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FULL],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(

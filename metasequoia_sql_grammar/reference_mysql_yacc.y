@@ -1107,12 +1107,6 @@ source_file_def:
           }
         ;
 
-opt_channel:
-          %empty { $$ = {}; }
-        | FOR_SYM CHANNEL_SYM TEXT_STRING_sys_nonewline
-          { $$ = to_lex_cstring($3); }
-        ;
-
 create_role_stmt:
           CREATE ROLE_SYM opt_if_not_exists role_list
           {
@@ -4874,11 +4868,6 @@ group_replication_plugin_auth:
           }
         ;
 
-replica:
-        SLAVE { Lex->set_replication_deprecated_syntax_used(); }
-      | REPLICA_SYM
-      ;
-
 stop_replica_stmt:
           STOP_SYM replica opt_replica_thread_option_list opt_channel
           {
@@ -5260,225 +5249,12 @@ opt_table:
         | TABLE_SYM
         ;
 
-opt_profile_defs:
-          %empty { $$ = 0; }
-        | profile_defs
-        ;
-
-profile_defs:
-          profile_def
-        | profile_defs ',' profile_def  { $$ = $1 | $3; }
-        ;
-
-profile_def:
-          CPU_SYM                   { $$ = PROFILE_CPU; }
-        | MEMORY_SYM                { $$ = PROFILE_MEMORY; }
-        | BLOCK_SYM IO_SYM          { $$ = PROFILE_BLOCK_IO; }
-        | CONTEXT_SYM SWITCHES_SYM  { $$ = PROFILE_CONTEXT; }
-        | PAGE_SYM FAULTS_SYM       { $$ = PROFILE_PAGE_FAULTS; }
-        | IPC_SYM                   { $$ = PROFILE_IPC; }
-        | SWAPS_SYM                 { $$ = PROFILE_SWAPS; }
-        | SOURCE_SYM                { $$ = PROFILE_SOURCE; }
-        | ALL                       { $$ = PROFILE_ALL; }
-        ;
-
-opt_for_query:
-          %empty { $$ = 0; }
-        | FOR_SYM QUERY_SYM NUM
-          {
-            int error;
-            $$ = static_cast<my_thread_id>(my_strtoll10($3.str, nullptr, &error));
-            if (error != 0)
-              MYSQL_YYABORT;
-          }
-        ;
-
-/* SHOW statements */
-
-show_tables_stmt:
-          SHOW opt_show_cmd_type TABLES opt_db opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_tables(@$, $2, $4, $5.wild, $5.where);
-          }
-        ;
-
-show_triggers_stmt:
-          SHOW opt_full TRIGGERS_SYM opt_db opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_triggers(@$, $2, $4, $5.wild, $5.where);
-          }
-        ;
-
-show_table_status_stmt:
-          SHOW TABLE_SYM STATUS_SYM opt_db opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_table_status(@$, $4, $5.wild, $5.where);
-          }
-        ;
-
-show_open_tables_stmt:
-          SHOW OPEN_SYM TABLES opt_db opt_wild_or_where
-          {
-             $$ = NEW_PTN PT_show_open_tables(@$, $4, $5.wild, $5.where);
-          }
-        ;
-
-show_plugins_stmt:
-          SHOW PLUGINS_SYM
-          {
-            $$ = NEW_PTN PT_show_plugins(@$);
-          }
-        ;
-
-show_replicas_stmt:
-          SHOW SLAVE HOSTS_SYM
-          {
-            Lex->set_replication_deprecated_syntax_used();
-            push_deprecated_warn(YYTHD, "SHOW SLAVE HOSTS", "SHOW REPLICAS");
-
-            $$ = NEW_PTN PT_show_replicas(@$);
-          }
-        | SHOW REPLICAS_SYM
-          {
-            $$ = NEW_PTN PT_show_replicas(@$);
-          }
-        ;
-
-show_relaylog_events_stmt:
-          SHOW RELAYLOG_SYM EVENTS_SYM opt_binlog_in binlog_from opt_limit_clause
-          opt_channel
-          {
-            $$ = NEW_PTN PT_show_relaylog_events(@$, $4, $6, $7);
-          }
-        ;
-
-show_keys_stmt:
-          SHOW                  /* #1 */
-          opt_extended          /* #2 */
-          keys_or_index         /* #3 */
-          from_or_in            /* #4 */
-          table_ident           /* #5 */
-          opt_db                /* #6 */
-          opt_where_clause      /* #7 */
-          {
-            if ($6)
-              $5->change_db($6);
-
-            $$ = NEW_PTN PT_show_keys(@$, $2, $5, $7);
-          }
-        ;
-
-show_warnings_stmt:
-          SHOW WARNINGS opt_limit_clause
-          {
-            $$ = NEW_PTN PT_show_warnings(@$, $3);
-          }
-        ;
-
-show_profiles_stmt:
-          SHOW PROFILES_SYM
-          {
-            push_warning_printf(YYTHD, Sql_condition::SL_WARNING,
-                                ER_WARN_DEPRECATED_SYNTAX,
-                                ER_THD(YYTHD, ER_WARN_DEPRECATED_SYNTAX),
-                                "SHOW PROFILES", "Performance Schema");
-            $$ = NEW_PTN PT_show_profiles(@$);
-          }
-        ;
-
-show_profile_stmt:
-          SHOW PROFILE_SYM opt_profile_defs opt_for_query opt_limit_clause
-          {
-            $$ = NEW_PTN PT_show_profile(@$, $3, $4, $5);
-          }
-        ;
-
-show_status_stmt:
-          SHOW opt_var_type STATUS_SYM opt_wild_or_where
-          {
-             $$ = NEW_PTN PT_show_status(@$, $2, $4.wild, $4.where);
-          }
-        ;
-
-show_processlist_stmt:
-          SHOW opt_full PROCESSLIST_SYM
-          {
-            $$ = NEW_PTN PT_show_processlist(@$, $2);
-          }
-        ;
-
-show_variables_stmt:
-          SHOW opt_var_type VARIABLES opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_variables(@$, $2, $4.wild, $4.where);
-          }
-        ;
-
-show_privileges_stmt:
-          SHOW PRIVILEGES
-          {
-            $$ = NEW_PTN PT_show_privileges(@$);
-          }
-        ;
-
-show_master_status_stmt:
-          SHOW MASTER_SYM STATUS_SYM
-          {
-            push_deprecated_warn(YYTHD, "SHOW MASTER STATUS", "SHOW BINARY LOG STATUS");
-            $$ = NEW_PTN PT_show_binary_log_status(@$);
-          }
-        ;
-
-show_replica_status_stmt:
-          SHOW replica STATUS_SYM opt_channel
-          {
-            if (Lex->is_replication_deprecated_syntax_used())
-              push_deprecated_warn(YYTHD, "SHOW SLAVE STATUS", "SHOW REPLICA STATUS");
-            $$ = NEW_PTN PT_show_replica_status(@$, $4);
-          }
-        ;
-
-show_procedure_status_stmt:
-          SHOW PROCEDURE_SYM STATUS_SYM opt_wild_or_where
-          {
-            $$ = NEW_PTN PT_show_status_proc(@$, $4.wild, $4.where);
-          }
-        ;
-
-show_procedure_code_stmt:
-          SHOW PROCEDURE_SYM CODE_SYM sp_name
-          {
-            $$ = NEW_PTN PT_show_procedure_code(@$, $4);
-          }
-        ;
-
-show_parse_tree_stmt:
-          SHOW PARSE_TREE_SYM simple_statement
-          {
-#ifndef WITH_SHOW_PARSE_TREE
-            YYTHD->syntax_error_at(@2);
-            MYSQL_YYABORT;
-#endif
-            $$ = NEW_PTN PT_show_parse_tree(@$, $3);
-          }
-        ;
-
 master_or_binary_logs_and_gtids:
           MASTER_SYM
           {
             Lex->set_replication_deprecated_syntax_used();
           }
         | BINARY_SYM LOGS_SYM AND_SYM GTIDS_SYM
-        ;
-
-opt_full:
-          %empty      { $$= 0; }
-        | FULL        { $$= 1; }
-        ;
-
-opt_extended:
-          %empty        { $$= 0; }
-        | EXTENDED_SYM  { $$= 1; }
         ;
 
 /* flush things */
@@ -6181,13 +5957,6 @@ option_type:
           GLOBAL_SYM  { $$=OPT_GLOBAL; }
         | PERSIST_SYM { $$=OPT_PERSIST; }
         | PERSIST_ONLY_SYM { $$=OPT_PERSIST_ONLY; }
-        | LOCAL_SYM   { $$=OPT_SESSION; }
-        | SESSION_SYM { $$=OPT_SESSION; }
-        ;
-
-opt_var_type:
-          %empty      { $$=OPT_SESSION; }
-        | GLOBAL_SYM  { $$=OPT_GLOBAL; }
         | LOCAL_SYM   { $$=OPT_SESSION; }
         | SESSION_SYM { $$=OPT_SESSION; }
         ;

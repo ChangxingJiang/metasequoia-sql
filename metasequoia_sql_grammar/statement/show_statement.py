@@ -24,10 +24,37 @@ __all__ = [
     "SHOW_CREATE_TABLE_STATEMENT",
     "SHOW_CREATE_TRIGGER_STATEMENT",
     "SHOW_CREATE_USER_STATEMENT",
+    "SHOW_CREATE_VIEW_STATEMENT",
     "SHOW_DATABASES_STATEMENT",
+    "SHOW_ENGINE_LOGS_STATEMENT",
+    "SHOW_ENGINE_MUTEX_STATEMENT",
+    "SHOW_ENGINE_STATUS_STATEMENT",
+    "SHOW_ENGINES_STATEMENT",
+    "SHOW_ERRORS_STATEMENT",
     "SHOW_EVENTS_STATEMENT",
+    "SHOW_FUNCTION_CODE_STATEMENT",
     "SHOW_FUNCTION_STATUS_STATEMENT",
     "SHOW_GRANTS_STATEMENT",
+    "SHOW_KEYS_STATEMENT",
+    "SHOW_MASTER_STATUS_STATEMENT",
+    "SHOW_OPEN_TABLES_STATEMENT",
+    "SHOW_PARSE_TREE_STATEMENT",
+    "SHOW_PLUGINS_STATEMENT",
+    "SHOW_PRIVILEGES_STATEMENT",
+    "SHOW_PROCEDURE_CODE_STATEMENT",
+    "SHOW_PROCEDURE_STATUS_STATEMENT",
+    "SHOW_PROCESSLIST_STATEMENT",
+    "SHOW_PROFILE_STATEMENT",
+    "SHOW_PROFILES_STATEMENT",
+    "SHOW_RELAYLOG_EVENTS_STATEMENT",
+    "SHOW_REPLICA_STATUS_STATEMENT",
+    "SHOW_REPLICAS_STATEMENT",
+    "SHOW_STATUS_STATEMENT",
+    "SHOW_TABLE_STATUS_STATEMENT",
+    "SHOW_TABLES_STATEMENT",
+    "SHOW_TRIGGERS_STATEMENT",
+    "SHOW_WARNINGS_STATEMENT",
+    "SHOW_VARIABLES_STATEMENT",
 
     # SHOW 语句的组成部分
     "OPT_BINLOG_IN",
@@ -35,6 +62,8 @@ __all__ = [
     "OPT_WILD_OR_WHERE",
     "OPT_SHOW_SCHEMA",
     "ENGINE_NAME_OR_ALL",
+    "OPT_FOR_QUERY",
+    "OPT_FOR_CHANNEL",
 ]
 
 # `SHOW BINARY LOG STATUS` 语句
@@ -350,6 +379,255 @@ SHOW_GRANTS_STATEMENT = ms_parser.create_group(
     ]
 )
 
+# `SHOW KEYS` 语句
+SHOW_KEYS_STATEMENT = ms_parser.create_group(
+    name="show_keys_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[
+                TType.KEYWORD_SHOW,  # 0
+                "opt_keyword_extended",  # 1
+                "keyword_keys_or_index",  # 2
+                "keyword_from_or_in",  # 3
+                "identifier",  # 4
+                "opt_show_schema",  # 5
+                "opt_where_clause"  # 6
+            ],
+            action=lambda x: ast.ShowKeysStatement(
+                is_extended=x[1],
+                table_ident=x[4],
+                schema_name=x[5],
+                where_clause=x[6]
+            )
+        )
+    ]
+)
+
+# `SHOW MASTER STATUS` 语句
+SHOW_MASTER_STATUS_STATEMENT = ms_parser.create_group(
+    name="show_master_status_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_MASTER, TType.KEYWORD_STATUS],
+            action=lambda _: ast.ShowMasterStatusStatement()
+        )
+    ]
+)
+
+# `SHOW OPEN TABLES` 语句
+SHOW_OPEN_TABLES_STATEMENT = ms_parser.create_group(
+    name="show_open_tables_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_OPEN, TType.KEYWORD_TABLES, "opt_show_schema",
+                     "opt_wild_or_where"],
+            action=lambda x: ast.ShowOpenTablesStatement(schema_name=x[3], wild=x[4].wild, where=x[4].where)
+        )
+    ]
+)
+
+# `SHOW PARSE TREE` 语句
+SHOW_PARSE_TREE_STATEMENT = ms_parser.create_group(
+    name="show_parse_tree_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PARSE_TREE, "sql_statement"],
+            action=lambda x: ast.ShowParseTreeStatement(statement=x[2])
+        )
+    ]
+)
+
+# `SHOW PLUGINS` 语句
+SHOW_PLUGINS_STATEMENT = ms_parser.create_group(
+    name="show_plugins_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PLUGINS],
+            action=lambda _: ast.ShowPluginsStatement()
+        )
+    ]
+)
+
+# `SHOW PRIVILEGES` 语句
+SHOW_PRIVILEGES_STATEMENT = ms_parser.create_group(
+    name="show_privileges_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PRIVILEGES],
+            action=lambda _: ast.ShowPrivilegesStatement()
+        ),
+    ]
+)
+
+# `SHOW PROCEDURE CODE` 语句
+SHOW_PROCEDURE_CODE_STATEMENT = ms_parser.create_group(
+    name="show_procedure_code_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PROCEDURE, TType.KEYWORD_CODE, "identifier"],
+            action=lambda x: ast.ShowProcedureCodeStatement(procedure_name=x[3])
+        )
+    ]
+)
+
+# `SHOW PROCEDURE STATUS` 语句
+SHOW_PROCEDURE_STATUS_STATEMENT = ms_parser.create_group(
+    name="show_procedure_status_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PROCEDURE, TType.KEYWORD_STATUS, "opt_wild_or_where"],
+            action=lambda x: ast.ShowProcedureStatusStatement(wild=x[3].wild, where=x[3].where)
+        )
+    ]
+)
+
+# `SHOW PROCESSLIST` 语句
+SHOW_PROCESSLIST_STATEMENT = ms_parser.create_group(
+    name="show_processlist_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, "opt_keyword_full", TType.KEYWORD_PROCESSLIST],
+            action=lambda x: ast.ShowProcesslistStatement(is_full=x[1])
+        )
+    ]
+)
+
+# `SHOW PROFILE` 语句
+SHOW_PROFILE_STATEMENT = ms_parser.create_group(
+    name="show_profile_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PROFILE, "opt_profile_type_list", "opt_for_query",
+                     "opt_limit_clause"],
+            action=lambda x: ast.ShowProfileStatement(profile_type=x[2], thread_id=x[3], limit_clause=x[4])
+        )
+    ]
+)
+
+# `SHOW PROFILES` 语句
+SHOW_PROFILES_STATEMENT = ms_parser.create_group(
+    name="show_profiles_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_PROFILES],
+            action=lambda _: ast.ShowProfilesStatement()
+        )
+    ]
+)
+
+# `SHOW RELAYLOG EVENTS` 语句
+SHOW_RELAYLOG_EVENTS_STATEMENT = ms_parser.create_group(
+    name="show_relaylog_events_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_RELAYLOG, TType.KEYWORD_EVENTS, "opt_binlog_in",
+                     "opt_binlog_from", "opt_limit_clause", "opt_for_channel"],
+            action=lambda x: ast.ShowRelaylogEventsStatement(
+                binlog_in=x[3],
+                binlog_from=x[4],
+                limit_clause=x[5],
+                channel_name=x[6]
+            )
+        )
+    ]
+)
+
+# `SHOW REPLICA STATUS` 语句
+SHOW_REPLICA_STATUS_STATEMENT = ms_parser.create_group(
+    name="show_replica_status_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, "keyword_replica_or_slave", TType.KEYWORD_STATUS, "opt_for_channel"],
+            action=lambda x: ast.ShowReplicaStatusStatement(channel_name=x[3])
+        )
+    ]
+)
+
+# `SHOW REPLICAS` 语句
+SHOW_REPLICAS_STATEMENT = ms_parser.create_group(
+    name="show_replicas_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_REPLICAS, TType.KEYWORD_STATUS],
+            action=lambda _: ast.ShowReplicasStatement()
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_SLAVE, TType.KEYWORD_HOSTS],
+            action=lambda _: ast.ShowReplicasStatement()
+        )
+    ]
+)
+
+# `SHOW STATUS` 语句
+SHOW_STATUS_STATEMENT = ms_parser.create_group(
+    name="show_status_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, "opt_variable_type", TType.KEYWORD_STATUS, "opt_wild_or_where"],
+            action=lambda x: ast.ShowStatusStatement(variable_type=x[1], wild=x[3].wild, where=x[3].where)
+        )
+    ]
+)
+
+# `SHOW TABLE STATUS` 语句
+SHOW_TABLE_STATUS_STATEMENT = ms_parser.create_group(
+    name="show_table_status_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_TABLE, TType.KEYWORD_STATUS, "opt_show_schema",
+                     "opt_wild_or_where"],
+            action=lambda x: ast.ShowTableStatusStatement(schema_name=x[3], wild=x[4].wild, where=x[4].where)
+        )
+    ]
+)
+
+# `SHOW TABLES` 语句
+SHOW_TABLES_STATEMENT = ms_parser.create_group(
+    name="show_tables_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, "opt_show_command_type", TType.KEYWORD_TABLES, "opt_show_schema",
+                     "opt_wild_or_where"],
+            action=lambda x: ast.ShowTablesStatement(command_type=x[1], schema_name=x[3], wild=x[4].wild,
+                                                     where=x[4].where)
+        )
+    ]
+)
+
+# `SHOW TRIGGERS` 语句
+SHOW_TRIGGERS_STATEMENT = ms_parser.create_group(
+    name="show_triggers_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, "opt_keyword_full", TType.KEYWORD_TRIGGERS, "opt_show_schema",
+                     "opt_wild_or_where"],
+            action=lambda x: ast.ShowTriggersStatement(is_full=x[1], schema_name=x[3], wild=x[4].wild, where=x[4].where)
+        )
+    ]
+)
+
+# `SHOW WARNINGS` 语句
+SHOW_WARNINGS_STATEMENT = ms_parser.create_group(
+    name="show_warnings_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_WARNINGS, "opt_limit_clause"],
+            action=lambda x: ast.ShowWarningsStatement(limit_clause=x[2])
+        )
+    ]
+)
+
+# `SHOW VARIABLES` 语句
+SHOW_VARIABLES_STATEMENT = ms_parser.create_group(
+    name="show_variables_statement",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SHOW, "opt_variable_type", TType.KEYWORD_VARIABLES, "opt_wild_or_where"],
+            action=lambda x: ast.ShowVariablesStatement(variable_type=x[1], wild=x[3].wild, where=x[3].where)
+        )
+    ]
+)
+
 # 可选的 `IN` 关键字引导的指定文件名子句
 OPT_BINLOG_IN = ms_parser.create_group(
     name="opt_binlog_in",
@@ -426,5 +704,29 @@ ENGINE_NAME_OR_ALL = ms_parser.create_group(
             symbols=[TType.KEYWORD_ALL],
             action=ms_parser.template.action.RETURN_NULL
         )
+    ]
+)
+
+# 可选的 `FOR QUERY` 引导的线程 ID
+OPT_FOR_QUERY = ms_parser.create_group(
+    name="opt_for_query",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FOR, TType.KEYWORD_QUERY, TType.LITERAL_INT_NUM],
+            action=lambda x: int(x[2])
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `FOR CHANNEL` 引导的通道名
+OPT_FOR_CHANNEL = ms_parser.create_group(
+    name="opt_for_channel",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FOR, TType.KEYWORD_CHANNEL, "text_literal_sys"],
+            action=lambda x: x[2].get_str_value()
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

@@ -10,6 +10,8 @@ __all__ = [
     "EnumRepairType",
     "EnumCheckType",
     "EnumChecksumType",
+    "EnumProfileType",
+    "EnumVariableType",
 ]
 
 
@@ -57,3 +59,27 @@ class EnumChecksumType(IntEnum):
     DEFAULT = 0
     QUICK = 1  # QUICK
     EXTENDED = 2  # EXTENDED
+
+
+class EnumProfileType(IntFlag):
+    """`SHOW PROFILE` 语句中性能分析指标的枚举值"""
+
+    DEFAULT = 0
+    CPU = (1 << 0)  # CPU
+    MEMORY = (1 << 1)  # MEMORY
+    BLOCK_IO = (1 << 2)  # BLOCK IO
+    CONTEXT_SWITCHES = (1 << 3)  # CONTEXT SWITCHES
+    PAGE_FAULTS = (1 << 4)  # PAGE FAULTS
+    IPC = (1 << 5)  # IPC
+    SWAPS = (1 << 6)  # SWAPS
+    SOURCE = (1 << 7)  # SOURCE
+    ALL = (1 << 8)  # ALL
+
+
+class EnumVariableType(IntEnum):
+    """变量类型的枚举值"""
+
+    DEFAULT = 0
+    GLOBAL = 1
+    LOCAL = 2
+    SESSION = 3

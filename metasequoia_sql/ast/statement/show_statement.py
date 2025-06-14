@@ -8,7 +8,7 @@ from metasequoia_sql.ast.base import Expression, Node, Statement
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.limit_clause import LimitClause
-    from metasequoia_sql.ast.basic.fixed_enum import EnumShowCommandType
+    from metasequoia_sql.ast.basic.fixed_enum import EnumShowCommandType, EnumProfileType, EnumVariableType
     from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.basic.literal import UserName
 
@@ -43,6 +43,26 @@ __all__ = [
     "ShowFunctionCodeStatement",
     "ShowFunctionStatusStatement",
     "ShowGrantsStatement",
+    "ShowKeysStatement",
+    "ShowMasterStatusStatement",
+    "ShowOpenTablesStatement",
+    "ShowParseTreeStatement",
+    "ShowPluginsStatement",
+    "ShowPrivilegesStatement",
+    "ShowProcedureCodeStatement",
+    "ShowProcedureStatusStatement",
+    "ShowProcesslistStatement",
+    "ShowProfileStatement",
+    "ShowProfilesStatement",
+    "ShowRelaylogEventsStatement",
+    "ShowReplicaStatusStatement",
+    "ShowReplicasStatement",
+    "ShowStatusStatement",
+    "ShowTableStatusStatement",
+    "ShowTablesStatement",
+    "ShowTriggersStatement",
+    "ShowWarningsStatement",
+    "ShowVariablesStatement",
 
     # 临时对象
     "TempWildOrWhere",
@@ -430,6 +450,390 @@ class ShowGrantsStatement(Statement):
     @property
     def using_user_list(self) -> List["UserName"]:
         return self._using_user_list
+
+
+class ShowKeysStatement(Statement):
+    """SHOW KEYS 语句"""
+
+    __slots__ = (
+        "_is_extended",
+        "_table_ident",
+        "_schema_name",
+        "_where_clause"
+    )
+
+    def __init__(self,
+                 is_extended: bool,
+                 table_ident: "Identifier",
+                 schema_name: Optional[str],
+                 where_clause: Optional[Expression]):
+        self._is_extended = is_extended
+        self._table_ident = table_ident
+        self._schema_name = schema_name
+        self._where_clause = where_clause
+
+    @property
+    def is_extended(self) -> bool:
+        return self._is_extended
+
+    @property
+    def table_ident(self) -> "Identifier":
+        return self._table_ident
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
+
+    @property
+    def where_clause(self) -> Optional[Expression]:
+        return self._where_clause
+
+
+class ShowMasterStatusStatement(Statement):
+    """SHOW MASTER STATUS 语句"""
+
+
+class ShowOpenTablesStatement(Statement):
+    """SHOW OPEN TABLES 语句"""
+
+    __slots__ = (
+        "_schema_name",
+        "_wild",
+        "_where"
+    )
+
+    def __init__(self, schema_name: Optional[str], wild: Optional[str], where: Optional[Expression]):
+        self._schema_name = schema_name
+        self._wild = wild
+        self._where = where
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
+
+    @property
+    def wild(self) -> Optional[str]:
+        return self._wild
+
+    @property
+    def where(self) -> Optional[Expression]:
+        return self._where
+
+
+class ShowParseTreeStatement(Statement):
+    """SHOW PARSE TREE 语句"""
+
+    __slots__ = (
+        "_statement"
+    )
+
+    def __init__(self, statement: Statement):
+        self._statement = statement
+
+    @property
+    def statement(self) -> Statement:
+        return self._statement
+
+
+class ShowPluginsStatement(Statement):
+    """SHOW PLUGINS 语句"""
+
+
+class ShowPrivilegesStatement(Statement):
+    """SHOW PRIVILEGES 语句"""
+
+
+class ShowProcedureCodeStatement(Statement):
+    """SHOW PROCEDURE CODE 语句"""
+
+    __slots__ = (
+        "_procedure_name"
+    )
+
+    def __init__(self, procedure_name: "Identifier"):
+        self._procedure_name = procedure_name
+
+    @property
+    def procedure_name(self) -> "Identifier":
+        return self._procedure_name
+
+
+class ShowProcedureStatusStatement(ShowWildOrWhereBaseStatement):
+    """SHOW PROCEDURE STATUS 语句"""
+
+
+class ShowProcesslistStatement(Statement):
+    """SHOW PROCESSLIST 语句"""
+
+    __slots__ = (
+        "_is_full"
+    )
+
+    def __init__(self, is_full: bool):
+        self._is_full = is_full
+
+    @property
+    def is_full(self) -> bool:
+        return self._is_full
+
+
+class ShowProfileStatement(Statement):
+    """SHOW PROFILE 语句"""
+
+    __slots__ = (
+        "_profile_type",
+        "_thread_id",
+        "_limit_clause",
+    )
+
+    def __init__(self, profile_type: "EnumProfileType", thread_id: Optional[int], limit_clause: "LimitClause"):
+        self._profile_type = profile_type
+        self._thread_id = thread_id
+        self._limit_clause = limit_clause
+
+    @property
+    def profile_type(self) -> "EnumProfileType":
+        return self._profile_type
+
+    @property
+    def thread_id(self) -> Optional[int]:
+        return self._thread_id
+
+    @property
+    def limit_clause(self) -> "LimitClause":
+        return self._limit_clause
+
+
+class ShowProfilesStatement(Statement):
+    """SHOW PROFILES 语句"""
+
+
+class ShowRelaylogEventsStatement(Statement):
+    """SHOW RELAYLOG EVENTS 语句"""
+
+    __slots__ = (
+        "_binlog_in",
+        "_binlog_from",
+        "_limit_clause",
+        "_channel_name"
+    )
+
+    def __init__(self,
+                 binlog_in: Optional[str],
+                 binlog_from: Optional[int],
+                 limit_clause: Optional["LimitClause"],
+                 channel_name: Optional[str]):
+        self._binlog_in = binlog_in
+        self._binlog_from = binlog_from
+        self._limit_clause = limit_clause
+        self._channel_name = channel_name
+
+    @property
+    def binlog_in(self) -> Optional[str]:
+        return self._binlog_in
+
+    @property
+    def binlog_from(self) -> Optional[int]:
+        return self._binlog_from
+
+    @property
+    def limit_clause(self) -> Optional["LimitClause"]:
+        return self._limit_clause
+
+    @property
+    def channel_name(self) -> Optional[str]:
+        return self._channel_name
+
+
+class ShowReplicaStatusStatement(Statement):
+    """SHOW REPLICA STATUS 语句"""
+
+    __slots__ = (
+        "_channel_name"
+    )
+
+    def __init__(self, channel_name: Optional[str]):
+        self._channel_name = channel_name
+
+    @property
+    def channel_name(self) -> Optional[str]:
+        return self._channel_name
+
+
+class ShowReplicasStatement(Statement):
+    """SHOW REPLICAS 语句"""
+
+
+class ShowStatusStatement(Statement):
+    """SHOW STATUS 语句"""
+
+    __slots__ = (
+        "_variable_type",
+        "_wild",
+        "_where"
+    )
+
+    def __init__(self,
+                 variable_type: "EnumVariableType",
+                 wild: Optional[str] = None,
+                 where: Optional[Expression] = None):
+        self._variable_type = variable_type
+        self._wild = wild
+        self._where = where
+
+    @property
+    def variable_type(self) -> "EnumVariableType":
+        return self._variable_type
+
+    @property
+    def wild(self) -> Optional[str]:
+        return self._wild
+
+    @property
+    def where(self) -> Optional[Expression]:
+        return self._where
+
+
+class ShowTableStatusStatement(Statement):
+    """SHOW TABLE STATUS 语句"""
+
+    __slots__ = (
+        "_schema_name",
+        "_wild",
+        "_where"
+    )
+
+    def __init__(self,
+                 schema_name: Optional[str] = None,
+                 wild: Optional[str] = None,
+                 where: Optional[Expression] = None):
+        self._schema_name = schema_name
+        self._wild = wild
+        self._where = where
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
+
+    @property
+    def wild(self) -> Optional[str]:
+        return self._wild
+
+    @property
+    def where(self) -> Optional[Expression]:
+        return self._where
+
+
+class ShowTablesStatement(Statement):
+    """SHOW TABLES 语句"""
+
+    __slots__ = (
+        "_command_type",
+        "_schema_name",
+        "_wild",
+        "_where"
+    )
+
+    def __init__(self,
+                 command_type: "EnumShowCommandType",
+                 schema_name: Optional[str] = None,
+                 wild: Optional[str] = None,
+                 where: Optional[Expression] = None):
+        self._command_type = command_type
+        self._schema_name = schema_name
+        self._wild = wild
+        self._where = where
+
+    @property
+    def command_type(self) -> "EnumShowCommandType":
+        return self._command_type
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
+
+    @property
+    def wild(self) -> Optional[str]:
+        return self._wild
+
+    @property
+    def where(self) -> Optional[Expression]:
+        return self._where
+
+
+class ShowTriggersStatement(Statement):
+    """SHOW TRIGGERS 语句"""
+
+    def __init__(self,
+                 is_full: bool,
+                 schema_name: Optional[str],
+                 wild: Optional[str] = None,
+                 where: Optional[Expression] = None):
+        self._is_full = is_full
+        self._schema_name = schema_name
+        self._wild = wild
+        self._where = where
+
+    @property
+    def is_full(self) -> bool:
+        return self._is_full
+
+    @property
+    def schema_name(self) -> Optional[str]:
+        return self._schema_name
+
+    @property
+    def wild(self) -> Optional[str]:
+        return self._wild
+
+    @property
+    def where(self) -> Optional[Expression]:
+        return self._where
+
+
+class ShowWarningsStatement(Statement):
+    """SHOW WARNINGS 语句"""
+
+    __slots__ = (
+        "_limit_clause"
+    )
+
+    def __init__(self, limit_clause: Optional["LimitClause"]):
+        self._limit_clause = limit_clause
+
+    @property
+    def limit_clause(self) -> Optional["LimitClause"]:
+        return self._limit_clause
+
+
+class ShowVariablesStatement(Statement):
+    """SHOW VARIABLES 语句"""
+
+    __slots__ = (
+        "_variable_type",
+        "_wild",
+        "_where"
+    )
+
+    def __init__(self,
+                 variable_type: "EnumVariableType",
+                 wild: Optional[str] = None,
+                 where: Optional[Expression] = None):
+        self._variable_type = variable_type
+        self._wild = wild
+        self._where = where
+
+    @property
+    def variable_type(self) -> "EnumVariableType":
+        return self._variable_type
+
+    @property
+    def wild(self) -> Optional[str]:
+        return self._wild
+
+    @property
+    def where(self) -> Optional[Expression]:
+        return self._where
 
 
 class TempWildOrWhere(Node):

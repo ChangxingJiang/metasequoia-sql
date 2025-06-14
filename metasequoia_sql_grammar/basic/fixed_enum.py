@@ -17,6 +17,10 @@ __all__ = [
     "CHECK_TYPE_LIST",
     "CHECK_TYPE",
     "OPT_CHECKSUM_TYPE",
+    "OPT_PROFILE_TYPE_LIST",
+    "PROFILE_TYPE_LIST",
+    "PROFILE_TYPE",
+    "OPT_VARIABLE_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -184,6 +188,101 @@ OPT_CHECKSUM_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EXTENDED],
             action=lambda x: ast.EnumChecksumType.EXTENDED
+        )
+    ]
+)
+
+# 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表
+OPT_PROFILE_TYPE_LIST = ms_parser.create_group(
+    name="opt_profile_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["profile_type_list"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumProfileType.DEFAULT
+        )
+    ]
+)
+
+# `SHOW PROFILE` 语句中性能分析指标的枚举值的列表
+PROFILE_TYPE_LIST = ms_parser.create_group(
+    name="profile_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["profile_type_list", TType.OPERATOR_COMMA, "profile_type"],
+            action=lambda x: x[0] | x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=["profile_type"],
+            action=lambda x: x[0]
+        )
+    ]
+)
+
+# `SHOW PROFILE` 语句中性能分析指标的枚举值
+PROFILE_TYPE = ms_parser.create_group(
+    name="profile_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CPU],
+            action=lambda x: ast.EnumProfileType.CPU
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MEMORY],
+            action=lambda x: ast.EnumProfileType.MEMORY
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BLOCK, TType.KEYWORD_IO],
+            action=lambda x: ast.EnumProfileType.BLOCK_IO
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONTEXT, TType.KEYWORD_SWITCHES],
+            action=lambda x: ast.EnumProfileType.CONTEXT_SWITCHES
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PAGE, TType.KEYWORD_FAULTS],
+            action=lambda x: ast.EnumProfileType.PAGE_FAULTS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IPC],
+            action=lambda x: ast.EnumProfileType.IPC
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SWAPS],
+            action=lambda x: ast.EnumProfileType.SWAPS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE],
+            action=lambda x: ast.EnumProfileType.SOURCE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ALL],
+            action=lambda x: ast.EnumProfileType.ALL
+        )
+    ]
+)
+
+# 可选的变量类型的枚举值
+OPT_VARIABLE_TYPE = ms_parser.create_group(
+    name="opt_variable_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumVariableType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GLOBAL],
+            action=lambda x: ast.EnumVariableType.GLOBAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOCAL],
+            action=lambda x: ast.EnumVariableType.LOCAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SESSION],
+            action=lambda x: ast.EnumVariableType.SESSION
         )
     ]
 )
