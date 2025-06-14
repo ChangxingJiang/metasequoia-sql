@@ -7767,11 +7767,6 @@ opt_suspend:
           { $$= XA_FOR_MIGRATE; }
         ;
 
-resource_group_types:
-          USER { $$= resourcegroups::Type::USER_RESOURCE_GROUP; }
-        | SYSTEM_SYM { $$= resourcegroups::Type::SYSTEM_RESOURCE_GROUP; }
-        ;
-
 opt_resource_group_vcpu_list:
           %empty
           {

@@ -18,6 +18,7 @@ __all__ = [
     "EnumOpenSslType",
     "EnumChainType",
     "EnumReleaseType",
+    "EnumResourceGroupType",
 ]
 
 
@@ -139,3 +140,10 @@ class EnumReleaseType(IntEnum):
     DEFAULT = 0  # 默认值
     YES = 1  # RELEASE
     NO = 2  # NO RELEASE
+
+
+class EnumResourceGroupType(IntEnum):
+    """资源组类型的枚举值"""
+
+    USER = 1  # USER
+    SYSTEM = 2  # SYSTEM

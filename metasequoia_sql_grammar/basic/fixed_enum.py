@@ -27,6 +27,7 @@ __all__ = [
     "OPT_OPEN_SSL_TYPE",
     "OPT_CHAIN_TYPE",
     "OPT_RELEASE_TYPE",
+    "RESOURCE_GROUP_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -407,6 +408,21 @@ OPT_RELEASE_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_NO, TType.KEYWORD_RELEASE],
             action=lambda _: ast.EnumReleaseType.NO
+        )
+    ]
+)
+
+# 资源组类型的枚举值
+RESOURCE_GROUP_TYPE = ms_parser.create_group(
+    name="resource_group_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_USER],
+            action=lambda _: ast.EnumResourceGroupType.USER
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SYSTEM],
+            action=lambda _: ast.EnumResourceGroupType.SYSTEM
         )
     ]
 )

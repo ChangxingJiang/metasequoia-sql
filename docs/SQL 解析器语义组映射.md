@@ -80,16 +80,6 @@
 | ----------------------- | ------------------ | ------------------------- | ------------------ |
 | `check_table_statement` | `CHECK TABLE` 语句 | `ast.CheckTableStatement` | `check_table_stmt` |
 
-#### CREATE TABLE 语句（create table statement）
-
-| 水杉解析器语义组名称         | 语义组类型                                 | 返回值类型                  | MySQL 语义组名称               |
-| ---------------------------- | ------------------------------------------ | --------------------------- | ------------------------------ |
-| `create_table_statement`     | `CREATE TABLE` 语句                        | `ast.CreateTableStatement`  | `create_table_stmt`            |
-| `opt_create_table_option_1`  | `CREATE TABLE` 的选项（第 1 层）           | `ast.TempCreateTableOption` | `opt_create_table_options_etc` |
-| `opt_create_table_option_2`  | `CREATE TABLE` 的选项（第 2 层）           | `ast.TempCreateTableOption` | `opt_create_partitioning_etc`  |
-| `opt_create_table_option_3`  | `CREATE TABLE` 的选项（第 3 层）           | `ast.TempCreateTableOption` | `opt_duplicate_as_qe`          |
-| `as_create_query_expression` | 可选择是否包含前置 `AS` 关键字的查询表达式 | `ast.QueryExpression`       | `as_create_query_expression`   |
-
 #### CHECKSUM 语句（checksum statement）
 
 | 水杉解析器语义组名称 | 语义组类型      | 返回值类型              | MySQL 语义组名称 |
@@ -115,6 +105,16 @@
 | ------------------------ | ---------------------- | --------------------- | ------------------- |
 | `create_index_statement` | `CREATE INDEX` 语句    | `ast.CreateIndexStmt` | `create_index_stmt` |
 | `opt_keyword_unique`     | 可选的 `UNIQUE` 关键字 | `ast.EnumIndexType`   | `opt_unique`        |
+
+#### CREATE TABLE 语句（create table statement）
+
+| 水杉解析器语义组名称         | 语义组类型                                 | 返回值类型                  | MySQL 语义组名称               |
+| ---------------------------- | ------------------------------------------ | --------------------------- | ------------------------------ |
+| `create_table_statement`     | `CREATE TABLE` 语句                        | `ast.CreateTableStatement`  | `create_table_stmt`            |
+| `opt_create_table_option_1`  | `CREATE TABLE` 的选项（第 1 层）           | `ast.TempCreateTableOption` | `opt_create_table_options_etc` |
+| `opt_create_table_option_2`  | `CREATE TABLE` 的选项（第 2 层）           | `ast.TempCreateTableOption` | `opt_create_partitioning_etc`  |
+| `opt_create_table_option_3`  | `CREATE TABLE` 的选项（第 3 层）           | `ast.TempCreateTableOption` | `opt_duplicate_as_qe`          |
+| `as_create_query_expression` | 可选择是否包含前置 `AS` 关键字的查询表达式 | `ast.QueryExpression`       | `as_create_query_expression`   |
 
 #### DELETE 语句（delete statement）
 
@@ -795,27 +795,28 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 固定的枚举类型（fixed enum）
 
-| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                  | MySQL 语义组名称      |
-| ----------------------- | ------------------------------------------------------ | --------------------------- | --------------------- |
-| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `ast.EnumDropRestrict`      | `opt_restrict`        |
-| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `ast.EnumShowCommandType`   | `opt_show_cmd_type`   |
-| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `ast.EnumRepairType`        | `opt_mi_repair_types` |
-| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `ast.EnumRepairType`        | `mi_repair_types`     |
-| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `ast.EnumRepairType`        | `mi_repair_type`      |
-| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `ast.EnumCheckType`         | `opt_mi_check_types`  |
-| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `ast.EnumCheckType`         | `mi_check_types`      |
-| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `ast.EnumCheckType`         | `mi_check_type`       |
-| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `ast.EnumChecksumType`      | `opt_checksum_type`   |
-| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `ast.EnumProfileType`       | `opt_profile_defs`    |
-| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `ast.EnumProfileType`       | `profile_defs`        |
-| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`       | `profile_def`         |
-| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`        |
-| `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type` |
-| `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`         |
-| `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`         |
-| `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`           | `opt_ssl`             |
-| `opt_chain_type`        | `CHAIN` 选项的枚举值                                   | `EnumChainType`             | `opt_chain`           |
-| `opt_release_type`      | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`           | `opt_release`         |
+| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                  | MySQL 语义组名称       |
+| ----------------------- | ------------------------------------------------------ | --------------------------- | ---------------------- |
+| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `ast.EnumDropRestrict`      | `opt_restrict`         |
+| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `ast.EnumShowCommandType`   | `opt_show_cmd_type`    |
+| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `ast.EnumRepairType`        | `opt_mi_repair_types`  |
+| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `ast.EnumRepairType`        | `mi_repair_types`      |
+| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `ast.EnumRepairType`        | `mi_repair_type`       |
+| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `ast.EnumCheckType`         | `opt_mi_check_types`   |
+| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `ast.EnumCheckType`         | `mi_check_types`       |
+| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `ast.EnumCheckType`         | `mi_check_type`        |
+| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `ast.EnumChecksumType`      | `opt_checksum_type`    |
+| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `ast.EnumProfileType`       | `opt_profile_defs`     |
+| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `ast.EnumProfileType`       | `profile_defs`         |
+| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`       | `profile_def`          |
+| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`         |
+| `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type`  |
+| `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`          |
+| `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`          |
+| `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`           | `opt_ssl`              |
+| `opt_chain_type`        | `CHAIN` 选项的枚举值                                   | `EnumChainType`             | `opt_chain`            |
+| `opt_release_type`      | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`           | `opt_release`          |
+| `resource_group_type`   | 资源组类型的枚举值                                     | `EnumResourceGroupType`     | `resource_group_types` |
 
 #### 固定的词语组合（fixed word）
 
