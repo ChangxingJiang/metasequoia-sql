@@ -14,6 +14,7 @@ __all__ = [
     "EnumVariableType",
     "EnumInstallOptionType",
     "EnumKillOptionType",
+    "EnumLockOptionType",
 ]
 
 
@@ -101,3 +102,13 @@ class EnumKillOptionType(IntEnum):
     DEFAULT = 0  # 默认值
     CONNECTION = 1  # CONNECTION
     QUERY = 2  # QUERY
+
+
+class EnumLockOptionType(IntEnum):
+    """LOCK 语句的锁定选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    READ = 1  # READ
+    WRITE = 2  # WRITE
+    LOW_PRIORITY_WRITE = 3  # LOW_PRIORITY WRITE
+    READ_LOCAL = 4  # READ LOCAL

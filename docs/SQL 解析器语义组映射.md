@@ -179,6 +179,21 @@
 | `install_statement`          | `INSTALL` 语句                               | `InstallStatement`      | `install_stmt`               |
 | `uninstall`                  | `UNINSTALL` 语句                             | `UninstallStatement`    | `uninstall`                  |
 
+#### KILL 语句（kill statement）
+
+| 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
+| -------------------- | ----------- | --------------- | ---------------- |
+| `kill_statement`     | `KILL` 语句 | `KillStatement` | `kill`           |
+
+#### LOCK 语句和 UNLOCK 语句（lock and unlock statement）
+
+| 水杉解析器语义组名称 | 语义组类型             | 返回值类型        | MySQL 语义组名称  |
+| -------------------- | ---------------------- | ----------------- | ----------------- |
+| `lock_statement`     | `LOCK` 语句            | `LockStatement`   | `lock`            |
+| `unlock_statement`   | `UNLOCK` 语句          | `UnlockStatement` | `unlock`          |
+| `table_lock_list`    | 单个表的锁定信息的列表 | `List[TableLock]` | `table_lock_list` |
+| `table_lock`         | 单个表的锁定信息       | `TableLock`       | `table_lock`      |
+
 #### OPTIMIZE TABLE 语句（optimize table statement）
 
 | 水杉解析器语义组名称       | 语义组类型            | 返回值类型                   | MySQL 语义组名称      |
@@ -784,6 +799,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`        |
 | `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type` |
 | `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`         |
+| `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`         |
 
 ## 固定的词语组合（fixed word）
 

@@ -23,6 +23,7 @@ __all__ = [
     "OPT_VARIABLE_TYPE",
     "INSTALL_OPTION_TYPE",
     "KILL_OPTION_TYPE",
+    "LOCK_OPTION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -323,6 +324,29 @@ KILL_OPTION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_QUERY],
             action=lambda _: ast.EnumKillOptionType.QUERY
+        )
+    ]
+)
+
+# `LOCK` 语句的锁定选项的枚举值
+LOCK_OPTION_TYPE = ms_parser.create_group(
+    name="lock_option_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ],
+            action=lambda _: ast.EnumLockOptionType.READ
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WRITE],
+            action=lambda _: ast.EnumLockOptionType.WRITE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOW_PRIORITY, TType.KEYWORD_WRITE],
+            action=lambda _: ast.EnumLockOptionType.LOW_PRIORITY_WRITE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_LOCAL],
+            action=lambda _: ast.EnumLockOptionType.READ_LOCAL
         )
     ]
 )
