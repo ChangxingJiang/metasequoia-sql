@@ -678,7 +678,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 # 表达式（expression）
 
-## 一般表达式（general expression）
+#### 一般表达式（general expression）
 
 | 水杉解析器语义组名称           | 语义组含义                                       | 返回值类型                 | MySQL 语义组名称                                     |
 | ------------------------------ | ------------------------------------------------ | -------------------------- | ---------------------------------------------------- |
@@ -708,7 +708,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `expr_or_default`              | 一般表达式或 `DEFAULT` 关键字                    | `ast.Expression`           | `expr_or_default`                                    |
 | `subquery`                     | 子查询表达式                                     | `ast.SubQuery`             | `row_subquery`<br />`table_subquery`<br />`subquery` |
 
-## 聚集函数表达式（sum function expression）
+#### 聚集函数表达式（sum function expression）
 
 | 水杉解析器语义组名称 | 语义组含义                            | 返回值类型                    | MySQL 语义组名称                                             |
 | -------------------- | ------------------------------------- | ----------------------------- | ------------------------------------------------------------ |
@@ -717,7 +717,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_distinct`       | 可选的 `DISTINCT` 关键字              | `bool`                        | `opt_distinct`                                               |
 | `opt_separator`      | 可选的 `SEPARATOR` 关键字引导的分隔符 | `Optional[ast.StringLiteral]` | `opt_gconcat_separator`                                      |
 
-## 窗口函数表达式（window function expression）
+#### 窗口函数表达式（window function expression）
 
 | 水杉解析器语义组名称         | 语义组含义                                                   | 返回值类型            | MySQL 语义组名称                                  |
 | ---------------------------- | ------------------------------------------------------------ | --------------------- | ------------------------------------------------- |
@@ -727,7 +727,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_lead_or_lag_info`       | LEAD 和 LAG 窗口函数中偏移量及默认值信息                     | `ast.LeadOrLagInfo`   | `opt_lead_lag_info`<br />`opt_ll_default`【包含】 |
 | `window_function_expression` | 窗口函数表达式                                               | `ast.FuncWindowBase`  | `window_func_call`                                |
 
-## 普通函数表达式（function expression）
+#### 普通函数表达式（function expression）
 
 包括如下 4 种语义组：
 
@@ -742,9 +742,13 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `now_expression`      | `NOW` 关键字及精度                         | `ast.FunctionExpression` | `now`                                                        |
 | `date_time_type`      | 时间类型（`DATE`、`TIME` 或者 `DATETIME`） | `ast.DateTimeType`       | `date_time_type`                                             |
 
-## 运算符表达式（operator expression）
+#### 运算符表达式（operator expression）
 
 运算符表达式的备选规则均包含在一般表达式的语义组中。
+
+#### 近似表达式（app expression）
+
+在其他特定场景下使用的近似表达式。
 
 # 基础元素（basic）
 
