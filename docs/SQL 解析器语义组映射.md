@@ -160,7 +160,7 @@
 
 | 水杉解析器语义组名称 | 语义组类型                    | 返回值类型           | MySQL 语义组名称 |
 | -------------------- | ----------------------------- | -------------------- | ---------------- |
-|                      |                               |                      |                  |
+| `execute_statement`  | `EXECUTE` 语句                | `ExecuteStatement`   | `execute`        |
 | `execute_using`      | `EXECUTE` 语句的 `USING` 子句 | `List[UserVariable]` | `execute_using`  |
 
 #### EXPLAIN 语句（explain statement）
