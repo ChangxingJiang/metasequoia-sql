@@ -8008,18 +8008,6 @@ uninstall:
           }
         ;
 
-import_stmt:
-          IMPORT TABLE_SYM FROM TEXT_STRING_sys_list
-          {
-            LEX *lex= Lex;
-            lex->m_sql_cmd=
-              new (YYTHD->mem_root) Sql_cmd_import_table($4);
-            if (lex->m_sql_cmd == nullptr)
-              MYSQL_YYABORT;
-            lex->sql_command= SQLCOM_IMPORT;
-          }
-        ;
-
 /**************************************************************************
 
 Clone local/remote replica statements.

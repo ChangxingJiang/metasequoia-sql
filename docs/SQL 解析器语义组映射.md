@@ -147,6 +147,12 @@
 | `opt_explain_into`       | 可选的 `INTO` 引导的指定分析结果写入变量子句   | `Optional[ast.UserVariable]` | `opt_explain_into`                             |
 | `opt_explain_for_schema` | 可选的 `FOR DATABASE` 引导的指定分析数据库子句 | `Optional[str]`              | `opt_explain_for_schema`                       |
 
+#### IMPORT TABLE 语句（import table statement）
+
+| 水杉解析器语义组名称 | 语义组类型          | 返回值类型                 | MySQL 语义组名称 |
+| -------------------- | ------------------- | -------------------------- | ---------------- |
+| `insert_statement`   | `IMPORT TABLE` 语句 | `ast.ImportTableStatement` | `insert_stmt`    |
+
 #### INSERT 语句和 REPLACE 语句（insert or replace statement）
 
 | 水杉解析器语义组名称      | 语义组类型                                        | 返回值类型                     | MySQL 语义组名称          |
