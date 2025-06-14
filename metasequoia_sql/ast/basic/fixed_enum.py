@@ -12,6 +12,7 @@ __all__ = [
     "EnumChecksumType",
     "EnumProfileType",
     "EnumVariableType",
+    "EnumInstallOptionType",
 ]
 
 
@@ -83,3 +84,11 @@ class EnumVariableType(IntEnum):
     GLOBAL = 1
     LOCAL = 2
     SESSION = 3
+
+
+class EnumInstallOptionType(IntEnum):
+    """`INSTALL` 语句的安装选项的枚举值"""
+
+    DEFAULT = 0
+    GLOBAL = 1
+    PERSIST = 2

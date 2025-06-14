@@ -168,6 +168,17 @@
 | `opt_insert_alias`        | `INSERT` 语句中 `AS` 关键字引导的表别名和字段别名 | `ast.TempInsertAlias`          | `opt_values_reference`    |
 | `opt_insert_update_list`  | 可选的 `ON DUPLICATE KEY UPDATE` 子句             | `List[ast.UpdateElement]`      | `opt_insert_update_list`  |
 
+#### INSTALL 语句和 UNINSTALL 语句（install and uninstall statement）
+
+| 水杉解析器语义组名称         | 语义组类型                                   | 返回值类型              | MySQL 语义组名称             |
+| ---------------------------- | -------------------------------------------- | ----------------------- | ---------------------------- |
+| `install_set_rvalue`         | `INSTALL` 语句的 `SET` 子句中的右值          | `Expression`            | `install_set_rvalue`         |
+| `install_set_value`          | `INSTALL` 语句的 `SET` 子句中的单个值        | `InstallSetValue`       | `install_set_value`          |
+| `install_set_value_list`     | `INSTALL` 语句的 `SET` 子句中值的列表        | `List[InstallSetValue]` | `install_set_value_list`     |
+| `opt_install_set_value_list` | 可选的 `INSTALL` 语句的 `SET` 子句中值的列表 | `List[InstallSetValue]` | `opt_install_set_value_list` |
+| `install_statement`          | `INSTALL` 语句                               | `InstallStatement`      | `install_stmt`               |
+| `uninstall`                  | `UNINSTALL` 语句                             | `UninstallStatement`    | `uninstall`                  |
+
 #### OPTIMIZE TABLE 语句（optimize table statement）
 
 | 水杉解析器语义组名称       | 语义组类型            | 返回值类型                   | MySQL 语义组名称      |
@@ -756,21 +767,22 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 ## 固定的枚举类型（fixed enum）
 
-| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                | MySQL 语义组名称      |
-| ----------------------- | ------------------------------------------------------ | ------------------------- | --------------------- |
-| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `ast.EnumDropRestrict`    | `opt_restrict`        |
-| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `ast.EnumShowCommandType` | `opt_show_cmd_type`   |
-| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `ast.EnumRepairType`      | `opt_mi_repair_types` |
-| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `ast.EnumRepairType`      | `mi_repair_types`     |
-| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `ast.EnumRepairType`      | `mi_repair_type`      |
-| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `ast.EnumCheckType`       | `opt_mi_check_types`  |
-| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `ast.EnumCheckType`       | `mi_check_types`      |
-| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `ast.EnumCheckType`       | `mi_check_type`       |
-| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `ast.EnumChecksumType`    | `opt_checksum_type`   |
-| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `ast.EnumProfileType`     | `opt_profile_defs`    |
-| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `ast.EnumProfileType`     | `profile_defs`        |
-| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`     | `profile_def`         |
-| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`    | `opt_var_type`        |
+| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                  | MySQL 语义组名称      |
+| ----------------------- | ------------------------------------------------------ | --------------------------- | --------------------- |
+| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `ast.EnumDropRestrict`      | `opt_restrict`        |
+| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `ast.EnumShowCommandType`   | `opt_show_cmd_type`   |
+| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `ast.EnumRepairType`        | `opt_mi_repair_types` |
+| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `ast.EnumRepairType`        | `mi_repair_types`     |
+| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `ast.EnumRepairType`        | `mi_repair_type`      |
+| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `ast.EnumCheckType`         | `opt_mi_check_types`  |
+| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `ast.EnumCheckType`         | `mi_check_types`      |
+| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `ast.EnumCheckType`         | `mi_check_type`       |
+| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `ast.EnumChecksumType`      | `opt_checksum_type`   |
+| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `ast.EnumProfileType`       | `opt_profile_defs`    |
+| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `ast.EnumProfileType`       | `profile_defs`        |
+| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`       | `profile_def`         |
+| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`        |
+| `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type` |
 
 ## 固定的词语组合（fixed word）
 

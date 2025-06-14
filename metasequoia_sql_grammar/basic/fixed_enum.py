@@ -21,6 +21,7 @@ __all__ = [
     "PROFILE_TYPE_LIST",
     "PROFILE_TYPE",
     "OPT_VARIABLE_TYPE",
+    "INSTALL_OPTION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -283,6 +284,25 @@ OPT_VARIABLE_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SESSION],
             action=lambda x: ast.EnumVariableType.SESSION
+        )
+    ]
+)
+
+# `INSTALL` 语句的安装选项的枚举值
+INSTALL_OPTION_TYPE = ms_parser.create_group(
+    name="install_option_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumInstallOptionType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GLOBAL],
+            action=lambda _: ast.EnumInstallOptionType.GLOBAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PERSIST],
+            action=lambda _: ast.EnumInstallOptionType.PERSIST
         )
     ]
 )
