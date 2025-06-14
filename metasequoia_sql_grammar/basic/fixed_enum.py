@@ -22,6 +22,7 @@ __all__ = [
     "PROFILE_TYPE",
     "OPT_VARIABLE_TYPE",
     "INSTALL_OPTION_TYPE",
+    "KILL_OPTION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -303,6 +304,25 @@ INSTALL_OPTION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_PERSIST],
             action=lambda _: ast.EnumInstallOptionType.PERSIST
+        )
+    ]
+)
+
+# `KILL` 语句的选项的枚举值
+KILL_OPTION_TYPE = ms_parser.create_group(
+    name="kill_option_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumKillOptionType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONNECTION],
+            action=lambda _: ast.EnumKillOptionType.CONNECTION
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_QUERY],
+            action=lambda _: ast.EnumKillOptionType.QUERY
         )
     ]
 )

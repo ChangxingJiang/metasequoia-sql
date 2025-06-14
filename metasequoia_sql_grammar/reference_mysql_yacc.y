@@ -5460,26 +5460,6 @@ purge_option:
           }
         ;
 
-/* kill threads */
-
-kill:
-          KILL_SYM kill_option expr
-          {
-            ITEMIZE($3, &$3);
-
-            LEX *lex=Lex;
-            lex->kill_value_list.clear();
-            lex->kill_value_list.push_front($3);
-            lex->sql_command= SQLCOM_KILL;
-          }
-        ;
-
-kill_option:
-          %empty         { Lex->type= 0; }
-        | CONNECTION_SYM { Lex->type= 0; }
-        | QUERY_SYM      { Lex->type= ONLY_KILL_QUERY; }
-        ;
-
 /* change database */
 
 use:

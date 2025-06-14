@@ -13,6 +13,7 @@ __all__ = [
     "EnumProfileType",
     "EnumVariableType",
     "EnumInstallOptionType",
+    "EnumKillOptionType",
 ]
 
 
@@ -92,3 +93,11 @@ class EnumInstallOptionType(IntEnum):
     DEFAULT = 0
     GLOBAL = 1
     PERSIST = 2
+
+
+class EnumKillOptionType(IntEnum):
+    """KILL 语句的选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    CONNECTION = 1  # CONNECTION
+    QUERY = 2  # QUERY

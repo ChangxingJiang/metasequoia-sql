@@ -783,6 +783,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`       | `profile_def`         |
 | `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`        |
 | `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type` |
+| `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`         |
 
 ## 固定的词语组合（fixed word）
 
