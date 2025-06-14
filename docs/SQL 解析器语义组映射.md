@@ -124,10 +124,16 @@
 
 #### DESCRIBE 语句（describe statement）
 
-| 水杉解析器语义组名称  | 语义组类型                 | 返回值类型              | MySQL 语义组名称      |
-| --------------------- | -------------------------- | ----------------------- | --------------------- |
-| `describe_statement`  | `DESCRIBE` 语句            | `ast.DescribeStatement` | `describe_stmt`       |
-| `opt_describe_column` | 可选的 `DESCRIBE` 描述字段 | `Optional[str]`         | `opt_describe_column` |
+| 水杉解析器语义组名称  | 语义组类型                 | 返回值类型          | MySQL 语义组名称      |
+| --------------------- | -------------------------- | ------------------- | --------------------- |
+| `describe_statement`  | `DESCRIBE` 语句            | `DescribeStatement` | `describe_stmt`       |
+| `opt_describe_column` | 可选的 `DESCRIBE` 描述字段 | `Optional[str]`     | `opt_describe_column` |
+
+#### DO 语句（do statement）
+
+| 水杉解析器语义组名称 | 语义组类型 | 返回值类型    | MySQL 语义组名称 |
+| -------------------- | ---------- | ------------- | ---------------- |
+| `do_statement`       | `DO` 语句  | `DoStatement` | `do_stmt`        |
 
 #### DROP 语句（drop statement）
 
@@ -236,7 +242,7 @@
 | `opt_select_option_list`  | 可选的查询选项的列表                                         | `ast.SelectOption`          | `select_options`                                     |
 | `select_option_list`      | 查询选项的列表                                               | `ast.SelectOption`          | `select_option_list`                                 |
 | `select_option`           | 查询选项                                                     | `ast.SelectOption`          | `select_option`<br />`query_spec_option`【超集】     |
-| `select_item_list`        | `SELECT` 子句中的查询字段表达式的列表                        | `List[ast.Expression]`      | `select_item_list`                                   |
+| `select_item_list`        | `SELECT` 子句中的查询字段表达式的列表                        | `List[Expression]`          | `select_item_list`                                   |
 | `select_item`             | `SELECT` 子句中的查询字段表达式                              | `ast.Expression`            | `select_item`                                        |
 | `table_wild`              | 表中所有字段的通配符                                         | `ast.TableWild`             | `table_wild`                                         |
 | `table_value_constructor` | 通过值列表构造的查询                                         | `ast.TableValueConstructor` | `table_value_constructor`                            |
@@ -318,13 +324,19 @@
 | `start_transaction_options_list`     | 事务选项的列表           | `ast.StartTransactionOption`    | `start_transaction_option_list`     |
 | `start_transaction_options`          | 事务选项                 | `ast.StartTransactionOption`    | `start_transaction_option`          |
 
+#### TRUNCATE 语句（truncate statement）
+
+| 水杉解析器语义组名称 | 语义组类型      | 返回值类型          | MySQL 语义组名称 |
+| -------------------- | --------------- | ------------------- | ---------------- |
+| `truncate_statement` | `TRUNCATE` 语句 | `TruncateStatement` | `truncate_stmt`  |
+
 #### UPDATE 语句（update statement）
 
-| 水杉解析器语义组名称  | 语义组类型                    | 返回值类型                | MySQL 语义组名称 |
-| --------------------- | ----------------------------- | ------------------------- | ---------------- |
-| `update_statement`    | `UPDATE` 语句                 | `ast.UpdateStatement`     | `update_stmt`    |
-| `update_element_list` | `UPDATE` 语句中的更新项的列表 | `List[ast.UpdateElement]` | `update_list`    |
-| `update_element`      | `UPDATE` 语句中的更新项       | `ast.UpdateElement`       | `update_elem`    |
+| 水杉解析器语义组名称  | 语义组类型                    | 返回值类型            | MySQL 语义组名称 |
+| --------------------- | ----------------------------- | --------------------- | ---------------- |
+| `update_statement`    | `UPDATE` 语句                 | `UpdateStatement`     | `update_stmt`    |
+| `update_element_list` | `UPDATE` 语句中的更新项的列表 | `List[UpdateElement]` | `update_list`    |
+| `update_element`      | `UPDATE` 语句中的更新项       | `UpdateElement`       | `update_elem`    |
 
 # 子句（clause）
 
@@ -843,6 +855,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_full`               | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`               |
 | `opt_keyword_work`               | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`               |
 | `opt_keyword_no_write_to_binlog` | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog` |
+| `opt_keyword_table`              | 可选的 `TABLE` 关键字                                        | -          | `opt_table`              |
 | `keyword_describe_or_explain`    | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`       |
 | `keyword_table_or_tables`        | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`        |
 | `keyword_master_or_binary`       | `MASTER` 关键字或 `BINARY` 关键字                            | -          | `master_or_binary`       |

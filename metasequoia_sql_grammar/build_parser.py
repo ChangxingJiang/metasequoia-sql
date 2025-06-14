@@ -60,6 +60,7 @@ from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import describe_statement
+from metasequoia_sql_grammar.statement import do_statement
 from metasequoia_sql_grammar.statement import drop_statement
 from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import import_statement
@@ -73,6 +74,7 @@ from metasequoia_sql_grammar.statement import repair_table_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
+from metasequoia_sql_grammar.statement import truncate_statement
 from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
@@ -280,6 +282,7 @@ def build_grammar():
         create_table_statement,  # CREATE TABLE 语句
         delete_statement,  # DELETE 语句
         describe_statement,  # DESCRIBE 语句
+        do_statement,  # DO 语句
         drop_statement,  # DROP 语句
         explain_statement,  # EXPLAIN 语句
         import_statement,  # IMPORT TABLE 语句
@@ -293,6 +296,7 @@ def build_grammar():
         select_statement,  # SELECT 语句
         show_statement,  # SHOW 语句
         start_transaction_statement,  # START TRANSACTION 语句
+        truncate_statement,  # TRUNCATE 语句
         update_statement,  # UPDATE 语句
 
         # 顶层节点

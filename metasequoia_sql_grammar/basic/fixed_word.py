@@ -20,6 +20,7 @@ __all__ = [
     "OPT_KEYWORD_FULL",
     "OPT_KEYWORD_WORK",
     "OPT_KEYWORD_NO_WRITE_TO_BINLOG",
+    "OPT_KEYWORD_TABLE",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
     "KEYWORD_MASTER_OR_BINARY",
@@ -292,6 +293,17 @@ OPT_KEYWORD_NO_WRITE_TO_BINLOG = ms_parser.create_group(
             symbols=[],
             action=ms_parser.template.action.RETURN_FALSE
         )
+    ]
+)
+
+# 可选的 `TABLE` 关键字
+OPT_KEYWORD_TABLE = ms_parser.create_group(
+    name="opt_keyword_table",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

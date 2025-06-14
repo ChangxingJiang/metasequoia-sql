@@ -5160,34 +5160,9 @@ alter_order_item:
           }
         ;
 
-/*
-  DO statement
-*/
-
-do_stmt:
-          DO_SYM select_item_list
-          {
-            $$= NEW_PTN PT_select_stmt(@$, SQLCOM_DO,
-                  NEW_PTN PT_query_expression(@$,
-                    NEW_PTN PT_query_specification(@$, {}, $2)));
-          }
-        ;
-
 opt_ignore_unknown_user:
           %empty { $$= 0; }
         | IGNORE_SYM UNKNOWN_SYM USER { $$= 1; }
-        ;
-
-truncate_stmt:
-          TRUNCATE_SYM opt_table table_ident
-          {
-            $$= NEW_PTN PT_truncate_table_stmt(@$, $3);
-          }
-        ;
-
-opt_table:
-          %empty
-        | TABLE_SYM
         ;
 
 master_or_binary_logs_and_gtids:
