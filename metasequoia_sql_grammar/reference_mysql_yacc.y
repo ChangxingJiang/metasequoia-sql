@@ -7796,53 +7796,6 @@ opt_suspend:
           { $$= XA_FOR_MIGRATE; }
         ;
 
-/**************************************************************************
-
-Clone local/remote replica statements.
-
-**************************************************************************/
-clone_stmt:
-          CLONE_SYM LOCAL_SYM
-          DATA_SYM DIRECTORY_SYM opt_equal TEXT_STRING_filesystem
-          {
-            Lex->sql_command= SQLCOM_CLONE;
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_clone(to_lex_cstring($6));
-            if (Lex->m_sql_cmd == nullptr)
-              MYSQL_YYABORT;
-          }
-
-        | CLONE_SYM INSTANCE_SYM FROM user ':' ulong_num
-          IDENTIFIED_SYM BY TEXT_STRING_sys
-          opt_datadir_ssl
-          {
-            Lex->sql_command= SQLCOM_CLONE;
-            /* Reject space characters around ':' */
-            if (@6.raw.start - @4.raw.end != 1) {
-              YYTHD->syntax_error_at(@5);
-              MYSQL_YYABORT;
-            }
-            $4->first_factor_auth_info.auth = to_lex_cstring($9);
-            $4->first_factor_auth_info.uses_identified_by_clause = true;
-            Lex->contains_plaintext_password= true;
-
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_clone($4, $6, to_lex_cstring($10));
-
-            if (Lex->m_sql_cmd == nullptr)
-              MYSQL_YYABORT;
-          }
-        ;
-
-opt_datadir_ssl:
-          opt_ssl
-          {
-            $$= null_lex_str;
-          }
-        | DATA_SYM DIRECTORY_SYM opt_equal TEXT_STRING_filesystem opt_ssl
-          {
-            $$= $4;
-          }
-        ;
-
 resource_group_types:
           USER { $$= resourcegroups::Type::USER_RESOURCE_GROUP; }
         | SYSTEM_SYM { $$= resourcegroups::Type::SYSTEM_RESOURCE_GROUP; }
