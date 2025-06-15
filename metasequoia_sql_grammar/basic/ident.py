@@ -14,6 +14,7 @@ __all__ = [
     "OPT_IDENTIFIER_LIST",
     "IDENTIFIER_LIST",
     "IDENTIFIER",
+    "IDENTIFIER_ALLOW_DEFAULT",
     "TABLE_IDENT_OPT_WILD_LIST",
     "TABLE_IDENT_OPT_WILD",
     "OPT_WILD",
@@ -101,6 +102,25 @@ IDENTIFIER = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["ident_2"],
             action=lambda x: ast.Identifier(schema_name=x[0].value1, object_name=x[0].value2)
+        )
+    ]
+)
+
+# 允许 DEFAULT 前缀的标识符（`ident` 或 `ident.ident` 或 `DEFAULT.ident`）
+IDENTIFIER_ALLOW_DEFAULT = ms_parser.create_group(
+    name="identifier_allow_default",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident"],
+            action=lambda x: ast.Identifier(schema_name=None, object_name=x[0].get_str_value())
+        ),
+        ms_parser.create_rule(
+            symbols=["ident", TType.OPERATOR_DOT, "ident"],
+            action=lambda x: ast.Identifier(schema_name=x[0].get_str_value(), object_name=x[2].get_str_value())
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT, TType.OPERATOR_DOT, "ident"],
+            action=lambda x: ast.Identifier(schema_name="default", object_name=x[2].get_str_value())
         )
     ]
 )

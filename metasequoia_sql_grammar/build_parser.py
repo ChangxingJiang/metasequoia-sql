@@ -81,6 +81,7 @@ from metasequoia_sql_grammar.statement import purge_statement
 from metasequoia_sql_grammar.statement import release_statement
 from metasequoia_sql_grammar.statement import rename_statement
 from metasequoia_sql_grammar.statement import repair_table_statement
+from metasequoia_sql_grammar.statement import reset_statement
 from metasequoia_sql_grammar.statement import restart_statement
 from metasequoia_sql_grammar.statement import rollback_statement
 from metasequoia_sql_grammar.statement import savepoint_statement
@@ -319,6 +320,7 @@ def build_grammar():
         release_statement,  # RELEASE 语句
         rename_statement,
         repair_table_statement,  # REPAIR TABLE 语句
+        reset_statement,  # RESET 语句
         restart_statement,  # RESTART 语句
         rollback_statement,  # ROLLBACK 语句
         savepoint_statement,  # SAVEPOINT 语句

@@ -30,6 +30,7 @@ __all__ = [
     "KEYWORD_FROM_OR_IN",
     "KEYWORD_KEYS_OR_INDEX",
     "KEYWORD_REPLICA_OR_SLAVE",
+    "KEYWORD_MASTER_OR_BINARY_LOGS_AND_GTIDS",
     "OPT_BRACES",
     "OPT_COMMA",
     "KEYWORD_CHARSET",
@@ -345,6 +346,20 @@ KEYWORD_DEALLOCATE_OR_DROP = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DROP]
+        )
+    ]
+)
+
+
+# `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合
+KEYWORD_MASTER_OR_BINARY_LOGS_AND_GTIDS = ms_parser.create_group(
+    name="keyword_master_or_binary_logs_and_gtids",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY, TType.KEYWORD_LOGS, TType.KEYWORD_AND, TType.KEYWORD_GTIDS]
         )
     ]
 )

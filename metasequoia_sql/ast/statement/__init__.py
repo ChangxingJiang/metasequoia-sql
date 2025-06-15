@@ -30,6 +30,7 @@ from metasequoia_sql.ast.statement.purge_statement import *
 from metasequoia_sql.ast.statement.release_statement import *
 from metasequoia_sql.ast.statement.rename_statement import *
 from metasequoia_sql.ast.statement.repair_table_statement import *
+from metasequoia_sql.ast.statement.reset_statement import *
 from metasequoia_sql.ast.statement.restart_statement import *
 from metasequoia_sql.ast.statement.rollback_statement import *
 from metasequoia_sql.ast.statement.savepoint_statement import *
