@@ -17,23 +17,23 @@ __all__ = [
     "DdlIntOptionBase",
     "DdlExpressionOptionBase",
     "DdlCharsetOptionBase",
-    "TableOptionEngine",
-    "TableOptionSecondaryEngine",
-    "TableOptionMaxRows",
-    "TableOptionMinRows",
-    "TableOptionAvgRowLength",
-    "TableOptionPassword",
-    "TableOptionComment",
-    "TableOptionCompression",
-    "TableOptionEncryption",
-    "TableOptionAutoIncrement",
-    "TableOptionPackKey",
-    "TableOptionStatsAutoRecalc",
-    "TableOptionStatsPersistent",
-    "TableOptionStatsSamplePages",
-    "TableOptionChecksum",
-    "TableOptionTableChecksum",
-    "TableOptionDelayKeyWrite",
+    "DdlOptionEngine",
+    "DdlOptionSecondaryEngine",
+    "DdlOptionMaxRows",
+    "DdlOptionMinRows",
+    "DdlOptionAvgRowLength",
+    "DdlOptionPassword",
+    "DdlOptionComment",
+    "DdlOptionCompression",
+    "DdlOptionEncryption",
+    "DdlOptionAutoIncrement",
+    "DdlOptionPackKey",
+    "DdlOptionStatsAutoRecalc",
+    "DdlOptionStatsPersistent",
+    "DdlOptionStatsSamplePages",
+    "DdlOptionChecksum",
+    "DdlOptionTableChecksum",
+    "DdlOptionDelayKeyWrite",
     "EnumRowFormat",
     "DdlOptionRowFormat",
     "DdlOptionUnion",
@@ -41,26 +41,26 @@ __all__ = [
     "DdlOptionDefaultCollate",
     "EnumMergeInsertType",
     "DdlOptionInsertMethod",
-    "TableOptionDataDirectory",
-    "TableOptionIndexDirectory",
-    "TableOptionTableSpace",
+    "DdlOptionDataDirectory",
+    "DdlOptionIndexDirectory",
+    "DdlOptionTableSpace",
     "EnumStorageType",
     "DdlOptionStorage",
-    "TableOptionConnection",
-    "TableOptionKeyBlockSize",
+    "DdlOptionConnection",
+    "DdlOptionKeyBlockSize",
     "DdlOptionStartTransaction",
-    "TableOptionEngineAttribute",
-    "TableOptionSecondaryEngineAttribute",
-    "TableOptionAutoextendSize",
+    "DdlOptionEngineAttribute",
+    "DdlOptionSecondaryEngineAttribute",
+    "DdlOptionAutoextendSize",
 ]
 
 
 class DdlOption(Node):
-    """DDL 表属性"""
+    """DDL 选项"""
 
 
 class DdlStrOptionBase(DdlOption):
-    """字符串类型的 DDL 表属性"""
+    """字符串类型的 DDL 选项"""
 
     __slots__ = (
         "_value"
@@ -75,7 +75,7 @@ class DdlStrOptionBase(DdlOption):
 
 
 class DdlIntOptionBase(DdlOption):
-    """整数类型的 DDL 表属性"""
+    """整数类型的 DDL 选项"""
 
     __slots__ = (
         "_value"
@@ -90,7 +90,7 @@ class DdlIntOptionBase(DdlOption):
 
 
 class DdlExpressionOptionBase(DdlOption):
-    """表达式类型的 DDL 表属性"""
+    """表达式类型的 DDL 选项"""
 
     __slots__ = (
         "_value"
@@ -105,7 +105,7 @@ class DdlExpressionOptionBase(DdlOption):
 
 
 class DdlCharsetOptionBase(DdlOption):
-    """字符集类型的 DDL 表属性"""
+    """字符集类型的 DDL 选项"""
 
     __slots__ = (
         "_value"
@@ -119,72 +119,72 @@ class DdlCharsetOptionBase(DdlOption):
         return self._value
 
 
-class TableOptionEngine(DdlStrOptionBase):
-    """DDL 表属性：ENGINE"""
+class DdlOptionEngine(DdlStrOptionBase):
+    """DDL 选项：ENGINE（表属性）"""
 
 
-class TableOptionSecondaryEngine(DdlStrOptionBase):
-    """DDL 表属性：SECONDARY_ENGINE"""
+class DdlOptionSecondaryEngine(DdlStrOptionBase):
+    """DDL 选项：SECONDARY_ENGINE（表属性）"""
 
 
-class TableOptionMaxRows(DdlIntOptionBase):
-    """DDL 表属性：MAX_ROWS"""
+class DdlOptionMaxRows(DdlIntOptionBase):
+    """DDL 选项：MAX_ROWS（表属性）"""
 
 
-class TableOptionMinRows(DdlIntOptionBase):
-    """DDL 表属性：MIN_ROWS"""
+class DdlOptionMinRows(DdlIntOptionBase):
+    """DDL 选项：MIN_ROWS（表属性）"""
 
 
-class TableOptionAvgRowLength(DdlIntOptionBase):
-    """DDL 表属性：AVG_ROW_LENGTH"""
+class DdlOptionAvgRowLength(DdlIntOptionBase):
+    """DDL 选项：AVG_ROW_LENGTH（表属性）"""
 
 
-class TableOptionPassword(DdlStrOptionBase):
-    """DDL 表属性：PASSWORD"""
+class DdlOptionPassword(DdlStrOptionBase):
+    """DDL 选项：PASSWORD（表属性）"""
 
 
-class TableOptionComment(DdlStrOptionBase):
-    """DDL 表属性：COMMENT"""
+class DdlOptionComment(DdlStrOptionBase):
+    """DDL 选项：COMMENT（表属性）"""
 
 
-class TableOptionCompression(DdlStrOptionBase):
-    """DDL 表属性：COMPRESSION"""
+class DdlOptionCompression(DdlStrOptionBase):
+    """DDL 选项：COMPRESSION（表属性）"""
 
 
-class TableOptionEncryption(DdlStrOptionBase):
-    """DDL 表属性：ENCRYPTION"""
+class DdlOptionEncryption(DdlStrOptionBase):
+    """DDL 选项：ENCRYPTION（表属性）"""
 
 
-class TableOptionAutoIncrement(DdlIntOptionBase):
-    """DDL 表属性：AUTO_INCREMENT"""
+class DdlOptionAutoIncrement(DdlIntOptionBase):
+    """DDL 选项：AUTO_INCREMENT（表属性）"""
 
 
-class TableOptionPackKey(DdlExpressionOptionBase):
-    """DDL 表属性：PACK_KEY"""
+class DdlOptionPackKey(DdlExpressionOptionBase):
+    """DDL 选项：PACK_KEY（表属性）"""
 
 
-class TableOptionStatsAutoRecalc(DdlExpressionOptionBase):
-    """DDL 表属性：STATS_AUTO_RECALC"""
+class DdlOptionStatsAutoRecalc(DdlExpressionOptionBase):
+    """DDL 选项：STATS_AUTO_RECALC（表属性）"""
 
 
-class TableOptionStatsPersistent(DdlIntOptionBase):
-    """DDL 表属性：STATS_PERSISTENT"""
+class DdlOptionStatsPersistent(DdlIntOptionBase):
+    """DDL 选项：STATS_PERSISTENT（表属性）"""
 
 
-class TableOptionStatsSamplePages(DdlExpressionOptionBase):
-    """DDL 表属性：STATS_SAMPLE_PAGES"""
+class DdlOptionStatsSamplePages(DdlExpressionOptionBase):
+    """DDL 选项：STATS_SAMPLE_PAGES（表属性）"""
 
 
-class TableOptionChecksum(DdlIntOptionBase):
-    """DDL 表属性：CHECKSUM"""
+class DdlOptionChecksum(DdlIntOptionBase):
+    """DDL 选项：CHECKSUM（表属性）"""
 
 
-class TableOptionTableChecksum(DdlIntOptionBase):
-    """DDL 表属性：TABLE_CHECKSUM"""
+class DdlOptionTableChecksum(DdlIntOptionBase):
+    """DDL 选项：TABLE_CHECKSUM（表属性）"""
 
 
-class TableOptionDelayKeyWrite(DdlIntOptionBase):
-    """DDL 表属性：DELAY_KEY_WRITE"""
+class DdlOptionDelayKeyWrite(DdlIntOptionBase):
+    """DDL 选项：DELAY_KEY_WRITE"""
 
 
 class EnumRowFormat(IntEnum):
@@ -199,7 +199,7 @@ class EnumRowFormat(IntEnum):
 
 
 class DdlOptionRowFormat(DdlOption):
-    """DDL 表属性：ROW_FORMAT"""
+    """DDL 选项：ROW_FORMAT（表属性）"""
 
     __slots__ = (
         "_value"
@@ -214,7 +214,7 @@ class DdlOptionRowFormat(DdlOption):
 
 
 class DdlOptionUnion(DdlOption):
-    """DDL 表属性：UNION"""
+    """DDL 选项：UNION（表属性）"""
 
     __slots__ = (
         "_table_list"
@@ -245,7 +245,7 @@ class EnumMergeInsertType(IntEnum):
 
 
 class DdlOptionInsertMethod(DdlOption):
-    """DDL 表属性：INSERT_METHOD"""
+    """DDL 选项：INSERT_METHOD（表属性）"""
 
     __slots__ = (
         "_value"
@@ -259,16 +259,16 @@ class DdlOptionInsertMethod(DdlOption):
         return self._value
 
 
-class TableOptionDataDirectory(DdlStrOptionBase):
-    """DDL 表属性：DATA DIRECTORY"""
+class DdlOptionDataDirectory(DdlStrOptionBase):
+    """DDL 选项：DATA DIRECTORY（表属性）"""
 
 
-class TableOptionIndexDirectory(DdlStrOptionBase):
-    """DDL 表属性：INDEX DIRECTORY"""
+class DdlOptionIndexDirectory(DdlStrOptionBase):
+    """DDL 选项：INDEX DIRECTORY（表属性）"""
 
 
-class TableOptionTableSpace(DdlStrOptionBase):
-    """DDL 表属性：TABLESPACE"""
+class DdlOptionTableSpace(DdlStrOptionBase):
+    """DDL 选项：TABLESPACE（表属性）"""
 
 
 class EnumStorageType(IntEnum):
@@ -279,7 +279,7 @@ class EnumStorageType(IntEnum):
 
 
 class DdlOptionStorage(DdlOption):
-    """DDL 表属性：STORAGE"""
+    """DDL 选项：STORAGE（表属性）"""
 
     __slots__ = (
         "_value"
@@ -293,25 +293,25 @@ class DdlOptionStorage(DdlOption):
         return self._value
 
 
-class TableOptionConnection(DdlStrOptionBase):
-    """DDL 表属性：CONNECTION"""
+class DdlOptionConnection(DdlStrOptionBase):
+    """DDL 选项：CONNECTION（表属性）"""
 
 
-class TableOptionKeyBlockSize(DdlIntOptionBase):
-    """DDL 表属性：KEY_BLOCK_SIZE"""
+class DdlOptionKeyBlockSize(DdlIntOptionBase):
+    """DDL 选项：KEY_BLOCK_SIZE（表属性）"""
 
 
 class DdlOptionStartTransaction(DdlOption):
-    """DDL 表属性：START TRANSACTION"""
+    """DDL 选项：START TRANSACTION（表属性）"""
 
 
-class TableOptionEngineAttribute(DdlStrOptionBase):
-    """DDL 表属性：ENGINE_ATTRIBUTE"""
+class DdlOptionEngineAttribute(DdlStrOptionBase):
+    """DDL 选项：ENGINE_ATTRIBUTE（表属性）"""
 
 
-class TableOptionSecondaryEngineAttribute(DdlStrOptionBase):
-    """DDL 表属性：SECONDARY_ENGINE_ATTRIBUTE"""
+class DdlOptionSecondaryEngineAttribute(DdlStrOptionBase):
+    """DDL 选项：SECONDARY_ENGINE_ATTRIBUTE（表属性）"""
 
 
-class TableOptionAutoextendSize(DdlExpressionOptionBase):
-    """DDL 表属性：AUTOEXTEND_SIZE"""
+class DdlOptionAutoextendSize(DdlExpressionOptionBase):
+    """DDL 选项：AUTOEXTEND_SIZE（表属性）"""

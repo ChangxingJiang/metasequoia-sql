@@ -55,75 +55,75 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ENGINE, "opt_equal", "ident_or_text"],
-            action=lambda x: ast.TableOptionEngine(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionEngine(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SECONDARY_ENGINE, "opt_equal", TType.KEYWORD_NULL],
-            action=lambda x: ast.TableOptionSecondaryEngine(value=None)
+            action=lambda x: ast.DdlOptionSecondaryEngine(value=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SECONDARY_ENGINE, "opt_equal", "ident_or_text"],
-            action=lambda x: ast.TableOptionSecondaryEngine(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionSecondaryEngine(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_MAX_ROWS, "opt_equal", "num_literal"],
-            action=lambda x: ast.TableOptionMaxRows(value=x[2].value)
+            action=lambda x: ast.DdlOptionMaxRows(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_MIN_ROWS, "opt_equal", "num_literal"],
-            action=lambda x: ast.TableOptionMinRows(value=x[2].value)
+            action=lambda x: ast.DdlOptionMinRows(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AVG_ROW_LENGTH, "opt_equal", "num_literal"],
-            action=lambda x: ast.TableOptionAvgRowLength(value=x[2].value)
+            action=lambda x: ast.DdlOptionAvgRowLength(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_PASSWORD, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionPassword(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionPassword(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_COMMENT, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionComment(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionComment(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_COMPRESSION, "opt_equal", "ident_or_text"],
-            action=lambda x: ast.TableOptionCompression(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionCompression(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ENCRYPTION, "opt_equal", "ident_or_text"],
-            action=lambda x: ast.TableOptionEncryption(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionEncryption(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AUTO_INCREMENT, "opt_equal", "num_literal"],
-            action=lambda x: ast.TableOptionAutoIncrement(value=x[2].value)
+            action=lambda x: ast.DdlOptionAutoIncrement(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_PACK_KEYS, "opt_equal", "ternary_option"],
-            action=lambda x: ast.TableOptionPackKey(value=x[2])
+            action=lambda x: ast.DdlOptionPackKey(value=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STATS_AUTO_RECALC, "opt_equal", "ternary_option"],
-            action=lambda x: ast.TableOptionStatsAutoRecalc(value=x[2])
+            action=lambda x: ast.DdlOptionStatsAutoRecalc(value=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STATS_PERSISTENT, "opt_equal", "ternary_option"],
-            action=lambda x: ast.TableOptionStatsPersistent(value=x[2])
+            action=lambda x: ast.DdlOptionStatsPersistent(value=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STATS_SAMPLE_PAGES, "opt_equal", "ternary_option"],
-            action=lambda x: ast.TableOptionStatsSamplePages(value=x[2])
+            action=lambda x: ast.DdlOptionStatsSamplePages(value=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CHECKSUM, "opt_equal", "num_literal_or_hex"],
-            action=lambda x: ast.TableOptionChecksum(value=x[2].value)
+            action=lambda x: ast.DdlOptionChecksum(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_TABLE_CHECKSUM, "opt_equal", "num_literal_or_hex"],
-            action=lambda x: ast.TableOptionTableChecksum(value=x[2].value)
+            action=lambda x: ast.DdlOptionTableChecksum(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DELAY_KEY_WRITE, "opt_equal", "num_literal_or_hex"],
-            action=lambda x: ast.TableOptionDelayKeyWrite(value=x[2].value)
+            action=lambda x: ast.DdlOptionDelayKeyWrite(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ROW_FORMAT, "opt_equal", "row_format"],
@@ -146,15 +146,15 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DATA, TType.KEYWORD_DIRECTORY, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionDataDirectory(value=x[3].get_str_value())
+            action=lambda x: ast.DdlOptionDataDirectory(value=x[3].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INDEX, TType.KEYWORD_DIRECTORY, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionIndexDirectory(value=x[3].get_str_value())
+            action=lambda x: ast.DdlOptionIndexDirectory(value=x[3].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_TABLESPACE, "opt_equal", "ident"],
-            action=lambda x: ast.TableOptionTableSpace(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionTableSpace(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STORAGE, TType.KEYWORD_DISK],
@@ -166,11 +166,11 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CONNECTION, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionConnection(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionConnection(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_KEY_BLOCK_SIZE, "opt_equal", "num_literal"],
-            action=lambda x: ast.TableOptionKeyBlockSize(value=x[2].value)
+            action=lambda x: ast.DdlOptionKeyBlockSize(value=x[2].value)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_START, TType.KEYWORD_TRANSACTION],
@@ -178,11 +178,11 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ENGINE_ATTRIBUTE, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionEngineAttribute(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionEngineAttribute(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SECONDARY_ENGINE_ATTRIBUTE, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.TableOptionSecondaryEngineAttribute(value=x[2].get_str_value())
+            action=lambda x: ast.DdlOptionSecondaryEngineAttribute(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
             symbols=["autoextend_size_option"]
@@ -282,7 +282,7 @@ AUTOEXTEND_SIZE_OPTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AUTOEXTEND_SIZE, "opt_equal", "size_number"],
-            action=lambda x: ast.TableOptionAutoextendSize(value=x[2])
+            action=lambda x: ast.DdlOptionAutoextendSize(value=x[2])
         )
     ]
 )
