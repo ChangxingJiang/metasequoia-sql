@@ -29,6 +29,9 @@ __all__ = [
     "OPT_RELEASE_TYPE",
     "RESOURCE_GROUP_TYPE",
     "SIGNAL_CONDITION_TYPE",
+    "FLUSH_OPTION_TYPE_LIST",
+    "FLUSH_OPTION_TYPE",
+    "FLUSH_LOCK_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -479,6 +482,91 @@ SIGNAL_CONDITION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_MYSQL_ERRNO],
             action=lambda _: ast.EnumSignalConditionType.MYSQL_ERRNO
+        )
+    ]
+)
+
+# `FLUSH` 语句选项的枚举值的列表
+FLUSH_OPTION_TYPE_LIST = ms_parser.create_group(
+    name="flush_option_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["flush_option_type_list", TType.OPERATOR_COMMA, "flush_option_type"],
+            action=lambda x: x[0] | x[2]
+        ),
+        ms_parser.create_rule(
+            symbols=["flush_option_type"],
+            action=lambda x: x[0]
+        )
+    ]
+)
+
+# `FLUSH` 语句选项的枚举值
+FLUSH_OPTION_TYPE = ms_parser.create_group(
+    name="flush_option_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ERROR, TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.ERROR_LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ENGINE, TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.ENGINE_LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GENERAL, TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.GENERAL_LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SLOW, TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.SLOW_LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BINARY, TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.BINARY_LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RELAY, TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.RELAY_LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PRIVILEGES],
+            action=lambda _: ast.EnumFlushOptionType.PRIVILEGES
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOGS],
+            action=lambda _: ast.EnumFlushOptionType.LOGS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_STATUS],
+            action=lambda _: ast.EnumFlushOptionType.STATUS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_USER_RESOURCES],
+            action=lambda _: ast.EnumFlushOptionType.RESOURCES
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_OPTIMIZER_COSTS],
+            action=lambda _: ast.EnumFlushOptionType.OPTIMIZER_COSTS
+        )
+    ]
+)
+
+# `FLUSH` 语句锁定选项的枚举值
+FLUSH_LOCK_TYPE = ms_parser.create_group(
+    name="flush_lock_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_READ, TType.KEYWORD_LOCK],
+            action=lambda _: ast.EnumFlushLockType.WITH_READ_LOCK
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FOR, TType.KEYWORD_EXPORT],
+            action=lambda _: ast.EnumFlushLockType.FOR_EXPORT
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumFlushLockType.DEFAULT
         )
     ]
 )

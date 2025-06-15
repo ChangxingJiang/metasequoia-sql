@@ -20,6 +20,8 @@ __all__ = [
     "EnumReleaseType",
     "EnumResourceGroupType",
     "EnumSignalConditionType",
+    "EnumFlushOptionType",
+    "EnumFlushLockType",
 ]
 
 
@@ -165,3 +167,28 @@ class EnumSignalConditionType(IntEnum):
     CURSOR_NAME = 10  # CURSOR_NAME
     MESSAGE_TEXT = 11  # MESSAGE_TEXT
     MYSQL_ERRNO = 12  # MYSQL_ERRNO
+
+
+class EnumFlushOptionType(IntFlag):
+    """`FLUSH` 语句选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    ERROR_LOGS = (1 << 0)  # ERROR LOGS
+    ENGINE_LOGS = (1 << 1)  # ENGINE LOGS  
+    GENERAL_LOGS = (1 << 2)  # GENERAL LOGS
+    SLOW_LOGS = (1 << 3)  # SLOW LOGS
+    BINARY_LOGS = (1 << 4)  # BINARY LOGS
+    RELAY_LOGS = (1 << 5)  # RELAY LOGS
+    PRIVILEGES = (1 << 6)  # PRIVILEGES
+    LOGS = (1 << 7)  # LOGS
+    STATUS = (1 << 8)  # STATUS
+    RESOURCES = (1 << 9)  # RESOURCES
+    OPTIMIZER_COSTS = (1 << 10)  # OPTIMIZER_COSTS
+
+
+class EnumFlushLockType(IntEnum):
+    """`FLUSH` 语句锁定选项的枚举值"""
+
+    DEFAULT = 0  # 默认值
+    WITH_READ_LOCK = 1  # WITH READ LOCK
+    FOR_EXPORT = 2  # FOR EXPORT

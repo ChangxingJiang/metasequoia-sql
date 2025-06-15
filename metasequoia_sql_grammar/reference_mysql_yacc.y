@@ -1004,13 +1004,6 @@ source_file_def:
           }
         ;
 
-create_role_stmt:
-          CREATE ROLE_SYM opt_if_not_exists role_list
-          {
-            $$= NEW_PTN PT_create_role(@$, !!$3, $4);
-          }
-        ;
-
 create_resource_group_stmt:
           CREATE RESOURCE_SYM GROUP_SYM ident TYPE_SYM
           opt_equal resource_group_types
@@ -4835,109 +4828,6 @@ master_or_binary_logs_and_gtids:
         | BINARY_SYM LOGS_SYM AND_SYM GTIDS_SYM
         ;
 
-/* flush things */
-
-flush:
-          FLUSH_SYM opt_no_write_to_binlog
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_FLUSH;
-            lex->type= 0;
-            lex->no_write_to_binlog= $2;
-          }
-          flush_options
-          {}
-        ;
-
-flush_options:
-          table_or_tables opt_table_list
-          {
-            Lex->type|= REFRESH_TABLES;
-            /*
-              Set type of metadata and table locks for
-              FLUSH TABLES table_list [WITH READ LOCK].
-            */
-            YYPS->m_lock_type= TL_READ_NO_INSERT;
-            YYPS->m_mdl_type= MDL_SHARED_HIGH_PRIO;
-            if (Select->add_tables(YYTHD, $2, TL_OPTION_UPDATING,
-                                   YYPS->m_lock_type, YYPS->m_mdl_type))
-              MYSQL_YYABORT;
-          }
-          opt_flush_lock {}
-        | flush_options_list
-        ;
-
-opt_flush_lock:
-          %empty {}
-        | WITH READ_SYM LOCK_SYM
-          {
-            Table_ref *tables= Lex->query_tables;
-            Lex->type|= REFRESH_READ_LOCK;
-            for (; tables; tables= tables->next_global)
-            {
-              tables->mdl_request.set_type(MDL_SHARED_NO_WRITE);
-              /* Don't try to flush views. */
-              tables->required_type= dd::enum_table_type::BASE_TABLE;
-              tables->open_type= OT_BASE_ONLY;      /* Ignore temporary tables. */
-            }
-          }
-        | FOR_SYM
-          {
-            if (Lex->query_tables == nullptr) // Table list can't be empty
-            {
-              YYTHD->syntax_error(ER_NO_TABLES_USED);
-              MYSQL_YYABORT;
-            }
-          }
-          EXPORT_SYM
-          {
-            Table_ref *tables= Lex->query_tables;
-            Lex->type|= REFRESH_FOR_EXPORT;
-            for (; tables; tables= tables->next_global)
-            {
-              tables->mdl_request.set_type(MDL_SHARED_NO_WRITE);
-              /* Don't try to flush views. */
-              tables->required_type= dd::enum_table_type::BASE_TABLE;
-              tables->open_type= OT_BASE_ONLY;      /* Ignore temporary tables. */
-            }
-          }
-        ;
-
-flush_options_list:
-          flush_options_list ',' flush_option
-        | flush_option
-          {}
-        ;
-
-flush_option:
-          ERROR_SYM LOGS_SYM
-          { Lex->type|= REFRESH_ERROR_LOG; }
-        | ENGINE_SYM LOGS_SYM
-          { Lex->type|= REFRESH_ENGINE_LOG; }
-        | GENERAL LOGS_SYM
-          { Lex->type|= REFRESH_GENERAL_LOG; }
-        | SLOW LOGS_SYM
-          { Lex->type|= REFRESH_SLOW_LOG; }
-        | BINARY_SYM LOGS_SYM
-          { Lex->type|= REFRESH_BINARY_LOG; }
-        | RELAY LOGS_SYM opt_channel
-          {
-            Lex->type|= REFRESH_RELAY_LOG;
-            if (Lex->set_channel_name($3))
-              MYSQL_YYABORT;  // OOM
-          }
-        | PRIVILEGES
-          { Lex->type|= REFRESH_GRANT; }
-        | LOGS_SYM
-          { Lex->type|= REFRESH_LOG; }
-        | STATUS_SYM
-          { Lex->type|= REFRESH_STATUS; }
-        | RESOURCES
-          { Lex->type|= REFRESH_USER_RESOURCES; }
-        | OPTIMIZER_COSTS_SYM
-          { Lex->type|= REFRESH_OPTIMIZER_COSTS; }
-        ;
-
 reset:
           RESET_SYM
           {
@@ -5056,55 +4946,6 @@ source_reset_options:
             }
             else
               Lex->next_binlog_file_nr = $2;
-          }
-        ;
-
-purge:
-          PURGE
-          {
-            LEX *lex=Lex;
-            lex->type=0;
-            lex->sql_command = SQLCOM_PURGE;
-          }
-          purge_options
-          {}
-        ;
-
-purge_options:
-          master_or_binary
-          {
-            if (Lex->is_replication_deprecated_syntax_used())
-            {
-              push_deprecated_warn(YYTHD, "PURGE MASTER LOGS TO", "PURGE BINARY LOGS TO");
-            }
-          }
-          LOGS_SYM purge_option
-        ;
-
-purge_option:
-          TO_SYM TEXT_STRING_sys
-          {
-            Lex->to_log = $2.str;
-          }
-        | BEFORE_SYM expr
-          {
-            ITEMIZE($2, &$2);
-
-            LEX *lex= Lex;
-            lex->purge_value_list.clear();
-            lex->purge_value_list.push_front($2);
-            lex->sql_command= SQLCOM_PURGE_BEFORE;
-          }
-        ;
-
-/* change database */
-
-use:
-          USE_SYM ident
-          {
-            LEX *lex=Lex;
-            lex->sql_command=SQLCOM_CHANGE_DB;
-            lex->query_block->db= $2.str;
           }
         ;
 
@@ -5643,21 +5484,6 @@ set_expr_or_default:
         | SYSTEM_SYM
           {
             $$= NEW_PTN Item_string(@$, "SYSTEM", 6, system_charset_info);
-          }
-        ;
-
-shutdown_stmt:
-          SHUTDOWN
-          {
-            Lex->sql_command= SQLCOM_SHUTDOWN;
-            $$= NEW_PTN PT_shutdown();
-          }
-        ;
-
-restart_server_stmt:
-          RESTART_SYM
-          {
-            $$= NEW_PTN PT_restart_server();
           }
         ;
 

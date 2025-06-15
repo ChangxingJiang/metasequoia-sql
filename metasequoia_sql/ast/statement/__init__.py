@@ -8,6 +8,7 @@ from metasequoia_sql.ast.statement.checksum_statement import *
 from metasequoia_sql.ast.statement.clone_statement import *
 from metasequoia_sql.ast.statement.commit_statement import *
 from metasequoia_sql.ast.statement.create_index_statement import *
+from metasequoia_sql.ast.statement.create_role_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.deallocate_statement import *
 from metasequoia_sql.ast.statement.delete_statement import *
@@ -16,6 +17,7 @@ from metasequoia_sql.ast.statement.do_statement import *
 from metasequoia_sql.ast.statement.drop_statement import *
 from metasequoia_sql.ast.statement.execute_statement import *
 from metasequoia_sql.ast.statement.explain_statement import *
+from metasequoia_sql.ast.statement.flush_statement import *
 from metasequoia_sql.ast.statement.help_statement import *
 from metasequoia_sql.ast.statement.import_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *
@@ -24,14 +26,18 @@ from metasequoia_sql.ast.statement.kill_statement import *
 from metasequoia_sql.ast.statement.lock_or_unlock_statement import *
 from metasequoia_sql.ast.statement.optimize_table_statement import *
 from metasequoia_sql.ast.statement.prepare_statement import *
+from metasequoia_sql.ast.statement.purge_statement import *
 from metasequoia_sql.ast.statement.release_statement import *
 from metasequoia_sql.ast.statement.rename_statement import *
 from metasequoia_sql.ast.statement.repair_table_statement import *
+from metasequoia_sql.ast.statement.restart_statement import *
 from metasequoia_sql.ast.statement.rollback_statement import *
 from metasequoia_sql.ast.statement.savepoint_statement import *
 from metasequoia_sql.ast.statement.select_statement import *
 from metasequoia_sql.ast.statement.show_statement import *
+from metasequoia_sql.ast.statement.shutdown_statement import *
 from metasequoia_sql.ast.statement.signal_and_resignal_statement import *
 from metasequoia_sql.ast.statement.start_transaction_statement import *
 from metasequoia_sql.ast.statement.truncate_statement import *
 from metasequoia_sql.ast.statement.update_statement import *
+from metasequoia_sql.ast.statement.use_statement import *

@@ -112,6 +112,12 @@
 | `create_index_statement` | `CREATE INDEX` 语句    | `CreateIndexStmt` | `create_index_stmt` |
 | `opt_keyword_unique`     | 可选的 `UNIQUE` 关键字 | `EnumIndexType`   | `opt_unique`        |
 
+#### CREATE ROLE 语句（create role statement）
+
+| 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称   |
+| ----------------------- | ------------------ | --------------------- | ------------------ |
+| `create_role_statement` | `CREATE ROLE` 语句 | `CreateRoleStatement` | `create_role_stmt` |
+
 #### CREATE TABLE 语句（create table statement）
 
 | 水杉解析器语义组名称         | 语义组类型                                 | 返回值类型              | MySQL 语义组名称               |
@@ -185,6 +191,12 @@
 | `opt_explain_into`       | 可选的 `INTO` 引导的指定分析结果写入变量子句   | `Optional[UserVariable]` | `opt_explain_into`                             |
 | `opt_explain_for_schema` | 可选的 `FOR DATABASE` 引导的指定分析数据库子句 | `Optional[str]`          | `opt_explain_for_schema`                       |
 
+#### FLUSH 语句（flush statement）
+
+| 水杉解析器语义组名称 | 语义组类型   | 返回值类型       | MySQL 语义组名称                     |
+| -------------------- | ------------ | ---------------- | ------------------------------------ |
+| `flush_statement`    | `FLUSH` 语句 | `FlushStatement` | `flush`<br />`flush_options`【包含】 |
+
 #### HELP 语句（help statement）
 
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
@@ -244,6 +256,13 @@
 | -------------------------- | --------------------- | ------------------------ | --------------------- |
 | `optimize_table_statement` | `OPTIMIZE TABLE` 语句 | `OptimizeTableStatement` | `optimize_table_stmt` |
 
+#### PURGE 语句（purge statement）
+
+| 水杉解析器语义组名称 | 语义组类型   | 返回值类型       | MySQL 语义组名称                     |
+| -------------------- | ------------ | ---------------- | ------------------------------------ |
+| `purge_statement`    | `PURGE` 语句 | `PurgeStatement` | `purge`<br />`purge_options`【包含】 |
+| `purge_option`       | `PURGE` 选项 | `PurgeOption`    | `purge_option`                       |
+
 #### RENAME 语句（rename statement）
 
 | 水杉解析器语义组名称 | 语义组类型                          | 返回值类型                            | MySQL 语义组名称      |
@@ -271,6 +290,12 @@
 | 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称 |
 | -------------------- | -------------- | ------------------ | ---------------- |
 | `release_statement`  | `RELEASE` 语句 | `ReleaseStatement` | `release`        |
+
+#### RESTART 语句（restart statement）
+
+| 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称      |
+| -------------------- | -------------- | ------------------ | --------------------- |
+| `restart_statement`  | `RESTART` 语句 | `RestartStatement` | `restart_server_stmt` |
 
 #### ROLLBACK 语句（rollback statement）
 
@@ -365,6 +390,12 @@
 | `opt_for_query`                    | 可选的 `FOR QUERY` 引导的线程 ID               | `Optional[int]`                | `opt_for_query`               |
 | `opt_for_channel`                  | 可选的 `FOR CHANNEL` 引导的通道名              | `Optional[str]`                | `opt_channel`                 |
 
+#### SHUTDOWN 语句（shutdown statement）
+
+| 水杉解析器语义组名称 | 语义组类型      | 返回值类型          | MySQL 语义组名称 |
+| -------------------- | --------------- | ------------------- | ---------------- |
+| `shutdown_statement` | `SHUTDOWN` 语句 | `ShutdownStatement` | `shutdown_stmt`  |
+
 #### SIGNAL 语句和 RESIGNAL 语句（signal and resignal statement）
 
 | 水杉解析器语义组名称           | 语义组类型                                                   | 返回值类型                       | MySQL 语义组名称               |
@@ -399,6 +430,12 @@
 | `update_statement`    | `UPDATE` 语句                 | `UpdateStatement`     | `update_stmt`    |
 | `update_element_list` | `UPDATE` 语句中的更新项的列表 | `List[UpdateElement]` | `update_list`    |
 | `update_element`      | `UPDATE` 语句中的更新项       | `UpdateElement`       | `update_elem`    |
+
+#### USE 语句（use statement）
+
+| 水杉解析器语义组名称 | 语义组类型 | 返回值类型     | MySQL 语义组名称 |
+| -------------------- | ---------- | -------------- | ---------------- |
+| `use_statement`      | `USE` 语句 | `UseStatement` | `use`            |
 
 # 子句（clause）
 
@@ -883,29 +920,32 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 固定的枚举类型（fixed enum）
 
-| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                | MySQL 语义组名称                         |
-| ----------------------- | ------------------------------------------------------ | ------------------------- | ---------------------------------------- |
-| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `EnumDropRestrict`        | `opt_restrict`                           |
-| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `EnumShowCommandType`     | `opt_show_cmd_type`                      |
-| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `EnumRepairType`          | `opt_mi_repair_types`                    |
-| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `EnumRepairType`          | `mi_repair_types`                        |
-| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `EnumRepairType`          | `mi_repair_type`                         |
-| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `EnumCheckType`           | `opt_mi_check_types`                     |
-| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `EnumCheckType`           | `mi_check_types`                         |
-| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `EnumCheckType`           | `mi_check_type`                          |
-| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `EnumChecksumType`        | `opt_checksum_type`                      |
-| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `EnumProfileType`         | `opt_profile_defs`                       |
-| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `EnumProfileType`         | `profile_defs`                           |
-| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `EnumProfileType`         | `profile_def`                            |
-| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `EnumVariableType`        | `opt_var_type`                           |
-| `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `EnumInstallOptionType`   | `install_option_type`                    |
-| `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `EnumKillOptionType`      | `kill_option`                            |
-| `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `EnumLockOptionType`      | `lock_option`                            |
-| `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`         | `opt_ssl`                                |
-| `opt_chain_type`        | `CHAIN` 选项的枚举值                                   | `EnumChainType`           | `opt_chain`                              |
-| `opt_release_type`      | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`         | `opt_release`                            |
-| `resource_group_type`   | 资源组类型的枚举值                                     | `EnumResourceGroupType`   | `resource_group_types`                   |
-| `signal_condition_type` | `SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值    | `EnumSignalConditionType` | `signal_condition_information_item_name` |
+| 水杉解析器语义组名称     | 语义组类型                                             | 返回值类型                | MySQL 语义组名称                         |
+| ------------------------ | ------------------------------------------------------ | ------------------------- | ---------------------------------------- |
+| `opt_drop_restrict`      | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `EnumDropRestrict`        | `opt_restrict`                           |
+| `opt_show_command_type`  | 可选的 `SHOW` 语句命令类型的枚举值                     | `EnumShowCommandType`     | `opt_show_cmd_type`                      |
+| `opt_repair_type_list`   | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `EnumRepairType`          | `opt_mi_repair_types`                    |
+| `repair_type_list`       | `REPAIR` 语句命令类型的枚举值的列表                    | `EnumRepairType`          | `mi_repair_types`                        |
+| `repair_type`            | `REPAIR` 语句命令类型的枚举值                          | `EnumRepairType`          | `mi_repair_type`                         |
+| `opt_check_type_list`    | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `EnumCheckType`           | `opt_mi_check_types`                     |
+| `check_type_list`        | `CHECK` 语句命令类型的枚举值的列表                     | `EnumCheckType`           | `mi_check_types`                         |
+| `check_type`             | `CHECK` 语句命令类型的枚举值                           | `EnumCheckType`           | `mi_check_type`                          |
+| `opt_checksum_type`      | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `EnumChecksumType`        | `opt_checksum_type`                      |
+| `opt_profile_type_list`  | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `EnumProfileType`         | `opt_profile_defs`                       |
+| `profile_type_list`      | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `EnumProfileType`         | `profile_defs`                           |
+| `profile_type`           | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `EnumProfileType`         | `profile_def`                            |
+| `opt_variable_type`      | 可选的变量类型的枚举值                                 | `EnumVariableType`        | `opt_var_type`                           |
+| `install_option_type`    | `INSTALL` 语句的安装选项的枚举值                       | `EnumInstallOptionType`   | `install_option_type`                    |
+| `kill_option_type`       | `KILL` 语句的选项的枚举值                              | `EnumKillOptionType`      | `kill_option`                            |
+| `lock_option_type`       | `LOCK` 语句的锁定选项的枚举值                          | `EnumLockOptionType`      | `lock_option`                            |
+| `opt_open_ssl_type`      | SSL 选项的枚举值                                       | `EnumOpenSslType`         | `opt_ssl`                                |
+| `opt_chain_type`         | `CHAIN` 选项的枚举值                                   | `EnumChainType`           | `opt_chain`                              |
+| `opt_release_type`       | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`         | `opt_release`                            |
+| `resource_group_type`    | 资源组类型的枚举值                                     | `EnumResourceGroupType`   | `resource_group_types`                   |
+| `signal_condition_type`  | `SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值    | `EnumSignalConditionType` | `signal_condition_information_item_name` |
+| `flush_option_type_list` | `FLUSH` 语句选项的枚举值的列表                         | `EnumFlushOptionType`     | `flush_options_list`                     |
+| `flush_option_type`      | `FLUSH` 语句选项的枚举值                               | `EnumFlushOptionType`     | `flush_option`                           |
+| `flush_lock_type`        | `FLUSH` 语句锁定选项的枚举值                           | `EnumFlushLockType`       | `opt_flush_lock`                         |
 
 #### 固定的词语组合（fixed word）
 
