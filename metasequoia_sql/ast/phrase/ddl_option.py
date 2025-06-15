@@ -1,5 +1,5 @@
 """
-DDL 表属性（ddl table option）
+DDL 选项（ddl option）
 """
 
 from enum import IntEnum
@@ -12,11 +12,11 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.charset_name import Charset
 
 __all__ = [
-    "TableOption",
-    "TableStrOptionBase",
-    "TableIntOptionBase",
-    "TableExpressionOptionBase",
-    "TableCharsetOptionBase",
+    "DdlOption",
+    "DdlStrOptionBase",
+    "DdlIntOptionBase",
+    "DdlExpressionOptionBase",
+    "DdlCharsetOptionBase",
     "TableOptionEngine",
     "TableOptionSecondaryEngine",
     "TableOptionMaxRows",
@@ -35,31 +35,31 @@ __all__ = [
     "TableOptionTableChecksum",
     "TableOptionDelayKeyWrite",
     "EnumRowFormat",
-    "TableOptionRowFormat",
-    "TableOptionUnion",
-    "TableOptionDefaultCharset",
-    "TableOptionDefaultCollate",
+    "DdlOptionRowFormat",
+    "DdlOptionUnion",
+    "DdlOptionDefaultCharset",
+    "DdlOptionDefaultCollate",
     "EnumMergeInsertType",
-    "TableOptionInsertMethod",
+    "DdlOptionInsertMethod",
     "TableOptionDataDirectory",
     "TableOptionIndexDirectory",
     "TableOptionTableSpace",
     "EnumStorageType",
-    "TableOptionStorage",
+    "DdlOptionStorage",
     "TableOptionConnection",
     "TableOptionKeyBlockSize",
-    "TableOptionStartTransaction",
+    "DdlOptionStartTransaction",
     "TableOptionEngineAttribute",
     "TableOptionSecondaryEngineAttribute",
     "TableOptionAutoextendSize",
 ]
 
 
-class TableOption(Node):
+class DdlOption(Node):
     """DDL 表属性"""
 
 
-class TableStrOptionBase(TableOption):
+class DdlStrOptionBase(DdlOption):
     """字符串类型的 DDL 表属性"""
 
     __slots__ = (
@@ -74,7 +74,7 @@ class TableStrOptionBase(TableOption):
         return self._value
 
 
-class TableIntOptionBase(TableOption):
+class DdlIntOptionBase(DdlOption):
     """整数类型的 DDL 表属性"""
 
     __slots__ = (
@@ -89,7 +89,7 @@ class TableIntOptionBase(TableOption):
         return self._value
 
 
-class TableExpressionOptionBase(TableOption):
+class DdlExpressionOptionBase(DdlOption):
     """表达式类型的 DDL 表属性"""
 
     __slots__ = (
@@ -104,7 +104,7 @@ class TableExpressionOptionBase(TableOption):
         return self._value
 
 
-class TableCharsetOptionBase(TableOption):
+class DdlCharsetOptionBase(DdlOption):
     """字符集类型的 DDL 表属性"""
 
     __slots__ = (
@@ -119,71 +119,71 @@ class TableCharsetOptionBase(TableOption):
         return self._value
 
 
-class TableOptionEngine(TableStrOptionBase):
+class TableOptionEngine(DdlStrOptionBase):
     """DDL 表属性：ENGINE"""
 
 
-class TableOptionSecondaryEngine(TableStrOptionBase):
+class TableOptionSecondaryEngine(DdlStrOptionBase):
     """DDL 表属性：SECONDARY_ENGINE"""
 
 
-class TableOptionMaxRows(TableIntOptionBase):
+class TableOptionMaxRows(DdlIntOptionBase):
     """DDL 表属性：MAX_ROWS"""
 
 
-class TableOptionMinRows(TableIntOptionBase):
+class TableOptionMinRows(DdlIntOptionBase):
     """DDL 表属性：MIN_ROWS"""
 
 
-class TableOptionAvgRowLength(TableIntOptionBase):
+class TableOptionAvgRowLength(DdlIntOptionBase):
     """DDL 表属性：AVG_ROW_LENGTH"""
 
 
-class TableOptionPassword(TableStrOptionBase):
+class TableOptionPassword(DdlStrOptionBase):
     """DDL 表属性：PASSWORD"""
 
 
-class TableOptionComment(TableStrOptionBase):
+class TableOptionComment(DdlStrOptionBase):
     """DDL 表属性：COMMENT"""
 
 
-class TableOptionCompression(TableStrOptionBase):
+class TableOptionCompression(DdlStrOptionBase):
     """DDL 表属性：COMPRESSION"""
 
 
-class TableOptionEncryption(TableStrOptionBase):
+class TableOptionEncryption(DdlStrOptionBase):
     """DDL 表属性：ENCRYPTION"""
 
 
-class TableOptionAutoIncrement(TableIntOptionBase):
+class TableOptionAutoIncrement(DdlIntOptionBase):
     """DDL 表属性：AUTO_INCREMENT"""
 
 
-class TableOptionPackKey(TableExpressionOptionBase):
+class TableOptionPackKey(DdlExpressionOptionBase):
     """DDL 表属性：PACK_KEY"""
 
 
-class TableOptionStatsAutoRecalc(TableExpressionOptionBase):
+class TableOptionStatsAutoRecalc(DdlExpressionOptionBase):
     """DDL 表属性：STATS_AUTO_RECALC"""
 
 
-class TableOptionStatsPersistent(TableIntOptionBase):
+class TableOptionStatsPersistent(DdlIntOptionBase):
     """DDL 表属性：STATS_PERSISTENT"""
 
 
-class TableOptionStatsSamplePages(TableExpressionOptionBase):
+class TableOptionStatsSamplePages(DdlExpressionOptionBase):
     """DDL 表属性：STATS_SAMPLE_PAGES"""
 
 
-class TableOptionChecksum(TableIntOptionBase):
+class TableOptionChecksum(DdlIntOptionBase):
     """DDL 表属性：CHECKSUM"""
 
 
-class TableOptionTableChecksum(TableIntOptionBase):
+class TableOptionTableChecksum(DdlIntOptionBase):
     """DDL 表属性：TABLE_CHECKSUM"""
 
 
-class TableOptionDelayKeyWrite(TableIntOptionBase):
+class TableOptionDelayKeyWrite(DdlIntOptionBase):
     """DDL 表属性：DELAY_KEY_WRITE"""
 
 
@@ -198,7 +198,7 @@ class EnumRowFormat(IntEnum):
     COMPACT = 5  # COMPACT
 
 
-class TableOptionRowFormat(TableOption):
+class DdlOptionRowFormat(DdlOption):
     """DDL 表属性：ROW_FORMAT"""
 
     __slots__ = (
@@ -213,7 +213,7 @@ class TableOptionRowFormat(TableOption):
         return self._value
 
 
-class TableOptionUnion(TableOption):
+class DdlOptionUnion(DdlOption):
     """DDL 表属性：UNION"""
 
     __slots__ = (
@@ -228,12 +228,12 @@ class TableOptionUnion(TableOption):
         return self._table_list
 
 
-class TableOptionDefaultCharset(TableCharsetOptionBase):
-    """DDL 表属性：DEFAULT CHARSET"""
+class DdlOptionDefaultCharset(DdlCharsetOptionBase):
+    """DDL 选项：DEFAULT CHARSET（表属性或数据库属性）"""
 
 
-class TableOptionDefaultCollate(TableCharsetOptionBase):
-    """DDL 表属性：DEFAULT COLLATE"""
+class DdlOptionDefaultCollate(DdlCharsetOptionBase):
+    """DDL 选项：DEFAULT COLLATE（表属性或数据库属性）"""
 
 
 class EnumMergeInsertType(IntEnum):
@@ -244,7 +244,7 @@ class EnumMergeInsertType(IntEnum):
     LAST = 3  # LAST：将新记录插入到最后一个底层的 MyISAM 表中
 
 
-class TableOptionInsertMethod(TableOption):
+class DdlOptionInsertMethod(DdlOption):
     """DDL 表属性：INSERT_METHOD"""
 
     __slots__ = (
@@ -259,15 +259,15 @@ class TableOptionInsertMethod(TableOption):
         return self._value
 
 
-class TableOptionDataDirectory(TableStrOptionBase):
+class TableOptionDataDirectory(DdlStrOptionBase):
     """DDL 表属性：DATA DIRECTORY"""
 
 
-class TableOptionIndexDirectory(TableStrOptionBase):
+class TableOptionIndexDirectory(DdlStrOptionBase):
     """DDL 表属性：INDEX DIRECTORY"""
 
 
-class TableOptionTableSpace(TableStrOptionBase):
+class TableOptionTableSpace(DdlStrOptionBase):
     """DDL 表属性：TABLESPACE"""
 
 
@@ -278,7 +278,7 @@ class EnumStorageType(IntEnum):
     MEMORY = 2  # MEMORY：使用内存存储
 
 
-class TableOptionStorage(TableOption):
+class DdlOptionStorage(DdlOption):
     """DDL 表属性：STORAGE"""
 
     __slots__ = (
@@ -293,25 +293,25 @@ class TableOptionStorage(TableOption):
         return self._value
 
 
-class TableOptionConnection(TableStrOptionBase):
+class TableOptionConnection(DdlStrOptionBase):
     """DDL 表属性：CONNECTION"""
 
 
-class TableOptionKeyBlockSize(TableIntOptionBase):
+class TableOptionKeyBlockSize(DdlIntOptionBase):
     """DDL 表属性：KEY_BLOCK_SIZE"""
 
 
-class TableOptionStartTransaction(TableOption):
+class DdlOptionStartTransaction(DdlOption):
     """DDL 表属性：START TRANSACTION"""
 
 
-class TableOptionEngineAttribute(TableStrOptionBase):
+class TableOptionEngineAttribute(DdlStrOptionBase):
     """DDL 表属性：ENGINE_ATTRIBUTE"""
 
 
-class TableOptionSecondaryEngineAttribute(TableStrOptionBase):
+class TableOptionSecondaryEngineAttribute(DdlStrOptionBase):
     """DDL 表属性：SECONDARY_ENGINE_ATTRIBUTE"""
 
 
-class TableOptionAutoextendSize(TableExpressionOptionBase):
+class TableOptionAutoextendSize(DdlExpressionOptionBase):
     """DDL 表属性：AUTOEXTEND_SIZE"""

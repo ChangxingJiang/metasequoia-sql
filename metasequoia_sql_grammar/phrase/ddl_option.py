@@ -1,5 +1,5 @@
 """
-DDL 表属性（ddl table option）
+DDL 选项（ddl option）
 """
 
 import metasequoia_parser as ms_parser
@@ -127,12 +127,12 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ROW_FORMAT, "opt_equal", "row_format"],
-            action=lambda x: ast.TableOptionRowFormat(value=x[2])
+            action=lambda x: ast.DdlOptionRowFormat(value=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_UNION, "opt_equal", TType.OPERATOR_LPAREN, "opt_identifier_list",
                      TType.OPERATOR_RPAREN],
-            action=lambda x: ast.TableOptionUnion(table_list=x[3])
+            action=lambda x: ast.DdlOptionUnion(table_list=x[3])
         ),
         ms_parser.create_rule(
             symbols=["default_charset_option"]
@@ -142,7 +142,7 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INSERT_METHOD, "opt_equal", "merge_insert_type"],
-            action=lambda x: ast.TableOptionInsertMethod(value=x[2])
+            action=lambda x: ast.DdlOptionInsertMethod(value=x[2])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DATA, TType.KEYWORD_DIRECTORY, "opt_equal", "text_literal_sys"],
@@ -158,11 +158,11 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STORAGE, TType.KEYWORD_DISK],
-            action=lambda x: ast.TableOptionStorage(value=ast.EnumStorageType.DISK)
+            action=lambda x: ast.DdlOptionStorage(value=ast.EnumStorageType.DISK)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STORAGE, TType.KEYWORD_MEMORY],
-            action=lambda x: ast.TableOptionStorage(value=ast.EnumStorageType.MEMORY)
+            action=lambda x: ast.DdlOptionStorage(value=ast.EnumStorageType.MEMORY)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CONNECTION, "opt_equal", "text_literal_sys"],
@@ -174,7 +174,7 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_START, TType.KEYWORD_TRANSACTION],
-            action=lambda _: ast.TableOptionStartTransaction()
+            action=lambda _: ast.DdlOptionStartTransaction()
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ENGINE_ATTRIBUTE, "opt_equal", "text_literal_sys"],
@@ -241,7 +241,7 @@ DEFAULT_CHARSET_OPTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["opt_keyword_default", "keyword_charset", "opt_equal", "charset_name"],
-            action=lambda x: ast.TableOptionDefaultCharset(value=x[3])
+            action=lambda x: ast.DdlOptionDefaultCharset(value=x[3])
         )
     ]
 )
@@ -252,7 +252,7 @@ DEFAULT_COLLATE_OPTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["opt_keyword_default", TType.KEYWORD_COLLATE, "opt_equal", "charset_name"],
-            action=lambda x: ast.TableOptionDefaultCollate(value=x[3])
+            action=lambda x: ast.DdlOptionDefaultCollate(value=x[3])
         )
     ]
 )

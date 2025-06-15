@@ -7,7 +7,7 @@ from typing import List, Optional, TYPE_CHECKING
 from metasequoia_sql.ast.base import Node, Statement
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.phrase.ddl_table_option import TableOption
+    from metasequoia_sql.ast.phrase.ddl_option import DdlOption
     from metasequoia_sql.ast.clause.ddl_partition_by_clause import DdlPartitionByClause
     from metasequoia_sql.ast.phrase.on_duplicate import OnDuplicate
     from metasequoia_sql.ast.statement.select_statement import QueryExpression
@@ -33,7 +33,7 @@ class TempCreateTableOption(Node):
     )
 
     def __init__(self,
-                 opt_create_table_option_list: List["TableOption"],
+                 opt_create_table_option_list: List["DdlOption"],
                  opt_partition_clause: Optional["DdlPartitionByClause"],
                  on_duplicate: "OnDuplicate",
                  opt_query_expression: Optional["QueryExpression"]):
@@ -43,7 +43,7 @@ class TempCreateTableOption(Node):
         self._opt_query_expression = opt_query_expression
 
     @property
-    def opt_create_table_option_list(self) -> List["TableOption"]:
+    def opt_create_table_option_list(self) -> List["DdlOption"]:
         return self._opt_create_table_option_list
 
     @property
@@ -58,7 +58,7 @@ class TempCreateTableOption(Node):
     def opt_query_expression(self) -> Optional["QueryExpression"]:
         return self._opt_query_expression
 
-    def set_create_table_option_list(self, create_table_option_list: List["TableOption"]) -> "TempCreateTableOption":
+    def set_create_table_option_list(self, create_table_option_list: List["DdlOption"]) -> "TempCreateTableOption":
         self._opt_create_table_option_list = create_table_option_list
         return self
 
@@ -110,7 +110,7 @@ class CreateTableStatementAsDefinition(CreateTableStatement):
                  if_not_exists: bool,
                  table_ident: "Identifier",
                  table_element_list: List["TableElement"],
-                 opt_create_table_option_list: List["TableOption"],
+                 opt_create_table_option_list: List["DdlOption"],
                  opt_partition_clause: Optional["DdlPartitionByClause"],
                  on_duplicate: "OnDuplicate",
                  opt_query_expression: Optional["QueryExpression"], ):
@@ -126,7 +126,7 @@ class CreateTableStatementAsDefinition(CreateTableStatement):
         return self._table_element_list
 
     @property
-    def opt_create_table_option_list(self) -> List["TableOption"]:
+    def opt_create_table_option_list(self) -> List["DdlOption"]:
         return self._opt_create_table_option_list
 
     @property

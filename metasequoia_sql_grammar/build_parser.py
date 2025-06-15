@@ -42,7 +42,7 @@ from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.phrase import ddl_column_attribute
 from metasequoia_sql_grammar.phrase import ddl_index_attribute
 from metasequoia_sql_grammar.phrase import ddl_table_element
-from metasequoia_sql_grammar.phrase import ddl_table_option
+from metasequoia_sql_grammar.phrase import ddl_option
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
