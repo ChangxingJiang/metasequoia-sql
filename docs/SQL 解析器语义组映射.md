@@ -48,6 +48,12 @@
 
 # 语句（statement）
 
+#### ALTER RESOURCE GROUP 语句（alter resource group statement）
+
+| 水杉解析器语义组名称             | 语义组类型                  | 返回值类型                    | MySQL 语义组名称            |
+| -------------------------------- | --------------------------- | ----------------------------- | --------------------------- |
+| `alter_resource_group_statement` | `ALTER RESOURCE GROUP` 语句 | `AlterResourceGroupStatement` | `alter_resource_group_stmt` |
+
 #### ALTER TABLE 语句（alter table statement）
 
 | 水杉解析器语义组名称 | 语义组类型    | 返回值类型        | MySQL 语义组名称      |
@@ -111,6 +117,12 @@
 | ------------------------ | ---------------------- | ----------------- | ------------------- |
 | `create_index_statement` | `CREATE INDEX` 语句    | `CreateIndexStmt` | `create_index_stmt` |
 | `opt_keyword_unique`     | 可选的 `UNIQUE` 关键字 | `EnumIndexType`   | `opt_unique`        |
+
+#### CREATE RESOURCE GROUP 语句（create resource group statement）
+
+| 水杉解析器语义组名称              | 语义组类型                   | 返回值类型                     | MySQL 语义组名称             |
+| --------------------------------- | ---------------------------- | ------------------------------ | ---------------------------- |
+| `create_resource_group_statement` | `CREATE RESOURCE GROUP` 语句 | `CreateResourceGroupStatement` | `create_resource_group_stmt` |
 
 #### CREATE ROLE 语句（create role statement）
 
@@ -802,6 +814,13 @@
 | -------------------- | ---------- | ---------- | ---------------- |
 | `sql_state`          | SQL 状态   | `SqlState` | `sqlstate`       |
 
+#### 线程优先级（thread priority）
+
+| 水杉解析器语义组名称  | 语义组含义                 | 返回值类型       | MySQL 语义组名称              |
+| --------------------- | -------------------------- | ---------------- | ----------------------------- |
+| `opt_thread_priority` | 可选的线程优先级           | `ThreadPriority` | `opt_resource_group_priority` |
+| `signed_int_num`      | 正整数字面值或负整数字面值 | `int`            | `signed_num`                  |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -978,6 +997,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_acl_type`           | 可选的 ACL 类型枚举值                                  | `EnumAclType`             | `opt_acl_type`                           |
 | `opt_join_or_resume`     | XA 事务中的 JOIN/RESUME 选项枚举值                     | `EnumXaJoinOrResume`      | `opt_join_or_resume`                     |
 | `opt_suspend`            | XA 事务中的 SUSPEND 选项枚举值                         | `EnumXaSuspend`           | `opt_suspend`                            |
+| `opt_enable_disable`     | 资源组启用 / 禁用状态的枚举值                          | `EnumEnableDisable`       | `opt_resource_group_enable_disable`      |
 
 #### 固定的词语组合（fixed word）
 

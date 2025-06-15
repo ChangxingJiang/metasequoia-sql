@@ -1,3 +1,4 @@
+from metasequoia_sql.ast.statement.alter_resource_group_statement import *
 from metasequoia_sql.ast.statement.alter_table_statement import *
 from metasequoia_sql.ast.statement.analyze_statement import *
 from metasequoia_sql.ast.statement.begin_statement import *
@@ -8,6 +9,7 @@ from metasequoia_sql.ast.statement.checksum_statement import *
 from metasequoia_sql.ast.statement.clone_statement import *
 from metasequoia_sql.ast.statement.commit_statement import *
 from metasequoia_sql.ast.statement.create_index_statement import *
+from metasequoia_sql.ast.statement.create_resource_group_statement import *
 from metasequoia_sql.ast.statement.create_role_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.deallocate_statement import *

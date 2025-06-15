@@ -35,6 +35,7 @@ __all__ = [
     "OPT_ACL_TYPE",
     "OPT_JOIN_OR_RESUME",
     "OPT_SUSPEND",
+    "OPT_ENABLE_DISABLE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -631,6 +632,25 @@ OPT_SUSPEND = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SUSPEND, TType.KEYWORD_FOR, TType.KEYWORD_MIGRATE],
             action=lambda _: ast.EnumXaSuspend.FOR_MIGRATE
+        )
+    ]
+)
+
+# 可选的资源组启用/禁用状态枚举值
+OPT_ENABLE_DISABLE = ms_parser.create_group(
+    name="opt_enable_disable",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumEnableDisable.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ENABLE],
+            action=lambda _: ast.EnumEnableDisable.ENABLE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DISABLE],
+            action=lambda _: ast.EnumEnableDisable.DISABLE
         )
     ]
 )

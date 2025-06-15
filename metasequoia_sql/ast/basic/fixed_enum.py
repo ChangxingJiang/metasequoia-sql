@@ -25,6 +25,7 @@ __all__ = [
     "EnumAclType",
     "EnumXaJoinOrResume",
     "EnumXaSuspend",
+    "EnumEnableDisable",
 ]
 
 
@@ -220,3 +221,11 @@ class EnumXaSuspend(IntEnum):
     NONE = 0  # %empty
     SUSPEND = 1  # SUSPEND
     FOR_MIGRATE = 2  # SUSPEND FOR MIGRATE
+
+
+class EnumEnableDisable(IntEnum):
+    """资源组启用 / 禁用状态的枚举值"""
+
+    DEFAULT = 0  # %empty
+    ENABLE = 1  # ENABLE
+    DISABLE = 2  # DISABLE

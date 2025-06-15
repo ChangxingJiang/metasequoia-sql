@@ -48,7 +48,9 @@ from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import sql_state
+from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.statement import alter_resource_group_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
@@ -59,6 +61,7 @@ from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import commit_statement
 from metasequoia_sql_grammar.statement import create_index_statement
+from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import deallocate_statement
@@ -249,6 +252,7 @@ def build_grammar():
         alias,  # 短语 - 别名
         sql_state,  # 短语 - SQL状态
         time_interval,  # 短语 - 时间间隔
+        thread_priority,  # 短语 - 线程优先级
         dml_option,  # DML 选项
         ddl_column_attribute,  # DDL 字段属性
         ddl_table_element,  # DDL 表元素
@@ -290,6 +294,7 @@ def build_grammar():
         ddl_partition_by_clause,  # DDL 分区子句
 
         # 语句
+        alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
         analyze_statement,  # ANALYZE TABLE 语句
         alter_table_statement,  # ALTER TABLE 语句
         begin_statement,  # BEGIN 语句
@@ -300,6 +305,7 @@ def build_grammar():
         clone_statement,  # CLONE 语句
         commit_statement,  # COMMIT 语句
         create_index_statement,  # CREATE INDEX 语句
+        create_resource_group_statement,  # CREATE RESOURCE GROUP 语句
         create_role_statement,  # CREATE ROLE 语句
         create_table_statement,  # CREATE TABLE 语句
         deallocate_statement,  # DEALLOCATE 语句

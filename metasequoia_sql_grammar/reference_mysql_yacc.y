@@ -1004,18 +1004,6 @@ source_file_def:
           }
         ;
 
-create_resource_group_stmt:
-          CREATE RESOURCE_SYM GROUP_SYM ident TYPE_SYM
-          opt_equal resource_group_types
-          opt_resource_group_vcpu_list opt_resource_group_priority
-          opt_resource_group_enable_disable
-          {
-            $$= NEW_PTN PT_create_resource_group(@$, to_lex_cstring($4), $7, $8, $9,
-                                                 $10.is_default ? true :
-                                                 $10.value);
-          }
-        ;
-
 create:
           CREATE DATABASE opt_if_not_exists ident
           {
@@ -3859,16 +3847,6 @@ opt_replace_password:
         | REPLACE_SYM TEXT_STRING_password  { $$ = to_lex_cstring($2); }
         ;
 
-alter_resource_group_stmt:
-          ALTER RESOURCE_SYM GROUP_SYM ident opt_resource_group_vcpu_list
-          opt_resource_group_priority opt_resource_group_enable_disable
-          opt_force
-          {
-            $$= NEW_PTN PT_alter_resource_group(@$, to_lex_cstring($4),
-                                                $5, $6, $7, $8);
-          }
-        ;
-
 alter_user_command:
           ALTER USER if_exists
           {
@@ -6572,33 +6550,5 @@ sp_tail:
           {                     /*$13*/
             LEX *lex= Lex;
             lex->sql_command= SQLCOM_CREATE_PROCEDURE;
-          }
-        ;
-
-signed_num:
-          NUM     { $$= static_cast<int>(my_strtoll($1.str, nullptr, 10)); }
-        | '-' NUM { $$= -static_cast<int>(my_strtoll($2.str, nullptr, 10)); }
-        ;
-
-opt_resource_group_priority:
-          %empty { $$.is_default= true; }
-        | THREAD_PRIORITY_SYM opt_equal signed_num
-          {
-            $$.is_default= false;
-            $$.value= $3;
-          }
-        ;
-
-opt_resource_group_enable_disable:
-          %empty { $$.is_default= true; }
-        | ENABLE_SYM
-          {
-            $$.is_default= false;
-            $$.value= true;
-          }
-        | DISABLE_SYM
-          {
-            $$.is_default= false;
-            $$.value= false;
           }
         ;
