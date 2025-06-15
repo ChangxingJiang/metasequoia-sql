@@ -18,6 +18,7 @@ from metasequoia_sql.ast.statement.drop_statement import *
 from metasequoia_sql.ast.statement.execute_statement import *
 from metasequoia_sql.ast.statement.explain_statement import *
 from metasequoia_sql.ast.statement.flush_statement import *
+from metasequoia_sql.ast.statement.grant_and_revoke_statement import *
 from metasequoia_sql.ast.statement.help_statement import *
 from metasequoia_sql.ast.statement.import_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *

@@ -197,6 +197,19 @@
 | -------------------- | ------------ | ---------------- | ------------------------------------ |
 | `flush_statement`    | `FLUSH` 语句 | `FlushStatement` | `flush`<br />`flush_options`【包含】 |
 
+#### GRANT 语句和 REVOKE 语句（grant and revoke statement）
+
+| 水杉解析器语义组名称     | 语义组类型               | 返回值类型              | MySQL 语义组名称         |
+| ------------------------ | ------------------------ | ----------------------- | ------------------------ |
+| `grant_statement`        | `GRANT` 语句             | `GrantStatement`        | `grant`                  |
+| `revoke_statement`       | `REVOKE` 语句            | `RevokeStatement`       |                          |
+| `role_or_privilege_list` | 角色或权限列表           | `List[RoleOrPrivilege]` | `role_or_privilege_list` |
+| `role_or_privilege`      | 角色或权限               | `RoleOrPrivilege`       | `role_or_privilege`      |
+| `opt_with_roles`         | 可选的 `WITH ROLES` 子句 | `WithRole`              | `opt_with_roles`         |
+| `opt_except_role_list`   | 可选的排除角色列表       | `List[RoleName]`        | `opt_except_role_list`   |
+| `opt_grant_as`           | 可选的 `GRANT AS` 子句   | `Optional[UserName]`    | `opt_grant_as`           |
+| `grant_identifier`       | `GRANT` 语句中的标识符   | `GrantIdentifier`       | `grant_ident`            |
+
 #### HELP 语句（help statement）
 
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
@@ -955,6 +968,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `flush_option_type_list` | `FLUSH` 语句选项的枚举值的列表                         | `EnumFlushOptionType`     | `flush_options_list`                     |
 | `flush_option_type`      | `FLUSH` 语句选项的枚举值                               | `EnumFlushOptionType`     | `flush_option`                           |
 | `flush_lock_type`        | `FLUSH` 语句锁定选项的枚举值                           | `EnumFlushLockType`       | `opt_flush_lock`                         |
+| `opt_acl_type`           | 可选的 ACL 类型枚举值                                  | `EnumAclType`             | `opt_acl_type`                           |
 
 #### 固定的词语组合（fixed word）
 
@@ -976,6 +990,10 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_table`                       | 可选的 `TABLE` 关键字                                        | -          | `opt_table`                                |
 | `opt_keyword_savepoint`                   | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`                            |
 | `opt_keyword_value`                       | 可选的 `VALUE` 关键字                                        | -          | `opt_value`                                |
+| `opt_keyword_privileges`                  | 可选的 `PRIVILEGES` 关键字                                   | -          | `opt_privileges`                           |
+| `opt_keyword_with_admin_option`           | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                    |
+| `opt_keyword_grant_option`                | 可选的 `WITH GRANT OPTION` 关键字组合                        | -          | `grant_options`<br />`opt_grant_option`    |
+| `opt_keyword_ignore_unknown_user`         | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                  |
 | `keyword_deallocate_or_drop`              | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
 | `keyword_describe_or_explain`             | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
 | `keyword_table_or_tables`                 | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |

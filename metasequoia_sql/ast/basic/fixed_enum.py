@@ -22,6 +22,7 @@ __all__ = [
     "EnumSignalConditionType",
     "EnumFlushOptionType",
     "EnumFlushLockType",
+    "EnumAclType",
 ]
 
 
@@ -192,3 +193,12 @@ class EnumFlushLockType(IntEnum):
     DEFAULT = 0  # 默认值
     WITH_READ_LOCK = 1  # WITH READ LOCK
     FOR_EXPORT = 2  # FOR EXPORT
+
+
+class EnumAclType(IntEnum):
+    """ACL 类型的枚举值"""
+
+    DEFAULT = 0  # %empty
+    TABLE = 1  # TABLE
+    FUNCTION = 2  # FUNCTION
+    PROCEDURE = 3  # PROCEDURE

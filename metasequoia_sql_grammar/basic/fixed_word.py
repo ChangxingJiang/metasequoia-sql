@@ -23,6 +23,10 @@ __all__ = [
     "OPT_KEYWORD_TABLE",
     "OPT_KEYWORD_SAVEPOINT",
     "OPT_KEYWORD_VALUE",
+    "OPT_KEYWORD_PRIVILEGES",
+    "OPT_KEYWORD_WITH_ADMIN_OPTION",
+    "OPT_KEYWORD_IGNORE_UNKNOWN_USER",
+    "OPT_KEYWORD_GRANT_OPTION",
     "KEYWORD_DEALLOCATE_OR_DROP",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
@@ -350,7 +354,6 @@ KEYWORD_DEALLOCATE_OR_DROP = ms_parser.create_group(
     ]
 )
 
-
 # `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合
 KEYWORD_MASTER_OR_BINARY_LOGS_AND_GTIDS = ms_parser.create_group(
     name="keyword_master_or_binary_logs_and_gtids",
@@ -360,6 +363,62 @@ KEYWORD_MASTER_OR_BINARY_LOGS_AND_GTIDS = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_BINARY, TType.KEYWORD_LOGS, TType.KEYWORD_AND, TType.KEYWORD_GTIDS]
+        )
+    ]
+)
+
+# 可选的 `PRIVILEGES` 关键字
+OPT_KEYWORD_PRIVILEGES = ms_parser.create_group(
+    name="opt_keyword_privileges",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PRIVILEGES]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `WITH ADMIN OPTION` 关键字组合
+OPT_KEYWORD_WITH_ADMIN_OPTION = ms_parser.create_group(
+    name="opt_keyword_with_admin_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_ADMIN, TType.KEYWORD_OPTION],
+            action=lambda x: True
+        )
+    ]
+)
+
+# 可选的 `IGNORE UNKNOWN USER` 关键字组合
+OPT_KEYWORD_IGNORE_UNKNOWN_USER = ms_parser.create_group(
+    name="opt_keyword_ignore_unknown_user",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IGNORE, TType.KEYWORD_UNKNOWN, TType.KEYWORD_USER],
+            action=lambda x: True
+        )
+    ]
+)
+
+# 可选的 `WITH GRANT OPTION` 关键字组合（合并 grant_options 和 opt_grant_option）
+OPT_KEYWORD_GRANT_OPTION = ms_parser.create_group(
+    name="opt_keyword_grant_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_GRANT, TType.KEYWORD_OPTION],
+            action=lambda x: True
         )
     ]
 )

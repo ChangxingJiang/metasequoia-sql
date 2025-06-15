@@ -32,6 +32,7 @@ __all__ = [
     "FLUSH_OPTION_TYPE_LIST",
     "FLUSH_OPTION_TYPE",
     "FLUSH_LOCK_TYPE",
+    "OPT_ACL_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -567,6 +568,29 @@ FLUSH_LOCK_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[],
             action=lambda _: ast.EnumFlushLockType.DEFAULT
+        )
+    ]
+)
+
+# 可选的 ACL 类型枚举值
+OPT_ACL_TYPE = ms_parser.create_group(
+    name="opt_acl_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumAclType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE],
+            action=lambda _: ast.EnumAclType.TABLE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FUNCTION],
+            action=lambda _: ast.EnumAclType.FUNCTION
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PROCEDURE],
+            action=lambda _: ast.EnumAclType.PROCEDURE
         )
     ]
 )
