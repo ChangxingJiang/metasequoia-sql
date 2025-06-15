@@ -4929,11 +4929,6 @@ reset_option:
           source_reset_options
         ;
 
-opt_replica_reset_options:
-          %empty      { Lex->reset_slave_info.all= false; }
-        | ALL         { Lex->reset_slave_info.all= true; }
-        ;
-
 source_reset_options:
           %empty {}
         | TO_SYM real_ulonglong_num

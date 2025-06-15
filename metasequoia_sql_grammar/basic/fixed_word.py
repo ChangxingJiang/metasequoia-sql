@@ -56,9 +56,13 @@ OPT_KEYWORD_ALL = ms_parser.create_group(
     name="opt_keyword_all",
     rules=[
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ALL]
+            symbols=[TType.KEYWORD_ALL],
+            action=ms_parser.template.action.RETURN_TRUE
         ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
     ]
 )
 

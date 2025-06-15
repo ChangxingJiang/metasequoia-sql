@@ -27,4 +27,4 @@ CREATE_ROLE_STATEMENT = ms_parser.create_group(
             )
         )
     ]
-) 
+)
