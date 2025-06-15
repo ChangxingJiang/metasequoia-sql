@@ -130,131 +130,142 @@ ROLE_OR_PRIVILEGE = ms_parser.create_group(
         # 静态权限
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SELECT, "opt_ident_list_parens"],
-            action=lambda x: ast.StaticPrivilege(privilege_type="SELECT", column_list=x[1])
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.SELECT, column_list=x[1])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INSERT, "opt_ident_list_parens"],
-            action=lambda x: ast.StaticPrivilege(privilege_type="INSERT", column_list=x[1])
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.INSERT, column_list=x[1])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_UPDATE, "opt_ident_list_parens"],
-            action=lambda x: ast.StaticPrivilege(privilege_type="UPDATE", column_list=x[1])
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.UPDATE, column_list=x[1])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_REFERENCES, "opt_ident_list_parens"],
-            action=lambda x: ast.StaticPrivilege(privilege_type="REFERENCES", column_list=x[1])
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.REFERENCES,
+                                                 column_list=x[1])
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DELETE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="DELETE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.DELETE, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_USAGE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="USAGE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.USAGE, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INDEX],
-            action=lambda x: ast.StaticPrivilege(privilege_type="INDEX", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.INDEX, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALTER],
-            action=lambda x: ast.StaticPrivilege(privilege_type="ALTER", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.ALTER, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DROP],
-            action=lambda x: ast.StaticPrivilege(privilege_type="DROP", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.DROP, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EXECUTE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="EXECUTE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.EXECUTE, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_RELOAD],
-            action=lambda x: ast.StaticPrivilege(privilege_type="RELOAD", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.RELOAD, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SHUTDOWN],
-            action=lambda x: ast.StaticPrivilege(privilege_type="SHUTDOWN", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.SHUTDOWN, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_PROCESS],
-            action=lambda x: ast.StaticPrivilege(privilege_type="PROCESS", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.PROCESS, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_FILE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="FILE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.FILE, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_GRANT, TType.KEYWORD_OPTION],
-            action=lambda x: ast.StaticPrivilege(privilege_type="GRANT", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.GRANT, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_DATABASES],
-            action=lambda x: ast.StaticPrivilege(privilege_type="SHOW_DB", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.SHOW_DB, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SUPER],
-            action=lambda x: ast.StaticPrivilege(privilege_type="SUPER", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.SUPER, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE, TType.KEYWORD_TEMPORARY, TType.KEYWORD_TABLES],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE_TMP", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE_TMP,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_LOCK, TType.KEYWORD_TABLES],
-            action=lambda x: ast.StaticPrivilege(privilege_type="LOCK_TABLES", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.LOCK_TABLES,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_REPLICATION, TType.KEYWORD_SLAVE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="REPL_SLAVE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.REPL_SLAVE,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_REPLICATION, TType.KEYWORD_CLIENT],
-            action=lambda x: ast.StaticPrivilege(privilege_type="REPL_CLIENT", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.REPL_CLIENT,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE, TType.KEYWORD_VIEW],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE_VIEW", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE_VIEW,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SHOW, TType.KEYWORD_VIEW],
-            action=lambda x: ast.StaticPrivilege(privilege_type="SHOW_VIEW", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.SHOW_VIEW, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE, TType.KEYWORD_ROUTINE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE_ROUTINE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE_ROUTINE,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALTER, TType.KEYWORD_ROUTINE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="ALTER_ROUTINE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.ALTER_ROUTINE,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE, TType.KEYWORD_USER],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE_USER", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE_USER,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EVENT],
-            action=lambda x: ast.StaticPrivilege(privilege_type="EVENT", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.EVENT, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_TRIGGER],
-            action=lambda x: ast.StaticPrivilege(privilege_type="TRIGGER", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.TRIGGER, column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE, TType.KEYWORD_TABLESPACE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE_TABLESPACE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE_TABLESPACE,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CREATE, TType.KEYWORD_ROLE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="CREATE_ROLE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.CREATE_ROLE,
+                                                 column_list=None)
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DROP, TType.KEYWORD_ROLE],
-            action=lambda x: ast.StaticPrivilege(privilege_type="DROP_ROLE", column_list=None)
+            action=lambda x: ast.StaticPrivilege(privilege_type=ast.EnumStaticPrivilegeType.DROP_ROLE, column_list=None)
         )
     ]
 )

@@ -2,6 +2,7 @@
 GRANT 和 REVOKE 语句（grant and revoke statement）
 """
 
+from enum import IntEnum
 from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Node, Statement
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.fixed_enum import EnumAclType
 
 __all__ = [
+    "EnumStaticPrivilegeType",
     "RoleOrPrivilege",
     "RoleOrDynamicPrivilege",
     "RoleAtHost",
@@ -36,6 +38,43 @@ __all__ = [
     "RevokeAllPrivilegesStatement",
     "RevokeProxyStatement",
 ]
+
+
+class EnumStaticPrivilegeType(IntEnum):
+    """静态权限类型的枚举值"""
+
+    SELECT = 1  # SELECT
+    INSERT = 2  # INSERT
+    UPDATE = 3  # UPDATE
+    REFERENCES = 4  # REFERENCES
+    DELETE = 5  # DELETE
+    USAGE = 6  # USAGE
+    INDEX = 7  # INDEX
+    ALTER = 8  # ALTER
+    CREATE = 9  # CREATE
+    DROP = 10  # DROP
+    EXECUTE = 11  # EXECUTE
+    RELOAD = 12  # RELOAD
+    SHUTDOWN = 13  # SHUTDOWN
+    PROCESS = 14  # PROCESS
+    FILE = 15  # FILE
+    GRANT = 16  # GRANT OPTION
+    SHOW_DB = 17  # SHOW DATABASES
+    SUPER = 18  # SUPER
+    CREATE_TMP = 19  # CREATE TEMPORARY TABLES
+    LOCK_TABLES = 20  # LOCK TABLES
+    REPL_SLAVE = 21  # REPLICATION SLAVE
+    REPL_CLIENT = 22  # REPLICATION CLIENT
+    CREATE_VIEW = 23  # CREATE VIEW
+    SHOW_VIEW = 24  # SHOW VIEW
+    CREATE_ROUTINE = 25  # CREATE ROUTINE
+    ALTER_ROUTINE = 26  # ALTER ROUTINE
+    CREATE_USER = 27  # CREATE USER
+    EVENT = 28  # EVENT
+    TRIGGER = 29  # TRIGGER
+    CREATE_TABLESPACE = 30  # CREATE TABLESPACE
+    CREATE_ROLE = 31  # CREATE ROLE
+    DROP_ROLE = 32  # DROP ROLE
 
 
 class RoleOrPrivilege(Node):
@@ -149,7 +188,7 @@ class RoleAtHost(RoleOrPrivilege):
 class StaticPrivilege(RoleOrPrivilege):
     """
     静态权限的抽象语法树节点。
-
+    
     语法规则：
         特定的静态权限关键字 [opt_column_list]
     """
@@ -159,13 +198,13 @@ class StaticPrivilege(RoleOrPrivilege):
         "_column_list",
     )
 
-    def __init__(self, privilege_type: str, column_list: Optional[List["Identifier"]]):
+    def __init__(self, privilege_type: EnumStaticPrivilegeType, column_list: Optional[List["Identifier"]]):
         """
         初始化静态权限节点。
 
         Parameters
         ----------
-        privilege_type : str
+        privilege_type : EnumStaticPrivilegeType
             权限类型
         column_list : Optional[List[Identifier]]
             可选的列名列表
@@ -174,13 +213,13 @@ class StaticPrivilege(RoleOrPrivilege):
         self._column_list = column_list
 
     @property
-    def privilege_type(self) -> str:
+    def privilege_type(self) -> EnumStaticPrivilegeType:
         """
         获取权限类型。
 
         Returns
         -------
-        str
+        EnumStaticPrivilegeType
             权限类型
         """
         return self._privilege_type
