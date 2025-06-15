@@ -62,6 +62,12 @@
 | `opt_histogram`              | 可选的直方图参数     | `ast.Histogram`             | `opt_histogram`              |
 | `opt_histogram_update_param` | 直方图的更新参数     | `ast.HistogramUpdateParam`  | `opt_histogram_update_param` |
 
+#### BEGIN 语句（begin statement）
+
+| 水杉解析器语义组名称 | 语义组类型   | 返回值类型       | MySQL 语义组名称 |
+| -------------------- | ------------ | ---------------- | ---------------- |
+| `begin_statement`    | `BEGIN` 语句 | `BeginStatement` | `begin_stmt`     |
+
 #### BINLOG 语句（binlog statement）
 
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型          | MySQL 语义组名称 |
@@ -116,11 +122,17 @@
 | `opt_create_table_option_3`  | `CREATE TABLE` 的选项（第 3 层）           | `ast.TempCreateTableOption` | `opt_duplicate_as_qe`          |
 | `as_create_query_expression` | 可选择是否包含前置 `AS` 关键字的查询表达式 | `ast.QueryExpression`       | `as_create_query_expression`   |
 
+#### DEALLOCATE 语句（deallocate statement）
+
+| 水杉解析器语义组名称   | 语义组类型        | 返回值类型            | MySQL 语义组名称 |
+| ---------------------- | ----------------- | --------------------- | ---------------- |
+| `deallocate_statement` | `DEALLOCATE` 语句 | `DeallocateStatement` | `deallocate`     |
+
 #### DELETE 语句（delete statement）
 
-| 水杉解析器语义组名称 | 语义组类型    | 返回值类型            | MySQL 语义组名称 |
-| -------------------- | ------------- | --------------------- | ---------------- |
-| `delete_statement`   | `DELETE` 语句 | `ast.DeleteStatement` | `delete_stmt`    |
+| 水杉解析器语义组名称 | 语义组类型    | 返回值类型        | MySQL 语义组名称 |
+| -------------------- | ------------- | ----------------- | ---------------- |
+| `delete_statement`   | `DELETE` 语句 | `DeleteStatement` | `delete_stmt`    |
 
 #### DESCRIBE 语句（describe statement）
 
@@ -173,11 +185,17 @@
 | `opt_explain_into`       | 可选的 `INTO` 引导的指定分析结果写入变量子句   | `Optional[ast.UserVariable]` | `opt_explain_into`                             |
 | `opt_explain_for_schema` | 可选的 `FOR DATABASE` 引导的指定分析数据库子句 | `Optional[str]`              | `opt_explain_for_schema`                       |
 
+#### HELP 语句（help statement）
+
+| 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
+| -------------------- | ----------- | --------------- | ---------------- |
+| `help_statement`     | `HELP` 语句 | `HelpStatement` | `help`           |
+
 #### IMPORT TABLE 语句（import table statement）
 
-| 水杉解析器语义组名称     | 语义组类型          | 返回值类型                 | MySQL 语义组名称 |
-| ------------------------ | ------------------- | -------------------------- | ---------------- |
-| `import_table_statement` | `IMPORT TABLE` 语句 | `ast.ImportTableStatement` | `insert_stmt`    |
+| 水杉解析器语义组名称     | 语义组类型          | 返回值类型             | MySQL 语义组名称 |
+| ------------------------ | ------------------- | ---------------------- | ---------------- |
+| `import_table_statement` | `IMPORT TABLE` 语句 | `ImportTableStatement` | `insert_stmt`    |
 
 #### INSERT 语句和 REPLACE 语句（insert or replace statement）
 
@@ -235,11 +253,36 @@
 | `rename_table_list`  | `RENAME` 语句中的表重命名对的列表   | `List[Tuple[Identifier, Identifier]]` | `table_to_table_list` |
 | `rename_table_item`  | `RENAME` 语句中的表重命名对         | `Tuple[Identifier, Identifier]`       | `table_to_table`      |
 
+#### PREPARE 语句（prepare）
+
+| 水杉解析器语义组名称 | 语义组类型                         | 返回值类型                           | MySQL 语义组名称 |
+| -------------------- | ---------------------------------- | ------------------------------------ | ---------------- |
+| `prepare_statement`  | `PREPARE` 语句                     | `PrepareStatement`                   | `prepare`        |
+| `prepare_source`     | `PREPARE` 语句的 `FROM` 子句中的值 | `Union[StringLiteral, UserVariable]` | `prepare_src`    |
+
 #### REPAIR TABLE 语句（repair table statement）
 
 | 水杉解析器语义组名称     | 语义组类型          | 返回值类型                 | MySQL 语义组名称    |
 | ------------------------ | ------------------- | -------------------------- | ------------------- |
 | `repair_table_statement` | `REPAIR TABLE` 语句 | `ast.RepairTableStatement` | `repair_table_stmt` |
+
+#### RELEASE 语句（release statement）
+
+| 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称 |
+| -------------------- | -------------- | ------------------ | ---------------- |
+| `release_statement`  | `RELEASE` 语句 | `ReleaseStatement` | `release`        |
+
+#### ROLLBACK 语句（rollback statement）
+
+| 水杉解析器语义组名称 | 语义组类型      | 返回值类型          | MySQL 语义组名称 |
+| -------------------- | --------------- | ------------------- | ---------------- |
+| `rollback_statement` | `ROLLBACK` 语句 | `RollbackStatement` | `rollback`       |
+
+#### SAVEPOINT 语句（savepoint statement）
+
+| 水杉解析器语义组名称  | 语义组类型       | 返回值类型           | MySQL 语义组名称 |
+| --------------------- | ---------------- | -------------------- | ---------------- |
+| `savepoint_statement` | `SAVEPOINT` 语句 | `SavepointStatement` | `savepoint`      |
 
 #### SELECT 语句（select statement）
 
@@ -863,6 +906,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_work`               | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`               |
 | `opt_keyword_no_write_to_binlog` | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog` |
 | `opt_keyword_table`              | 可选的 `TABLE` 关键字                                        | -          | `opt_table`              |
+| `opt_keyword_savepoint`          | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`          |
+| `keyword_deallocate_or_drop`     | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`     |
 | `keyword_describe_or_explain`    | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`       |
 | `keyword_table_or_tables`        | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`        |
 | `keyword_master_or_binary`       | `MASTER` 关键字或 `BINARY` 关键字                            | -          | `master_or_binary`       |

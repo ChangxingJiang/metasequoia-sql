@@ -184,77 +184,6 @@ simple_statement:
         | xa                            { $$= nullptr; }
         ;
 
-deallocate:
-          deallocate_or_drop PREPARE_SYM ident
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            lex->sql_command= SQLCOM_DEALLOCATE_PREPARE;
-            lex->prepared_stmt_name= to_lex_cstring($3);
-          }
-        ;
-
-deallocate_or_drop:
-          DEALLOCATE_SYM
-        | DROP
-        ;
-
-prepare:
-          PREPARE_SYM ident FROM prepare_src
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            lex->sql_command= SQLCOM_PREPARE;
-            lex->prepared_stmt_name= to_lex_cstring($2);
-            /*
-              We don't know know at this time whether there's a password
-              in prepare_src, so we err on the side of caution.  Setting
-              the flag will force a rewrite which will obscure all of
-              prepare_src in the "Query" log line.  We'll see the actual
-              query (with just the passwords obscured, if any) immediately
-              afterwards in the "Prepare" log lines anyway, and then again
-              in the "Execute" log line if and when prepare_src is executed.
-            */
-            lex->contains_plaintext_password= true;
-          }
-        ;
-
-prepare_src:
-          TEXT_STRING_sys
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            lex->prepared_stmt_code= $1;
-            lex->prepared_stmt_code_is_varref= false;
-          }
-        | '@' ident_or_text
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            lex->prepared_stmt_code= $2;
-            lex->prepared_stmt_code_is_varref= true;
-          }
-        ;
-
-/* help */
-
-help:
-          HELP_SYM
-          {
-            if (Lex->sphead)
-            {
-              my_error(ER_SP_BADSTATEMENT, MYF(0), "HELP");
-              MYSQL_YYABORT;
-            }
-          }
-          ident_or_text
-          {
-            LEX *lex= Lex;
-            lex->sql_command= SQLCOM_HELP;
-            lex->help_arg= $3.str;
-          }
-        ;
-
 /* change master */
 
 change_replication_source:
@@ -6843,58 +6772,6 @@ opt_grant_as:
             Lex->grant_as.grant_as_used = true;
             Lex->grant_as.user = $2;
           }
-
-begin_stmt:
-          BEGIN_SYM
-          {
-            LEX *lex=Lex;
-            lex->sql_command = SQLCOM_BEGIN;
-            lex->start_transaction_opt= 0;
-          }
-          opt_work {}
-        ;
-
-opt_savepoint:
-          %empty {}
-        | SAVEPOINT_SYM {}
-        ;
-
-rollback:
-          ROLLBACK_SYM opt_work opt_chain opt_release
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_ROLLBACK;
-            /* Don't allow AND CHAIN RELEASE. */
-            MYSQL_YYABORT_UNLESS($3 != TVL_YES || $4 != TVL_YES);
-            lex->tx_chain= $3;
-            lex->tx_release= $4;
-          }
-        | ROLLBACK_SYM opt_work
-          TO_SYM opt_savepoint ident
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_ROLLBACK_TO_SAVEPOINT;
-            lex->ident= $5;
-          }
-        ;
-
-savepoint:
-          SAVEPOINT_SYM ident
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_SAVEPOINT;
-            lex->ident= $2;
-          }
-        ;
-
-release:
-          RELEASE_SYM SAVEPOINT_SYM ident
-          {
-            LEX *lex=Lex;
-            lex->sql_command= SQLCOM_RELEASE_SAVEPOINT;
-            lex->ident= $3;
-          }
-        ;
 
 /**************************************************************************
 

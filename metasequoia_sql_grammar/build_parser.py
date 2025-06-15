@@ -50,6 +50,7 @@ from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import analyze_statement
+from metasequoia_sql_grammar.statement import begin_statement
 from metasequoia_sql_grammar.statement import binlog_statement
 from metasequoia_sql_grammar.statement import call_statement
 from metasequoia_sql_grammar.statement import check_table_statement
@@ -58,20 +59,26 @@ from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import commit_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_table_statement
+from metasequoia_sql_grammar.statement import deallocate_statement
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import describe_statement
 from metasequoia_sql_grammar.statement import do_statement
 from metasequoia_sql_grammar.statement import drop_statement
 from metasequoia_sql_grammar.statement import execute_statement
 from metasequoia_sql_grammar.statement import explain_statement
+from metasequoia_sql_grammar.statement import help_statement
 from metasequoia_sql_grammar.statement import import_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import install_or_uninstall_statement
 from metasequoia_sql_grammar.statement import kill_statement
 from metasequoia_sql_grammar.statement import lock_or_unlock_statement
 from metasequoia_sql_grammar.statement import optimize_table_statement
+from metasequoia_sql_grammar.statement import prepare_statement
+from metasequoia_sql_grammar.statement import release_statement
 from metasequoia_sql_grammar.statement import rename_statement
 from metasequoia_sql_grammar.statement import repair_table_statement
+from metasequoia_sql_grammar.statement import rollback_statement
+from metasequoia_sql_grammar.statement import savepoint_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
@@ -273,6 +280,7 @@ def build_grammar():
         # 语句
         analyze_statement,  # ANALYZE TABLE 语句
         alter_table_statement,  # ALTER TABLE 语句
+        begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句
         call_statement,  # ALTER TABLE 语句
         check_table_statement,  # CHECK TABLE 语句
@@ -281,20 +289,26 @@ def build_grammar():
         commit_statement,  # COMMIT 语句
         create_index_statement,  # CREATE INDEX 语句
         create_table_statement,  # CREATE TABLE 语句
+        deallocate_statement,  # DEALLOCATE 语句
         delete_statement,  # DELETE 语句
         describe_statement,  # DESCRIBE 语句
         do_statement,  # DO 语句
         drop_statement,  # DROP 语句
         execute_statement,  # EXECUTE 语句
         explain_statement,  # EXPLAIN 语句
+        help_statement,  # HELP 语句
         import_statement,  # IMPORT TABLE 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句
         install_or_uninstall_statement,  # INSTALL/UNINSTALL 语句
         kill_statement,  # KILL 语句
         lock_or_unlock_statement,  # LOCK/UNLOCK 语句
         optimize_table_statement,  # OPTIMIZE TABLE 语句
+        prepare_statement,  # PREPARE 语句
+        release_statement,  # RELEASE 语句
         rename_statement,
         repair_table_statement,  # REPAIR TABLE 语句
+        rollback_statement,  # ROLLBACK 语句
+        savepoint_statement,  # SAVEPOINT 语句
         select_statement,  # SELECT 语句
         show_statement,  # SHOW 语句
         start_transaction_statement,  # START TRANSACTION 语句
