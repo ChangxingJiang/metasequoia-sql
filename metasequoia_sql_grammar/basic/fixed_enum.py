@@ -28,6 +28,7 @@ __all__ = [
     "OPT_CHAIN_TYPE",
     "OPT_RELEASE_TYPE",
     "RESOURCE_GROUP_TYPE",
+    "SIGNAL_CONDITION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -423,6 +424,61 @@ RESOURCE_GROUP_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SYSTEM],
             action=lambda _: ast.EnumResourceGroupType.SYSTEM
+        )
+    ]
+)
+
+# `SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值
+SIGNAL_CONDITION_TYPE = ms_parser.create_group(
+    name="signal_condition_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CLASS_ORIGIN],
+            action=lambda _: ast.EnumSignalConditionType.CLASS_ORIGIN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SUBCLASS_ORIGIN],
+            action=lambda _: ast.EnumSignalConditionType.SUBCLASS_ORIGIN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONSTRAINT_CATALOG],
+            action=lambda _: ast.EnumSignalConditionType.CONSTRAINT_CATALOG
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONSTRAINT_SCHEMA],
+            action=lambda _: ast.EnumSignalConditionType.CONSTRAINT_SCHEMA
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONSTRAINT_NAME],
+            action=lambda _: ast.EnumSignalConditionType.CONSTRAINT_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CATALOG_NAME],
+            action=lambda _: ast.EnumSignalConditionType.CATALOG_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SCHEMA_NAME],
+            action=lambda _: ast.EnumSignalConditionType.SCHEMA_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE_NAME],
+            action=lambda _: ast.EnumSignalConditionType.TABLE_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COLUMN_NAME],
+            action=lambda _: ast.EnumSignalConditionType.COLUMN_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CURSOR_NAME],
+            action=lambda _: ast.EnumSignalConditionType.CURSOR_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MESSAGE_TEXT],
+            action=lambda _: ast.EnumSignalConditionType.MESSAGE_TEXT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MYSQL_ERRNO],
+            action=lambda _: ast.EnumSignalConditionType.MYSQL_ERRNO
         )
     ]
 )

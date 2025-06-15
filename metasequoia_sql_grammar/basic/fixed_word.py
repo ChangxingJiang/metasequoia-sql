@@ -22,6 +22,7 @@ __all__ = [
     "OPT_KEYWORD_NO_WRITE_TO_BINLOG",
     "OPT_KEYWORD_TABLE",
     "OPT_KEYWORD_SAVEPOINT",
+    "OPT_KEYWORD_VALUE",
     "KEYWORD_DEALLOCATE_OR_DROP",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
@@ -315,6 +316,17 @@ OPT_KEYWORD_SAVEPOINT = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SAVEPOINT]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `VALUE` 关键字
+OPT_KEYWORD_VALUE = ms_parser.create_group(
+    name="opt_keyword_value",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_VALUE]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

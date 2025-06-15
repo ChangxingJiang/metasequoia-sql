@@ -19,6 +19,7 @@ __all__ = [
     "EnumChainType",
     "EnumReleaseType",
     "EnumResourceGroupType",
+    "EnumSignalConditionType",
 ]
 
 
@@ -147,3 +148,20 @@ class EnumResourceGroupType(IntEnum):
 
     USER = 1  # USER
     SYSTEM = 2  # SYSTEM
+
+
+class EnumSignalConditionType(IntEnum):
+    """`SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值"""
+
+    CLASS_ORIGIN = 1  # CLASS_ORIGIN
+    SUBCLASS_ORIGIN = 2  # SUBCLASS_ORIGIN
+    CONSTRAINT_CATALOG = 3  # CONSTRAINT_CATALOG
+    CONSTRAINT_SCHEMA = 4  # CONSTRAINT_SCHEMA
+    CONSTRAINT_NAME = 5  # CONSTRAINT_NAME
+    CATALOG_NAME = 6  # CATALOG_NAME
+    SCHEMA_NAME = 7  # SCHEMA_NAME
+    TABLE_NAME = 8  # TABLE_NAME
+    COLUMN_NAME = 9  # COLUMN_NAME
+    CURSOR_NAME = 10  # CURSOR_NAME
+    MESSAGE_TEXT = 11  # MESSAGE_TEXT
+    MYSQL_ERRNO = 12  # MYSQL_ERRNO

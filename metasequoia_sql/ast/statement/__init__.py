@@ -31,6 +31,7 @@ from metasequoia_sql.ast.statement.rollback_statement import *
 from metasequoia_sql.ast.statement.savepoint_statement import *
 from metasequoia_sql.ast.statement.select_statement import *
 from metasequoia_sql.ast.statement.show_statement import *
+from metasequoia_sql.ast.statement.signal_and_resignal_statement import *
 from metasequoia_sql.ast.statement.start_transaction_statement import *
 from metasequoia_sql.ast.statement.truncate_statement import *
 from metasequoia_sql.ast.statement.update_statement import *

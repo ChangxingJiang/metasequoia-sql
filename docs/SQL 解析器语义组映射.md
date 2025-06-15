@@ -365,6 +365,18 @@
 | `opt_for_query`                    | 可选的 `FOR QUERY` 引导的线程 ID               | `Optional[int]`                    | `opt_for_query`               |
 | `opt_for_channel`                  | 可选的 `FOR CHANNEL` 引导的通道名              | `Optional[str]`                    | `opt_channel`                 |
 
+#### SIGNAL 语句和 RESIGNAL 语句（signal and resignal statement）
+
+| 水杉解析器语义组名称           | 语义组类型                                                   | 返回值类型                       | MySQL 语义组名称               |
+| ------------------------------ | ------------------------------------------------------------ | -------------------------------- | ------------------------------ |
+| `signal_statement`             | `SIGNAL` 语句                                                | `SignalStatement`                | `signal_stmt`                  |
+| `resignal_statement`           | `RESIGNAL` 语句                                              | `ResignalStatement`              | `resignal_stmt`                |
+| `opt_signal_value`             | `RESIGNAL` 语句中可选的信号值                                | `Optional[Union[str, SqlState]]` | `opt_signal_value`             |
+| `signal_value`                 | `SIGNAL` 和 `RESIGNAL` 语句中的信号值                        | `Union[str, SqlState]`           | `signal_value`                 |
+| `opt_set_signal_information`   | `SIGNAL` 和 `RESIGNAL` 语句中可选的 `SET` 关键字引导的信号项子句 | `List[SignalInformation]`        | `opt_set_signal_information`   |
+| `signal_information_item_list` | `SIGNAL` 和 `RESIGNAL` 语句中的信息项列表                    | `List[SignalInformation]`        | `signal_information_item_list` |
+| `signal_allowed_expr`          | `SIGNAL` 和 `RESIGNAL` 语句中信息项的值允许的表达式          | `Expression`                     | `signal_allowed_expr`          |
+
 #### START TRANSACTION 语句（start transaction statement）
 
 | 水杉解析器语义组名称                 | 语义组类型               | 返回值类型                      | MySQL 语义组名称                    |
@@ -718,6 +730,12 @@
 | `cpu_num_or_range_list`        | CPU 编号或范围的列表                             | `List[CpuRange]` | `vcpu_range_spec_list`         |
 | `cpu_num_or_range`             | CPU 编号或范围                                   | `CpuRange`       | `vcpu_num_or_range`            |
 
+#### SQL 状态（sql state）
+
+| 水杉解析器语义组名称 | 语义组含义 | 返回值类型 | MySQL 语义组名称 |
+| -------------------- | ---------- | ---------- | ---------------- |
+| `sql_state`          | SQL 状态   | `SqlState` | `sqlstate`       |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -865,28 +883,29 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 固定的枚举类型（fixed enum）
 
-| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                  | MySQL 语义组名称       |
-| ----------------------- | ------------------------------------------------------ | --------------------------- | ---------------------- |
-| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `ast.EnumDropRestrict`      | `opt_restrict`         |
-| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `ast.EnumShowCommandType`   | `opt_show_cmd_type`    |
-| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `ast.EnumRepairType`        | `opt_mi_repair_types`  |
-| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `ast.EnumRepairType`        | `mi_repair_types`      |
-| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `ast.EnumRepairType`        | `mi_repair_type`       |
-| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `ast.EnumCheckType`         | `opt_mi_check_types`   |
-| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `ast.EnumCheckType`         | `mi_check_types`       |
-| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `ast.EnumCheckType`         | `mi_check_type`        |
-| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `ast.EnumChecksumType`      | `opt_checksum_type`    |
-| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `ast.EnumProfileType`       | `opt_profile_defs`     |
-| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `ast.EnumProfileType`       | `profile_defs`         |
-| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`       | `profile_def`          |
-| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`         |
-| `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type`  |
-| `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`          |
-| `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`          |
-| `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`           | `opt_ssl`              |
-| `opt_chain_type`        | `CHAIN` 选项的枚举值                                   | `EnumChainType`             | `opt_chain`            |
-| `opt_release_type`      | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`           | `opt_release`          |
-| `resource_group_type`   | 资源组类型的枚举值                                     | `EnumResourceGroupType`     | `resource_group_types` |
+| 水杉解析器语义组名称    | 语义组类型                                             | 返回值类型                  | MySQL 语义组名称                         |
+| ----------------------- | ------------------------------------------------------ | --------------------------- | ---------------------------------------- |
+| `opt_drop_restrict`     | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `ast.EnumDropRestrict`      | `opt_restrict`                           |
+| `opt_show_command_type` | 可选的 `SHOW` 语句命令类型的枚举值                     | `ast.EnumShowCommandType`   | `opt_show_cmd_type`                      |
+| `opt_repair_type_list`  | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `ast.EnumRepairType`        | `opt_mi_repair_types`                    |
+| `repair_type_list`      | `REPAIR` 语句命令类型的枚举值的列表                    | `ast.EnumRepairType`        | `mi_repair_types`                        |
+| `repair_type`           | `REPAIR` 语句命令类型的枚举值                          | `ast.EnumRepairType`        | `mi_repair_type`                         |
+| `opt_check_type_list`   | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `ast.EnumCheckType`         | `opt_mi_check_types`                     |
+| `check_type_list`       | `CHECK` 语句命令类型的枚举值的列表                     | `ast.EnumCheckType`         | `mi_check_types`                         |
+| `check_type`            | `CHECK` 语句命令类型的枚举值                           | `ast.EnumCheckType`         | `mi_check_type`                          |
+| `opt_checksum_type`     | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `ast.EnumChecksumType`      | `opt_checksum_type`                      |
+| `opt_profile_type_list` | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `ast.EnumProfileType`       | `opt_profile_defs`                       |
+| `profile_type_list`     | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `ast.EnumProfileType`       | `profile_defs`                           |
+| `profile_type`          | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `ast.EnumProfileType`       | `profile_def`                            |
+| `opt_variable_type`     | 可选的变量类型的枚举值                                 | `ast.EnumVariableType`      | `opt_var_type`                           |
+| `install_option_type`   | `INSTALL` 语句的安装选项的枚举值                       | `ast.EnumInstallOptionType` | `install_option_type`                    |
+| `kill_option_type`      | `KILL` 语句的选项的枚举值                              | `ast.EnumKillOptionType`    | `kill_option`                            |
+| `lock_option_type`      | `LOCK` 语句的锁定选项的枚举值                          | `ast.EnumLockOptionType`    | `lock_option`                            |
+| `opt_open_ssl_type`     | SSL 选项的枚举值                                       | `EnumOpenSslType`           | `opt_ssl`                                |
+| `opt_chain_type`        | `CHAIN` 选项的枚举值                                   | `EnumChainType`             | `opt_chain`                              |
+| `opt_release_type`      | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`           | `opt_release`                            |
+| `resource_group_type`   | 资源组类型的枚举值                                     | `EnumResourceGroupType`     | `resource_group_types`                   |
+| `signal_condition_type` | `SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值    | `EnumSignalConditionType`   | `signal_condition_information_item_name` |
 
 #### 固定的词语组合（fixed word）
 
@@ -907,6 +926,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_no_write_to_binlog` | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog` |
 | `opt_keyword_table`              | 可选的 `TABLE` 关键字                                        | -          | `opt_table`              |
 | `opt_keyword_savepoint`          | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`          |
+| `opt_keyword_value`              | 可选的 `VALUE` 关键字                                        | -          | `opt_value`              |
 | `keyword_deallocate_or_drop`     | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`     |
 | `keyword_describe_or_explain`    | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`       |
 | `keyword_table_or_tables`        | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`        |

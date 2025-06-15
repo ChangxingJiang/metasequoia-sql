@@ -47,6 +47,7 @@ from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
+from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import analyze_statement
@@ -81,6 +82,7 @@ from metasequoia_sql_grammar.statement import rollback_statement
 from metasequoia_sql_grammar.statement import savepoint_statement
 from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import show_statement
+from metasequoia_sql_grammar.statement import signal_and_resignal_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
 from metasequoia_sql_grammar.statement import truncate_statement
 from metasequoia_sql_grammar.statement import update_statement
@@ -236,6 +238,7 @@ def build_grammar():
         field_type,  # 短语 - 字段类型
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
+        sql_state,  # 短语 - SQL状态
         time_interval,  # 短语 - 时间间隔
         dml_option,  # DML 选项
         ddl_column_attribute,  # DDL 字段属性
@@ -311,6 +314,7 @@ def build_grammar():
         savepoint_statement,  # SAVEPOINT 语句
         select_statement,  # SELECT 语句
         show_statement,  # SHOW 语句
+        signal_and_resignal_statement,  # SIGNAL/RESIGNAL 语句
         start_transaction_statement,  # START TRANSACTION 语句
         truncate_statement,  # TRUNCATE 语句
         update_statement,  # UPDATE 语句

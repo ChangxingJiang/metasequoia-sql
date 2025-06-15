@@ -635,7 +635,7 @@ KEYWORD_TO_TERMINAL_MAP = {
     "specific": SqlTerminalType.KEYWORD_SPECIFIC,
     "sql": SqlTerminalType.KEYWORD_SQL,
     "sqlexception": SqlTerminalType.KEYWORD_SQLEXCEPTION,
-    "sqlstate": SqlTerminalType.KEYWORD_SQLSTATE,
+    "sql_state": SqlTerminalType.KEYWORD_SQLSTATE,
     "sqlwarning": SqlTerminalType.KEYWORD_SQLWARNING,
     "sql_after_gtids": SqlTerminalType.KEYWORD_SQL_AFTER_GTIDS,
     "sql_after_mts_gaps": SqlTerminalType.KEYWORD_SQL_AFTER_MTS_GAPS,
