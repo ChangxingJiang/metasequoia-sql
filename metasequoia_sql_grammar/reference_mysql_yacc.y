@@ -2125,15 +2125,6 @@ statement_information_item_name:
           { $$= Statement_information_item::ROW_COUNT; }
         ;
 
-/*
-   Only a limited subset of <expr> are allowed in GET DIAGNOSTICS
-   <condition number>, same subset as for SIGNAL/RESIGNAL.
-*/
-condition_number:
-          signal_allowed_expr
-          { $$= $1; }
-        ;
-
 condition_information:
           condition_information_item
           {

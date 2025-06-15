@@ -432,15 +432,15 @@
 
 #### SIGNAL 语句和 RESIGNAL 语句（signal and resignal statement）
 
-| 水杉解析器语义组名称           | 语义组类型                                                   | 返回值类型                       | MySQL 语义组名称               |
-| ------------------------------ | ------------------------------------------------------------ | -------------------------------- | ------------------------------ |
-| `signal_statement`             | `SIGNAL` 语句                                                | `SignalStatement`                | `signal_stmt`                  |
-| `resignal_statement`           | `RESIGNAL` 语句                                              | `ResignalStatement`              | `resignal_stmt`                |
-| `opt_signal_value`             | `RESIGNAL` 语句中可选的信号值                                | `Optional[Union[str, SqlState]]` | `opt_signal_value`             |
-| `signal_value`                 | `SIGNAL` 和 `RESIGNAL` 语句中的信号值                        | `Union[str, SqlState]`           | `signal_value`                 |
-| `opt_set_signal_information`   | `SIGNAL` 和 `RESIGNAL` 语句中可选的 `SET` 关键字引导的信号项子句 | `List[SignalInformation]`        | `opt_set_signal_information`   |
-| `signal_information_item_list` | `SIGNAL` 和 `RESIGNAL` 语句中的信息项列表                    | `List[SignalInformation]`        | `signal_information_item_list` |
-| `signal_allowed_expr`          | `SIGNAL` 和 `RESIGNAL` 语句中信息项的值允许的表达式          | `Expression`                     | `signal_allowed_expr`          |
+| 水杉解析器语义组名称           | 语义组类型                                                   | 返回值类型                       | MySQL 语义组名称                              |
+| ------------------------------ | ------------------------------------------------------------ | -------------------------------- | --------------------------------------------- |
+| `signal_statement`             | `SIGNAL` 语句                                                | `SignalStatement`                | `signal_stmt`                                 |
+| `resignal_statement`           | `RESIGNAL` 语句                                              | `ResignalStatement`              | `resignal_stmt`                               |
+| `opt_signal_value`             | `RESIGNAL` 语句中可选的信号值                                | `Optional[Union[str, SqlState]]` | `opt_signal_value`                            |
+| `signal_value`                 | `SIGNAL` 和 `RESIGNAL` 语句中的信号值                        | `Union[str, SqlState]`           | `signal_value`                                |
+| `opt_set_signal_information`   | `SIGNAL` 和 `RESIGNAL` 语句中可选的 `SET` 关键字引导的信号项子句 | `List[SignalInformation]`        | `opt_set_signal_information`                  |
+| `signal_information_item_list` | `SIGNAL` 和 `RESIGNAL` 语句中的信息项列表                    | `List[SignalInformation]`        | `signal_information_item_list`                |
+| `signal_allowed_expr`          | `SIGNAL` 和 `RESIGNAL` 语句中信息项的值允许的表达式          | `Expression`                     | `signal_allowed_expr`<br />`condition_number` |
 
 #### START TRANSACTION 语句（start transaction statement）
 
