@@ -43,3 +43,4 @@ from metasequoia_sql.ast.statement.start_transaction_statement import *
 from metasequoia_sql.ast.statement.truncate_statement import *
 from metasequoia_sql.ast.statement.update_statement import *
 from metasequoia_sql.ast.statement.use_statement import *
+from metasequoia_sql.ast.statement.xa_statement import *

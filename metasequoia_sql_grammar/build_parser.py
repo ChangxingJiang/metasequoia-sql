@@ -94,6 +94,7 @@ from metasequoia_sql_grammar.statement import start_transaction_statement
 from metasequoia_sql_grammar.statement import truncate_statement
 from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.statement import use_statement
+from metasequoia_sql_grammar.statement import xa_statement
 from metasequoia_sql_grammar.table import derived_table
 from metasequoia_sql_grammar.table import general_table
 from metasequoia_sql_grammar.table import joined_table
@@ -334,6 +335,7 @@ def build_grammar():
         truncate_statement,  # TRUNCATE 语句
         update_statement,  # UPDATE 语句
         use_statement,  # USE 语句
+        xa_statement,  # XA 语句
 
         # 顶层节点
         top_level_node

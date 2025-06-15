@@ -23,6 +23,8 @@ __all__ = [
     "EnumFlushOptionType",
     "EnumFlushLockType",
     "EnumAclType",
+    "EnumXaJoinOrResume",
+    "EnumXaSuspend",
 ]
 
 
@@ -202,3 +204,19 @@ class EnumAclType(IntEnum):
     TABLE = 1  # TABLE
     FUNCTION = 2  # FUNCTION
     PROCEDURE = 3  # PROCEDURE
+
+
+class EnumXaJoinOrResume(IntEnum):
+    """XA 事务中的 JOIN/RESUME 选项枚举值"""
+
+    NONE = 0  # %empty
+    JOIN = 1  # JOIN
+    RESUME = 2  # RESUME
+
+
+class EnumXaSuspend(IntEnum):
+    """XA 事务中的 SUSPEND 选项枚举值"""
+
+    NONE = 0  # %empty
+    SUSPEND = 1  # SUSPEND
+    FOR_MIGRATE = 2  # SUSPEND FOR MIGRATE

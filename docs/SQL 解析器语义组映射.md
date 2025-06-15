@@ -202,7 +202,7 @@
 | 水杉解析器语义组名称     | 语义组类型               | 返回值类型              | MySQL 语义组名称         |
 | ------------------------ | ------------------------ | ----------------------- | ------------------------ |
 | `grant_statement`        | `GRANT` 语句             | `GrantStatement`        | `grant`                  |
-| `revoke_statement`       | `REVOKE` 语句            | `RevokeStatement`       |                          |
+| `revoke_statement`       | `REVOKE` 语句            | `RevokeStatement`       | `revoke`                 |
 | `role_or_privilege_list` | 角色或权限列表           | `List[RoleOrPrivilege]` | `role_or_privilege_list` |
 | `role_or_privilege`      | 角色或权限               | `RoleOrPrivilege`       | `role_or_privilege`      |
 | `opt_with_roles`         | 可选的 `WITH ROLES` 子句 | `WithRole`              | `opt_with_roles`         |
@@ -458,6 +458,13 @@
 | 水杉解析器语义组名称 | 语义组类型 | 返回值类型     | MySQL 语义组名称 |
 | -------------------- | ---------- | -------------- | ---------------- |
 | `use_statement`      | `USE` 语句 | `UseStatement` | `use`            |
+
+#### XA 语句（xa statement）
+
+| 水杉解析器语义组名称 | 语义组类型    | 返回值类型    | MySQL 语义组名称 |
+| -------------------- | ------------- | ------------- | ---------------- |
+| `xa_statement`       | XA 事务语句   | `XaStatement` | `xa`             |
+| `xid`                | XA 事务标识符 | `XaId`        | `xid`            |
 
 # 子句（clause）
 
@@ -969,6 +976,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `flush_option_type`      | `FLUSH` 语句选项的枚举值                               | `EnumFlushOptionType`     | `flush_option`                           |
 | `flush_lock_type`        | `FLUSH` 语句锁定选项的枚举值                           | `EnumFlushLockType`       | `opt_flush_lock`                         |
 | `opt_acl_type`           | 可选的 ACL 类型枚举值                                  | `EnumAclType`             | `opt_acl_type`                           |
+| `opt_join_or_resume`     | XA 事务中的 JOIN/RESUME 选项枚举值                     | `EnumXaJoinOrResume`      | `opt_join_or_resume`                     |
+| `opt_suspend`            | XA 事务中的 SUSPEND 选项枚举值                         | `EnumXaSuspend`           | `opt_suspend`                            |
 
 #### 固定的词语组合（fixed word）
 
@@ -994,6 +1003,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_with_admin_option`           | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                    |
 | `opt_keyword_grant_option`                | 可选的 `WITH GRANT OPTION` 关键字组合                        | -          | `grant_options`<br />`opt_grant_option`    |
 | `opt_keyword_ignore_unknown_user`         | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                  |
+| `opt_keyword_convert_xid`                 | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                          |
+| `opt_keyword_one_phase`                   | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
 | `keyword_deallocate_or_drop`              | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
 | `keyword_describe_or_explain`             | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
 | `keyword_table_or_tables`                 | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |
@@ -1002,6 +1013,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `keyword_keys_or_index`                   | `KEYS`、`INDEX` 或 `INDEXES` 关键字                          | -          | `keys_or_index`                            |
 | `keyword_replica_or_slave`                | `REPLICA` 或 `SLAVE` 关键字                                  | -          | `replica`                                  |
 | `keyword_master_or_binary_logs_and_gtids` | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`          |
+| `keyword_begin_or_start`                  | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                           |
 | `opt_braces`                              | 可选的空括号                                                 | -          | `optional_braces`                          |
 | `opt_comma`                               | 可选的逗号                                                   | -          | `opt_comma`                                |
 | `keyword_charset`                         | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |

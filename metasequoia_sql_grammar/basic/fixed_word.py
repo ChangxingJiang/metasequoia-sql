@@ -27,6 +27,9 @@ __all__ = [
     "OPT_KEYWORD_WITH_ADMIN_OPTION",
     "OPT_KEYWORD_IGNORE_UNKNOWN_USER",
     "OPT_KEYWORD_GRANT_OPTION",
+    "OPT_KEYWORD_CONVERT_XID",
+    "OPT_KEYWORD_ONE_PHASE",
+    "KEYWORD_BEGIN_OR_START",
     "KEYWORD_DEALLOCATE_OR_DROP",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
@@ -341,6 +344,36 @@ OPT_KEYWORD_VALUE = ms_parser.create_group(
     ]
 )
 
+# 可选的 `CONVERT XID` 关键字组合
+OPT_KEYWORD_CONVERT_XID = ms_parser.create_group(
+    name="opt_keyword_convert_xid",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONVERT, TType.KEYWORD_XID],
+            action=lambda x: True
+        )
+    ]
+)
+
+# 可选的 `ONE PHASE` 关键字组合
+OPT_KEYWORD_ONE_PHASE = ms_parser.create_group(
+    name="opt_keyword_one_phase",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ONE, TType.KEYWORD_PHASE],
+            action=lambda x: True
+        )
+    ]
+)
+
 # `DEALLOCATE` 关键字或 `DROP` 关键字
 KEYWORD_DEALLOCATE_OR_DROP = ms_parser.create_group(
     name="keyword_deallocate_or_drop",
@@ -419,6 +452,19 @@ OPT_KEYWORD_GRANT_OPTION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_WITH, TType.KEYWORD_GRANT, TType.KEYWORD_OPTION],
             action=lambda x: True
+        )
+    ]
+)
+
+# `BEGIN` 关键字或 `START` 关键字
+KEYWORD_BEGIN_OR_START = ms_parser.create_group(
+    name="keyword_begin_or_start",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BEGIN]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_START]
         )
     ]
 )

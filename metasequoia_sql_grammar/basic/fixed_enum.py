@@ -33,6 +33,8 @@ __all__ = [
     "FLUSH_OPTION_TYPE",
     "FLUSH_LOCK_TYPE",
     "OPT_ACL_TYPE",
+    "OPT_JOIN_OR_RESUME",
+    "OPT_SUSPEND",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -591,6 +593,44 @@ OPT_ACL_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_PROCEDURE],
             action=lambda _: ast.EnumAclType.PROCEDURE
+        )
+    ]
+)
+
+# 可选的 JOIN/RESUME 类型枚举值
+OPT_JOIN_OR_RESUME = ms_parser.create_group(
+    name="opt_xa_join_or_resume",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumXaJoinOrResume.NONE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_JOIN],
+            action=lambda _: ast.EnumXaJoinOrResume.JOIN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RESUME],
+            action=lambda _: ast.EnumXaJoinOrResume.RESUME
+        )
+    ]
+)
+
+# 可选的 SUSPEND 类型枚举值
+OPT_SUSPEND = ms_parser.create_group(
+    name="opt_xa_suspend",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumXaSuspend.NONE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SUSPEND],
+            action=lambda _: ast.EnumXaSuspend.SUSPEND
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SUSPEND, TType.KEYWORD_FOR, TType.KEYWORD_MIGRATE],
+            action=lambda _: ast.EnumXaSuspend.FOR_MIGRATE
         )
     ]
 )
