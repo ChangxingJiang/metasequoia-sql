@@ -38,6 +38,8 @@ __all__ = [
     "OPT_ENABLE_DISABLE",
     "OPT_VIEW_CHECK_OPTION",
     "HANDLER_TYPE",
+    "OPT_EVENT_COMPLETION_TYPE",
+    "EVENT_COMPLETION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -718,6 +720,35 @@ HANDLER_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CONTINUE],
             action=lambda _: ast.EnumHandlerType.CONTINUE
+        )
+    ]
+)
+
+# 可选的事件完成类型的枚举值
+OPT_EVENT_COMPLETION_TYPE = ms_parser.create_group(
+    name="opt_event_completion_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["event_completion_type"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumEventCompletionType.DEFAULT
+        )
+    ]
+)
+
+# 事件完成类型的枚举值
+EVENT_COMPLETION_TYPE = ms_parser.create_group(
+    name="event_completion_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ON, TType.KEYWORD_COMPLETION, TType.KEYWORD_PRESERVE],
+            action=lambda x: ast.EnumEventCompletionType.ON_COMPLETION_PRESERVE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ON, TType.KEYWORD_COMPLETION, TType.KEYWORD_NOT, TType.KEYWORD_PRESERVE],
+            action=lambda x: ast.EnumEventCompletionType.ON_COMPLETION_NOT_PRESERVE
         )
     ]
 )

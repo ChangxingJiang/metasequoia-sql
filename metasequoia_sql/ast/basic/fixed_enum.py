@@ -30,6 +30,7 @@ __all__ = [
     "EnumSqlSecurity",
     "EnumEventStatusType",
     "EnumHandlerType",
+    "EnumEventCompletionType",
 ]
 
 
@@ -264,6 +265,14 @@ class EnumEventStatusType(IntEnum):
 
 class EnumHandlerType(IntEnum):
     """处理器类型的枚举值"""
-    
+
     EXIT = 1  # EXIT
     CONTINUE = 2  # CONTINUE
+
+
+class EnumEventCompletionType(IntEnum):
+    """事件完成类型的枚举值"""
+
+    DEFAULT = 0  # %empty
+    ON_COMPLETION_PRESERVE = 1  # ON COMPLETION PRESERVE
+    ON_COMPLETION_NOT_PRESERVE = 2  # ON COMPLETION NOT PRESERVE
