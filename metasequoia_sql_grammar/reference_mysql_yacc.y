@@ -4019,11 +4019,6 @@ opt_ev_sql_stmt:
         | DO_SYM ev_sql_stmt { $$= 1; }
         ;
 
-ident_or_empty:
-          %empty { $$.str= nullptr; $$.length= 0; }
-        | ident { $$= $1; }
-        ;
-
 opt_alter_table_actions:
           opt_alter_command_list
         | opt_alter_command_list alter_table_partition_options

@@ -1082,7 +1082,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_wild`                                             | 可选的 `.*`                                                  | -                  | `opt_wild`                                                   |
 | `simple_ident`                                         | 通用标识符（`ident` 或 `ident.ident` 或 `ident.ident.ident`） | `Expression`       | `simple_ident`<br />`simple_ident_nospvar`<br />`insert_column` |
 | `simple_ident_list`                                    | 逗号分隔的通用通配符的列表                                   | `List[Expression]` | `ident_list`<br />`insert_columns`                           |
-| `opt_ident`                                            | 可选的单个标识符                                             | `Optional[str]`    | `opt_existing_window_name`<br />`opt_ident`                  |
+| `opt_ident`                                            | 可选的单个标识符                                             | `Optional[str]`    | `opt_existing_window_name`<br />`opt_ident`<br />`ident_or_empty` |
 
 ## 字符集名称（charset）
 
