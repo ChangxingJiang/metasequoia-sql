@@ -505,6 +505,14 @@
 
 # 子句（clause）
 
+#### DEFINER 子句（definer clause）
+
+指定定义者子句。
+
+| 水杉解析器语义组名称 | 语义组类型                        | 返回值类型 | MySQL 语义组名称                                             |
+| -------------------- | --------------------------------- | ---------- | ------------------------------------------------------------ |
+| `opt_definer_clause` | 可选的指定定义者的 `DEFINER` 子句 | `UserName` | `definer_opt`<br />`no_definer`【子集】<br />`definer`【子集】 |
+
 #### FROM 子句（from clause）
 
 | 水杉解析器语义组名称 | 语义组类型         | 返回值类型    | MySQL 语义组名称                         |
@@ -861,6 +869,40 @@
 | `create_function_option_list` | `CREATE FUNCTION` 和 `CREATE PROCEDURE` 语句中的函数选项的列表 | `List[FunctionOption]` | `sp_c_chistics`                     |
 | `create_function_option`      | `CREATE FUNCTION` 和 `CREATE PROCEDURE` 语句中的函数选项     | `FunctionOption`       | `sp_c_chistic`                      |
 
+#### 处理命令（process command）
+
+`EVENT` 语句和 `TRIGGER` 语句中使用的处理命令。
+
+| 水杉解析器语义组名称                     | 语义组含义                           | 返回值类型                           | MySQL 语义组名称                                             |
+| ---------------------------------------- | ------------------------------------ | ------------------------------------ | ------------------------------------------------------------ |
+| `process_command_list`                   | 分号分隔的处理命令的列表             | `List[ProcessCommand]`               | `sp_proc_stmts1`<br />`sp_proc_stmts`                        |
+| `process_command`                        | 处理命令                             | `ProcessCommand`                     | `sp_proc_stmt`<br />`ev_sql_stmt_inner`<br />`ev_sql_stmt`   |
+| `process_command_statement`              | 处理命令：执行语句                   | `ProcessCommandStatement`            | `sp_proc_stmt_statement`                                     |
+| `process_command_return`                 | 处理命令：返回表达式结果             | `ProcessCommandReturn`               | `sp_proc_stmt_return`                                        |
+| `process_command_if`                     | 处理命令：`IF` 语句                  | `ProcessCommandIf`                   | `sp_proc_stmt_if`<br />`sp_if`【包含】                       |
+| `process_command_opt_elseif_list`        | 处理命令中可选的 `ELSEIF` 子句的列表 | `List[ProcessCommandConditionTuple]` | `sp_elseifs`【部分】                                         |
+| `process_command_elseif_list`            | 处理命令中的 `ELSEIF` 子句的列表     | `List[ProcessCommandConditionTuple]` | `sp_elseifs`【部分】                                         |
+| `process_command_elseif`                 | 处理命令中的 `ELSEIF` 子句           | `ProcessCommandConditionTuple`       | `sp_elseifs`【部分】                                         |
+| `process_command_opt_else`               | 处理命令中可选的 `ELSE` 子句         | `Optional[List[ProcessCommand]]`     | `else_clause_opt`                                            |
+| `process_command_case`                   | 处理命令：`CASE` 语句                | `ProcessCommandCase`                 | `case_stmt_specification`<br />`simple_case_stmt`【子集】<br />`searched_case_stmt`【子集】 |
+| `process_command_when_clause_list`       | 处理命令中的 `WHEN` 子句的列表       | `List[ProcessCommandConditionTuple]` | `simple_when_clause_list`<br />`searched_when_clause_list`   |
+| `process_command_when_clause`            | 处理命令中的 `WHEN` 子句             | `ProcessCommandConditionTuple`       | `simple_when_clause`<br />`searched_when_clause`             |
+| `process_command_handler_condition_list` | 处理命令中的处理器条件值的列表       | `List[ProcessCommandConditionValue]` | `sp_hcond_list`                                              |
+| `process_command_declare_list`           | 处理命令的声明表达式的列表           | `List[ProcessCommandDeclare]`        | `sp_decls`                                                   |
+| `process_command_declare`                | 处理命令的声明表达式                 | `ProcessCommandDeclare`              | `sp_decl`                                                    |
+| `process_command_handler_condition`      | 处理命令中的处理器条件值             | `ProcessCommandConditionValue`       | `sp_hcond`<br />`sp_hcond_element`                           |
+| `process_command_condition`              | 处理命令中的条件值                   | `ProcessCommandConditionValue`       | `sp_cond`                                                    |
+| `process_command_labeled_block`          | 处理命令：带标签的代码块             | `ProcessCommandLabeledBlock`         | `sp_labeled_block`                                           |
+| `process_command_unlabeled_block`        | 处理命令：不带标签的代码块           | `ProcessCommandUnlabeledBlock`       | `sp_unlabeled_block`                                         |
+| `process_command_block`                  | 处理命令中的代码块内容               | `ProcessCommandBlock`                | `sp_block_content`                                           |
+| `process_command_labeled_control`        | 处理命令：带标签的控制语句           | `ProcessCommandLabeledControl`       | `sp_labeled_control`                                         |
+| `process_command_unlabeled_control`      | 处理命令：不带标签的控制语句         | `ProcessCommand`                     | `sp_proc_stmt_unlabeled`<br />`sp_unlabeled_control`         |
+| `process_command_leave`                  | 处理命令：`LEAVE` 语句               | `ProcessCommandLeave`                | `sp_proc_stmt_leave`                                         |
+| `process_command_iterate`                | 处理命令：`ITERATE` 语句             | `ProcessCommandIterate`              | `sp_proc_stmt_iterate`                                       |
+| `process_command_open`                   | 处理命令：`OPEN` 游标语句            | `ProcessCommandOpen`                 | `sp_proc_stmt_open`                                          |
+| `process_command_fetch`                  | 处理命令：`FETCH` 游标语句           | `ProcessCommandFetch`                | `sp_proc_stmt_fetch`                                         |
+| `process_command_close`                  | 处理命令：`CLOSE` 游标语句           | `ProcessCommandClose`                | `sp_proc_stmt_close`                                         |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -959,6 +1001,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `expr_or_default_list`         | 一般表达式或 `DEFAULT` 关键字的列表              | `List[Expression]`     | `values`                                             |
 | `expr_or_default`              | 一般表达式或 `DEFAULT` 关键字                    | `Expression`           | `expr_or_default`                                    |
 | `subquery`                     | 子查询表达式                                     | `SubQuery`             | `row_subquery`<br />`table_subquery`<br />`subquery` |
+| `opt_default_expr`             | 可选的 `DEFAULT` 关键字引导的表达式              | `Optional[Expression]` | `sp_opt_default`                                     |
 
 #### 聚集函数表达式（sum function expression）
 
@@ -1040,6 +1083,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_enable_disable`     | 资源组启用 / 禁用状态的枚举值                          | `EnumEnableDisable`       | `opt_resource_group_enable_disable`      |
 | `opt_view_check_option`  | 可选的视图检查选项的枚举值                             | `EnumViewCheckOption`     | `view_check_option`                      |
 | `opt_event_status_type`  | 可选的事件状态类型的枚举值                             | `EnumEventStatusType`     | `opt_ev_status`                          |
+| `handler_type`           | 处理器类型的枚举值                                     | `EnumHandlerType`         | `sp_handler_type`                        |
 
 #### 固定的词语组合（fixed word）
 
@@ -1076,6 +1120,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `keyword_replica_or_slave`                | `REPLICA` 或 `SLAVE` 关键字                                  | -          | `replica`                                  |
 | `keyword_master_or_binary_logs_and_gtids` | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`          |
 | `keyword_begin_or_start`                  | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                           |
+| `keyword_next_from_or_from`               | 可选的 `NEXT FROM` 或 `FROM` 关键字（用于 FETCH 语法中的噪声词） | -          | `sp_opt_fetch_noise`                       |
 | `opt_braces`                              | 可选的空括号                                                 | -          | `optional_braces`                          |
 | `opt_comma`                               | 可选的逗号                                                   | -          | `opt_comma`                                |
 | `keyword_charset`                         | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |
@@ -1103,6 +1148,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `ident_list`                                           | 单个标识符（`ident`）的列表                                  | `List[str]`        | `simple_ident_list`<br />`ident_string_list`<br />`using_list`<br />`reference_list`<br />`name_list`<br />`column_list`<br />`sp_fetch_list`<br />`sp_decl_idents` |
 | `ident`（MySQL）                                       | 单个标识符（`ident`）                                        | `Ident`            | `ident`<br />`schema`<br />`window_name`                     |
 | `opt_ident_list_parens`                                | 可选的括号嵌套的单个标识符（`ident`）的列表                  | `List[str]`        | `opt_derived_column_list`<br />`opt_ref_list`<br />`opt_column_list` |
+| `opt_label_ident`                                      | 可选的 label 标识符                                          | `Optional[str]`    | `sp_opt_label`                                               |
 | `label_ident`（MySQL）                                 | 表示存储过程名称的标识符                                     | `Ident`            | `label_ident`                                                |
 | `role_ident`（MySQL）                                  | 表示角色的标识符                                             | `Ident`            | `role_ident`                                                 |
 | `variable_identifier`                                  | 变量名标识符                                                 | `Identifier`       | `lvalue_variable`                                            |
@@ -1120,7 +1166,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `simple_ident_list`                                    | 逗号分隔的通用通配符的列表                                   | `List[Expression]` | `ident_list`<br />`insert_columns`                           |
 | `opt_ident`                                            | 可选的单个标识符                                             | `Optional[str]`    | `opt_existing_window_name`<br />`opt_ident`<br />`ident_or_empty` |
 
-## 字符集名称（charset）
+#### 字符集名称（charset）
 
 | 水杉解析器语义组名称 | 语义组含义                               | 返回值类型          | MySQL 语义组名称                                             |
 | -------------------- | ---------------------------------------- | ------------------- | ------------------------------------------------------------ |
@@ -1130,7 +1176,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_charset`        | 可选的指定字符集信息                     | `Charset`           | `opt_charset_with_opt_binary`                                |
 | `opt_collate`        | 指定比较和排序规则                       | `Optional[Charset]` | `opt_collate`                                                |
 
-## 字面值（literal）
+#### 字面值（literal）
 
 | 水杉解析器语义组名称       | 语义组含义                                                   | 返回值类型            | MySQL 语义组名称                                             |
 | -------------------------- | ------------------------------------------------------------ | --------------------- | ------------------------------------------------------------ |

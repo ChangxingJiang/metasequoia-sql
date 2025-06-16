@@ -29,6 +29,7 @@ __all__ = [
     "EnumViewCheckOption",
     "EnumSqlSecurity",
     "EnumEventStatusType",
+    "EnumHandlerType",
 ]
 
 
@@ -259,3 +260,10 @@ class EnumEventStatusType(IntEnum):
     DISABLE_ON_SLAVE = 2  # DISABLE ON SLAVE
     DISABLE_ON_REPLICA = 3  # DISABLE ON REPLICA
     DISABLE = 4  # DISABLE
+
+
+class EnumHandlerType(IntEnum):
+    """处理器类型的枚举值"""
+    
+    EXIT = 1  # EXIT
+    CONTINUE = 2  # CONTINUE

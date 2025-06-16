@@ -5,6 +5,7 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -17,6 +18,7 @@ from metasequoia_sql_grammar.basic import param
 from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
 from metasequoia_sql_grammar.clause import ddl_partition_by_clause
+from metasequoia_sql_grammar.clause import definer_clause
 from metasequoia_sql_grammar.clause import from_clause
 from metasequoia_sql_grammar.clause import group_by_clause
 from metasequoia_sql_grammar.clause import having_clause
@@ -48,6 +50,7 @@ from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import function_option
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
+from metasequoia_sql_grammar.phrase import process_command
 from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
@@ -266,7 +269,8 @@ def build_grammar():
         ddl_option,  # DDL 选项
         on_duplicate,  # 重复值处理规则
         ddl_alter_option,  # DDL 修改表选项
-        cpu_range,
+        cpu_range,  # CPU 范围
+        process_command,  # 处理命令
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -282,6 +286,7 @@ def build_grammar():
         table_function,  # 生成表函数
 
         # 子句层级
+        definer_clause,  # DEFINER 子句
         from_clause,  # FROM 子句
         group_by_clause,  # GROUP BY 子句
         having_clause,  # HAVING 子句

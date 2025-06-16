@@ -30,6 +30,7 @@ __all__ = [
     "OPT_KEYWORD_CONVERT_XID",
     "OPT_KEYWORD_ONE_PHASE",
     "KEYWORD_BEGIN_OR_START",
+    "KEYWORD_NEXT_FROM_OR_FROM",
     "KEYWORD_DEALLOCATE_OR_DROP",
     "KEYWORD_DESCRIBE_OR_EXPLAIN",
     "KEYWORD_TABLE_OR_TABLES",
@@ -466,6 +467,20 @@ KEYWORD_BEGIN_OR_START = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_START]
         )
+    ]
+)
+
+# 可选的 `NEXT FROM` 或 `FROM` 关键字，用于 FETCH 语法中的噪声词
+KEYWORD_NEXT_FROM_OR_FROM = ms_parser.create_group(
+    name="keyword_next_from_or_from",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NEXT, TType.KEYWORD_FROM]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FROM]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

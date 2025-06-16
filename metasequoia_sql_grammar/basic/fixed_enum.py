@@ -37,6 +37,7 @@ __all__ = [
     "OPT_SUSPEND",
     "OPT_ENABLE_DISABLE",
     "OPT_VIEW_CHECK_OPTION",
+    "HANDLER_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -702,6 +703,21 @@ OPT_EVENT_STATUS_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DISABLE],
             action=lambda _: ast.EnumEventStatusType.DISABLE
+        )
+    ]
+)
+
+# 处理器类型的枚举值
+HANDLER_TYPE = ms_parser.create_group(
+    name="handler_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXIT],
+            action=lambda _: ast.EnumHandlerType.EXIT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONTINUE],
+            action=lambda _: ast.EnumHandlerType.CONTINUE
         )
     ]
 )

@@ -25,6 +25,7 @@ __all__ = [
     "OPT_IDENT_LIST_PARENS",
     "OPT_IDENT",
     "VARIABLE_IDENTIFIER",
+    "OPT_LABEL_IDENT",
 ]
 
 # 不是保留字或非保留关键字的标识符
@@ -259,5 +260,17 @@ VARIABLE_IDENTIFIER = ms_parser.create_group(
             symbols=[TType.KEYWORD_DEFAULT, TType.OPERATOR_DOT, "ident"],
             action=lambda x: ast.Identifier(schema_name="default", object_name=x[2].get_str_value())
         )
+    ]
+)
+
+# 可选的 label 标识符
+OPT_LABEL_IDENT = ms_parser.create_group(
+    name="opt_label_ident",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["label_ident"],
+            action=lambda x: x[0].get_str_value()
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

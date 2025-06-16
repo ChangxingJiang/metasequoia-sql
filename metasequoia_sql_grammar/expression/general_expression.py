@@ -32,6 +32,7 @@ __all__ = [
     "EXPR_OR_DEFAULT_LIST",
     "EXPR_OR_DEFAULT",
     "SUBQUERY",
+    "OPT_DEFAULT_EXPR",
 ]
 
 # 比较运算符
@@ -733,5 +734,17 @@ SUBQUERY = ms_parser.create_group(
             action=lambda x: x[0],
             sr_priority_as=TType.SUBQUERY_AS_EXPR
         )
+    ]
+)
+
+# 可选的 `DEFAULT` 关键字引导的表达式
+OPT_DEFAULT_EXPR = ms_parser.create_group(
+    name="opt_default_expr",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT, "expr"],
+            action=lambda x: x[1]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
