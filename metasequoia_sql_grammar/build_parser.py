@@ -41,15 +41,19 @@ from metasequoia_sql_grammar.phrase import cpu_range
 from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.phrase import ddl_column_attribute
 from metasequoia_sql_grammar.phrase import ddl_index_attribute
-from metasequoia_sql_grammar.phrase import ddl_table_element
 from metasequoia_sql_grammar.phrase import ddl_option
+from metasequoia_sql_grammar.phrase import ddl_table_element
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import field_type
+from metasequoia_sql_grammar.phrase import function_option
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.statement import alter_database_statement
+from metasequoia_sql_grammar.statement import alter_function_statement
+from metasequoia_sql_grammar.statement import alter_procedure_statement
 from metasequoia_sql_grammar.statement import alter_resource_group_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import analyze_statement
@@ -248,6 +252,7 @@ def build_grammar():
 
         # 短语
         field_type,  # 短语 - 字段类型
+        function_option,  # 短语 - 函数选项
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
         sql_state,  # 短语 - SQL状态
@@ -257,7 +262,7 @@ def build_grammar():
         ddl_column_attribute,  # DDL 字段属性
         ddl_table_element,  # DDL 表元素
         ddl_index_attribute,  # DDL 索引属性
-        ddl_table_option,  # DDL 表属性
+        ddl_option,  # DDL 选项
         on_duplicate,  # 重复值处理规则
         ddl_alter_option,  # DDL 修改表选项
         cpu_range,
@@ -294,6 +299,9 @@ def build_grammar():
         ddl_partition_by_clause,  # DDL 分区子句
 
         # 语句
+        alter_database_statement,  # ALTER DATABASE 语句
+        alter_function_statement,  # ALTER FUNCTION 语句
+        alter_procedure_statement,  # ALTER PROCEDURE 语句
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
         analyze_statement,  # ANALYZE TABLE 语句
         alter_table_statement,  # ALTER TABLE 语句

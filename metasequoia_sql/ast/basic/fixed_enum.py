@@ -27,6 +27,7 @@ __all__ = [
     "EnumXaSuspend",
     "EnumEnableDisable",
     "EnumViewCheckOption",
+    "EnumSqlSecurity",
 ]
 
 
@@ -239,3 +240,11 @@ class EnumViewCheckOption(IntEnum):
     WITH_CHECK_OPTION = 1  # WITH CHECK OPTION
     WITH_CASCADED_CHECK_OPTION = 2  # WITH CASCADED CHECK OPTION
     WITH_LOCAL_CHECK_OPTION = 3  # WITH LOCAL CHECK OPTION
+
+
+class EnumSqlSecurity(IntEnum):
+    """SQL 安全模式的枚举值"""
+
+    DEFAULT = 0
+    DEFINER = 1  # DEFINER：使用定义者权限执行
+    INVOKER = 2  # INVOKER：使用调用者权限执行

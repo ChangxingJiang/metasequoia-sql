@@ -1,3 +1,6 @@
+from metasequoia_sql.ast.statement.alter_database_statement import *
+from metasequoia_sql.ast.statement.alter_function_statement import *
+from metasequoia_sql.ast.statement.alter_procedure_statement import *
 from metasequoia_sql.ast.statement.alter_resource_group_statement import *
 from metasequoia_sql.ast.statement.alter_table_statement import *
 from metasequoia_sql.ast.statement.analyze_statement import *

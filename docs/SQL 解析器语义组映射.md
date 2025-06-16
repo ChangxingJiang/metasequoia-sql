@@ -48,6 +48,24 @@
 
 # 语句（statement）
 
+#### ALTER DATABASE 语句（alter database statement）
+
+| 水杉解析器语义组名称       | 语义组类型            | 返回值类型               | MySQL 语义组名称      |
+| -------------------------- | --------------------- | ------------------------ | --------------------- |
+| `alter_database_statement` | `ALTER DATABASE` 语句 | `AlterDatabaseStatement` | `alter_database_stmt` |
+
+#### ALTER FUNCTION 语句（alter function statement）
+
+| 水杉解析器语义组名称       | 语义组类型            | 返回值类型               | MySQL 语义组名称      |
+| -------------------------- | --------------------- | ------------------------ | --------------------- |
+| `alter_function_statement` | `ALTER FUNCTION` 语句 | `AlterFunctionStatement` | `alter_function_stmt` |
+
+#### ALTER PROCEDURE 语句（alter procedure statement）
+
+| 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称       |
+| --------------------------- | ---------------------- | ------------------------- | ---------------------- |
+| `alter_procedure_statement` | `ALTER PROCEDURE` 语句 | `AlterProcedureStatement` | `alter_procedure_stmt` |
+
 #### ALTER RESOURCE GROUP 语句（alter resource group statement）
 
 | 水杉解析器语义组名称             | 语义组类型                  | 返回值类型                    | MySQL 语义组名称            |
@@ -827,6 +845,15 @@
 | `opt_thread_priority` | 可选的线程优先级           | `ThreadPriority` | `opt_resource_group_priority` |
 | `signed_int_num`      | 正整数字面值或负整数字面值 | `int`            | `signed_num`                  |
 
+#### 函数选项（function option）
+
+| 水杉解析器语义组名称          | 语义组含义                                                   | 返回值类型             | MySQL 语义组名称                    |
+| ----------------------------- | ------------------------------------------------------------ | ---------------------- | ----------------------------------- |
+| `alter_function_option_list`  | `ALTER FUNCTION` 和 `ALTER PROCEDURE` 语句中的函数选项的列表 | `List[FunctionOption]` | `sp_a_chistics`                     |
+| `alter_function_option`       | `ALTER FUNCTION` 和 `ALTER PROCEDURE` 语句中的函数选项       | `FunctionOption`       | `sp_chistic`<br />`sp_suid`【子集】 |
+| `create_function_option_list` | `CREATE FUNCTION` 和 `CREATE PROCEDURE` 语句中的函数选项的列表 | `List[FunctionOption]` | `sp_c_chistics`                     |
+| `create_function_option`      | `CREATE FUNCTION` 和 `CREATE PROCEDURE` 语句中的函数选项     | `FunctionOption`       | `sp_c_chistic`                      |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -1004,6 +1031,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_join_or_resume`     | XA 事务中的 JOIN/RESUME 选项枚举值                     | `EnumXaJoinOrResume`      | `opt_join_or_resume`                     |
 | `opt_suspend`            | XA 事务中的 SUSPEND 选项枚举值                         | `EnumXaSuspend`           | `opt_suspend`                            |
 | `opt_enable_disable`     | 资源组启用 / 禁用状态的枚举值                          | `EnumEnableDisable`       | `opt_resource_group_enable_disable`      |
+| `opt_view_check_option`  | 可选的视图检查选项的枚举值                             | `EnumViewCheckOption`     | `view_check_option`                      |
 
 #### 固定的词语组合（fixed word）
 

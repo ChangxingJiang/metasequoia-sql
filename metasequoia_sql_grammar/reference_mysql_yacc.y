@@ -1446,54 +1446,6 @@ ev_sql_stmt_inner:
         | sp_proc_stmt_close
         ;
 
-sp_a_chistics:
-          %empty {}
-        | sp_a_chistics sp_chistic {}
-        ;
-
-sp_c_chistics:
-          %empty {}
-        | sp_c_chistics sp_c_chistic {}
-        ;
-
-/* Characteristics for both create and alter */
-sp_chistic:
-          COMMENT_SYM TEXT_STRING_sys
-          { Lex->sp_chistics.comment= to_lex_cstring($2); }
-        | LANGUAGE_SYM SQL_SYM
-          { Lex->sp_chistics.language= {"SQL",3}; }
-        | LANGUAGE_SYM ident
-          { Lex->sp_chistics.language= to_lex_cstring($2); }
-        | NO_SYM SQL_SYM
-          { Lex->sp_chistics.daccess= SP_NO_SQL; }
-        | CONTAINS_SYM SQL_SYM
-          { Lex->sp_chistics.daccess= SP_CONTAINS_SQL; }
-        | READS_SYM SQL_SYM DATA_SYM
-          { Lex->sp_chistics.daccess= SP_READS_SQL_DATA; }
-        | MODIFIES_SYM SQL_SYM DATA_SYM
-          { Lex->sp_chistics.daccess= SP_MODIFIES_SQL_DATA; }
-        | sp_suid
-          {}
-        ;
-
-/* Create characteristics */
-sp_c_chistic:
-          sp_chistic            { }
-        | DETERMINISTIC_SYM     { Lex->sp_chistics.detistic= true; }
-        | not DETERMINISTIC_SYM { Lex->sp_chistics.detistic= false; }
-        ;
-
-sp_suid:
-          SQL_SYM SECURITY_SYM DEFINER_SYM
-          {
-            Lex->sp_chistics.suid= SP_IS_SUID;
-          }
-        | SQL_SYM SECURITY_SYM INVOKER_SYM
-          {
-            Lex->sp_chistics.suid= SP_IS_NOT_SUID;
-          }
-        ;
-
 /* Stored FUNCTION parameter declaration list */
 sp_fdparam_list:
           %empty
@@ -3409,70 +3361,6 @@ alter_table_stmt:
                   $4.flags.algo.get_or_default(),
                   $4.flags.lock.get_or_default(),
                   $4.flags.validation.get_or_default());
-          }
-        ;
-
-alter_database_stmt:
-          ALTER DATABASE ident_or_empty
-          {
-            Lex->create_info= YYTHD->alloc_typed<HA_CREATE_INFO>();
-            if (Lex->create_info == nullptr)
-              MYSQL_YYABORT; // OOM
-            Lex->create_info->default_table_charset= nullptr;
-            Lex->create_info->used_fields= 0;
-          }
-          alter_database_options
-          {
-            LEX *lex=Lex;
-            lex->sql_command=SQLCOM_ALTER_DB;
-            lex->name= $3;
-            if (lex->name.str == nullptr &&
-                lex->copy_db_to(&lex->name.str, &lex->name.length))
-              MYSQL_YYABORT;
-          }
-        ;
-
-alter_procedure_stmt:
-          ALTER PROCEDURE_SYM sp_name
-          {
-            LEX *lex= Lex;
-
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_DROP_SP, MYF(0), "PROCEDURE");
-              MYSQL_YYABORT;
-            }
-            memset(&lex->sp_chistics, 0, sizeof(st_sp_chistics));
-          }
-          sp_a_chistics
-          {
-            LEX *lex=Lex;
-
-            lex->sql_command= SQLCOM_ALTER_PROCEDURE;
-            lex->spname= $3;
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-alter_function_stmt:
-          ALTER FUNCTION_SYM sp_name
-          {
-            LEX *lex= Lex;
-
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_DROP_SP, MYF(0), "FUNCTION");
-              MYSQL_YYABORT;
-            }
-            memset(&lex->sp_chistics, 0, sizeof(st_sp_chistics));
-          }
-          sp_a_chistics
-          {
-            LEX *lex=Lex;
-
-            lex->sql_command= SQLCOM_ALTER_FUNCTION;
-            lex->spname= $3;
-            MAKE_CMD_DDL_DUMMY();
           }
         ;
 
@@ -6058,13 +5946,6 @@ view_query_block:
             lex->parsing_options.allows_variable= true;
             lex->parsing_options.allows_select_into= true;
           }
-        ;
-
-view_check_option:
-          %empty                          { $$= VIEW_CHECK_NONE; }
-        | WITH CHECK_SYM OPTION           { $$= VIEW_CHECK_CASCADED; }
-        | WITH CASCADED CHECK_SYM OPTION  { $$= VIEW_CHECK_CASCADED; }
-        | WITH LOCAL_SYM CHECK_SYM OPTION { $$= VIEW_CHECK_LOCAL; }
         ;
 
 /**************************************************************************
