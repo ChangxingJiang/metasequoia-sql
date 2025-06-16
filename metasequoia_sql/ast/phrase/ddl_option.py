@@ -39,6 +39,8 @@ __all__ = [
     "DdlOptionUnion",
     "DdlOptionDefaultCharset",
     "DdlOptionDefaultCollate",
+    "DdlOptionDefaultEncryption",
+    "DdlOptionReadOnly",
     "EnumMergeInsertType",
     "DdlOptionInsertMethod",
     "DdlOptionDataDirectory",
@@ -234,6 +236,25 @@ class DdlOptionDefaultCharset(DdlCharsetOptionBase):
 
 class DdlOptionDefaultCollate(DdlCharsetOptionBase):
     """DDL 选项：DEFAULT COLLATE（表属性或数据库属性）"""
+
+
+class DdlOptionDefaultEncryption(DdlStrOptionBase):
+    """DDL 选项：DEFAULT ENCRYPTION（数据库属性）"""
+
+
+class DdlOptionReadOnly(DdlOption):
+    """DDL 选项：READ ONLY（数据库属性）"""
+
+    __slots__ = (
+        "_value"
+    )
+
+    def __init__(self, value: Expression):
+        self._value = value
+
+    @property
+    def value(self) -> Expression:
+        return self._value
 
 
 class EnumMergeInsertType(IntEnum):

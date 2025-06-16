@@ -646,17 +646,23 @@
 
 #### DDL 选项（ddl option）
 
-| 水杉解析器语义组名称                       | 语义组含义                                           | 返回值类型                  | MySQL 语义组名称                                          |
-| ------------------------------------------ | ---------------------------------------------------- | --------------------------- | --------------------------------------------------------- |
-| `create_table_option_list`                 | 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表 | `List[TableOption]`         | `create_table_options`                                    |
-| `create_table_option_list_space_separated` | 空格分隔的 `CREATE TABLE` 语句中的表属性的列表       | `List[TableOption]`         | `create_table_options_space_separated`                    |
-| `create_table_option`                      | `CREATE TABLE` 语句中的表属性                        | `TableOption`               | `create_table_option`                                     |
-| `ternary_option`                           | 整数字面值、十六进制字面值或 `DEFAULT` 关键字        | `Expression`                | `ternary_option`                                          |
-| `row_format`                               | 行格式类型的枚举值                                   | `EnumRowFormat`             | `row_types`                                               |
-| `default_charset_option`                   | 指定默认字符集的数据库选项或表选项                   | `TableOptionDefaultCharset` | `default_charset`                                         |
-| `default_collate_option`                   | 指定默认排序规则的数据库选项或表选项                 | `TableOptionDefaultCollate` | `default_collation`                                       |
-| `merge_insert_type`                        | 向 MERGE 表插入数据的类型的枚举值                    | `EnumMergeInsertType`       | `merge_insert_types`                                      |
-| `autoextend_size_option`                   | 指定表空间每次自动扩展的大小属性                     | `TableOptionAutoextendSize` | `option_autoextend_size`<br />`ts_option_autoextend_size` |
+| 水杉解析器语义组名称                       | 语义组含义                                           | 返回值类型                   | MySQL 语义组名称                                          |
+| ------------------------------------------ | ---------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
+| `create_table_option_list`                 | 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表 | `List[DdlOption]`            | `create_table_options`                                    |
+| `create_table_option_list_space_separated` | 空格分隔的 `CREATE TABLE` 语句中的表属性的列表       | `List[DdlOption]`            | `create_table_options_space_separated`                    |
+| `create_table_option`                      | `CREATE TABLE` 语句中的表选项                        | `DdlOption`                  | `create_table_option`                                     |
+| `opt_create_database_option_list`          | 可选的 `CREATE DATABASE` 语句中的数据库选项列表      | `List[DdlOption]`            | `opt_create_database_options`                             |
+| `create_database_option_list`              | `CREATE DATABASE` 语句中的数据库选项列表             | `List[DdlOption]`            | `create_database_option_list`                             |
+| `create_database_option`                   | `CREATE DATABASE` 语句中的数据库选项                 | `DdlOption`                  | `create_database_option`                                  |
+| `alter_database_option_list`               | `ALTER DATABASE` 语句中的数据库选项列表              | `List[DdlOption]`            | `alter_database_option_list`                              |
+| `alter_database_option`                    | `ALTER DATABASE` 语句中的数据库选项                  | `DdlOption`                  | `alter_database_option`                                   |
+| `ternary_option`                           | 整数字面值、十六进制字面值或 `DEFAULT` 关键字        | `Expression`                 | `ternary_option`                                          |
+| `row_format`                               | 行格式类型的枚举值                                   | `EnumRowFormat`              | `row_types`                                               |
+| `default_charset_option`                   | 指定默认字符集的数据库选项或表选项                   | `DdlOptionDefaultCharset`    | `default_charset`                                         |
+| `default_collate_option`                   | 指定默认排序规则的数据库选项或表选项                 | `DdlOptionDefaultCollate`    | `default_collation`                                       |
+| `default_encryption_option`                | 指定默认加密的数据库选项                             | `DdlOptionDefaultEncryption` | `default_encryption`                                      |
+| `merge_insert_type`                        | 向 MERGE 表插入数据的类型的枚举值                    | `EnumMergeInsertType`        | `merge_insert_types`                                      |
+| `autoextend_size_option`                   | 指定表空间每次自动扩展的大小属性                     | `DdlOptionAutoextendSize`    | `option_autoextend_size`<br />`ts_option_autoextend_size` |
 
 #### 字段类型（field type）
 

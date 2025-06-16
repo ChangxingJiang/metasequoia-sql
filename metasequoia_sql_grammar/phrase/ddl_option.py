@@ -8,13 +8,25 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    # `CREATE TABLE` 选项
     "CREATE_TABLE_OPTION_LIST",
     "CREATE_TABLE_OPTION_LIST_SPACE_SEPARATED",
     "CREATE_TABLE_OPTION",
+
+    # `CREATE DATABASE` 选项
+    "OPT_CREATE_DATABASE_OPTION_LIST",
+    "CREATE_DATABASE_OPTION_LIST",
+    "CREATE_DATABASE_OPTION",
+
+    # `ALTER DATABASE` 选项
+    "ALTER_DATABASE_OPTION_LIST",
+    "ALTER_DATABASE_OPTION",
+
     "TERNARY_OPTION",
     "ROW_FORMAT",
     "DEFAULT_CHARSET_OPTION",
     "DEFAULT_COLLATE_OPTION",
+    "DEFAULT_ENCRYPTION_OPTION",
     "MERGE_INSERT_TYPE",
     "AUTOEXTEND_SIZE_OPTION",
 ]
@@ -49,7 +61,7 @@ CREATE_TABLE_OPTION_LIST_SPACE_SEPARATED = ms_parser.create_group(
     ]
 )
 
-# `CREATE TABLE` 语句中的表属性
+# `CREATE TABLE` 语句中的表选项
 CREATE_TABLE_OPTION = ms_parser.create_group(
     name="create_table_option",
     rules=[
@@ -190,6 +202,75 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
     ]
 )
 
+# 可选的 `CREATE DATABASE` 语句中的数据库选项列表
+OPT_CREATE_DATABASE_OPTION_LIST = ms_parser.create_group(
+    name="opt_create_database_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_database_option_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# `CREATE DATABASE` 语句中的数据库选项列表
+CREATE_DATABASE_OPTION_LIST = ms_parser.create_group(
+    name="create_database_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_database_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        ),
+        ms_parser.create_rule(
+            symbols=["create_database_option_list", "create_database_option"],
+            action=ms_parser.template.action.LIST_APPEND_1
+        )
+    ]
+)
+
+# `CREATE DATABASE` 语句中的数据库选项
+CREATE_DATABASE_OPTION = ms_parser.create_group(
+    name="create_database_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["default_collate_option"]
+        ),
+        ms_parser.create_rule(
+            symbols=["default_charset_option"]
+        ),
+        ms_parser.create_rule(
+            symbols=["default_encryption_option"]
+        )
+    ]
+)
+
+# `ALTER DATABASE` 语句中的数据库选项列表
+ALTER_DATABASE_OPTION_LIST = ms_parser.create_group(
+    name="alter_database_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["alter_database_option"]
+        ),
+        ms_parser.create_rule(
+            symbols=["alter_database_option_list", "alter_database_option"]
+        )
+    ]
+)
+
+# `ALTER DATABASE` 语句中的数据库选项
+ALTER_DATABASE_OPTION = ms_parser.create_group(
+    name="alter_database_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_database_option"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_ONLY, "opt_equal", "ternary_option"],
+            action=lambda x: ast.DdlOptionReadOnly(value=x[3])
+        )
+    ]
+)
+
 # 整数字面值、十六进制字面值或 `DEFAULT` 关键字
 TERNARY_OPTION = ms_parser.create_group(
     name="ternary_option",
@@ -253,6 +334,17 @@ DEFAULT_COLLATE_OPTION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["opt_keyword_default", TType.KEYWORD_COLLATE, "opt_equal", "charset_name"],
             action=lambda x: ast.DdlOptionDefaultCollate(value=x[3])
+        )
+    ]
+)
+
+# 指定默认加密的数据库选项
+DEFAULT_ENCRYPTION_OPTION = ms_parser.create_group(
+    name="default_encryption_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["opt_keyword_default", TType.KEYWORD_ENCRYPTION, "opt_equal", "text_literal_sys"],
+            action=lambda x: ast.DdlOptionDefaultEncryption(value=x[3].get_str_value())
         )
     ]
 )
