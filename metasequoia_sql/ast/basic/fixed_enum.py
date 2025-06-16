@@ -26,6 +26,7 @@ __all__ = [
     "EnumXaJoinOrResume",
     "EnumXaSuspend",
     "EnumEnableDisable",
+    "EnumViewCheckOption",
 ]
 
 
@@ -229,3 +230,12 @@ class EnumEnableDisable(IntEnum):
     DEFAULT = 0  # %empty
     ENABLE = 1  # ENABLE
     DISABLE = 2  # DISABLE
+
+
+class EnumViewCheckOption(IntEnum):
+    """视图检查选项的枚举值"""
+
+    DEFAULT = 0  # %empty
+    WITH_CHECK_OPTION = 1  # WITH CHECK OPTION
+    WITH_CASCADED_CHECK_OPTION = 2  # WITH CASCADED CHECK OPTION
+    WITH_LOCAL_CHECK_OPTION = 3  # WITH LOCAL CHECK OPTION

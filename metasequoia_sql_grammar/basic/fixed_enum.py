@@ -36,6 +36,7 @@ __all__ = [
     "OPT_JOIN_OR_RESUME",
     "OPT_SUSPEND",
     "OPT_ENABLE_DISABLE",
+    "OPT_VIEW_CHECK_OPTION",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -651,6 +652,29 @@ OPT_ENABLE_DISABLE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DISABLE],
             action=lambda _: ast.EnumEnableDisable.DISABLE
+        )
+    ]
+)
+
+# 可选的视图检查选项的枚举值
+OPT_VIEW_CHECK_OPTION = ms_parser.create_group(
+    name="opt_view_check_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumViewCheckOption.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_CHECK, TType.KEYWORD_OPTION],
+            action=lambda _: ast.EnumViewCheckOption.WITH_CHECK_OPTION
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_CASCADED, TType.KEYWORD_CHECK, TType.KEYWORD_OPTION],
+            action=lambda _: ast.EnumViewCheckOption.WITH_CASCADED_CHECK_OPTION
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_LOCAL, TType.KEYWORD_CHECK, TType.KEYWORD_OPTION],
+            action=lambda _: ast.EnumViewCheckOption.WITH_LOCAL_CHECK_OPTION
         )
     ]
 )
