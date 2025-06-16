@@ -1039,6 +1039,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_suspend`            | XA 事务中的 SUSPEND 选项枚举值                         | `EnumXaSuspend`           | `opt_suspend`                            |
 | `opt_enable_disable`     | 资源组启用 / 禁用状态的枚举值                          | `EnumEnableDisable`       | `opt_resource_group_enable_disable`      |
 | `opt_view_check_option`  | 可选的视图检查选项的枚举值                             | `EnumViewCheckOption`     | `view_check_option`                      |
+| `opt_event_status_type`  | 可选的事件状态类型的枚举值                             | `EnumEventStatusType`     | `opt_ev_status`                          |
 
 #### 固定的词语组合（fixed word）
 

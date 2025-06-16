@@ -678,3 +678,30 @@ OPT_VIEW_CHECK_OPTION = ms_parser.create_group(
         )
     ]
 )
+
+# 可选的事件状态类型的枚举值
+OPT_EVENT_STATUS_TYPE = ms_parser.create_group(
+    name="opt_event_status_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumEventStatusType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ENABLE],
+            action=lambda _: ast.EnumEventStatusType.ENABLE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DISABLE, TType.KEYWORD_ON, TType.KEYWORD_SLAVE],
+            action=lambda _: ast.EnumEventStatusType.DISABLE_ON_SLAVE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DISABLE, TType.KEYWORD_ON, TType.KEYWORD_REPLICA],
+            action=lambda _: ast.EnumEventStatusType.DISABLE_ON_REPLICA
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DISABLE],
+            action=lambda _: ast.EnumEventStatusType.DISABLE
+        )
+    ]
+)

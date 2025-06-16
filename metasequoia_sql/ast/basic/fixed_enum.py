@@ -28,6 +28,7 @@ __all__ = [
     "EnumEnableDisable",
     "EnumViewCheckOption",
     "EnumSqlSecurity",
+    "EnumEventStatusType",
 ]
 
 
@@ -248,3 +249,13 @@ class EnumSqlSecurity(IntEnum):
     DEFAULT = 0
     DEFINER = 1  # DEFINER：使用定义者权限执行
     INVOKER = 2  # INVOKER：使用调用者权限执行
+
+
+class EnumEventStatusType(IntEnum):
+    """事件状态类型的枚举值"""
+
+    DEFAULT = 0
+    ENABLE = 1  # ENABLE
+    DISABLE_ON_SLAVE = 2  # DISABLE ON SLAVE
+    DISABLE_ON_REPLICA = 3  # DISABLE ON REPLICA
+    DISABLE = 4  # DISABLE

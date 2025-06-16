@@ -1284,36 +1284,6 @@ ev_schedule_time:
           }
         ;
 
-opt_ev_status:
-          %empty { $$= 0; }
-        | ENABLE_SYM
-          {
-            Lex->event_parse_data->status= Event_parse_data::ENABLED;
-            Lex->event_parse_data->status_changed= true;
-            $$= 1;
-          }
-        | DISABLE_SYM ON_SYM SLAVE
-          {
-            push_deprecated_warn(YYTHD, "<CREATE|ALTER> EVENT ... DISABLE ON SLAVE",
-                                        "<CREATE|ALTER> EVENT ... DISABLE ON REPLICA");
-            Lex->event_parse_data->status= Event_parse_data::REPLICA_SIDE_DISABLED;
-            Lex->event_parse_data->status_changed= true;
-            $$= 1;
-          }
-        | DISABLE_SYM ON_SYM REPLICA_SYM
-          {
-            Lex->event_parse_data->status= Event_parse_data::REPLICA_SIDE_DISABLED;
-            Lex->event_parse_data->status_changed= true;
-            $$= 1;
-          }
-        | DISABLE_SYM
-          {
-            Lex->event_parse_data->status= Event_parse_data::DISABLED;
-            Lex->event_parse_data->status_changed= true;
-            $$= 1;
-          }
-        ;
-
 ev_starts:
           %empty
           {
