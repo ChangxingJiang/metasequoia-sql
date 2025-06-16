@@ -60,6 +60,13 @@
 | -------------------------- | --------------------- | ------------------------ | --------------------- |
 | `alter_function_statement` | `ALTER FUNCTION` 语句 | `AlterFunctionStatement` | `alter_function_stmt` |
 
+#### ALTER INSTANCE 语句（alter instance statement）
+
+| 水杉解析器语义组名称       | 语义组类型            | 返回值类型               | MySQL 语义组名称        |
+| -------------------------- | --------------------- | ------------------------ | ----------------------- |
+| `alter_instance_statement` | `ALTER INSTANCE` 语句 | `AlterInstanceStatement` | `alter_instance_stmt`   |
+| `alter_instance_action`    | `ALTER INSTANCE` 操作 | `AlterInstanceAction`    | `alter_instance_action` |
+
 #### ALTER PROCEDURE 语句（alter procedure statement）
 
 | 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称       |

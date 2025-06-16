@@ -53,6 +53,7 @@ from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_database_statement
 from metasequoia_sql_grammar.statement import alter_function_statement
+from metasequoia_sql_grammar.statement import alter_instance_statement
 from metasequoia_sql_grammar.statement import alter_procedure_statement
 from metasequoia_sql_grammar.statement import alter_resource_group_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
@@ -301,6 +302,7 @@ def build_grammar():
         # 语句
         alter_database_statement,  # ALTER DATABASE 语句
         alter_function_statement,  # ALTER FUNCTION 语句
+        alter_instance_statement,  # ALTER INSTANCE 语句
         alter_procedure_statement,  # ALTER PROCEDURE 语句
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
         analyze_statement,  # ANALYZE TABLE 语句
