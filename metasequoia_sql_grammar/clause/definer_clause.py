@@ -17,6 +17,7 @@ OPT_DEFINDER_CLAUSE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DEFINER, TType.OPERATOR_EQ, "user_name"],
             action=lambda x: x[2]
-        )
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

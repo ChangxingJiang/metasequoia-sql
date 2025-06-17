@@ -10,6 +10,7 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     # 处理命令的基类
     "PROCESS_COMMAND_LIST",
+    "OPT_DO_PROCESS_COMMAND",
     "PROCESS_COMMAND",
 
     # 处理命令：执行语句
@@ -66,6 +67,18 @@ PROCESS_COMMAND_LIST = ms_parser.create_group(
             symbols=["process_command_list", "process_command", TType.OPERATOR_SEMICOLON],
             action=lambda x: x[0] + [x[1]]
         )
+    ]
+)
+
+# 可选的 `DO` 关键字引导的处理命令
+OPT_DO_PROCESS_COMMAND = ms_parser.create_group(
+    name="opt_do_process_command",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DO, "process_command"],
+            action=lambda x: x[1]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 

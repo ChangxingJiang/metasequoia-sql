@@ -1,4 +1,5 @@
 from metasequoia_sql.ast.statement.alter_database_statement import *
+from metasequoia_sql.ast.statement.alter_event_statement import *
 from metasequoia_sql.ast.statement.alter_function_statement import *
 from metasequoia_sql.ast.statement.alter_instance_statement import *
 from metasequoia_sql.ast.statement.alter_procedure_statement import *

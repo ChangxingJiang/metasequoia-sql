@@ -509,9 +509,9 @@
 
 指定定义者子句。
 
-| 水杉解析器语义组名称 | 语义组类型                        | 返回值类型 | MySQL 语义组名称                                             |
-| -------------------- | --------------------------------- | ---------- | ------------------------------------------------------------ |
-| `opt_definer_clause` | 可选的指定定义者的 `DEFINER` 子句 | `UserName` | `definer_opt`<br />`no_definer`【子集】<br />`definer`【子集】 |
+| 水杉解析器语义组名称 | 语义组类型                        | 返回值类型           | MySQL 语义组名称                                             |
+| -------------------- | --------------------------------- | -------------------- | ------------------------------------------------------------ |
+| `opt_definer_clause` | 可选的指定定义者的 `DEFINER` 子句 | `Optional[UserName]` | `definer_opt`<br />`no_definer`【子集】<br />`definer`【子集】 |
 
 #### FROM 子句（from clause）
 
@@ -876,6 +876,7 @@
 | 水杉解析器语义组名称                     | 语义组含义                           | 返回值类型                           | MySQL 语义组名称                                             |
 | ---------------------------------------- | ------------------------------------ | ------------------------------------ | ------------------------------------------------------------ |
 | `process_command_list`                   | 分号分隔的处理命令的列表             | `List[ProcessCommand]`               | `sp_proc_stmts1`<br />`sp_proc_stmts`                        |
+| `opt_do_process_command`                 | 可选的 `DO` 关键字引导的处理命令     | `Optional[ProcessCommand]`           | `opt_ev_sql_stmt`                                            |
 | `process_command`                        | 处理命令                             | `ProcessCommand`                     | `sp_proc_stmt`<br />`ev_sql_stmt_inner`<br />`ev_sql_stmt`   |
 | `process_command_statement`              | 处理命令：执行语句                   | `ProcessCommandStatement`            | `sp_proc_stmt_statement`                                     |
 | `process_command_return`                 | 处理命令：返回表达式结果             | `ProcessCommandReturn`               | `sp_proc_stmt_return`                                        |
@@ -913,6 +914,13 @@
 | `opt_schedule_starts`  | 可选的事件开始时间                      | `Optional[Expression]`   | `ev_starts`                                     |
 | `opt_schedule_ends`    | 可选的事件结束时间                      | `Optional[Expression]`   | `ev_ends`                                       |
 
+#### 事件属性（event attribute）
+
+| 水杉解析器语义组名称 | 语义组含义       | 返回值类型             | MySQL 语义组名称   |
+| -------------------- | ---------------- | ---------------------- | ------------------ |
+| `opt_event_rename`   | 可选的事件重命名 | `Optional[Identifier]` | `opt_ev_rename_to` |
+| `opt_event_comment`  | 可选的事件注释   | `Optional[str]`        | `opt_ev_comment`   |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -933,7 +941,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 我们通过设计语法来解决这个问题：规定 `table_factor` 本身不能有括号，但它的所有子情况各自拥有自己的括号规则，比如 `single_table_parens`、`joined_table_parens` 和 `table_reference_list_parens`。这样虽然看起来有些繁琐，但语法是无歧义的，并且不会产生移进 / 归约冲突（shift / reduce conflicts）。
 
-## 通用表逻辑（general table）
+#### 通用表逻辑（general table）
 
 `table_reference_list` 是在 DQL 语句的 `FROM` 子句、`UPDATE` 语句、`DELETE` 语句中使用的表名的列表；`table_reference_list` 是 `table_reference` 的列表。
 
@@ -945,14 +953,14 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `table_factor`                | 单个表元素（包含任意层括号的 single_table、derived_table、joined_table_parens、table_reference_list_parens、table_function） | `Table`       | `table_factor`                |
 | `table_reference_list_parens` | 包含任意层括号的在 DQL 和 DML 语句中的表元素的列表           | `List[Table]` | `table_reference_list_parens` |
 
-## 单表（single table）
+#### 单表（single table）
 
 | 水杉解析器语义组名称  | 语义组含义                                       | 返回值类型    | MySQL 语义组名称      |
 | --------------------- | ------------------------------------------------ | ------------- | --------------------- |
 | `single_table_parens` | 包含任意层嵌套括号的、通过表明标识符定义的单个表 | `SingleTable` | `single_table_parens` |
 | `single_table`        | 通过表名标识符定义的单个表                       | `SingleTable` | `single_table`        |
 
-## 关联表（joined table）
+#### 关联表（joined table）
 
 | 水杉解析器语义组名称  | 语义组含义                   | 返回值类型     | MySQL 语义组名称      |
 | --------------------- | ---------------------------- | -------------- | --------------------- |
@@ -964,13 +972,13 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_inner`   | 可选的 `INNER` 关键字        | -              | `opt_inner`           |
 | `opt_keyword_outer`   | 可选的 `OUTER` 关键字        | -              | `opt_outer`           |
 
-## 派生表（derived table）
+#### 派生表（derived table）
 
 | 水杉解析器语义组名称 | 语义组含义 | 返回值类型     | MySQL 语义组名称 |
 | -------------------- | ---------- | -------------- | ---------------- |
 | `derived_table`      | 派生表     | `DerivedTable` | `derived_table`  |
 
-## 生成表函数（table function）
+#### 生成表函数（table function）
 
 | 水杉解析器语义组名称        | 语义组含义                           | 返回值类型                  | MySQL 语义组名称 |
 | --------------------------- | ------------------------------------ | --------------------------- | ---------------- |

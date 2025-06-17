@@ -1266,15 +1266,6 @@ event_tail:
           }
         ;
 
-opt_ev_comment:
-          %empty { $$= 0; }
-        | COMMENT_SYM TEXT_STRING_sys
-          {
-            Lex->event_parse_data->comment= $2;
-            $$= 1;
-          }
-        ;
-
 /* Stored FUNCTION parameter declaration list */
 sp_fdparam_list:
           %empty
@@ -2381,24 +2372,6 @@ ev_alter_on_schedule_completion:
         | ON_SYM SCHEDULE_SYM ev_schedule_time { $$= 1; }
         | ev_on_completion { $$= 1; }
         | ON_SYM SCHEDULE_SYM ev_schedule_time ev_on_completion { $$= 1; }
-        ;
-
-opt_ev_rename_to:
-          %empty { $$= 0;}
-        | RENAME TO_SYM sp_name
-          {
-            /*
-              Use lex's spname to hold the new name.
-              The original name is in the Event_parse_data object
-            */
-            Lex->spname= $3;
-            $$= 1;
-          }
-        ;
-
-opt_ev_sql_stmt:
-          %empty { $$= 0;}
-        | DO_SYM ev_sql_stmt { $$= 1; }
         ;
 
 opt_alter_table_actions:

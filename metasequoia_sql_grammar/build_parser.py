@@ -46,6 +46,7 @@ from metasequoia_sql_grammar.phrase import ddl_index_attribute
 from metasequoia_sql_grammar.phrase import ddl_option
 from metasequoia_sql_grammar.phrase import ddl_table_element
 from metasequoia_sql_grammar.phrase import dml_option
+from metasequoia_sql_grammar.phrase import event_attribute
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import function_option
 from metasequoia_sql_grammar.phrase import json_table_option
@@ -55,6 +56,7 @@ from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.statement import alter_database_statement
+from metasequoia_sql_grammar.statement import alter_event_statement
 from metasequoia_sql_grammar.statement import alter_function_statement
 from metasequoia_sql_grammar.statement import alter_instance_statement
 from metasequoia_sql_grammar.statement import alter_procedure_statement
@@ -271,6 +273,7 @@ def build_grammar():
         ddl_alter_option,  # DDL 修改表选项
         cpu_range,  # CPU 范围
         process_command,  # 处理命令
+        event_attribute,  # 事件属性
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -306,6 +309,7 @@ def build_grammar():
 
         # 语句
         alter_database_statement,  # ALTER DATABASE 语句
+        alter_event_statement,  # ALTER EVENT 语句
         alter_function_statement,  # ALTER FUNCTION 语句
         alter_instance_statement,  # ALTER INSTANCE 语句
         alter_procedure_statement,  # ALTER PROCEDURE 语句
