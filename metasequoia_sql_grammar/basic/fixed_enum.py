@@ -40,6 +40,9 @@ __all__ = [
     "HANDLER_TYPE",
     "OPT_EVENT_COMPLETION_TYPE",
     "EVENT_COMPLETION_TYPE",
+    "WHICH_AREA",
+    "STATEMENT_INFORMATION_TYPE",
+    "CONDITION_INFORMATION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -744,11 +747,104 @@ EVENT_COMPLETION_TYPE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ON, TType.KEYWORD_COMPLETION, TType.KEYWORD_PRESERVE],
-            action=lambda x: ast.EnumEventCompletionType.ON_COMPLETION_PRESERVE
+            action=lambda _: ast.EnumEventCompletionType.ON_COMPLETION_PRESERVE
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ON, TType.KEYWORD_COMPLETION, TType.KEYWORD_NOT, TType.KEYWORD_PRESERVE],
-            action=lambda x: ast.EnumEventCompletionType.ON_COMPLETION_NOT_PRESERVE
+            action=lambda _: ast.EnumEventCompletionType.ON_COMPLETION_NOT_PRESERVE
+        )
+    ]
+)
+
+# 诊断区域的枚举值
+WHICH_AREA = ms_parser.create_group(
+    name="which_area",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumDiagnosticsAreaType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CURRENT],
+            action=lambda _: ast.EnumDiagnosticsAreaType.CURRENT_AREA
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_STACKED],
+            action=lambda _: ast.EnumDiagnosticsAreaType.STACKED_AREA
+        )
+    ]
+)
+
+# 语句诊断信息项名称的枚举值
+STATEMENT_INFORMATION_TYPE = ms_parser.create_group(
+    name="statement_information_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NUMBER],
+            action=lambda _: ast.EnumStatementInformationType.NUMBER
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ROW_COUNT],
+            action=lambda _: ast.EnumStatementInformationType.ROW_COUNT
+        )
+    ]
+)
+
+# 条件诊断信息项名称的枚举值
+CONDITION_INFORMATION_TYPE = ms_parser.create_group(
+    name="condition_information_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CLASS_ORIGIN],
+            action=lambda _: ast.EnumConditionInformationType.CLASS_ORIGIN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SUBCLASS_ORIGIN],
+            action=lambda _: ast.EnumConditionInformationType.SUBCLASS_ORIGIN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONSTRAINT_CATALOG],
+            action=lambda _: ast.EnumConditionInformationType.CONSTRAINT_CATALOG
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONSTRAINT_SCHEMA],
+            action=lambda _: ast.EnumConditionInformationType.CONSTRAINT_SCHEMA
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONSTRAINT_NAME],
+            action=lambda _: ast.EnumConditionInformationType.CONSTRAINT_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CATALOG_NAME],
+            action=lambda _: ast.EnumConditionInformationType.CATALOG_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SCHEMA_NAME],
+            action=lambda _: ast.EnumConditionInformationType.SCHEMA_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE_NAME],
+            action=lambda _: ast.EnumConditionInformationType.TABLE_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COLUMN_NAME],
+            action=lambda _: ast.EnumConditionInformationType.COLUMN_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CURSOR_NAME],
+            action=lambda _: ast.EnumConditionInformationType.CURSOR_NAME
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MESSAGE_TEXT],
+            action=lambda _: ast.EnumConditionInformationType.MESSAGE_TEXT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MYSQL_ERRNO],
+            action=lambda _: ast.EnumConditionInformationType.MYSQL_ERRNO
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RETURNED_SQLSTATE],
+            action=lambda _: ast.EnumConditionInformationType.RETURNED_SQLSTATE
         )
     ]
 )

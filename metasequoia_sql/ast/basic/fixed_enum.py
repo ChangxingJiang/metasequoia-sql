@@ -31,6 +31,9 @@ __all__ = [
     "EnumEventStatusType",
     "EnumHandlerType",
     "EnumEventCompletionType",
+    "EnumDiagnosticsAreaType",
+    "EnumStatementInformationType",
+    "EnumConditionInformationType",
 ]
 
 
@@ -276,3 +279,36 @@ class EnumEventCompletionType(IntEnum):
     DEFAULT = 0  # %empty
     ON_COMPLETION_PRESERVE = 1  # ON COMPLETION PRESERVE
     ON_COMPLETION_NOT_PRESERVE = 2  # ON COMPLETION NOT PRESERVE
+
+
+class EnumDiagnosticsAreaType(IntEnum):
+    """诊断区域的枚举值"""
+
+    DEFAULT = 0
+    CURRENT_AREA = 1  # CURRENT
+    STACKED_AREA = 2  # STACKED
+
+
+class EnumStatementInformationType(IntEnum):
+    """语句诊断信息项名称的枚举值"""
+
+    NUMBER = 1  # NUMBER
+    ROW_COUNT = 2  # ROW_COUNT
+
+
+class EnumConditionInformationType(IntEnum):
+    """条件诊断信息项名称的枚举值"""
+
+    CLASS_ORIGIN = 1  # CLASS_ORIGIN
+    SUBCLASS_ORIGIN = 2  # SUBCLASS_ORIGIN
+    CONSTRAINT_CATALOG = 3  # CONSTRAINT_CATALOG
+    CONSTRAINT_SCHEMA = 4  # CONSTRAINT_SCHEMA
+    CONSTRAINT_NAME = 5  # CONSTRAINT_NAME
+    CATALOG_NAME = 6  # CATALOG_NAME
+    SCHEMA_NAME = 7  # SCHEMA_NAME
+    TABLE_NAME = 8  # TABLE_NAME
+    COLUMN_NAME = 9  # COLUMN_NAME
+    CURSOR_NAME = 10  # CURSOR_NAME
+    MESSAGE_TEXT = 11  # MESSAGE_TEXT
+    MYSQL_ERRNO = 12  # MYSQL_ERRNO
+    RETURNED_SQLSTATE = 13  # RETURNED_SQLSTATE
