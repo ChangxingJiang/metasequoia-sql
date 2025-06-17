@@ -1888,50 +1888,6 @@ alter_view_stmt:
           }
         ;
 
-alter_event_stmt:
-          ALTER definer_opt EVENT_SYM sp_name
-          {
-            /*
-              It is safe to use Lex->spname because
-              ALTER EVENT xxx RENATE TO yyy DO ALTER EVENT RENAME TO
-              is not allowed. Lex->spname is used in the case of RENAME TO
-              If it had to be supported spname had to be added to
-              Event_parse_data.
-            */
-
-            if (!(Lex->event_parse_data= new (YYTHD->mem_root) Event_parse_data()))
-              MYSQL_YYABORT;
-            Lex->event_parse_data->identifier= $4;
-
-            Lex->sql_command= SQLCOM_ALTER_EVENT;
-            MAKE_CMD_DDL_DUMMY();
-          }
-          ev_alter_on_schedule_completion
-          opt_ev_rename_to
-          opt_ev_status
-          opt_ev_comment
-          opt_ev_sql_stmt
-          {
-            if (!($6 || $7 || $8 || $9 || $10))
-            {
-              YYTHD->syntax_error();
-              MYSQL_YYABORT;
-            }
-            /*
-              sql_command is set here because some rules in ev_sql_stmt
-              can overwrite it
-            */
-            Lex->sql_command= SQLCOM_ALTER_EVENT;
-
-            /*
-              assert that even if sql_command was overwritten,
-              m_sql_cmd was not changed to a different command-type.
-            */
-            assert(Lex->m_sql_cmd->sql_cmd_type() == SQL_CMD_DDL);
-            assert(Lex->m_sql_cmd->sql_command_code() == SQLCOM_ALTER_EVENT);
-          }
-        ;
-
 alter_logfile_stmt:
           ALTER LOGFILE_SYM GROUP_SYM ident ADD lg_undofile
           opt_alter_logfile_group_options
@@ -2365,13 +2321,6 @@ user_func:
             Lex->users_list.push_back(curr_user);
             $$= curr_user;
           }
-        ;
-
-ev_alter_on_schedule_completion:
-          %empty { $$= 0;}
-        | ON_SYM SCHEDULE_SYM ev_schedule_time { $$= 1; }
-        | ev_on_completion { $$= 1; }
-        | ON_SYM SCHEDULE_SYM ev_schedule_time ev_on_completion { $$= 1; }
         ;
 
 opt_alter_table_actions:
