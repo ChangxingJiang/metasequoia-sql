@@ -22,13 +22,26 @@ __all__ = [
     "ALTER_DATABASE_OPTION_LIST",
     "ALTER_DATABASE_OPTION",
 
-    "TERNARY_OPTION",
-    "ROW_FORMAT",
-    "DEFAULT_CHARSET_OPTION",
-    "DEFAULT_COLLATE_OPTION",
-    "DEFAULT_ENCRYPTION_OPTION",
-    "MERGE_INSERT_TYPE",
-    "AUTOEXTEND_SIZE_OPTION",
+    # `DROP TABLESPACE` 选项列表
+    "OPT_DROP_TABLESPACE_OPTION_LIST",
+    "DROP_TABLESPACE_OPTION_LIST",
+    "DROP_TABLESPACE_OPTION",
+
+    # `DROP UNDO TABLESPACE` 选项列表
+    "OPT_DROP_UNDO_TABLESPACE_OPTION_LIST",
+    "DROP_UNDO_TABLESPACE_OPTION_LIST",
+    "DROP_UNDO_TABLESPACE_OPTION",
+
+    # 基础选项
+    "DDL_OPTION_STORAGE_ENGINE",
+    "DDL_OPTION_WAIT",
+    "DDL_OPTION_DEFAULT_CHARSET",
+    "DDL_OPTION_DEFAULT_COLLATE",
+    "DDL_OPTION_DEFAULT_ENCRYPTION",
+    "DDL_OPTION_AUTOEXTEND_SIZE",
+
+    # 选项值
+    "TERNARY_OPTION_VALUE",
 ]
 
 # 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表
@@ -110,19 +123,19 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
             action=lambda x: ast.DdlOptionAutoIncrement(value=x[2].value)
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_PACK_KEYS, "opt_equal", "ternary_option"],
+            symbols=[TType.KEYWORD_PACK_KEYS, "opt_equal", "ternary_option_value"],
             action=lambda x: ast.DdlOptionPackKey(value=x[2])
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_STATS_AUTO_RECALC, "opt_equal", "ternary_option"],
+            symbols=[TType.KEYWORD_STATS_AUTO_RECALC, "opt_equal", "ternary_option_value"],
             action=lambda x: ast.DdlOptionStatsAutoRecalc(value=x[2])
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_STATS_PERSISTENT, "opt_equal", "ternary_option"],
+            symbols=[TType.KEYWORD_STATS_PERSISTENT, "opt_equal", "ternary_option_value"],
             action=lambda x: ast.DdlOptionStatsPersistent(value=x[2])
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_STATS_SAMPLE_PAGES, "opt_equal", "ternary_option"],
+            symbols=[TType.KEYWORD_STATS_SAMPLE_PAGES, "opt_equal", "ternary_option_value"],
             action=lambda x: ast.DdlOptionStatsSamplePages(value=x[2])
         ),
         ms_parser.create_rule(
@@ -138,7 +151,7 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
             action=lambda x: ast.DdlOptionDelayKeyWrite(value=x[2].value)
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ROW_FORMAT, "opt_equal", "row_format"],
+            symbols=[TType.KEYWORD_ROW_FORMAT, "opt_equal", "row_format_type"],
             action=lambda x: ast.DdlOptionRowFormat(value=x[2])
         ),
         ms_parser.create_rule(
@@ -147,10 +160,10 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
             action=lambda x: ast.DdlOptionUnion(table_list=x[3])
         ),
         ms_parser.create_rule(
-            symbols=["default_charset_option"]
+            symbols=["ddl_option_default_charset"]
         ),
         ms_parser.create_rule(
-            symbols=["default_collate_option"]
+            symbols=["ddl_option_default_collate"]
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INSERT_METHOD, "opt_equal", "merge_insert_type"],
@@ -197,7 +210,7 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
             action=lambda x: ast.DdlOptionSecondaryEngineAttribute(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
-            symbols=["autoextend_size_option"]
+            symbols=["ddl_option_autoextend_size"]
         )
     ]
 )
@@ -233,13 +246,13 @@ CREATE_DATABASE_OPTION = ms_parser.create_group(
     name="create_database_option",
     rules=[
         ms_parser.create_rule(
-            symbols=["default_collate_option"]
+            symbols=["ddl_option_default_collate"]
         ),
         ms_parser.create_rule(
-            symbols=["default_charset_option"]
+            symbols=["ddl_option_default_charset"]
         ),
         ms_parser.create_rule(
-            symbols=["default_encryption_option"]
+            symbols=["ddl_option_default_encryption"]
         )
     ]
 )
@@ -265,15 +278,116 @@ ALTER_DATABASE_OPTION = ms_parser.create_group(
             symbols=["create_database_option"]
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_READ, TType.KEYWORD_ONLY, "opt_equal", "ternary_option"],
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_ONLY, "opt_equal", "ternary_option_value"],
             action=lambda x: ast.DdlOptionReadOnly(value=x[3])
         )
     ]
 )
 
+# 可选的 `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表
+OPT_DROP_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="opt_drop_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_option_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表
+DROP_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="drop_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_option_list", "opt_comma", "drop_tablespace_option"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项
+DROP_TABLESPACE_OPTION = ms_parser.create_group(
+    name="drop_tablespace_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ddl_option_storage_engine"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_wait"]
+        )
+    ]
+)
+
+# ALTER 选项：[STORAGE] ENGINE
+DDL_OPTION_STORAGE_ENGINE = ms_parser.create_group(
+    name="ddl_option_storage_engine",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["opt_keyword_storage", TType.KEYWORD_ENGINE, "opt_equal", "ident_or_text"],
+            action=lambda x: ast.DdlOptionStorageEngine(value=x[3].get_str_value())
+        )
+    ]
+)
+
+# ALTER 选项：`WAIT` 或 `NO_WAIT`
+DDL_OPTION_WAIT = ms_parser.create_group(
+    name="ddl_option_wait",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WAIT],
+            action=lambda _: ast.DdlOptionWait(value=True)
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NO_WAIT],
+            action=lambda _: ast.DdlOptionWait(value=False)
+        )
+    ]
+)
+
+# 可选的 `UNDO TABLESPACE` 的选项的列表
+OPT_DROP_UNDO_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="opt_drop_undo_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_option_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# `UNDO TABLESPACE` 的选项的列表
+DROP_UNDO_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="drop_undo_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_option_list", "opt_comma", "drop_undo_tablespace_option"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# `UNDO TABLESPACE` 的选项
+DROP_UNDO_TABLESPACE_OPTION = ms_parser.create_group(
+    name="drop_undo_tablespace_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ddl_option_storage_engine"]
+        )
+    ]
+)
+
 # 整数字面值、十六进制字面值或 `DEFAULT` 关键字
-TERNARY_OPTION = ms_parser.create_group(
-    name="ternary_option",
+TERNARY_OPTION_VALUE = ms_parser.create_group(
+    name="ternary_option_value",
     rules=[
         ms_parser.create_rule(
             symbols=["num_literal_or_hex"]
@@ -285,40 +399,9 @@ TERNARY_OPTION = ms_parser.create_group(
     ]
 )
 
-# 行格式类型的枚举值
-ROW_FORMAT = ms_parser.create_group(
-    name="row_format",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_DEFAULT],
-            action=lambda _: ast.EnumRowFormat.DEFAULT
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FIXED],
-            action=lambda _: ast.EnumRowFormat.FIXED
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_DYNAMIC],
-            action=lambda _: ast.EnumRowFormat.DYNAMIC
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_COMPRESSED],
-            action=lambda _: ast.EnumRowFormat.COMPRESSED
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_REDUNDANT],
-            action=lambda _: ast.EnumRowFormat.REDUNDANT
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_COMPACT],
-            action=lambda _: ast.EnumRowFormat.COMPACT
-        )
-    ]
-)
-
 # 指定默认字符集的数据库选项或表选项
-DEFAULT_CHARSET_OPTION = ms_parser.create_group(
-    name="default_charset_option",
+DDL_OPTION_DEFAULT_CHARSET = ms_parser.create_group(
+    name="ddl_option_default_charset",
     rules=[
         ms_parser.create_rule(
             symbols=["opt_keyword_default", "keyword_charset", "opt_equal", "charset_name"],
@@ -328,8 +411,8 @@ DEFAULT_CHARSET_OPTION = ms_parser.create_group(
 )
 
 # 指定默认排序规则的数据库选项或表选项
-DEFAULT_COLLATE_OPTION = ms_parser.create_group(
-    name="default_collate_option",
+DDL_OPTION_DEFAULT_COLLATE = ms_parser.create_group(
+    name="ddl_option_default_collate",
     rules=[
         ms_parser.create_rule(
             symbols=["opt_keyword_default", TType.KEYWORD_COLLATE, "opt_equal", "charset_name"],
@@ -339,8 +422,8 @@ DEFAULT_COLLATE_OPTION = ms_parser.create_group(
 )
 
 # 指定默认加密的数据库选项
-DEFAULT_ENCRYPTION_OPTION = ms_parser.create_group(
-    name="default_encryption_option",
+DDL_OPTION_DEFAULT_ENCRYPTION = ms_parser.create_group(
+    name="ddl_option_default_encryption",
     rules=[
         ms_parser.create_rule(
             symbols=["opt_keyword_default", TType.KEYWORD_ENCRYPTION, "opt_equal", "text_literal_sys"],
@@ -349,28 +432,9 @@ DEFAULT_ENCRYPTION_OPTION = ms_parser.create_group(
     ]
 )
 
-# 向 MERGE 表插入数据的类型的枚举值
-MERGE_INSERT_TYPE = ms_parser.create_group(
-    name="merge_insert_type",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_NO],
-            action=lambda _: ast.EnumMergeInsertType.NO
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FIRST],
-            action=lambda _: ast.EnumMergeInsertType.FIRST
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_LAST],
-            action=lambda _: ast.EnumMergeInsertType.LAST
-        )
-    ]
-)
-
 # 指定表空间每次自动扩展的大小属性
-AUTOEXTEND_SIZE_OPTION = ms_parser.create_group(
-    name="autoextend_size_option",
+DDL_OPTION_AUTOEXTEND_SIZE = ms_parser.create_group(
+    name="ddl_option_autoextend_size",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AUTOEXTEND_SIZE, "opt_equal", "size_number"],

@@ -81,9 +81,9 @@
 
 #### ALTER TABLE 语句（alter table statement）
 
-| 水杉解析器语义组名称 | 语义组类型    | 返回值类型        | MySQL 语义组名称      |
-| -------------------- | ------------- | ----------------- | --------------------- |
-| `binlog_statement`   | `BINLOG` 语句 | `BinlogStatement` | `binlog_base64_event` |
+| 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称   |
+| ----------------------- | ------------------ | --------------------- | ------------------ |
+| `alter_table_statement` | `ALTER TABLE` 语句 | `AlterTableStatement` | `alter_table_stmt` |
 
 #### ANALYZE TABLE 语句（analyze table statement）
 
@@ -101,9 +101,9 @@
 
 #### BINLOG 语句（binlog statement）
 
-| 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
-| -------------------- | ----------- | --------------- | ---------------- |
-| `call_statement`     | `CALL` 语句 | `CallStatement` | `call_stmt`      |
+| 水杉解析器语义组名称 | 语义组类型    | 返回值类型        | MySQL 语义组名称      |
+| -------------------- | ------------- | ----------------- | --------------------- |
+| `binlog_statement`   | `BINLOG` 语句 | `BinlogStatement` | `binlog_base64_event` |
 
 #### CALL 语句（call statement）
 
@@ -691,23 +691,31 @@
 
 #### DDL 选项（ddl option）
 
-| 水杉解析器语义组名称                       | 语义组含义                                           | 返回值类型                   | MySQL 语义组名称                                          |
-| ------------------------------------------ | ---------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
-| `create_table_option_list`                 | 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表 | `List[DdlOption]`            | `create_table_options`                                    |
-| `create_table_option_list_space_separated` | 空格分隔的 `CREATE TABLE` 语句中的表属性的列表       | `List[DdlOption]`            | `create_table_options_space_separated`                    |
-| `create_table_option`                      | `CREATE TABLE` 语句中的表选项                        | `DdlOption`                  | `create_table_option`                                     |
-| `opt_create_database_option_list`          | 可选的 `CREATE DATABASE` 语句中的数据库选项列表      | `List[DdlOption]`            | `opt_create_database_options`                             |
-| `create_database_option_list`              | `CREATE DATABASE` 语句中的数据库选项列表             | `List[DdlOption]`            | `create_database_option_list`                             |
-| `create_database_option`                   | `CREATE DATABASE` 语句中的数据库选项                 | `DdlOption`                  | `create_database_option`                                  |
-| `alter_database_option_list`               | `ALTER DATABASE` 语句中的数据库选项列表              | `List[DdlOption]`            | `alter_database_option_list`                              |
-| `alter_database_option`                    | `ALTER DATABASE` 语句中的数据库选项                  | `DdlOption`                  | `alter_database_option`                                   |
-| `ternary_option`                           | 整数字面值、十六进制字面值或 `DEFAULT` 关键字        | `Expression`                 | `ternary_option`                                          |
-| `row_format`                               | 行格式类型的枚举值                                   | `EnumRowFormat`              | `row_types`                                               |
-| `default_charset_option`                   | 指定默认字符集的数据库选项或表选项                   | `DdlOptionDefaultCharset`    | `default_charset`                                         |
-| `default_collate_option`                   | 指定默认排序规则的数据库选项或表选项                 | `DdlOptionDefaultCollate`    | `default_collation`                                       |
-| `default_encryption_option`                | 指定默认加密的数据库选项                             | `DdlOptionDefaultEncryption` | `default_encryption`                                      |
-| `merge_insert_type`                        | 向 MERGE 表插入数据的类型的枚举值                    | `EnumMergeInsertType`        | `merge_insert_types`                                      |
-| `autoextend_size_option`                   | 指定表空间每次自动扩展的大小属性                     | `DdlOptionAutoextendSize`    | `option_autoextend_size`<br />`ts_option_autoextend_size` |
+| 水杉解析器语义组名称                       | 语义组含义                                              | 返回值类型                   | MySQL 语义组名称                                          |
+| ------------------------------------------ | ------------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
+| `create_table_option_list`                 | 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表    | `List[DdlOption]`            | `create_table_options`                                    |
+| `create_table_option_list_space_separated` | 空格分隔的 `CREATE TABLE` 语句中的表属性的列表          | `List[DdlOption]`            | `create_table_options_space_separated`                    |
+| `create_table_option`                      | `CREATE TABLE` 语句中的表选项                           | `DdlOption`                  | `create_table_option`                                     |
+| `opt_create_database_option_list`          | 可选的 `CREATE DATABASE` 语句中的数据库选项列表         | `List[DdlOption]`            | `opt_create_database_options`                             |
+| `create_database_option_list`              | `CREATE DATABASE` 语句中的数据库选项列表                | `List[DdlOption]`            | `create_database_option_list`                             |
+| `create_database_option`                   | `CREATE DATABASE` 语句中的数据库选项                    | `DdlOption`                  | `create_database_option`                                  |
+| `alter_database_option_list`               | `ALTER DATABASE` 语句中的数据库选项列表                 | `List[DdlOption]`            | `alter_database_option_list`                              |
+| `alter_database_option`                    | `ALTER DATABASE` 语句中的数据库选项                     | `DdlOption`                  | `alter_database_option`                                   |
+| `ternary_option_value`                     | 整数字面值、十六进制字面值或 `DEFAULT` 关键字           | `Expression`                 | `ternary_option`                                          |
+| `ddl_option_default_charset`               | 指定默认字符集的数据库选项或表选项                      | `DdlOptionDefaultCharset`    | `default_charset`                                         |
+| `ddl_option_default_collate`               | 指定默认排序规则的数据库选项或表选项                    | `DdlOptionDefaultCollate`    | `default_collation`                                       |
+| `ddl_option_default_encryption`            | 指定默认加密的数据库选项                                | `DdlOptionDefaultEncryption` | `default_encryption`                                      |
+| `ddl_option_autoextend_size`               | 指定表空间每次自动扩展的大小属性                        | `DdlOptionAutoextendSize`    | `option_autoextend_size`<br />`ts_option_autoextend_size` |
+| `opt_drop_tablespace_option_list`          | 可选的 `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表 | `List[AlterOption]`          | `opt_drop_ts_options`                                     |
+| `drop_tablespace_option_list`              | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表        | `List[AlterOption]`          | `drop_ts_option_list`                                     |
+| `drop_tablespace_option`                   | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项              | `AlterOption`                | `drop_ts_option`                                          |
+| `opt_drop_undo_tablespace_option_list`     | 可选的 `UNDO TABLESPACE` 的选项的列表                   | `List[AlterOption]`          | `opt_undo_tablespace_options`                             |
+| `drop_undo_tablespace_option_list`         | `UNDO TABLESPACE` 的选项的列表                          | `List[AlterOption]`          | `undo_tablespace_option_list`                             |
+| `drop_undo_tablespace_option`              | `UNDO TABLESPACE` 的选项                                | `AlterOption`                | `undo_tablespace_option`                                  |
+| `ddl_option_engine`                        | ALTER 选项：`ENGINE`                                    | `DdlOptionEngine`            | `ts_option_engine`                                        |
+| `ddl_option_wait`                          | ALTER 选项：`WAIT` 或 `NO_WAIT`                         | `DdlOptionWait`              | `ts_option_wait`                                          |
+
+`drop_undo_tablespace_option` 语义组与 `alter_option_engine` 语义组一致，但考虑可拓展性保留单独的 `drop_undo_tablespace_option` 语义组。
 
 #### 字段类型（field type）
 
@@ -831,25 +839,17 @@
 
 #### DDL 修改表选项（ddl alter option）
 
-| 水杉解析器语义组名称                   | 语义组含义                                                   | 返回值类型                  | MySQL 语义组名称                                             |
-| -------------------------------------- | ------------------------------------------------------------ | --------------------------- | ------------------------------------------------------------ |
-| `alter_command_modifier_list`          | `ALTER` 命令的修饰选项的列表                                 | `TempAlterOptionList`       | `alter_commands_modifier_list`                               |
-| `alter_command_modifier`               | `ALTER` 命令的修饰选项                                       | `TempAlterOptionList`       | `alter_commands_modifier`                                    |
-| `opt_alter_option_lock_and_algorithm`  | 可选的任意顺序的 `ALGORITHM` 和 `LOCK` 修改表选项子句        | `TempAlterOptionList`       | `opt_index_lock_and_algorithm`                               |
-| `alter_option_algorithm`               | DDL 修改表选项：`ALGORITHM`（创建索引时使用的算法或机制）    | `AlterAlgorithmOption`      | `alter_algorithm_option`<br />`alter_algorithm_option_value`【包含】 |
-| `alter_option_lock`                    | DDL 修改表选项：`LOCK`（指定创建索引时对表施加的锁类型）     | `AlterLockOption`           | `alter_lock_option`<br />`alter_lock_option_value`【包含】   |
-| `opt_alter_option_with_validation`     | 可选的 DDL 修改表选项：`WITH VALIDATION` 或 `WITHOUT VALIDATION` | `AlterOptionWithValidation` | `opt_with_validation`                                        |
-| `alter_option_with_validation`         | DDL 修改表选项：`WITH VALIDATION` 或 `WITHOUT VALIDATION`    | `AlterOptionWithValidation` | `with_validation`                                            |
-| `opt_drop_tablespace_option_list`      | 可选的 `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表      | `List[AlterOption]`         | `opt_drop_ts_options`                                        |
-| `drop_tablespace_option_list`          | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表             | `List[AlterOption]`         | `drop_ts_option_list`                                        |
-| `drop_tablespace_option`               | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项                   | `AlterOption`               | `drop_ts_option`                                             |
-| `opt_drop_undo_tablespace_option_list` | 可选的 `UNDO TABLESPACE` 的选项的列表                        | `List[AlterOption]`         | `opt_undo_tablespace_options`                                |
-| `drop_undo_tablespace_option_list`     | `UNDO TABLESPACE` 的选项的列表                               | `List[AlterOption]`         | `undo_tablespace_option_list`                                |
-| `drop_undo_tablespace_option`          | `UNDO TABLESPACE` 的选项                                     | `AlterOption`               | `undo_tablespace_option`                                     |
-| `alter_option_engine`                  | ALTER 选项：`ENGINE`                                         | `AlterOptionEngine`         | `ts_option_engine`                                           |
-| `alter_option_wait`                    | ALTER 选项：`WAIT` 或 `NO_WAIT`                              | `AlterOptionWait`           | `ts_option_wait`                                             |
+核心是 `alter_command_modifier_list` 语义组。
 
-`drop_undo_tablespace_option` 语义组与 `alter_option_engine` 语义组一致，但考虑可拓展性保留单独的 `drop_undo_tablespace_option` 语义组。
+| 水杉解析器语义组名称                  | 语义组含义                                                   | 返回值类型                  | MySQL 语义组名称                                             |
+| ------------------------------------- | ------------------------------------------------------------ | --------------------------- | ------------------------------------------------------------ |
+| `alter_command_modifier_list`         | `ALTER` 命令的修饰选项的列表                                 | `TempAlterOptionList`       | `alter_commands_modifier_list`                               |
+| `alter_command_modifier`              | `ALTER` 命令的修饰选项                                       | `TempAlterOptionList`       | `alter_commands_modifier`                                    |
+| `opt_alter_option_lock_and_algorithm` | 可选的任意顺序的 `ALGORITHM` 和 `LOCK` 修改表选项子句        | `TempAlterOptionList`       | `opt_index_lock_and_algorithm`                               |
+| `alter_option_algorithm`              | DDL 修改表选项：`ALGORITHM`（创建索引时使用的算法或机制）    | `AlterAlgorithmOption`      | `alter_algorithm_option`<br />`alter_algorithm_option_value`【包含】 |
+| `alter_option_lock`                   | DDL 修改表选项：`LOCK`（指定创建索引时对表施加的锁类型）     | `AlterLockOption`           | `alter_lock_option`<br />`alter_lock_option_value`【包含】   |
+| `opt_alter_option_with_validation`    | 可选的 DDL 修改表选项：`WITH VALIDATION` 或 `WITHOUT VALIDATION` | `AlterOptionWithValidation` | `opt_with_validation`                                        |
+| `alter_option_with_validation`        | DDL 修改表选项：`WITH VALIDATION` 或 `WITHOUT VALIDATION`    | `AlterOptionWithValidation` | `with_validation`                                            |
 
 #### CPU 范围（cpu range）
 
@@ -932,6 +932,23 @@
 | -------------------- | ---------------- | ---------------------- | ------------------ |
 | `opt_event_rename`   | 可选的事件重命名 | `Optional[Identifier]` | `opt_ev_rename_to` |
 | `opt_event_comment`  | 可选的事件注释   | `Optional[str]`        | `opt_ev_comment`   |
+
+#### 修改命令（alter command）
+
+| 水杉解析器语义组名称            | 语义组含义                                            | 返回值类型                                          | MySQL 语义组名称                                   |
+| ------------------------------- | ----------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------- |
+| `opt_alter_table_actions`       | 可选的包含窗口相关修改命令的修改命令的列表            | `List[Union[AlterCommand, AlterOption, DdlOption]]` | `opt_alter_table_actions`                          |
+| `standalone_alter_table_action` | `ALTER` 命令的修饰选项的列表和独立的 `ALTER` 修改命令 | `List[Union[AlterCommand, AlterOption, DdlOption]]` | `standalone_alter_table_action`                    |
+| `opt_alter_command_list`        | 可选的修改命令的列表                                  | `List[Union[AlterCommand, AlterOption, DdlOption]]` | `opt_alter_command_list`<br />`alter_list`【子集】 |
+| `alter_command_list`            | 修改命令的列表                                        | `List[Union[AlterCommand, AlterOption, DdlOption]]` |                                                    |
+| `alter_command`                 | 单个修改命令                                          | `List[Union[AlterCommand, AlterOption, DdlOption]]` |                                                    |
+| `standalone_alter_commands`     | 独立的 `ALTER` 修改命令                               | `AlterCommand`                                      | `standalone_alter_commands`                        |
+| `alter_list_item`               | `ALTER TABLE` 修改命令                                | `AlterCommand`                                      | `alter_list_item`                                  |
+| `alter_table_partition_options` | 窗口相关的修改命令                                    | `AlterCommand`                                      | `alter_table_partition_options`                    |
+| `all_or_alt_part_name_list`     | `ALL` 关键字或指定分区名称列表                        | `Optional[List[str]]`                               | `all_or_alt_part_name_list`                        |
+| `opt_place`                     | 可选的变更字段插入位置                                | `AlterPlace`                                        | `opt_place`                                        |
+| `alter_order_expr_list`         | `ALTER` 排序表达式的列表                              | `List[OrderExpression]`                             | `alter_order_list`                                 |
+| `alter_order_expr`              | `ALTER` 排序表达式                                    | `OrderExpression`                                   | `alter_order_item`                                 |
 
 # 表（table）
 
@@ -1119,6 +1136,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `which_area`                 | 诊断区域的枚举值                                       | `EnumDiagnosticsAreaType`      | `which_area`                             |
 | `statement_information_type` | 语句诊断信息项名称的枚举值                             | `EnumStatementInformationType` | `statement_information_item_name`        |
 | `condition_information_type` | 条件诊断信息项名称的枚举值                             | `EnumConditionInformationType` | `condition_information_item_name`        |
+| `row_format_type`            | 行格式类型的枚举值                                     | `EnumRowFormatType`            | `row_types`                              |
+| `merge_insert_type`          | 向 MERGE 表插入数据的类型的枚举值                      | `EnumMergeInsertType`          | `merge_insert_types`                     |
 
 #### 固定的词语组合（fixed word）
 
@@ -1146,6 +1165,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_ignore_unknown_user`         | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                  |
 | `opt_keyword_convert_xid`                 | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                          |
 | `opt_keyword_one_phase`                   | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
+| `opt_keyword_column`                      | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                               |
 | `keyword_deallocate_or_drop`              | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
 | `keyword_describe_or_explain`             | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
 | `keyword_table_or_tables`                 | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |
@@ -1156,6 +1176,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `keyword_master_or_binary_logs_and_gtids` | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`          |
 | `keyword_begin_or_start`                  | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                           |
 | `keyword_next_from_or_from`               | 可选的 `NEXT FROM` 或 `FROM` 关键字（用于 FETCH 语法中的噪声词） | -          | `sp_opt_fetch_noise`                       |
+| `keyword_visible_or_invisible`            | `VISIBLE` 关键字或 `INVISIBLE` 关键字                        | `bool`     | `visibility`                               |
 | `opt_braces`                              | 可选的空括号                                                 | -          | `optional_braces`                          |
 | `opt_comma`                               | 可选的逗号                                                   | -          | `opt_comma`                                |
 | `keyword_charset`                         | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |
@@ -1164,6 +1185,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `keyword_nvarchar`                        | `NVARCHAR` 关键字、`NATIONAL VARCHAR` 关键字、`Ncharacter_setCHAR VARCHAR` 关键字、`NATIONAL CHAR VARYING` 关键字或 `NCHAR VARYING` 关键字（兼容的 `NVARCHAR` 类型名称） | -          | `nvarchar`                                 |
 | `opt_equal`                               | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                |
 | `equal`                                   | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                    |
+| `opt_to_or_eq_or_as`                      | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                   |
 
 #### 标识符（ident）
 
@@ -1240,13 +1262,13 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `user_name`                | 用户名称                                                     | `UserName`            | `user`                                                       |
 | `explicit_user_name`       | 用户名称（不匹配 `CURRENT_USER` 关键字）                     | `UserName`            | `user_ident_or_text`                                         |
 
-## 参数（param）
+#### 参数（param）
 
 | 水杉解析器语义组名称 | 语义组含义 | 返回值类型 | MySQL 语义组名称 |
 | -------------------- | ---------- | ---------- | ---------------- |
 | `param_marker`       | 参数占位符 | `Param`    | `param_marker`   |
 
-## 变量（variable）
+#### 变量（variable）
 
 | 水杉解析器语义组名称          | 语义组含义                 | 返回值类型               | MySQL 语义组名称                                |
 | ----------------------------- | -------------------------- | ------------------------ | ----------------------------------------------- |
@@ -1260,7 +1282,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `system_or_user_variable`     | 系统变量或用户变量         | `Variable`               | `rvalue_system_or_user_variable`                |
 | `user_variable_assignment`    | 用户变量赋值语句           | `UserVariableAssignment` | `in_expression_user_variable_assignment`        |
 
-## 时间单位类型（time_unit）
+#### 时间单位类型（time_unit）
 
 | 水杉解析器语义组名称 | 语义组含义                            | 返回值类型     | MySQL 语义组名称      |
 | -------------------- | ------------------------------------- | -------------- | --------------------- |

@@ -39,6 +39,7 @@ from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
+from metasequoia_sql_grammar.phrase import alter_command
 from metasequoia_sql_grammar.phrase import cpu_range
 from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.phrase import ddl_column_attribute
@@ -275,6 +276,7 @@ def build_grammar():
         cpu_range,  # CPU 范围
         process_command,  # 处理命令
         event_attribute,  # 事件属性
+        alter_command,  # ALTER 命令
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -315,8 +317,8 @@ def build_grammar():
         alter_instance_statement,  # ALTER INSTANCE 语句
         alter_procedure_statement,  # ALTER PROCEDURE 语句
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
-        analyze_statement,  # ANALYZE TABLE 语句
         alter_table_statement,  # ALTER TABLE 语句
+        analyze_statement,  # ANALYZE TABLE 语句
         begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句
         call_statement,  # ALTER TABLE 语句

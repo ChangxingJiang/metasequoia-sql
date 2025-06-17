@@ -34,6 +34,8 @@ __all__ = [
     "EnumDiagnosticsAreaType",
     "EnumStatementInformationType",
     "EnumConditionInformationType",
+    "EnumRowFormatType",
+    "EnumMergeInsertType",
 ]
 
 
@@ -312,3 +314,22 @@ class EnumConditionInformationType(IntEnum):
     MESSAGE_TEXT = 11  # MESSAGE_TEXT
     MYSQL_ERRNO = 12  # MYSQL_ERRNO
     RETURNED_SQLSTATE = 13  # RETURNED_SQLSTATE
+
+
+class EnumRowFormatType(IntEnum):
+    """行格式类型的枚举值"""
+
+    DEFAULT = 0  # DEFAULT
+    FIXED = 1  # FIXED
+    DYNAMIC = 2  # DYNAMIC
+    COMPRESSED = 3  # COMPRESSED
+    REDUNDANT = 4  # REDUNDANT
+    COMPACT = 5  # COMPACT
+
+
+class EnumMergeInsertType(IntEnum):
+    """向 MERGE 表插入数据的类型的枚举值"""
+
+    NO = 1  # NO：不允许向 MERGE 表插入数据，尝试插入会报错
+    FIRST = 2  # FIRST：将新记录插入到第一个底层的 MyISAM 表中
+    LAST = 3  # LAST：将新记录插入到最后一个底层的 MyISAM 表中

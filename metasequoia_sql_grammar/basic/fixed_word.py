@@ -7,6 +7,7 @@ import metasequoia_parser as ms_parser
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    # 可选的关键字
     "OPT_KEYWORD_OF",
     "OPT_KEYWORD_ALL",
     "OPT_KEYWORD_INTO",
@@ -29,6 +30,9 @@ __all__ = [
     "OPT_KEYWORD_GRANT_OPTION",
     "OPT_KEYWORD_CONVERT_XID",
     "OPT_KEYWORD_ONE_PHASE",
+    "OPT_KEYWORD_COLUMN",
+
+    # 多种备选的关键字
     "KEYWORD_BEGIN_OR_START",
     "KEYWORD_NEXT_FROM_OR_FROM",
     "KEYWORD_DEALLOCATE_OR_DROP",
@@ -39,14 +43,18 @@ __all__ = [
     "KEYWORD_KEYS_OR_INDEX",
     "KEYWORD_REPLICA_OR_SLAVE",
     "KEYWORD_MASTER_OR_BINARY_LOGS_AND_GTIDS",
-    "OPT_BRACES",
-    "OPT_COMMA",
     "KEYWORD_CHARSET",
     "KEYWORD_NCHAR",
     "KEYWORD_VARCHAR",
     "KEYWORD_NVARCHAR",
+    "KEYWORD_VISIBLE_OR_INVISIBLE",
+
+    # 可选的运算符
+    "OPT_BRACES",
+    "OPT_COMMA",
     "OPT_EQUAL",
     "EQUAL",
+    "OPT_TO_OR_EQ_OR_AS",
 ]
 
 # 可选的 `OPT` 关键字
@@ -457,6 +465,19 @@ OPT_KEYWORD_GRANT_OPTION = ms_parser.create_group(
     ]
 )
 
+# 可选的 `COLUMN` 关键字
+OPT_KEYWORD_COLUMN = ms_parser.create_group(
+    name="opt_keyword_column",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COLUMN]
+        )
+    ]
+)
+
 # `BEGIN` 关键字或 `START` 关键字
 KEYWORD_BEGIN_OR_START = ms_parser.create_group(
     name="keyword_begin_or_start",
@@ -579,6 +600,21 @@ KEYWORD_NVARCHAR = ms_parser.create_group(
     ]
 )
 
+# `VISIBLE` 关键字或 `INVISIBLE` 关键字
+KEYWORD_VISIBLE_OR_INVISIBLE = ms_parser.create_group(
+    name="keyword_visible_or_invisible",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_VISIBLE],
+            action=lambda _: True
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INVISIBLE],
+            action=lambda _: False
+        )
+    ]
+)
+
 # 可选的 `=` 运算符或 `:=` 运算符
 OPT_EQUAL = ms_parser.create_group(
     name="opt_equal",
@@ -599,6 +635,25 @@ EQUAL = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_COLON_EQ]
+        )
+    ]
+)
+
+# `TO` 关键字、`=` 运算符或 `AS` 关键字
+OPT_TO_OR_EQ_OR_AS = ms_parser.create_group(
+    name="opt_to_or_eq_or_as",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TO]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_EQ]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AS]
         )
     ]
 )

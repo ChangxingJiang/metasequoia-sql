@@ -2,20 +2,17 @@
 DDL 修改表选项（ddl alter option）
 """
 
-from typing import Optional
+from typing import Optional, List
 
 from metasequoia_sql.ast.base import Node
 
 __all__ = [
     "AlterOption",
     "AlterStrOptionBase",
-    "AlterBoolOptionBase",
     "AlterOptionLock",
     "AlterOptionAlgorithm",
     "AlterOptionWithValidation",
     "TempAlterOptionList",
-    "AlterOptionEngine",
-    "AlterOptionWait",
 ]
 
 
@@ -35,21 +32,6 @@ class AlterStrOptionBase(AlterOption):
 
     @property
     def value(self) -> str:
-        return self._value
-
-
-class AlterBoolOptionBase(AlterOption):
-    """布尔值类型的 DDL 修改选项"""
-
-    __slots__ = (
-        "_value"
-    )
-
-    def __init__(self, value: bool):
-        self._value = value
-
-    @property
-    def value(self) -> bool:
         return self._value
 
 
@@ -118,10 +100,12 @@ class TempAlterOptionList(Node):
             validation=other.validation or self.validation
         )
 
-
-class AlterOptionEngine(AlterStrOptionBase):
-    """ALTER 选项：`ENGINE`"""
-
-
-class AlterOptionWait(AlterBoolOptionBase):
-    """ALTER 选项：`WAIT` 或 `NO_WAIT`"""
+    def get_list(self) -> List[AlterOption]:
+        result = []
+        if self._lock is not None:
+            result.append(self._lock)
+        if self._algorithm is not None:
+            result.append(self._algorithm)
+        if self._validation is not None:
+            result.append(self._validation)
+        return result

@@ -564,7 +564,7 @@ KEYWORD_TO_TERMINAL_MAP = {
     "row": SqlTerminalType.KEYWORD_ROW,
     "rows": SqlTerminalType.KEYWORD_ROWS,
     "row_count": SqlTerminalType.KEYWORD_ROW_COUNT,
-    "row_format": SqlTerminalType.KEYWORD_ROW_FORMAT,
+    "row_format_type": SqlTerminalType.KEYWORD_ROW_FORMAT,
     "row_number": SqlTerminalType.KEYWORD_ROW_NUMBER,
     "rtree": SqlTerminalType.KEYWORD_RTREE,
     "s3": SqlTerminalType.KEYWORD_S3,

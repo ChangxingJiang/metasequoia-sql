@@ -2,111 +2,39 @@
 ALTER TABLE 语句（alter table statement）
 """
 
-from typing import List
+from typing import List, TYPE_CHECKING, Union
 
 from metasequoia_sql.ast.base import Node
 
+if TYPE_CHECKING:
+    from metasequoia_sql.ast.basic.ident import Identifier
+    from metasequoia_sql.ast.phrase.alter_command import AlterCommand
+    from metasequoia_sql.ast.phrase.ddl_alter_option import AlterOption
+    from metasequoia_sql.ast.phrase.ddl_option import DdlOption
 
-class AlterTableCommand(Node):
-    """ALTER TABLE 中的 ALTER 命令"""
-
-
-class AlterTableDiscardTablespace(AlterTableCommand):
-    """ALTER TABLE 命令：DISCARD TABLESPACE"""
-
-
-class AlterTableImportTablespace(AlterTableCommand):
-    """ALTER TABLE 命令：IMPORT TABLESPACE"""
+__all__ = [
+    "AlterTableStatement"
+]
 
 
-class AlterTableAddPartition(AlterTableCommand):
-    """ALTER TABLE 命令：ADD PARTITION"""
+class AlterTableStatement(Node):
+    """`ALTER TABLE` 语句"""
 
     __slots__ = (
-        "_no_write_to_binlog"
+        "_table_ident",
+        "_command_list"
     )
 
-    def __init__(self, no_write_to_binlog: bool):
-        self._no_write_to_binlog = no_write_to_binlog
+    def __init__(self,
+                 table_ident: "Identifier",
+                 command_list: List[Union[AlterCommand, AlterOption, DdlOption]]) -> None:
+        self._table_ident = table_ident
+        self._command_list = command_list
 
     @property
-    def no_write_to_binlog(self) -> bool:
-        return self._no_write_to_binlog
-
-
-class AlterTableAddPartitionByDefinitionList(AlterTableCommand):
-    """ALTER TABLE 命令：ADD PARTITION ( partition_definition_list )"""
-
-    __slots__ = (
-        "_no_write_to_binlog",
-        "_partition_list"
-    )
-
-    def __init__(self, no_write_to_binlog: bool, partition_list: List[str]):
-        self._no_write_to_binlog = no_write_to_binlog
-        self._partition_list = partition_list
+    def table_ident(self) -> "Identifier":
+        return self._table_ident
 
     @property
-    def no_write_to_binlog(self) -> bool:
-        return self._no_write_to_binlog
-
-    @property
-    def partition_list(self) -> list:
-        return self._partition_list
-
-
-class AlterTableAddPartitionByPartitionNum(AlterTableCommand):
-    """ALTER TABLE 命令：ADD PARTITION PARTITIONS num_partition"""
-
-    __slots__ = (
-        "_no_write_to_binlog",
-        "_num_partition"
-    )
-
-    def __init__(self, no_write_to_binlog: bool, num_partition: int):
-        self._no_write_to_binlog = no_write_to_binlog
-        self._num_partition = num_partition
-
-    @property
-    def no_write_to_binlog(self) -> bool:
-        return self._no_write_to_binlog
-
-    @property
-    def num_partition(self) -> int:
-        return self._num_partition
-
-
-class AlterTableDropPartition(AlterTableCommand):
-    """ALTER TABLE 命令：DROP PARTITION"""
-
-    __slots__ = (
-        "_partition_list"
-    )
-
-    def __init__(self, partition_list: List[str]):
-        self._partition_list = partition_list
-
-    @property
-    def partition_list(self) -> List[str]:
-        return self._partition_list
-
-
-class AlterTableRebuildPartition(AlterTableCommand):
-    """ALTER TABLE 命令：REBUILD PARTITION"""
-
-    __slots__ = (
-        "_no_write_to_binlog",
-        "_partition_list"
-    )
-
-    def __init__(self, no_write_to_binlog: bool, partition_list: List[str]):
-        self._no_write_to_binlog = no_write_to_binlog
-        self._partition_list = partition_list
-
-    @property
-    def no_write_to_binlog(self) -> bool:
-        return self._no_write_to_binlog
-
-    @property
-    def partition_list(self) -> List[str]:
-        return self._partition_list
+    def command_list(self) -> List[Union[AlterCommand, AlterOption, DdlOption]]:
+        return self._command_list

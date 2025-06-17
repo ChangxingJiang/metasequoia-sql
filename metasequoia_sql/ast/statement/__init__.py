@@ -5,6 +5,7 @@ from metasequoia_sql.ast.statement.alter_instance_statement import *
 from metasequoia_sql.ast.statement.alter_procedure_statement import *
 from metasequoia_sql.ast.statement.alter_resource_group_statement import *
 from metasequoia_sql.ast.statement.alter_table_statement import *
+from metasequoia_sql.ast.statement.alter_table_statement import *
 from metasequoia_sql.ast.statement.analyze_statement import *
 from metasequoia_sql.ast.statement.begin_statement import *
 from metasequoia_sql.ast.statement.binlog_statement import *

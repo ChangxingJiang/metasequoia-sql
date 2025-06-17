@@ -43,6 +43,8 @@ __all__ = [
     "WHICH_AREA",
     "STATEMENT_INFORMATION_TYPE",
     "CONDITION_INFORMATION_TYPE",
+    "ROW_FORMAT_TYPE",
+    "MERGE_INSERT_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -845,6 +847,56 @@ CONDITION_INFORMATION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_RETURNED_SQLSTATE],
             action=lambda _: ast.EnumConditionInformationType.RETURNED_SQLSTATE
+        )
+    ]
+)
+
+# 行格式类型的枚举值
+ROW_FORMAT_TYPE = ms_parser.create_group(
+    name="row_format_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT],
+            action=lambda _: ast.EnumRowFormatType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FIXED],
+            action=lambda _: ast.EnumRowFormatType.FIXED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DYNAMIC],
+            action=lambda _: ast.EnumRowFormatType.DYNAMIC
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COMPRESSED],
+            action=lambda _: ast.EnumRowFormatType.COMPRESSED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REDUNDANT],
+            action=lambda _: ast.EnumRowFormatType.REDUNDANT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COMPACT],
+            action=lambda _: ast.EnumRowFormatType.COMPACT
+        )
+    ]
+)
+
+# 向 MERGE 表插入数据的类型的枚举值
+MERGE_INSERT_TYPE = ms_parser.create_group(
+    name="merge_insert_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NO],
+            action=lambda _: ast.EnumMergeInsertType.NO
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FIRST],
+            action=lambda _: ast.EnumMergeInsertType.FIRST
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LAST],
+            action=lambda _: ast.EnumMergeInsertType.LAST
         )
     ]
 )

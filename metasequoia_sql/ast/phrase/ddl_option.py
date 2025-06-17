@@ -10,13 +10,20 @@ from metasequoia_sql.ast.base import Expression, Node
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.basic.charset_name import Charset
+    from metasequoia_sql.ast.basic.fixed_enum import EnumRowFormatType, EnumMergeInsertType
 
 __all__ = [
+    # DDL 选项的抽象基类
     "DdlOption",
+
+    # DDL 选项的指定类型变量的基类
     "DdlStrOptionBase",
     "DdlIntOptionBase",
     "DdlExpressionOptionBase",
     "DdlCharsetOptionBase",
+    "DdlBoolOptionBase",
+
+    # DDL 选项的具体类型
     "DdlOptionEngine",
     "DdlOptionSecondaryEngine",
     "DdlOptionMaxRows",
@@ -34,14 +41,12 @@ __all__ = [
     "DdlOptionChecksum",
     "DdlOptionTableChecksum",
     "DdlOptionDelayKeyWrite",
-    "EnumRowFormat",
     "DdlOptionRowFormat",
     "DdlOptionUnion",
     "DdlOptionDefaultCharset",
     "DdlOptionDefaultCollate",
     "DdlOptionDefaultEncryption",
     "DdlOptionReadOnly",
-    "EnumMergeInsertType",
     "DdlOptionInsertMethod",
     "DdlOptionDataDirectory",
     "DdlOptionIndexDirectory",
@@ -54,6 +59,8 @@ __all__ = [
     "DdlOptionEngineAttribute",
     "DdlOptionSecondaryEngineAttribute",
     "DdlOptionAutoextendSize",
+    "DdlOptionStorageEngine",
+    "DdlOptionWait",
 ]
 
 
@@ -118,6 +125,21 @@ class DdlCharsetOptionBase(DdlOption):
 
     @property
     def value(self) -> "Charset":
+        return self._value
+
+
+class DdlBoolOptionBase(DdlOption):
+    """布尔值类型的 DDL 选项"""
+
+    __slots__ = (
+        "_value"
+    )
+
+    def __init__(self, value: bool):
+        self._value = value
+
+    @property
+    def value(self) -> bool:
         return self._value
 
 
@@ -189,17 +211,6 @@ class DdlOptionDelayKeyWrite(DdlIntOptionBase):
     """DDL 选项：DELAY_KEY_WRITE"""
 
 
-class EnumRowFormat(IntEnum):
-    """行格式类型的枚举值"""
-
-    DEFAULT = 0  # DEFAULT
-    FIXED = 1  # FIXED
-    DYNAMIC = 2  # DYNAMIC
-    COMPRESSED = 3  # COMPRESSED
-    REDUNDANT = 4  # REDUNDANT
-    COMPACT = 5  # COMPACT
-
-
 class DdlOptionRowFormat(DdlOption):
     """DDL 选项：ROW_FORMAT（表属性）"""
 
@@ -207,11 +218,11 @@ class DdlOptionRowFormat(DdlOption):
         "_value"
     )
 
-    def __init__(self, value: EnumRowFormat):
+    def __init__(self, value: "EnumRowFormatType"):
         self._value = value
 
     @property
-    def value(self) -> EnumRowFormat:
+    def value(self) -> "EnumRowFormatType":
         return self._value
 
 
@@ -257,14 +268,6 @@ class DdlOptionReadOnly(DdlOption):
         return self._value
 
 
-class EnumMergeInsertType(IntEnum):
-    """向 MERGE 表插入数据的类型的枚举值"""
-
-    NO = 1  # NO：不允许向 MERGE 表插入数据，尝试插入会报错
-    FIRST = 2  # FIRST：将新记录插入到第一个底层的 MyISAM 表中
-    LAST = 3  # LAST：将新记录插入到最后一个底层的 MyISAM 表中
-
-
 class DdlOptionInsertMethod(DdlOption):
     """DDL 选项：INSERT_METHOD（表属性）"""
 
@@ -272,11 +275,11 @@ class DdlOptionInsertMethod(DdlOption):
         "_value"
     )
 
-    def __init__(self, value: EnumMergeInsertType):
+    def __init__(self, value: "EnumMergeInsertType"):
         self._value = value
 
     @property
-    def value(self) -> EnumMergeInsertType:
+    def value(self) -> "EnumMergeInsertType":
         return self._value
 
 
@@ -336,3 +339,11 @@ class DdlOptionSecondaryEngineAttribute(DdlStrOptionBase):
 
 class DdlOptionAutoextendSize(DdlExpressionOptionBase):
     """DDL 选项：AUTOEXTEND_SIZE（表属性）"""
+
+
+class DdlOptionStorageEngine(DdlStrOptionBase):
+    """DDL 选项：[Storage] ENGINE（TableSpace 属性）"""
+
+
+class DdlOptionWait(DdlBoolOptionBase):
+    """ALTER 选项：`WAIT` 或 `NO_WAIT`（TableSpace 属性）"""
