@@ -276,7 +276,7 @@
 | 水杉解析器语义组名称      | 语义组类型                                        | 返回值类型                 | MySQL 语义组名称          |
 | ------------------------- | ------------------------------------------------- | -------------------------- | ------------------------- |
 | `insert_statement`        | `INSERT` 语句                                     | `InsertOrReplaceStatement` | `insert_stmt`             |
-| `replace_stmt`            | `REPLACE` 语句                                    | `InsertOrReplaceStatement` | `replace_stmt`            |
+| `replace_statement`       | `REPLACE` 语句                                    | `InsertOrReplaceStatement` | `replace_stmt`            |
 | `insert_from_constructor` | 通过值列表构造的多行数据                          | `TempInsertColumnAndValue` | `insert_from_constructor` |
 | `insert_values`           | `VALUE` 或 `VALUES` 关键字引导的多行数据          | `List[RowValue]`           | `insert_values`           |
 | `keyword_value_or_values` | `VALUE` 关键字或 `VALUES` 关键字                  | -                          | `value_or_values`         |
@@ -325,6 +325,19 @@
 | `purge_statement`    | `PURGE` 语句 | `PurgeStatement` | `purge`<br />`purge_options`【包含】 |
 | `purge_option`       | `PURGE` 选项 | `PurgeOption`    | `purge_option`                       |
 
+#### PREPARE 语句（prepare）
+
+| 水杉解析器语义组名称 | 语义组类型                         | 返回值类型                           | MySQL 语义组名称 |
+| -------------------- | ---------------------------------- | ------------------------------------ | ---------------- |
+| `prepare_statement`  | `PREPARE` 语句                     | `PrepareStatement`                   | `prepare`        |
+| `prepare_source`     | `PREPARE` 语句的 `FROM` 子句中的值 | `Union[StringLiteral, UserVariable]` | `prepare_src`    |
+
+#### RELEASE 语句（release statement）
+
+| 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称 |
+| -------------------- | -------------- | ------------------ | ---------------- |
+| `release_statement`  | `RELEASE` 语句 | `ReleaseStatement` | `release`        |
+
 #### RENAME 语句（rename statement）
 
 | 水杉解析器语义组名称 | 语义组类型                          | 返回值类型                            | MySQL 语义组名称      |
@@ -334,24 +347,11 @@
 | `rename_table_list`  | `RENAME` 语句中的表重命名对的列表   | `List[Tuple[Identifier, Identifier]]` | `table_to_table_list` |
 | `rename_table_item`  | `RENAME` 语句中的表重命名对         | `Tuple[Identifier, Identifier]`       | `table_to_table`      |
 
-#### PREPARE 语句（prepare）
-
-| 水杉解析器语义组名称 | 语义组类型                         | 返回值类型                           | MySQL 语义组名称 |
-| -------------------- | ---------------------------------- | ------------------------------------ | ---------------- |
-| `prepare_statement`  | `PREPARE` 语句                     | `PrepareStatement`                   | `prepare`        |
-| `prepare_source`     | `PREPARE` 语句的 `FROM` 子句中的值 | `Union[StringLiteral, UserVariable]` | `prepare_src`    |
-
 #### REPAIR TABLE 语句（repair table statement）
 
 | 水杉解析器语义组名称     | 语义组类型          | 返回值类型             | MySQL 语义组名称    |
 | ------------------------ | ------------------- | ---------------------- | ------------------- |
 | `repair_table_statement` | `REPAIR TABLE` 语句 | `RepairTableStatement` | `repair_table_stmt` |
-
-#### RELEASE 语句（release statement）
-
-| 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称 |
-| -------------------- | -------------- | ------------------ | ---------------- |
-| `release_statement`  | `RELEASE` 语句 | `ReleaseStatement` | `release`        |
 
 #### RESET 语句（reset statement）
 

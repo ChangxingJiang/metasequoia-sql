@@ -47,7 +47,418 @@ SQL_STATEMENT = ms_parser.create_group(
     name="sql_statement",
     rules=[
         ms_parser.create_rule(
+            symbols=["alter_database_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["alter_event_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["alter_function_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["alter_instance_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_logfile_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["alter_procedure_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["alter_resource_group_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_server_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_tablespace_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_undo_tablespace_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_table_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_user_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["alter_view_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["analyze_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["begin_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["binlog_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["call_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["change"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["check_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["checksum_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["clone_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["commit_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["create"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["create_index_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["create_resource_group_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["create_role_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["create_srs_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["create_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["deallocate_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["delete_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["describe_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["do_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_database_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_event_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_function_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_index_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_logfile_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_procedure_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_resource_group_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_role_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_server_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_srs_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_tablespace_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_undo_tablespace_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_trigger_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_user_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["drop_view_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["execute_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["explain_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["flush_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["get_diagnostics_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["group_replication"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["grant_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["handler_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["help_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["import_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["insert_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["install_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["kill_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["load_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["lock_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["optimize_table_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["keycache_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["preload_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["prepare_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["purge_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["release_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["rename_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["repair_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["replace_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["reset_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["resignal_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["restart_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["revoke_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["rollback_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["savepoint_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["select_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["set"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["set_resource_group_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["set_role_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["show_binary_log_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_binary_logs_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_binlog_events_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_character_set_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_collation_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_columns_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_count_errors_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_count_warnings_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_database_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_event_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_function_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_procedure_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_trigger_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_user_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_create_view_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_databases_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_engine_logs_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_engine_mutex_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_engine_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_engines_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_errors_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_events_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_function_code_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_function_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_grants_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_keys_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_master_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_open_tables_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_parse_tree_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_plugins_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_privileges_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_procedure_code_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_procedure_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_processlist_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_profile_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_profiles_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_relaylog_events_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_replica_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_replicas_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_table_status_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_tables_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_triggers_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_variables_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["show_warnings_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["shutdown_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["signal_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["start_transaction_statement"]
+        ),
+        # ms_parser.create_rule(
+        #     symbols=["start_replica_stmt"]  TODO
+        # ),
+        # ms_parser.create_rule(
+        #     symbols=["stop_replica_stmt"]  TODO
+        # ),
+        ms_parser.create_rule(
+            symbols=["truncate_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["uninstall_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["unlock_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["update_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["use_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["xa_statement"]
         )
     ]
 )
