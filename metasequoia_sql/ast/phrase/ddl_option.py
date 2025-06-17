@@ -61,6 +61,7 @@ __all__ = [
     "DdlOptionAutoextendSize",
     "DdlOptionStorageEngine",
     "DdlOptionWait",
+    "DdlOptionInitialSize",
 ]
 
 
@@ -346,4 +347,8 @@ class DdlOptionStorageEngine(DdlStrOptionBase):
 
 
 class DdlOptionWait(DdlBoolOptionBase):
-    """ALTER 选项：`WAIT` 或 `NO_WAIT`（TableSpace 属性）"""
+    """DDL 选项：WAIT 或 NO_WAIT"""
+
+
+class DdlOptionInitialSize(DdlExpressionOptionBase):
+    """DDL 选项：INITIAL_SIZE（表空间属性）"""

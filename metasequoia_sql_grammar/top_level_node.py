@@ -58,9 +58,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["alter_instance_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["alter_logfile_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["alter_logfile_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["alter_procedure_statement"]
         ),

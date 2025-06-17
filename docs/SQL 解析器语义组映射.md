@@ -54,6 +54,12 @@
 | -------------------------- | --------------------- | ------------------------ | --------------------- |
 | `alter_database_statement` | `ALTER DATABASE` 语句 | `AlterDatabaseStatement` | `alter_database_stmt` |
 
+#### ALTER EVENT 语句（alter event statement）
+
+| 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称   |
+| ----------------------- | ------------------ | --------------------- | ------------------ |
+| `alter_event_statement` | `ALTER EVENT` 语句 | `AlterEventStatement` | `alter_event_stmt` |
+
 #### ALTER FUNCTION 语句（alter function statement）
 
 | 水杉解析器语义组名称       | 语义组类型            | 返回值类型               | MySQL 语义组名称      |
@@ -66,6 +72,15 @@
 | -------------------------- | --------------------- | ------------------------ | ----------------------- |
 | `alter_instance_statement` | `ALTER INSTANCE` 语句 | `AlterInstanceStatement` | `alter_instance_stmt`   |
 | `alter_instance_action`    | `ALTER INSTANCE` 操作 | `AlterInstanceAction`    | `alter_instance_action` |
+
+#### ALTER LOGFILE 语句（alter logfile statement）
+
+| 水杉解析器语义组名称                  | 语义组类型                            | 返回值类型              | MySQL 语义组名称                  |
+| ------------------------------------- | ------------------------------------- | ----------------------- | --------------------------------- |
+| `alter_logfile_statement`             | `ALTER LOGFILE` 语句                  | `AlterLogfileStatement` | `alter_logfile_stmt`              |
+| `opt_alter_logfile_group_option_list` | 可选的 `ALTER LOGFILE` 语句选项的列表 | `List[DdlOption]`       | `opt_alter_logfile_group_options` |
+| `alter_logfile_group_option_list`     | `ALTER LOGFILE` 语句选项的列表        | `List[DdlOption]`       | `alter_logfile_group_option_list` |
+| `alter_logfile_group_option`          | `ALTER LOGFILE` 语句的选项            | `DdlOption`             | `alter_logfile_group_option`      |
 
 #### ALTER PROCEDURE 语句（alter procedure statement）
 
@@ -714,6 +729,7 @@
 | `drop_undo_tablespace_option`              | `UNDO TABLESPACE` 的选项                                | `AlterOption`                | `undo_tablespace_option`                                  |
 | `ddl_option_engine`                        | ALTER 选项：`ENGINE`                                    | `DdlOptionEngine`            | `ts_option_engine`                                        |
 | `ddl_option_wait`                          | ALTER 选项：`WAIT` 或 `NO_WAIT`                         | `DdlOptionWait`              | `ts_option_wait`                                          |
+| `ddl_option_initial_size`                  | 指定表空间初始大小的属性                                | `DdlOptionInitialSize`       | `ts_option_initial_size`                                  |
 
 `drop_undo_tablespace_option` 语义组与 `alter_option_engine` 语义组一致，但考虑可拓展性保留单独的 `drop_undo_tablespace_option` 语义组。
 
@@ -949,6 +965,12 @@
 | `opt_place`                     | 可选的变更字段插入位置                                | `AlterPlace`                                        | `opt_place`                                        |
 | `alter_order_expr_list`         | `ALTER` 排序表达式的列表                              | `List[OrderExpression]`                             | `alter_order_list`                                 |
 | `alter_order_expr`              | `ALTER` 排序表达式                                    | `OrderExpression`                                   | `alter_order_item`                                 |
+
+#### 日志文件撤销文件（undofile）
+
+| 水杉解析器语义组名称 | 语义组含义           | 返回值类型 | MySQL 语义组名称 |
+| -------------------- | -------------------- | ---------- | ---------------- |
+| `undofile`           | 日志文件撤销文件名称 | `str`      | `lg_undofile`    |
 
 # 表（table）
 

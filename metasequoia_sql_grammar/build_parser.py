@@ -56,10 +56,12 @@ from metasequoia_sql_grammar.phrase import process_command
 from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
+from metasequoia_sql_grammar.phrase import undofile
 from metasequoia_sql_grammar.statement import alter_database_statement
 from metasequoia_sql_grammar.statement import alter_event_statement
 from metasequoia_sql_grammar.statement import alter_function_statement
 from metasequoia_sql_grammar.statement import alter_instance_statement
+from metasequoia_sql_grammar.statement import alter_logfile_statement
 from metasequoia_sql_grammar.statement import alter_procedure_statement
 from metasequoia_sql_grammar.statement import alter_resource_group_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
@@ -277,6 +279,7 @@ def build_grammar():
         process_command,  # 处理命令
         event_attribute,  # 事件属性
         alter_command,  # ALTER 命令
+        undofile,  # 撤销文件
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -315,6 +318,7 @@ def build_grammar():
         alter_event_statement,  # ALTER EVENT 语句
         alter_function_statement,  # ALTER FUNCTION 语句
         alter_instance_statement,  # ALTER INSTANCE 语句
+        alter_logfile_statement,  # ALTER LOGFILE 语句
         alter_procedure_statement,  # ALTER PROCEDURE 语句
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
         alter_table_statement,  # ALTER TABLE 语句

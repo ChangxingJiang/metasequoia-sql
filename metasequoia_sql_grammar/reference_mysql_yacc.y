@@ -1387,32 +1387,6 @@ logfile_group_option:
         | ts_option_comment
         ;
 
-opt_alter_logfile_group_options:
-          %empty { $$= nullptr; }
-        | alter_logfile_group_option_list
-        ;
-
-alter_logfile_group_option_list:
-          alter_logfile_group_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        | alter_logfile_group_option_list opt_comma alter_logfile_group_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        ;
-
-alter_logfile_group_option:
-          ts_option_initial_size
-        | ts_option_engine
-        | ts_option_wait
-        ;
-
 ts_datafile:
           DATAFILE_SYM TEXT_STRING_sys { $$= $2; }
         ;
@@ -1420,17 +1394,6 @@ ts_datafile:
 undo_tablespace_state:
           ACTIVE_SYM   { $$= ALTER_UNDO_TABLESPACE_SET_ACTIVE; }
         | INACTIVE_SYM { $$= ALTER_UNDO_TABLESPACE_SET_INACTIVE; }
-        ;
-
-lg_undofile:
-          UNDOFILE_SYM TEXT_STRING_sys { $$= $2; }
-        ;
-
-ts_option_initial_size:
-          INITIAL_SIZE_SYM opt_equal size_number
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_initial_size(@$, $3);
-          }
         ;
 
 ts_option_max_size:
@@ -1550,28 +1513,6 @@ alter_view_stmt:
             MAKE_CMD_DDL_DUMMY();
           }
         ;
-
-alter_logfile_stmt:
-          ALTER LOGFILE_SYM GROUP_SYM ident ADD lg_undofile
-          opt_alter_logfile_group_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($7 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $7))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_logfile_group{ALTER_LOGFILE_GROUP,
-                                                          $4, pc, $6};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ //OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
 
 alter_tablespace_stmt:
           ALTER TABLESPACE_SYM ident ADD ts_datafile

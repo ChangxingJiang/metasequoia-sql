@@ -1,5 +1,5 @@
 """
-ALTER EVENT 语句（alter event statement）语义组
+ALTER EVENT 语句（alter event statement）
 """
 
 import metasequoia_parser as ms_parser
@@ -8,26 +8,10 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "OPT_EVENT_SQL_STATEMENT",
     "ALTER_EVENT_STATEMENT",
 ]
 
-# 可选的事件 SQL 语句
-OPT_EVENT_SQL_STATEMENT = ms_parser.create_group(
-    name="opt_event_sql_statement",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_DO, "sql_statement"],
-            action=lambda x: x[1]
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        )
-    ]
-)
-
-# ALTER EVENT 语句
+# `ALTER EVENT` 语句
 ALTER_EVENT_STATEMENT = ms_parser.create_group(
     name="alter_event_statement",
     rules=[
@@ -56,4 +40,4 @@ ALTER_EVENT_STATEMENT = ms_parser.create_group(
             )
         )
     ]
-) 
+)

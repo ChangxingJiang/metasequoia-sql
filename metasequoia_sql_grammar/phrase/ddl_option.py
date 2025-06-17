@@ -39,6 +39,7 @@ __all__ = [
     "DDL_OPTION_DEFAULT_COLLATE",
     "DDL_OPTION_DEFAULT_ENCRYPTION",
     "DDL_OPTION_AUTOEXTEND_SIZE",
+    "DDL_OPTION_INITIAL_SIZE",
 
     # 选项值
     "TERNARY_OPTION_VALUE",
@@ -439,6 +440,17 @@ DDL_OPTION_AUTOEXTEND_SIZE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AUTOEXTEND_SIZE, "opt_equal", "size_number"],
             action=lambda x: ast.DdlOptionAutoextendSize(value=x[2])
+        )
+    ]
+)
+
+# 指定表空间初始大小的属性
+DDL_OPTION_INITIAL_SIZE = ms_parser.create_group(
+    name="ddl_option_initial_size",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INITIAL_SIZE, "opt_equal", "size_number"],
+            action=lambda x: ast.DdlOptionInitialSize(value=x[2])
         )
     ]
 )
