@@ -121,6 +121,12 @@
 | --------------------------------- | ---------------------------- | ------------------------------ | ---------------------------- |
 | `alter_undo_tablespace_statement` | `ALTER UNDO TABLESPACE` 语句 | `AlterUndoTablespaceStatement` | `alter_undo_tablespace_stmt` |
 
+#### ALTER VIEW 语句（alter view statement）
+
+| 水杉解析器语义组名称   | 语义组类型        | 返回值类型           | MySQL 语义组名称                                             |
+| ---------------------- | ----------------- | -------------------- | ------------------------------------------------------------ |
+| `alter_view_statement` | `ALTER VIEW` 语句 | `AlterViewStatement` | `alter_view_stmt`<br />`view_tail`【包含】<br />`view_query_block`【包含】 |
+
 #### ANALYZE TABLE 语句（analyze table statement）
 
 | 水杉解析器语义组名称         | 语义组类型           | 返回值类型              | MySQL 语义组名称             |
@@ -200,6 +206,14 @@
 | `opt_create_table_option_2`  | `CREATE TABLE` 的选项（第 2 层）           | `TempCreateTableOption` | `opt_create_partitioning_etc`  |
 | `opt_create_table_option_3`  | `CREATE TABLE` 的选项（第 3 层）           | `TempCreateTableOption` | `opt_duplicate_as_qe`          |
 | `as_create_query_expression` | 可选择是否包含前置 `AS` 关键字的查询表达式 | `QueryExpression`       | `as_create_query_expression`   |
+
+#### CREATE VIEW 语句（create view statement）
+
+| 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称                                             |
+| ----------------------- | ------------------ | --------------------- | ------------------------------------------------------------ |
+| `create_view_statement` | `CREATE VIEW` 语句 | `CreateViewStatement` | `create`【部分】<br />`view_tail`【包含】<br />`view_query_block`【包含】<br />`view_replace_or_algorithm`【包含】 |
+
+将 `create` 语义组中的备选规则 `CREATE view_or_trigger_or_sp_or_event`，以及 `view_or_trigger_or_sp_or_event` 语义组、`definer_tail` 语义和 `no_definer_tail` 语义组拆分为各个不同的 `CREATE` 语句单独的语义组。
 
 #### DEALLOCATE 语句（deallocate statement）
 
@@ -1210,6 +1224,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `row_format_type`            | 行格式类型的枚举值                                     | `EnumRowFormatType`            | `row_types`                              |
 | `merge_insert_type`          | 向 MERGE 表插入数据的类型的枚举值                      | `EnumMergeInsertType`          | `merge_insert_types`                     |
 | `undo_tablespace_state`      | `UNDO TABLESPACE` 状态的枚举值                         | `EnumUndoTablespaceState`      | `undo_tablespace_state`                  |
+| `opt_view_algorithm_type`    | 可选的视图算法类型的枚举值                             | `EnumViewAlgorithmType`        |                                          |
 | `view_algorithm_type`        | 视图算法类型的枚举值                                   | `EnumViewAlgorithmType`        | `view_algorithm`                         |
 | `view_suid_type`             | 视图 SUID 类型的枚举值                                 | `EnumViewSuidType`             | `view_suid`                              |
 
@@ -1240,6 +1255,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_convert_xid`                 | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                          |
 | `opt_keyword_one_phase`                   | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
 | `opt_keyword_column`                      | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                               |
+| `opt_keyword_on_replace`                  | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                             |
 | `keyword_deallocate_or_drop`              | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
 | `keyword_describe_or_explain`             | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
 | `keyword_table_or_tables`                 | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |

@@ -80,6 +80,7 @@ from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import commit_statement
 from metasequoia_sql_grammar.statement import create_index_statement
+from metasequoia_sql_grammar.statement import create_view_statement
 from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
 from metasequoia_sql_grammar.statement import create_table_statement
@@ -346,6 +347,7 @@ def build_grammar():
         create_resource_group_statement,  # CREATE RESOURCE GROUP 语句
         create_role_statement,  # CREATE ROLE 语句
         create_table_statement,  # CREATE TABLE 语句
+        create_view_statement,  # CREATE VIEW 语句
         deallocate_statement,  # DEALLOCATE 语句
         delete_statement,  # DELETE 语句
         describe_statement,  # DESCRIBE 语句

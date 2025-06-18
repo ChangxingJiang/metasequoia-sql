@@ -82,9 +82,9 @@ SQL_STATEMENT = ms_parser.create_group(
         # ms_parser.create_rule(
         #     symbols=["alter_user_stmt"]  TODO
         # ),
-        # ms_parser.create_rule(
-        #     symbols=["alter_view_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["alter_view_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["analyze_table_statement"]
         ),
@@ -129,6 +129,9 @@ SQL_STATEMENT = ms_parser.create_group(
         # ),
         ms_parser.create_rule(
             symbols=["create_table_statement"]
+        ),
+        ms_parser.create_rule(
+            symbols=["create_view_statement"]
         ),
         ms_parser.create_rule(
             symbols=["deallocate_statement"]

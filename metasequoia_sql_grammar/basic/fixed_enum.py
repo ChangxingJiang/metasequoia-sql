@@ -46,6 +46,7 @@ __all__ = [
     "ROW_FORMAT_TYPE",
     "MERGE_INSERT_TYPE",
     "UNDO_TABLESPACE_STATE",
+    "OPT_VIEW_ALGORITHM_TYPE",
     "VIEW_ALGORITHM_TYPE",
     "VIEW_SUID_TYPE",
 ]
@@ -915,6 +916,20 @@ UNDO_TABLESPACE_STATE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INACTIVE],
             action=lambda x: ast.EnumUndoTablespaceState.INACTIVE
+        )
+    ]
+)
+
+# 可选的视图算法类型的枚举值
+OPT_VIEW_ALGORITHM_TYPE = ms_parser.create_group(
+    name="opt_view_algorithm_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["view_algorithm_type"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumViewAlgorithmType.DEFAULT
         )
     ]
 )

@@ -1378,45 +1378,6 @@ old_or_new_charset_name_or_default:
         | DEFAULT_SYM    { $$=nullptr; }
         ;
 
-alter_view_stmt:
-          ALTER view_algorithm definer_opt
-          {
-            LEX *lex= Lex;
-
-            if (lex->sphead)
-            {
-              my_error(ER_SP_BADSTATEMENT, MYF(0), "ALTER VIEW");
-              MYSQL_YYABORT;
-            }
-            lex->create_view_mode= enum_view_create_mode::VIEW_ALTER;
-          }
-          view_tail
-          {
-            MAKE_CMD_DDL_DUMMY();
-          }
-        | ALTER definer_opt
-          /*
-            We have two separate rules for ALTER VIEW rather that
-            optional view_algorithm above, to resolve the ambiguity
-            with the ALTER EVENT below.
-          */
-          {
-            LEX *lex= Lex;
-
-            if (lex->sphead)
-            {
-              my_error(ER_SP_BADSTATEMENT, MYF(0), "ALTER VIEW");
-              MYSQL_YYABORT;
-            }
-            lex->create_view_algorithm= VIEW_ALGORITHM_UNDEFINED;
-            lex->create_view_mode= enum_view_create_mode::VIEW_ALTER;
-          }
-          view_tail
-          {
-            MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
 alter_user_stmt:
           alter_user_command alter_user_list require_clause
           connect_options opt_account_lock_password_expire_options
@@ -3046,133 +3007,21 @@ view_or_trigger_or_sp_or_event:
           {}
         | no_definer init_lex_create_info no_definer_tail
           {}
-        | view_replace_or_algorithm definer_opt init_lex_create_info view_tail
-          {}
         ;
 
 definer_tail:
-          view_tail
-        | trigger_tail
+          trigger_tail
         | sp_tail
         | sf_tail
         | event_tail
         ;
 
 no_definer_tail:
-          view_tail
-        | trigger_tail
+          trigger_tail
         | sp_tail
         | sf_tail
         | udf_tail
         | event_tail
-        ;
-
-/**************************************************************************
-
- CREATE VIEW statement parts.
-
-**************************************************************************/
-
-view_replace_or_algorithm:
-          view_replace
-          {}
-        | view_replace view_algorithm
-          {}
-        | view_algorithm
-          {}
-        ;
-
-view_replace:
-          OR_SYM REPLACE_SYM
-          { Lex->create_view_mode= enum_view_create_mode::VIEW_CREATE_OR_REPLACE; }
-        ;
-
-view_tail:
-          view_suid VIEW_SYM table_ident opt_derived_column_list
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            lex->sql_command= SQLCOM_CREATE_VIEW;
-            /* first table in list is target VIEW name */
-            if (!lex->query_block->add_table_to_list(thd, $3, nullptr,
-                                                    TL_OPTION_UPDATING,
-                                                    TL_IGNORE,
-                                                    MDL_EXCLUSIVE))
-              MYSQL_YYABORT;
-            lex->query_tables->open_strategy= Table_ref::OPEN_STUB;
-            thd->parsing_system_view= lex->query_tables->is_system_view;
-            if ($4.size())
-            {
-              for (auto column_alias : $4)
-              {
-                // Report error if the column name/length is incorrect.
-                if (check_column_name(column_alias.str))
-                {
-                  my_error(ER_WRONG_COLUMN_NAME, MYF(0), column_alias.str);
-                  MYSQL_YYABORT;
-                }
-              }
-              /*
-                The $4 object is short-lived (its 'm_array' is not);
-                so we have to duplicate it, and then we can store a
-                pointer.
-              */
-              void *rawmem= thd->memdup(&($4), sizeof($4));
-              if (!rawmem)
-                MYSQL_YYABORT; /* purecov: inspected */
-              lex->query_tables->
-                set_derived_column_names(static_cast<Create_col_name_list* >(rawmem));
-            }
-          }
-          AS view_query_block
-        ;
-
-view_query_block:
-          query_expression_with_opt_locking_clauses view_check_option
-          {
-            THD *thd= YYTHD;
-            LEX *lex= Lex;
-            lex->parsing_options.allows_variable= false;
-            lex->parsing_options.allows_select_into= false;
-
-            /*
-              In CREATE VIEW v ... the m_table_list initially contains
-              here a table entry for the destination "table" `v'.
-              Backup it and clean the table list for the processing of
-              the query expression and push `v' back to the beginning of the
-              m_table_list finally.
-
-              The following work only with the local list, the global list
-              is created correctly in this case
-            */
-            SQL_I_List<Table_ref> save_list;
-            Query_block * const save_query_block= Select;
-            save_query_block->m_table_list.save_and_clear(&save_list);
-
-            CONTEXTUALIZE_VIEW($1);
-
-            /*
-              The following work only with the local list, the global list
-              is created correctly in this case
-            */
-            save_query_block->m_table_list.push_front(&save_list);
-
-            Lex->create_view_check= $2;
-
-            /*
-              It's simpler to use @$ to grab the whole rule text, OTOH  it's
-              also simple to lose something that way when changing this rule,
-              so let use explicit @1 and @2 to memdup this view definition:
-            */
-            const size_t len= @2.cpp.end - @1.cpp.start;
-            lex->create_view_query_block.str=
-              static_cast<char *>(thd->memdup(@1.cpp.start, len));
-            lex->create_view_query_block.length= len;
-            trim_whitespace(thd->charset(), &lex->create_view_query_block);
-
-            lex->parsing_options.allows_variable= true;
-            lex->parsing_options.allows_select_into= true;
-          }
         ;
 
 /**************************************************************************
