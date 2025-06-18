@@ -49,6 +49,9 @@ __all__ = [
     "OPT_VIEW_ALGORITHM_TYPE",
     "VIEW_ALGORITHM_TYPE",
     "VIEW_SUID_TYPE",
+    "OPT_REPLICA_THREAD_TYPE_LIST",
+    "REPLICA_THREAD_TYPE_LIST",
+    "REPLICA_THREAD_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -972,6 +975,51 @@ VIEW_SUID_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SQL, TType.KEYWORD_SECURITY, TType.KEYWORD_INVOKER],
             action=lambda x: ast.EnumViewSuidType.INVOKER
+        )
+    ]
+)
+
+# 可选的副本线程选项的枚举值的列表
+OPT_REPLICA_THREAD_TYPE_LIST = ms_parser.create_group(
+    name="opt_replica_thread_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["replica_thread_type_list"],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumReplicaThreadType.DEFAULT
+        )
+    ]
+)
+
+# 副本线程选项的枚举值的列表
+REPLICA_THREAD_TYPE_LIST = ms_parser.create_group(
+    name="replica_thread_type_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["replica_thread_type_list", TType.OPERATOR_COMMA, "replica_thread_type"],
+            action=lambda x: x[0] | x[2]
+        ),
+        ms_parser.create_rule(
+            symbols=["replica_thread_type"],
+            action=lambda x: x[0]
+        )
+    ]
+)
+
+# 副本线程选项的枚举值
+REPLICA_THREAD_TYPE = ms_parser.create_group(
+    name="replica_thread_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SQL_THREAD],
+            action=lambda x: ast.EnumReplicaThreadType.SQL_THREAD
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RELAY_THREAD],
+            action=lambda x: ast.EnumReplicaThreadType.RELAY_THREAD
         )
     ]
 )

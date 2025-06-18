@@ -39,6 +39,7 @@ __all__ = [
     "EnumUndoTablespaceState",
     "EnumViewAlgorithmType",
     "EnumViewSuidType",
+    "EnumReplicaThreadType",
 ]
 
 
@@ -360,3 +361,11 @@ class EnumViewSuidType(IntEnum):
     DEFAULT = 0  # %empty
     DEFINER = 1  # SQL SECURITY DEFINER
     INVOKER = 2  # SQL SECURITY INVOKER
+
+
+class EnumReplicaThreadType(IntFlag):
+    """副本线程选项的枚举值"""
+
+    DEFAULT = 0
+    SQL_THREAD = (1 << 0)
+    RELAY_THREAD = (1 << 1)
