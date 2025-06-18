@@ -1009,6 +1009,18 @@
 | `server_options_list` | 服务器选项的列表 | `List[ServerOption]` | `server_options_list` |
 | `server_option`       | 服务器选项       | `ServerOption`       | `server_option`       |
 
+#### 身份认证（identification）
+
+| 水杉解析器语义组名称                        | 语义组含义                       | 返回值类型                             | MySQL 语义组名称                            |
+| ------------------------------------------- | -------------------------------- | -------------------------------------- | ------------------------------------------- |
+| `identification`                            | 身份认证（选择具体的认证方式）   | `Identification`                       | `identification`                            |
+| `identified_by_password`                    | 使用密码进行身份认证             | `IdentifiedByPassword`                 | `identified_by_password`                    |
+| `identified_by_random_password`             | 使用随机密码进行身份认证         | `IdentifiedByRandomPassword`           | `identified_by_random_password`             |
+| `identified_with_plugin`                    | 使用插件进行身份认证             | `IdentifiedWithPlugin`                 | `identified_with_plugin`                    |
+| `identified_with_plugin_as_auth`            | 使用插件和认证字符串进行身份认证 | `IdentifiedWithPluginAsAuth`           | `identified_with_plugin_as_auth`            |
+| `identified_with_plugin_by_password`        | 使用插件和密码进行身份认证       | `IdentifiedWithPluginByPassword`       | `identified_with_plugin_by_password`        |
+| `identified_with_plugin_by_random_password` | 使用插件和随机密码进行身份认证   | `IdentifiedWithPluginByRandomPassword` | `identified_with_plugin_by_random_password` |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -1300,6 +1312,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | 水杉解析器语义组名称       | 语义组含义                                                   | 返回值类型            | MySQL 语义组名称                                             |
 | -------------------------- | ------------------------------------------------------------ | --------------------- | ------------------------------------------------------------ |
 | `text_literal_sys_list`    | 字符串字面值的列表                                           | `List[str]`           | `TEXT_STRING_sys_list`                                       |
+| `text_literal_or_hex`      | 字符串字面值或十六机制字符串                                 | `str`                 | `TEXT_STRING_hash`                                           |
 | `text_literal_sys`         | 字符串字面值（不包括 Unicode 字符串）                        | `StringLiteral`       | `TEXT_STRING_sys`<br />`TEXT_STRING_literal`<br />`TEXT_STRING_filesystem`<br />`TEXT_STRING_password`<br />`TEXT_STRING_validated`<br />`TEXT_STRING_sys_nonewline`<br />`filter_wild_db_table_string`<br />`json_attribute` |
 | `int_literal`              | 整数字面值                                                   | `IntLiteral`          | `int64_literal`                                              |
 | `int_literal_or_hex`       | 整数字面值或十六进制字面值                                   | `IntLiteral`          | `real_ulong_num`<br />`real_ulonglong_num`                   |

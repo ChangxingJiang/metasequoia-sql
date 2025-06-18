@@ -1295,7 +1295,7 @@ opt_logfile_group_options:
         | logfile_group_option_list
         ;
 
-logfile_group_option_list:
+logfile_group_option_list:`
           logfile_group_option
           {
             $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
@@ -2268,19 +2268,6 @@ opt_load_memory:
         | MEMORY_SYM EQ size_number { $$ = $3; }
         ;
 
-
-/**********************************************************************
-** Creating different items.
-**********************************************************************/
-
-TEXT_STRING_hash:
-          TEXT_STRING_sys
-        | HEX_NUM
-          {
-            $$= to_lex_string(Item_hex_string::make_hex_str($1.str, $1.length));
-          }
-        ;
-
 /*
   SQLCOM_SET_OPTION statement.
 
@@ -2801,91 +2788,6 @@ identification:
         | identified_with_plugin_as_auth
         | identified_with_plugin_by_password
         | identified_with_plugin_by_random_password
-        ;
-
-identified_by_password:
-          IDENTIFIED_SYM BY TEXT_STRING_password
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->auth = to_lex_cstring($3);
-            m->uses_identified_by_clause = true;
-            $$ = m;
-            Lex->contains_plaintext_password= true;
-          }
-        ;
-
-identified_by_random_password:
-          IDENTIFIED_SYM BY RANDOM_SYM PASSWORD
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->auth = EMPTY_CSTR;
-            m->has_password_generator = true;
-            m->uses_identified_by_clause = true;
-            $$ = m;
-            Lex->contains_plaintext_password = true;
-          }
-        ;
-
-identified_with_plugin:
-          IDENTIFIED_SYM WITH ident_or_text
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->plugin = to_lex_cstring($3);
-            m->auth = EMPTY_CSTR;
-            m->uses_identified_by_clause = false;
-            m->uses_identified_with_clause = true;
-            $$ = m;
-          }
-        ;
-
-identified_with_plugin_as_auth:
-          IDENTIFIED_SYM WITH ident_or_text AS TEXT_STRING_hash
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->plugin = to_lex_cstring($3);
-            m->auth = to_lex_cstring($5);
-            m->uses_authentication_string_clause = true;
-            m->uses_identified_with_clause = true;
-            $$ = m;
-          }
-        ;
-
-identified_with_plugin_by_password:
-          IDENTIFIED_SYM WITH ident_or_text BY TEXT_STRING_password
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->plugin = to_lex_cstring($3);
-            m->auth = to_lex_cstring($5);
-            m->uses_identified_by_clause = true;
-            m->uses_identified_with_clause = true;
-            $$ = m;
-            Lex->contains_plaintext_password= true;
-          }
-        ;
-
-identified_with_plugin_by_random_password:
-          IDENTIFIED_SYM WITH ident_or_text BY RANDOM_SYM PASSWORD
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->plugin = to_lex_cstring($3);
-            m->uses_identified_by_clause = true;
-            m->uses_identified_with_clause = true;
-            m->has_password_generator = true;
-            $$ = m;
-            Lex->contains_plaintext_password= true;
-          }
         ;
 
 opt_initial_auth:

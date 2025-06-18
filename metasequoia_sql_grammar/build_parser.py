@@ -51,6 +51,7 @@ from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import event_attribute
 from metasequoia_sql_grammar.phrase import field_type
 from metasequoia_sql_grammar.phrase import function_option
+from metasequoia_sql_grammar.phrase import identification
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import process_command
@@ -268,6 +269,7 @@ def build_grammar():
         # 短语
         field_type,  # 短语 - 字段类型
         function_option,  # 短语 - 函数选项
+        identification,  # 短语 - 身份认证
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
         sql_state,  # 短语 - SQL状态
