@@ -100,6 +100,15 @@
 | ----------------------- | ------------------ | --------------------- | ------------------ |
 | `alter_table_statement` | `ALTER TABLE` 语句 | `AlterTableStatement` | `alter_table_stmt` |
 
+#### ALTER TABLESPACE 语句（alter tablespace statement）
+
+| 水杉解析器语义组名称               | 语义组类型                           | 返回值类型                 | MySQL 语义组名称               |
+| ---------------------------------- | ------------------------------------ | -------------------------- | ------------------------------ |
+| `alter_tablespace_statement`       | `ALTER TABLESPACE` 语句              | `AlterTablespaceStatement` | `alter_tablespace_stmt`        |
+| `opt_alter_tablespace_option_list` | 可选的 `ALTER TABLESPACE` 选项的列表 | `List[DdlOption]`          | `opt_alter_tablespace_options` |
+| `alter_tablespace_option_list`     | `ALTER TABLESPACE` 的选项的列表      | `List[DdlOption]`          | `alter_tablespace_option_list` |
+| `alter_tablespace_option`          | `ALTER TABLESPACE` 的选项            | `DdlOption`                | `alter_tablespace_option`      |
+
 #### ANALYZE TABLE 语句（analyze table statement）
 
 | 水杉解析器语义组名称         | 语义组类型           | 返回值类型              | MySQL 语义组名称             |
@@ -706,30 +715,33 @@
 
 #### DDL 选项（ddl option）
 
-| 水杉解析器语义组名称                       | 语义组含义                                              | 返回值类型                   | MySQL 语义组名称                                          |
-| ------------------------------------------ | ------------------------------------------------------- | ---------------------------- | --------------------------------------------------------- |
-| `create_table_option_list`                 | 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表    | `List[DdlOption]`            | `create_table_options`                                    |
-| `create_table_option_list_space_separated` | 空格分隔的 `CREATE TABLE` 语句中的表属性的列表          | `List[DdlOption]`            | `create_table_options_space_separated`                    |
-| `create_table_option`                      | `CREATE TABLE` 语句中的表选项                           | `DdlOption`                  | `create_table_option`                                     |
-| `opt_create_database_option_list`          | 可选的 `CREATE DATABASE` 语句中的数据库选项列表         | `List[DdlOption]`            | `opt_create_database_options`                             |
-| `create_database_option_list`              | `CREATE DATABASE` 语句中的数据库选项列表                | `List[DdlOption]`            | `create_database_option_list`                             |
-| `create_database_option`                   | `CREATE DATABASE` 语句中的数据库选项                    | `DdlOption`                  | `create_database_option`                                  |
-| `alter_database_option_list`               | `ALTER DATABASE` 语句中的数据库选项列表                 | `List[DdlOption]`            | `alter_database_option_list`                              |
-| `alter_database_option`                    | `ALTER DATABASE` 语句中的数据库选项                     | `DdlOption`                  | `alter_database_option`                                   |
-| `ternary_option_value`                     | 整数字面值、十六进制字面值或 `DEFAULT` 关键字           | `Expression`                 | `ternary_option`                                          |
-| `ddl_option_default_charset`               | 指定默认字符集的数据库选项或表选项                      | `DdlOptionDefaultCharset`    | `default_charset`                                         |
-| `ddl_option_default_collate`               | 指定默认排序规则的数据库选项或表选项                    | `DdlOptionDefaultCollate`    | `default_collation`                                       |
-| `ddl_option_default_encryption`            | 指定默认加密的数据库选项                                | `DdlOptionDefaultEncryption` | `default_encryption`                                      |
-| `ddl_option_autoextend_size`               | 指定表空间每次自动扩展的大小属性                        | `DdlOptionAutoextendSize`    | `option_autoextend_size`<br />`ts_option_autoextend_size` |
-| `opt_drop_tablespace_option_list`          | 可选的 `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表 | `List[AlterOption]`          | `opt_drop_ts_options`                                     |
-| `drop_tablespace_option_list`              | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表        | `List[AlterOption]`          | `drop_ts_option_list`                                     |
-| `drop_tablespace_option`                   | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项              | `AlterOption`                | `drop_ts_option`                                          |
-| `opt_drop_undo_tablespace_option_list`     | 可选的 `UNDO TABLESPACE` 的选项的列表                   | `List[AlterOption]`          | `opt_undo_tablespace_options`                             |
-| `drop_undo_tablespace_option_list`         | `UNDO TABLESPACE` 的选项的列表                          | `List[AlterOption]`          | `undo_tablespace_option_list`                             |
-| `drop_undo_tablespace_option`              | `UNDO TABLESPACE` 的选项                                | `AlterOption`                | `undo_tablespace_option`                                  |
-| `ddl_option_engine`                        | ALTER 选项：`ENGINE`                                    | `DdlOptionEngine`            | `ts_option_engine`                                        |
-| `ddl_option_wait`                          | ALTER 选项：`WAIT` 或 `NO_WAIT`                         | `DdlOptionWait`              | `ts_option_wait`                                          |
-| `ddl_option_initial_size`                  | 指定表空间初始大小的属性                                | `DdlOptionInitialSize`       | `ts_option_initial_size`                                  |
+| 水杉解析器语义组名称                       | 语义组含义                                              | 返回值类型                           | MySQL 语义组名称                                          |
+| ------------------------------------------ | ------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------- |
+| `create_table_option_list`                 | 逗号或空格分隔的 `CREATE TABLE` 语句中的表属性的列表    | `List[DdlOption]`                    | `create_table_options`                                    |
+| `create_table_option_list_space_separated` | 空格分隔的 `CREATE TABLE` 语句中的表属性的列表          | `List[DdlOption]`                    | `create_table_options_space_separated`                    |
+| `create_table_option`                      | `CREATE TABLE` 语句中的表选项                           | `DdlOption`                          | `create_table_option`                                     |
+| `opt_create_database_option_list`          | 可选的 `CREATE DATABASE` 语句中的数据库选项列表         | `List[DdlOption]`                    | `opt_create_database_options`                             |
+| `create_database_option_list`              | `CREATE DATABASE` 语句中的数据库选项列表                | `List[DdlOption]`                    | `create_database_option_list`                             |
+| `create_database_option`                   | `CREATE DATABASE` 语句中的数据库选项                    | `DdlOption`                          | `create_database_option`                                  |
+| `alter_database_option_list`               | `ALTER DATABASE` 语句中的数据库选项列表                 | `List[DdlOption]`                    | `alter_database_option_list`                              |
+| `alter_database_option`                    | `ALTER DATABASE` 语句中的数据库选项                     | `DdlOption`                          | `alter_database_option`                                   |
+| `ternary_option_value`                     | 整数字面值、十六进制字面值或 `DEFAULT` 关键字           | `Expression`                         | `ternary_option`                                          |
+| `ddl_option_default_charset`               | 指定默认字符集的数据库选项或表选项                      | `DdlOptionDefaultCharset`            | `default_charset`                                         |
+| `ddl_option_default_collate`               | 指定默认排序规则的数据库选项或表选项                    | `DdlOptionDefaultCollate`            | `default_collation`                                       |
+| `ddl_option_default_encryption`            | 指定默认加密的数据库选项                                | `DdlOptionDefaultEncryption`         | `default_encryption`                                      |
+| `ddl_option_autoextend_size`               | 指定表空间每次自动扩展的大小属性                        | `DdlOptionAutoextendSize`            | `option_autoextend_size`<br />`ts_option_autoextend_size` |
+| `opt_drop_tablespace_option_list`          | 可选的 `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表 | `List[DdlOption]`                    | `opt_drop_ts_options`                                     |
+| `drop_tablespace_option_list`              | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项的列表        | `List[DdlOption]`                    | `drop_ts_option_list`                                     |
+| `drop_tablespace_option`                   | `DROP TABLESPACE` 和 `DROP LOGFILE` 的选项              | `DdlOption`                          | `drop_ts_option`                                          |
+| `opt_drop_undo_tablespace_option_list`     | 可选的 `UNDO TABLESPACE` 的选项的列表                   | `List[DdlOption]`                    | `opt_undo_tablespace_options`                             |
+| `drop_undo_tablespace_option_list`         | `UNDO TABLESPACE` 的选项的列表                          | `List[DdlOption]`                    | `undo_tablespace_option_list`                             |
+| `drop_undo_tablespace_option`              | `UNDO TABLESPACE` 的选项                                | `DdlOption`                          | `undo_tablespace_option`                                  |
+| `ddl_option_engine`                        | ALTER 选项：`ENGINE`                                    | `DdlOptionEngine`                    | `ts_option_engine`                                        |
+| `ddl_option_wait`                          | ALTER 选项：`WAIT` 或 `NO_WAIT`                         | `DdlOptionWait`                      | `ts_option_wait`                                          |
+| `ddl_option_initial_size`                  | 指定表空间初始大小的属性                                | `DdlOptionInitialSize`               | `ts_option_initial_size`                                  |
+| `ddl_option_max_size`                      | 指定表空间最大大小的属性                                | `DdlOptionMaxSize`                   | `ts_option_max_size`                                      |
+| `ddl_option_tablespace_encryption`         | 指定表空间加密属性                                      | `DdlOptionTablespaceEncryption`      | `ts_option_encryption`                                    |
+| `ddl_option_tablespace_engine_attribute`   | 指定表空间引擎属性                                      | `DdlOptionTablespaceEngineAttribute` | `ts_option_engine_attribute`                              |
 
 `drop_undo_tablespace_option` 语义组与 `alter_option_engine` 语义组一致，但考虑可拓展性保留单独的 `drop_undo_tablespace_option` 语义组。
 
@@ -971,6 +983,12 @@
 | 水杉解析器语义组名称 | 语义组含义           | 返回值类型 | MySQL 语义组名称 |
 | -------------------- | -------------------- | ---------- | ---------------- |
 | `undofile`           | 日志文件撤销文件名称 | `str`      | `lg_undofile`    |
+
+#### 表空间数据文件（datafile）
+
+| 水杉解析器语义组名称 | 语义组含义         | 返回值类型 | MySQL 语义组名称 |
+| -------------------- | ------------------ | ---------- | ---------------- |
+| `datafile`           | 表空间数据文件名称 | `str`      | `ts_datafile`    |
 
 # 表（table）
 

@@ -41,6 +41,7 @@ from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import alter_command
 from metasequoia_sql_grammar.phrase import cpu_range
+from metasequoia_sql_grammar.phrase import datafile
 from metasequoia_sql_grammar.phrase import ddl_alter_option
 from metasequoia_sql_grammar.phrase import ddl_column_attribute
 from metasequoia_sql_grammar.phrase import ddl_index_attribute
@@ -65,6 +66,7 @@ from metasequoia_sql_grammar.statement import alter_logfile_statement
 from metasequoia_sql_grammar.statement import alter_procedure_statement
 from metasequoia_sql_grammar.statement import alter_resource_group_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
+from metasequoia_sql_grammar.statement import alter_tablespace_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
 from metasequoia_sql_grammar.statement import binlog_statement
@@ -279,6 +281,7 @@ def build_grammar():
         process_command,  # 处理命令
         event_attribute,  # 事件属性
         alter_command,  # ALTER 命令
+        datafile,  # 数据文件
         undofile,  # 撤销文件
 
         # 表达式
@@ -322,6 +325,7 @@ def build_grammar():
         alter_procedure_statement,  # ALTER PROCEDURE 语句
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
         alter_table_statement,  # ALTER TABLE 语句
+        alter_tablespace_statement,  # ALTER TABLESPACE 语句
         analyze_statement,  # ANALYZE TABLE 语句
         begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句

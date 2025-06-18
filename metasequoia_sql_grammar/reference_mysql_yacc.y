@@ -1327,36 +1327,6 @@ tablespace_option:
         | ts_option_engine_attribute
         ;
 
-opt_alter_tablespace_options:
-          %empty { $$= nullptr; }
-        | alter_tablespace_option_list
-        ;
-
-alter_tablespace_option_list:
-          alter_tablespace_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        | alter_tablespace_option_list opt_comma alter_tablespace_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        ;
-
-alter_tablespace_option:
-          ts_option_initial_size
-        | ts_option_autoextend_size
-        | ts_option_max_size
-        | ts_option_engine
-        | ts_option_wait
-        | ts_option_encryption
-        | ts_option_engine_attribute
-        ;
-
 opt_logfile_group_options:
           %empty { $$= nullptr; }
         | logfile_group_option_list
@@ -1387,20 +1357,9 @@ logfile_group_option:
         | ts_option_comment
         ;
 
-ts_datafile:
-          DATAFILE_SYM TEXT_STRING_sys { $$= $2; }
-        ;
-
 undo_tablespace_state:
           ACTIVE_SYM   { $$= ALTER_UNDO_TABLESPACE_SET_ACTIVE; }
         | INACTIVE_SYM { $$= ALTER_UNDO_TABLESPACE_SET_INACTIVE; }
-        ;
-
-ts_option_max_size:
-          MAX_SIZE_SYM opt_equal size_number
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_max_size(@$, $3);
-          }
         ;
 
 ts_option_extent_size:
@@ -1442,20 +1401,6 @@ ts_option_file_block_size:
           FILE_BLOCK_SIZE_SYM opt_equal size_number
           {
             $$= NEW_PTN PT_alter_tablespace_option_file_block_size(@$, $3);
-          }
-        ;
-
-ts_option_encryption:
-          ENCRYPTION_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_encryption(@$, $3);
-          }
-        ;
-
-ts_option_engine_attribute:
-          ENGINE_ATTRIBUTE_SYM opt_equal json_attribute
-          {
-            $$ = make_tablespace_engine_attribute(YYMEM_ROOT, $3);
           }
         ;
 
@@ -1511,75 +1456,6 @@ alter_view_stmt:
           view_tail
           {
             MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-alter_tablespace_stmt:
-          ALTER TABLESPACE_SYM ident ADD ts_datafile
-          opt_alter_tablespace_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($6 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $6))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_alter_tablespace_add_datafile{$3, $5, pc};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
-        | ALTER TABLESPACE_SYM ident DROP ts_datafile
-          opt_alter_tablespace_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($6 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $6))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            Lex->m_sql_cmd=
-              NEW_PTN Sql_cmd_alter_tablespace_drop_datafile{$3, $5, pc};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
-        | ALTER TABLESPACE_SYM ident RENAME TO_SYM ident
-          {
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_alter_tablespace_rename{$3, $6};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; // OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
-        | ALTER TABLESPACE_SYM ident alter_tablespace_option_list
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; // OOM
-
-            if ($4 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $4))
-                MYSQL_YYABORT;
-            }
-
-            Lex->m_sql_cmd=
-              NEW_PTN Sql_cmd_alter_tablespace{$3, pc};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; // OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
         ;
 

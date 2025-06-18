@@ -62,6 +62,9 @@ __all__ = [
     "DdlOptionStorageEngine",
     "DdlOptionWait",
     "DdlOptionInitialSize",
+    "DdlOptionMaxSize",
+    "DdlOptionTablespaceEncryption",
+    "DdlOptionTablespaceEngineAttribute",
 ]
 
 
@@ -352,3 +355,15 @@ class DdlOptionWait(DdlBoolOptionBase):
 
 class DdlOptionInitialSize(DdlExpressionOptionBase):
     """DDL 选项：INITIAL_SIZE（表空间属性）"""
+
+
+class DdlOptionMaxSize(DdlExpressionOptionBase):
+    """DDL 选项：MAX_SIZE（表空间属性）"""
+
+
+class DdlOptionTablespaceEncryption(DdlStrOptionBase):
+    """DDL 选项：ENCRYPTION（表空间属性）"""
+
+
+class DdlOptionTablespaceEngineAttribute(DdlStrOptionBase):
+    """DDL 选项：ENGINE_ATTRIBUTE（表空间属性）"""

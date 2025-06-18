@@ -40,6 +40,9 @@ __all__ = [
     "DDL_OPTION_DEFAULT_ENCRYPTION",
     "DDL_OPTION_AUTOEXTEND_SIZE",
     "DDL_OPTION_INITIAL_SIZE",
+    "DDL_OPTION_MAX_SIZE",
+    "DDL_OPTION_TABLESPACE_ENCRYPTION",
+    "DDL_OPTION_TABLESPACE_ENGINE_ATTRIBUTE",
 
     # 选项值
     "TERNARY_OPTION_VALUE",
@@ -451,6 +454,39 @@ DDL_OPTION_INITIAL_SIZE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INITIAL_SIZE, "opt_equal", "size_number"],
             action=lambda x: ast.DdlOptionInitialSize(value=x[2])
+        )
+    ]
+)
+
+# 指定表空间最大大小的属性
+DDL_OPTION_MAX_SIZE = ms_parser.create_group(
+    name="ddl_option_max_size",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MAX_SIZE, "opt_equal", "size_number"],
+            action=lambda x: ast.DdlOptionMaxSize(value=x[2])
+        )
+    ]
+)
+
+# 指定表空间加密属性
+DDL_OPTION_TABLESPACE_ENCRYPTION = ms_parser.create_group(
+    name="ddl_option_tablespace_encryption",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ENCRYPTION, "opt_equal", "text_literal_sys"],
+            action=lambda x: ast.DdlOptionTablespaceEncryption(value=x[2].get_str_value())
+        )
+    ]
+)
+
+# 指定表空间引擎属性
+DDL_OPTION_TABLESPACE_ENGINE_ATTRIBUTE = ms_parser.create_group(
+    name="ddl_option_tablespace_engine_attribute",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ENGINE_ATTRIBUTE, "opt_equal", "json_attribute"],
+            action=lambda x: ast.DdlOptionTablespaceEngineAttribute(value=x[2].get_str_value())
         )
     ]
 )

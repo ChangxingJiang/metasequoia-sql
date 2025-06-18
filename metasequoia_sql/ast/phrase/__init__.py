@@ -4,6 +4,7 @@
 
 from metasequoia_sql.ast.phrase.alter_command import *
 from metasequoia_sql.ast.phrase.cpu_range import *
+from metasequoia_sql.ast.phrase.datafile import *
 from metasequoia_sql.ast.phrase.ddl_alter_option import *
 from metasequoia_sql.ast.phrase.ddl_column_attribute import *
 from metasequoia_sql.ast.phrase.ddl_index_attribute import *
