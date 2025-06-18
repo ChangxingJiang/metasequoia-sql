@@ -289,9 +289,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["set_resource_group_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["set_role_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["set_role_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["show_binary_log_status_statement"]
         ),

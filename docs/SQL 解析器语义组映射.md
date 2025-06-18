@@ -460,6 +460,12 @@
 | `set_resource_group_statement` | `SET RESOURCE GROUP` 语句 | `SetResourceGroupStatement` | `set_resource_group_stmt`                      |
 | `thread_id_list`               | 线程 ID 列表              | `List[int]`                 | `thread_id_list_options`<br />`thread_id_list` |
 
+#### SET ROLE 语句（set role statement）
+
+| 水杉解析器语义组名称 | 语义组类型      | 返回值类型         | MySQL 语义组名称          |
+| -------------------- | --------------- | ------------------ | ------------------------- |
+| `set_role_statement` | `SET ROLE` 语句 | `SetRoleStatement` | `set_resource_group_stmt` |
+
 #### SHOW 语句（show statement）
 
 | 水杉解析器语义组名称               | 语义组类型                                     | 返回值类型                     | MySQL 语义组名称              |
@@ -1042,6 +1048,12 @@
 | `identified_with_plugin_by_password`        | 使用插件和密码进行身份认证       | `IdentifiedWithPluginByPassword`       | `identified_with_plugin_by_password`        |
 | `identified_with_plugin_by_random_password` | 使用插件和随机密码进行身份认证   | `IdentifiedWithPluginByRandomPassword` | `identified_with_plugin_by_random_password` |
 
+#### 源文件定义（source file definition）
+
+| 水杉解析器语义组名称 | 语义组含义 | 返回值类型 | MySQL 语义组名称 |
+| -------------------- | ---------- | ---------- | ---------------- |
+|                      |            |            |                  |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：
@@ -1240,52 +1252,54 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 固定的词语组合（fixed word）
 
-| 水杉解析器语义组名称                      | 语义组类型                                                   | 返回值类型 | MySQL 语义组名称                           |
-| ----------------------------------------- | ------------------------------------------------------------ | ---------- | ------------------------------------------ |
-| `opt_keyword_of`                          | 可选的 `OPT` 关键字                                          | -          | `opt_of`                                   |
-| `opt_keyword_all`                         | 可选的 `ALL` 关键字                                          | `bool`     | `opt_all`<br />`opt_replica_reset_options` |
-| `opt_keyword_into`                        | 可选的 `INTO` 关键字                                         | -          | `opt_INTO`                                 |
-| `opt_keyword_default`                     | 可选的 `DEFAULT` 关键字                                      | -          | `opt_default`                              |
-| `opt_keyword_storage`                     | 可选的 `STORAGE` 关键字                                      | -          | `opt_storage`                              |
-| `opt_keyword_temporary`                   | 可选的 `TEMPORARY` 关键字                                    | `bool`     | `opt_temporary`                            |
-| `opt_keyword_extended`                    | 可选的 `EXTENDED` 关键字                                     | `bool`     | `opt_extended`                             |
-| `opt_keyword_if_not_exists`               | 可选的 `IF NOT EXISTS` 关键字                                | `bool`     | `opt_if_not_exists`                        |
-| `opt_keyword_if_exists`                   | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`                                |
-| `opt_keyword_force`                       | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`                                |
-| `opt_keyword_full`                        | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`                                 |
-| `opt_keyword_work`                        | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`                                 |
-| `opt_keyword_no_write_to_binlog`          | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog`                   |
-| `opt_keyword_table`                       | 可选的 `TABLE` 关键字                                        | -          | `opt_table`                                |
-| `opt_keyword_savepoint`                   | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`                            |
-| `opt_keyword_value`                       | 可选的 `VALUE` 关键字                                        | -          | `opt_value`                                |
-| `opt_keyword_privileges`                  | 可选的 `PRIVILEGES` 关键字                                   | -          | `opt_privileges`                           |
-| `opt_keyword_with_admin_option`           | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                    |
-| `opt_keyword_grant_option`                | 可选的 `WITH GRANT OPTION` 关键字组合                        | -          | `grant_options`<br />`opt_grant_option`    |
-| `opt_keyword_ignore_unknown_user`         | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                  |
-| `opt_keyword_convert_xid`                 | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                          |
-| `opt_keyword_one_phase`                   | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
-| `opt_keyword_column`                      | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                               |
-| `opt_keyword_on_replace`                  | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                             |
-| `keyword_deallocate_or_drop`              | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
-| `keyword_describe_or_explain`             | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
-| `keyword_table_or_tables`                 | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |
-| `keyword_master_or_binary`                | `MASTER` 关键字或 `BINARY` 关键字                            | -          | `master_or_binary`                         |
-| `keyword_from_or_in`                      | `FROM` 关键字或 `IN` 关键字                                  | -          | `from_or_in`                               |
-| `keyword_keys_or_index`                   | `KEYS`、`INDEX` 或 `INDEXES` 关键字                          | -          | `keys_or_index`                            |
-| `keyword_replica_or_slave`                | `REPLICA` 或 `SLAVE` 关键字                                  | -          | `replica`                                  |
-| `keyword_master_or_binary_logs_and_gtids` | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`          |
-| `keyword_begin_or_start`                  | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                           |
-| `keyword_next_from_or_from`               | 可选的 `NEXT FROM` 或 `FROM` 关键字（用于 FETCH 语法中的噪声词） | -          | `sp_opt_fetch_noise`                       |
-| `keyword_visible_or_invisible`            | `VISIBLE` 关键字或 `INVISIBLE` 关键字                        | `bool`     | `visibility`                               |
-| `opt_braces`                              | 可选的空括号                                                 | -          | `optional_braces`                          |
-| `opt_comma`                               | 可选的逗号                                                   | -          | `opt_comma`                                |
-| `keyword_charset`                         | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |
-| `keyword_nchar`                           | `NCHAR` 关键字或 `NATIONAL CHAR` 关键字（兼容的 `NCHAR` 类型名称） | -          | `nchar`                                    |
-| `keyword_varchar`                         | `CHAR VARYING` 关键字或 `VARCHAR` 关键字（兼容的 `VARCHAR` 类型名称） | -          | `varchar`                                  |
-| `keyword_nvarchar`                        | `NVARCHAR` 关键字、`NATIONAL VARCHAR` 关键字、`Ncharacter_setCHAR VARCHAR` 关键字、`NATIONAL CHAR VARYING` 关键字或 `NCHAR VARYING` 关键字（兼容的 `NVARCHAR` 类型名称） | -          | `nvarchar`                                 |
-| `opt_equal`                               | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                |
-| `equal`                                   | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                    |
-| `opt_to_or_eq_or_as`                      | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                   |
+| 水杉解析器语义组名称                         | 语义组类型                                                   | 返回值类型 | MySQL 语义组名称                           |
+| -------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------------------------------------ |
+| `opt_keyword_of`                             | 可选的 `OPT` 关键字                                          | -          | `opt_of`                                   |
+| `opt_keyword_all`                            | 可选的 `ALL` 关键字                                          | `bool`     | `opt_all`<br />`opt_replica_reset_options` |
+| `opt_keyword_into`                           | 可选的 `INTO` 关键字                                         | -          | `opt_INTO`                                 |
+| `opt_keyword_default`                        | 可选的 `DEFAULT` 关键字                                      | -          | `opt_default`                              |
+| `opt_keyword_storage`                        | 可选的 `STORAGE` 关键字                                      | -          | `opt_storage`                              |
+| `opt_keyword_temporary`                      | 可选的 `TEMPORARY` 关键字                                    | `bool`     | `opt_temporary`                            |
+| `opt_keyword_extended`                       | 可选的 `EXTENDED` 关键字                                     | `bool`     | `opt_extended`                             |
+| `opt_keyword_if_not_exists`                  | 可选的 `IF NOT EXISTS` 关键字                                | `bool`     | `opt_if_not_exists`                        |
+| `opt_keyword_if_exists`                      | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`                                |
+| `opt_keyword_force`                          | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`                                |
+| `opt_keyword_full`                           | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`                                 |
+| `opt_keyword_work`                           | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`                                 |
+| `opt_keyword_no_write_to_binlog`             | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog`                   |
+| `opt_keyword_table`                          | 可选的 `TABLE` 关键字                                        | -          | `opt_table`                                |
+| `opt_keyword_savepoint`                      | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`                            |
+| `opt_keyword_value`                          | 可选的 `VALUE` 关键字                                        | -          | `opt_value`                                |
+| `opt_keyword_privileges`                     | 可选的 `PRIVILEGES` 关键字                                   | -          | `opt_privileges`                           |
+| `opt_keyword_with_admin_option`              | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                    |
+| `opt_keyword_grant_option`                   | 可选的 `WITH GRANT OPTION` 关键字组合                        | -          | `grant_options`<br />`opt_grant_option`    |
+| `opt_keyword_ignore_unknown_user`            | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                  |
+| `opt_keyword_convert_xid`                    | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                          |
+| `opt_keyword_one_phase`                      | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
+| `opt_keyword_column`                         | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                               |
+| `opt_keyword_on_replace`                     | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                             |
+| `keyword_deallocate_or_drop`                 | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
+| `keyword_describe_or_explain`                | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
+| `keyword_table_or_tables`                    | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |
+| `keyword_master_or_binary`                   | `MASTER` 关键字或 `BINARY` 关键字                            | -          | `master_or_binary`                         |
+| `keyword_from_or_in`                         | `FROM` 关键字或 `IN` 关键字                                  | -          | `from_or_in`                               |
+| `keyword_keys_or_index`                      | `KEYS`、`INDEX` 或 `INDEXES` 关键字                          | -          | `keys_or_index`                            |
+| `keyword_replica_or_slave`                   | `REPLICA` 或 `SLAVE` 关键字                                  | -          | `replica`                                  |
+| `keyword_master_or_binary_logs_and_gtids`    | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`          |
+| `keyword_begin_or_start`                     | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                           |
+| `keyword_next_from_or_from`                  | 可选的 `NEXT FROM` 或 `FROM` 关键字（用于 FETCH 语法中的噪声词） | -          | `sp_opt_fetch_noise`                       |
+| `keyword_visible_or_invisible`               | `VISIBLE` 关键字或 `INVISIBLE` 关键字                        | `bool`     | `visibility`                               |
+| `keyword_master_log_file_or_source_log_file` | `MASTER_LOG_FILE` 关键字或 `SOURCE_LOG_FILE` 关键字          | -          | `source_log_file`                          |
+| `keyword_master_log_pos_or_source_log_pos`   | `MASTER_LOG_POS` 关键字或 `SOURCE_LOG_POS` 关键字            | -          | `source_log_pos`                           |
+| `opt_braces`                                 | 可选的空括号                                                 | -          | `optional_braces`                          |
+| `opt_comma`                                  | 可选的逗号                                                   | -          | `opt_comma`                                |
+| `keyword_charset`                            | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |
+| `keyword_nchar`                              | `NCHAR` 关键字或 `NATIONAL CHAR` 关键字（兼容的 `NCHAR` 类型名称） | -          | `nchar`                                    |
+| `keyword_varchar`                            | `CHAR VARYING` 关键字或 `VARCHAR` 关键字（兼容的 `VARCHAR` 类型名称） | -          | `varchar`                                  |
+| `keyword_nvarchar`                           | `NVARCHAR` 关键字、`NATIONAL VARCHAR` 关键字、`Ncharacter_setCHAR VARCHAR` 关键字、`NATIONAL CHAR VARYING` 关键字或 `NCHAR VARYING` 关键字（兼容的 `NVARCHAR` 类型名称） | -          | `nvarchar`                                 |
+| `opt_equal`                                  | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                |
+| `equal`                                      | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                    |
+| `opt_to_or_eq_or_as`                         | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                   |
 
 #### 标识符（ident）
 

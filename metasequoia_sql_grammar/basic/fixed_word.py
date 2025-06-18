@@ -631,6 +631,32 @@ KEYWORD_VISIBLE_OR_INVISIBLE = ms_parser.create_group(
     ]
 )
 
+# `MASTER_LOG_FILE` 关键字或 `SOURCE_LOG_FILE` 关键字
+KEYWORD_MASTER_LOG_FILE_OR_SOURCE_LOG_FILE = ms_parser.create_group(
+    name="keyword_master_log_file_or_source_log_file",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_LOG_FILE]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_LOG_FILE]
+        )
+    ]
+)
+
+# `MASTER_LOG_POS` 关键字或 `SOURCE_LOG_POS` 关键字
+KEYWORD_MASTER_LOG_POS_OR_SOURCE_LOG_POS = ms_parser.create_group(
+    name="keyword_master_log_pos_or_source_log_pos",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_LOG_POS]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_LOG_POS]
+        )
+    ]
+)
+
 # 可选的 `=` 运算符或 `:=` 运算符
 OPT_EQUAL = ms_parser.create_group(
     name="opt_equal",

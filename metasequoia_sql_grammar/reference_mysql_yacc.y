@@ -807,24 +807,6 @@ source_tls_ciphersuites_def:
           }
         ;
 
-source_log_file:
-          MASTER_LOG_FILE_SYM
-          {
-            push_deprecated_warn(YYTHD, "MASTER_LOG_FILE",
-                                        "SOURCE_LOG_FILE");
-          }
-        | SOURCE_LOG_FILE_SYM
-        ;
-
-source_log_pos:
-          MASTER_LOG_POS_SYM
-          {
-            push_deprecated_warn(YYTHD, "MASTER_LOG_POS",
-                                        "SOURCE_LOG_POS");
-          }
-        | SOURCE_LOG_POS_SYM
-        ;
-
 source_file_def:
           source_log_file EQ TEXT_STRING_sys_nonewline
           {
@@ -2257,48 +2239,6 @@ start_option_value_list:
                                                                     true,
                                                                     @6);
           }
-        ;
-
-set_role_stmt:
-          SET_SYM ROLE_SYM role_list
-          {
-            $$= NEW_PTN PT_set_role(@$, $3);
-          }
-        | SET_SYM ROLE_SYM NONE_SYM
-          {
-            $$= NEW_PTN PT_set_role(@$, role_enum::ROLE_NONE);
-            Lex->sql_command= SQLCOM_SET_ROLE;
-          }
-        | SET_SYM ROLE_SYM DEFAULT_SYM
-          {
-            $$= NEW_PTN PT_set_role(@$, role_enum::ROLE_DEFAULT);
-            Lex->sql_command= SQLCOM_SET_ROLE;
-          }
-        | SET_SYM DEFAULT_SYM ROLE_SYM role_list TO_SYM role_list
-          {
-            $$= NEW_PTN PT_alter_user_default_role(@$, false, $6, $4,
-                                                    role_enum::ROLE_NAME);
-          }
-        | SET_SYM DEFAULT_SYM ROLE_SYM NONE_SYM TO_SYM role_list
-          {
-            $$= NEW_PTN PT_alter_user_default_role(@$, false, $6, nullptr,
-                                                   role_enum::ROLE_NONE);
-          }
-        | SET_SYM DEFAULT_SYM ROLE_SYM ALL TO_SYM role_list
-          {
-            $$= NEW_PTN PT_alter_user_default_role(@$, false, $6, nullptr,
-                                                   role_enum::ROLE_ALL);
-          }
-        | SET_SYM ROLE_SYM ALL opt_except_role_list
-          {
-            $$= NEW_PTN PT_set_role(@$, role_enum::ROLE_ALL, $4);
-            Lex->sql_command= SQLCOM_SET_ROLE;
-          }
-        ;
-
-opt_except_role_list:
-          %empty               { $$= nullptr; }
-        | EXCEPT_SYM role_list { $$= $2; }
         ;
 
 // Start of option value list, option_type was given

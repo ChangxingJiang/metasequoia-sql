@@ -51,6 +51,7 @@ from metasequoia_sql.ast.statement.rollback_statement import *
 from metasequoia_sql.ast.statement.savepoint_statement import *
 from metasequoia_sql.ast.statement.select_statement import *
 from metasequoia_sql.ast.statement.set_resource_group_statement import *
+from metasequoia_sql.ast.statement.set_role_statement import *
 from metasequoia_sql.ast.statement.show_statement import *
 from metasequoia_sql.ast.statement.shutdown_statement import *
 from metasequoia_sql.ast.statement.signal_and_resignal_statement import *
