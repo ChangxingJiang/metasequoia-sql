@@ -1839,39 +1839,6 @@ opt_plugin_dir_option:
           }
         ;
 
-opt_replica_thread_option_list:
-          %empty
-          {
-            $$= 0;
-          }
-        | replica_thread_option_list
-          {
-            $$= $1;
-          }
-        ;
-
-replica_thread_option_list:
-          replica_thread_option
-          {
-            $$= $1;
-          }
-        | replica_thread_option_list ',' replica_thread_option
-          {
-            $$= $1 | $3;
-          }
-        ;
-
-replica_thread_option:
-          SQL_THREAD
-          {
-            $$= SLAVE_SQL;
-          }
-        | RELAY_THREAD
-          {
-            $$= SLAVE_IO;
-          }
-        ;
-
 opt_replica_until:
           %empty
           {
@@ -2333,36 +2300,6 @@ opt_except_role_list:
           %empty               { $$= nullptr; }
         | EXCEPT_SYM role_list { $$= $2; }
         ;
-
-set_resource_group_stmt:
-          SET_SYM RESOURCE_SYM GROUP_SYM ident
-          {
-            $$= NEW_PTN PT_set_resource_group(@$, to_lex_cstring($4), nullptr);
-          }
-        | SET_SYM RESOURCE_SYM GROUP_SYM ident FOR_SYM thread_id_list_options
-          {
-            $$= NEW_PTN PT_set_resource_group(@$, to_lex_cstring($4), $6);
-          }
-       ;
-
-thread_id_list:
-          real_ulong_num
-          {
-            $$= NEW_PTN Mem_root_array<ulonglong>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; // OOM
-          }
-        | thread_id_list opt_comma real_ulong_num
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-thread_id_list_options:
-         thread_id_list { $$= $1; }
-       ;
 
 // Start of option value list, option_type was given
 start_option_value_list_following_option_type:

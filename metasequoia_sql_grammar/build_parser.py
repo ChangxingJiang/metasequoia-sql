@@ -111,6 +111,7 @@ from metasequoia_sql_grammar.statement import restart_statement
 from metasequoia_sql_grammar.statement import rollback_statement
 from metasequoia_sql_grammar.statement import savepoint_statement
 from metasequoia_sql_grammar.statement import select_statement
+from metasequoia_sql_grammar.statement import set_resource_group_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import shutdown_statement
 from metasequoia_sql_grammar.statement import signal_and_resignal_statement
@@ -375,6 +376,7 @@ def build_grammar():
         rollback_statement,  # ROLLBACK 语句
         savepoint_statement,  # SAVEPOINT 语句
         select_statement,  # SELECT 语句
+        set_resource_group_statement,  # SET RESOURCE GROUP 语句
         show_statement,  # SHOW 语句
         shutdown_statement,  # SHUTDOWN 语句
         signal_and_resignal_statement,  # SIGNAL/RESIGNAL 语句
