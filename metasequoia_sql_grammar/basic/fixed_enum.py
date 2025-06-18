@@ -46,6 +46,8 @@ __all__ = [
     "ROW_FORMAT_TYPE",
     "MERGE_INSERT_TYPE",
     "UNDO_TABLESPACE_STATE",
+    "VIEW_ALGORITHM_TYPE",
+    "VIEW_SUID_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -913,6 +915,48 @@ UNDO_TABLESPACE_STATE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INACTIVE],
             action=lambda x: ast.EnumUndoTablespaceState.INACTIVE
+        )
+    ]
+)
+
+# 视图算法类型的枚举值
+VIEW_ALGORITHM_TYPE = ms_parser.create_group(
+    name="view_algorithm_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumViewAlgorithmType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ALGORITHM, TType.OPERATOR_EQ, TType.KEYWORD_UNDEFINED],
+            action=lambda x: ast.EnumViewAlgorithmType.UNDEFINED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ALGORITHM, TType.OPERATOR_EQ, TType.KEYWORD_MERGE],
+            action=lambda x: ast.EnumViewAlgorithmType.MERGE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ALGORITHM, TType.OPERATOR_EQ, TType.KEYWORD_TEMPTABLE],
+            action=lambda x: ast.EnumViewAlgorithmType.TEMPTABLE
+        )
+    ]
+)
+
+# 视图 SUID 类型的枚举值
+VIEW_SUID_TYPE = ms_parser.create_group(
+    name="view_suid_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda x: ast.EnumViewSuidType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SQL, TType.KEYWORD_SECURITY, TType.KEYWORD_DEFINER],
+            action=lambda x: ast.EnumViewSuidType.DEFINER
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SQL, TType.KEYWORD_SECURITY, TType.KEYWORD_INVOKER],
+            action=lambda x: ast.EnumViewSuidType.INVOKER
         )
     ]
 )

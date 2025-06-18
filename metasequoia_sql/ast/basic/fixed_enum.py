@@ -37,6 +37,8 @@ __all__ = [
     "EnumRowFormatType",
     "EnumMergeInsertType",
     "EnumUndoTablespaceState",
+    "EnumViewAlgorithmType",
+    "EnumViewSuidType",
 ]
 
 
@@ -341,3 +343,20 @@ class EnumUndoTablespaceState(IntEnum):
 
     ACTIVE = 1  # ACTIVE：启用状态
     INACTIVE = 2  # INACTIVE：禁用状态
+
+
+class EnumViewAlgorithmType(IntEnum):
+    """视图算法类型的枚举值"""
+
+    DEFAULT = 0
+    UNDEFINED = 1  # ALGORITHM = UNDEFINED
+    MERGE = 2  # ALGORITHM = MERGE
+    TEMPTABLE = 3  # ALGORITHM = TEMPTABLE
+
+
+class EnumViewSuidType(IntEnum):
+    """视图 SUID 类型的枚举值"""
+
+    DEFAULT = 0  # %empty
+    DEFINER = 1  # SQL SECURITY DEFINER
+    INVOKER = 2  # SQL SECURITY INVOKER
