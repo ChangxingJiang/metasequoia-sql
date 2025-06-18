@@ -67,6 +67,7 @@ from metasequoia_sql_grammar.statement import alter_procedure_statement
 from metasequoia_sql_grammar.statement import alter_resource_group_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import alter_tablespace_statement
+from metasequoia_sql_grammar.statement import alter_undo_tablespace_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
 from metasequoia_sql_grammar.statement import binlog_statement
@@ -326,6 +327,7 @@ def build_grammar():
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
         alter_table_statement,  # ALTER TABLE 语句
         alter_tablespace_statement,  # ALTER TABLESPACE 语句
+        alter_undo_tablespace_statement,  # ALTER UNDO TABLESPACE 语句
         analyze_statement,  # ANALYZE TABLE 语句
         begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句

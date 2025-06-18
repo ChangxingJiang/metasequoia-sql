@@ -45,6 +45,7 @@ __all__ = [
     "CONDITION_INFORMATION_TYPE",
     "ROW_FORMAT_TYPE",
     "MERGE_INSERT_TYPE",
+    "UNDO_TABLESPACE_STATE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -897,6 +898,21 @@ MERGE_INSERT_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_LAST],
             action=lambda _: ast.EnumMergeInsertType.LAST
+        )
+    ]
+)
+
+# `UNDO TABLESPACE` 状态的枚举值
+UNDO_TABLESPACE_STATE = ms_parser.create_group(
+    name="undo_tablespace_state",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ACTIVE],
+            action=lambda x: ast.EnumUndoTablespaceState.ACTIVE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INACTIVE],
+            action=lambda x: ast.EnumUndoTablespaceState.INACTIVE
         )
     ]
 )

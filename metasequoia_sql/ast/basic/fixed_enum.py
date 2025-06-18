@@ -36,6 +36,7 @@ __all__ = [
     "EnumConditionInformationType",
     "EnumRowFormatType",
     "EnumMergeInsertType",
+    "EnumUndoTablespaceState",
 ]
 
 
@@ -333,3 +334,10 @@ class EnumMergeInsertType(IntEnum):
     NO = 1  # NO：不允许向 MERGE 表插入数据，尝试插入会报错
     FIRST = 2  # FIRST：将新记录插入到第一个底层的 MyISAM 表中
     LAST = 3  # LAST：将新记录插入到最后一个底层的 MyISAM 表中
+
+
+class EnumUndoTablespaceState(IntEnum):
+    """UNDO TABLESPACE 状态的枚举值"""
+
+    ACTIVE = 1  # ACTIVE：启用状态
+    INACTIVE = 2  # INACTIVE：禁用状态

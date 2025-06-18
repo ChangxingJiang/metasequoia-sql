@@ -109,6 +109,12 @@
 | `alter_tablespace_option_list`     | `ALTER TABLESPACE` 的选项的列表      | `List[DdlOption]`          | `alter_tablespace_option_list` |
 | `alter_tablespace_option`          | `ALTER TABLESPACE` 的选项            | `DdlOption`                | `alter_tablespace_option`      |
 
+#### ALTER UNDO TABLESPACE 语句（alter undo tablespace statement）
+
+| 水杉解析器语义组名称              | 语义组类型                   | 返回值类型                     | MySQL 语义组名称        |
+| --------------------------------- | ---------------------------- | ------------------------------ | ----------------------- |
+| `alter_undo_tablespace_statement` | `ALTER UNDO TABLESPACE` 语句 | `AlterUndoTablespaceStatement` | `alter_tablespace_stmt` |
+
 #### ANALYZE TABLE 语句（analyze table statement）
 
 | 水杉解析器语义组名称         | 语义组类型           | 返回值类型              | MySQL 语义组名称             |
@@ -1178,6 +1184,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `condition_information_type` | 条件诊断信息项名称的枚举值                             | `EnumConditionInformationType` | `condition_information_item_name`        |
 | `row_format_type`            | 行格式类型的枚举值                                     | `EnumRowFormatType`            | `row_types`                              |
 | `merge_insert_type`          | 向 MERGE 表插入数据的类型的枚举值                      | `EnumMergeInsertType`          | `merge_insert_types`                     |
+| `undo_tablespace_state`      | `UNDO TABLESPACE` 状态的枚举值                         | `EnumUndoTablespaceState`      | `undo_tablespace_state`                  |
 
 #### 固定的词语组合（fixed word）
 

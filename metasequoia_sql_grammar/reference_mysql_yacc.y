@@ -1357,11 +1357,6 @@ logfile_group_option:
         | ts_option_comment
         ;
 
-undo_tablespace_state:
-          ACTIVE_SYM   { $$= ALTER_UNDO_TABLESPACE_SET_ACTIVE; }
-        | INACTIVE_SYM { $$= ALTER_UNDO_TABLESPACE_SET_INACTIVE; }
-        ;
-
 ts_option_extent_size:
           EXTENT_SIZE_SYM opt_equal size_number
           {
@@ -1456,30 +1451,6 @@ alter_view_stmt:
           view_tail
           {
             MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-alter_undo_tablespace_stmt:
-          ALTER UNDO_SYM TABLESPACE_SYM ident SET_SYM undo_tablespace_state
-          opt_undo_tablespace_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; // OOM
-
-            if ($7 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $7))
-                MYSQL_YYABORT;
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_alter_undo_tablespace{
-              ALTER_UNDO_TABLESPACE, $4,
-              {nullptr, 0}, pc, $6};
-            if (!cmd)
-              MYSQL_YYABORT; //OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
         ;
 
