@@ -67,9 +67,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["alter_resource_group_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["alter_server_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["alter_server_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["alter_tablespace_statement"]
         ),

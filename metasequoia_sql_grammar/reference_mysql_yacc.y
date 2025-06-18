@@ -1050,43 +1050,6 @@ default_role_clause:
           }
         ;
 
-server_options_list:
-          server_option
-        | server_options_list ',' server_option
-        ;
-
-server_option:
-          USER TEXT_STRING_sys
-          {
-            Lex->server_options.set_username($2);
-          }
-        | HOST_SYM TEXT_STRING_sys
-          {
-            Lex->server_options.set_host($2);
-          }
-        | DATABASE TEXT_STRING_sys
-          {
-            Lex->server_options.set_db($2);
-          }
-        | OWNER_SYM TEXT_STRING_sys
-          {
-            Lex->server_options.set_owner($2);
-          }
-        | PASSWORD TEXT_STRING_sys
-          {
-            Lex->server_options.set_password($2);
-            Lex->contains_plaintext_password= true;
-          }
-        | SOCKET_SYM TEXT_STRING_sys
-          {
-            Lex->server_options.set_socket($2);
-          }
-        | PORT_SYM ulong_num
-          {
-            Lex->server_options.set_port($2);
-          }
-        ;
-
 event_tail:
           EVENT_SYM opt_if_not_exists sp_name
           {
@@ -1451,17 +1414,6 @@ alter_view_stmt:
           view_tail
           {
             MAKE_CMD_DDL_DUMMY();
-          }
-        ;
-
-alter_server_stmt:
-          ALTER SERVER_SYM ident_or_text OPTIONS_SYM '(' server_options_list ')'
-          {
-            LEX *lex= Lex;
-            lex->sql_command= SQLCOM_ALTER_SERVER;
-            lex->server_options.m_server_name= $3;
-            lex->m_sql_cmd=
-              NEW_PTN Sql_cmd_alter_server(&Lex->server_options);
           }
         ;
 
@@ -3240,23 +3192,6 @@ view_replace_or_algorithm:
 view_replace:
           OR_SYM REPLACE_SYM
           { Lex->create_view_mode= enum_view_create_mode::VIEW_CREATE_OR_REPLACE; }
-        ;
-
-view_algorithm:
-          ALGORITHM_SYM EQ UNDEFINED_SYM
-          { Lex->create_view_algorithm= VIEW_ALGORITHM_UNDEFINED; }
-        | ALGORITHM_SYM EQ MERGE_SYM
-          { Lex->create_view_algorithm= VIEW_ALGORITHM_MERGE; }
-        | ALGORITHM_SYM EQ TEMPTABLE_SYM
-          { Lex->create_view_algorithm= VIEW_ALGORITHM_TEMPTABLE; }
-        ;
-
-view_suid:
-          %empty { Lex->create_view_suid= VIEW_SUID_DEFAULT; }
-        | SQL_SYM SECURITY_SYM DEFINER_SYM
-          { Lex->create_view_suid= VIEW_SUID_DEFINER; }
-        | SQL_SYM SECURITY_SYM INVOKER_SYM
-          { Lex->create_view_suid= VIEW_SUID_INVOKER; }
         ;
 
 view_tail:

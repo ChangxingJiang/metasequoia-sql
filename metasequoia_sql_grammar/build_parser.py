@@ -54,6 +54,7 @@ from metasequoia_sql_grammar.phrase import function_option
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import process_command
+from metasequoia_sql_grammar.phrase import server_option
 from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
@@ -65,6 +66,7 @@ from metasequoia_sql_grammar.statement import alter_instance_statement
 from metasequoia_sql_grammar.statement import alter_logfile_statement
 from metasequoia_sql_grammar.statement import alter_procedure_statement
 from metasequoia_sql_grammar.statement import alter_resource_group_statement
+from metasequoia_sql_grammar.statement import alter_server_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import alter_tablespace_statement
 from metasequoia_sql_grammar.statement import alter_undo_tablespace_statement
@@ -284,6 +286,7 @@ def build_grammar():
         alter_command,  # ALTER 命令
         datafile,  # 数据文件
         undofile,  # 撤销文件
+        server_option,  # 服务器选项
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -325,6 +328,7 @@ def build_grammar():
         alter_logfile_statement,  # ALTER LOGFILE 语句
         alter_procedure_statement,  # ALTER PROCEDURE 语句
         alter_resource_group_statement,  # ALTER RESOURCE GROUP 语句
+        alter_server_statement,  # ALTER SERVER 语句
         alter_table_statement,  # ALTER TABLE 语句
         alter_tablespace_statement,  # ALTER TABLESPACE 语句
         alter_undo_tablespace_statement,  # ALTER UNDO TABLESPACE 语句
