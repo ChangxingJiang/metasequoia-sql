@@ -462,9 +462,9 @@
 
 #### SET ROLE 语句（set role statement）
 
-| 水杉解析器语义组名称 | 语义组类型      | 返回值类型         | MySQL 语义组名称          |
-| -------------------- | --------------- | ------------------ | ------------------------- |
-| `set_role_statement` | `SET ROLE` 语句 | `SetRoleStatement` | `set_resource_group_stmt` |
+| 水杉解析器语义组名称 | 语义组类型      | 返回值类型         | MySQL 语义组名称 |
+| -------------------- | --------------- | ------------------ | ---------------- |
+| `set_role_statement` | `SET ROLE` 语句 | `SetRoleStatement` | `set_role_stmt`  |
 
 #### SHOW 语句（show statement）
 
