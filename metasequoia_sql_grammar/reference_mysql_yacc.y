@@ -2781,15 +2781,6 @@ opt_create_user_with_mfa:
           }
         ;
 
-identification:
-          identified_by_password
-        | identified_by_random_password
-        | identified_with_plugin
-        | identified_with_plugin_as_auth
-        | identified_with_plugin_by_password
-        | identified_with_plugin_by_random_password
-        ;
-
 opt_initial_auth:
           INITIAL_SYM AUTHENTICATION_SYM identified_by_random_password
            {
