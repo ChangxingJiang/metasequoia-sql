@@ -185,6 +185,12 @@
 | -------------------- | ------------- | ----------------- | ---------------- |
 | `commit_statement`   | `COMMIT` 语句 | `CommitStatement` | `commit`         |
 
+#### CREATE DATABASE 语句（create database statement）
+
+| 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称 |
+| --------------------------- | ---------------------- | ------------------------- | ---------------- |
+| `create_database_statement` | `CREATE DATABASE` 语句 | `CreateDatabaseStatement` | `create`【部分】 |
+
 #### CREATE INDEX 语句（create index statement）
 
 | 水杉解析器语义组名称     | 语义组类型             | 返回值类型        | MySQL 语义组名称    |

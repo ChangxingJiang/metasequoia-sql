@@ -40,22 +40,7 @@ start_entry:
         ;
 
 create:
-          CREATE DATABASE opt_if_not_exists ident
-          {
-            Lex->create_info= YYTHD->alloc_typed<HA_CREATE_INFO>();
-            if (Lex->create_info == nullptr)
-              MYSQL_YYABORT; // OOM
-            Lex->create_info->default_table_charset= nullptr;
-            Lex->create_info->used_fields= 0;
-          }
-          opt_create_database_options
-          {
-            LEX *lex=Lex;
-            lex->sql_command=SQLCOM_CREATE_DB;
-            lex->name= $4;
-            lex->create_info->options= $3 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-          }
-        | CREATE view_or_trigger_or_sp_or_event
+          CREATE view_or_trigger_or_sp_or_event
           {}
         | CREATE USER opt_if_not_exists create_user_list default_role_clause
                       require_clause connect_options

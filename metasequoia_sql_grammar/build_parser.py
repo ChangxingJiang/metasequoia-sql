@@ -5,7 +5,6 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -82,11 +81,12 @@ from metasequoia_sql_grammar.statement import check_table_statement
 from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import commit_statement
+from metasequoia_sql_grammar.statement import create_database_statement
 from metasequoia_sql_grammar.statement import create_index_statement
-from metasequoia_sql_grammar.statement import create_view_statement
 from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
 from metasequoia_sql_grammar.statement import create_table_statement
+from metasequoia_sql_grammar.statement import create_view_statement
 from metasequoia_sql_grammar.statement import deallocate_statement
 from metasequoia_sql_grammar.statement import delete_statement
 from metasequoia_sql_grammar.statement import describe_statement
@@ -99,10 +99,10 @@ from metasequoia_sql_grammar.statement import get_diagnostics_statement
 from metasequoia_sql_grammar.statement import grant_and_revoke_statement
 from metasequoia_sql_grammar.statement import help_statement
 from metasequoia_sql_grammar.statement import import_statement
-from metasequoia_sql_grammar.statement import load_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import install_or_uninstall_statement
 from metasequoia_sql_grammar.statement import kill_statement
+from metasequoia_sql_grammar.statement import load_statement
 from metasequoia_sql_grammar.statement import lock_or_unlock_statement
 from metasequoia_sql_grammar.statement import optimize_table_statement
 from metasequoia_sql_grammar.statement import prepare_statement
@@ -352,6 +352,7 @@ def build_grammar():
         checksum_statement,  # CHECKSUM 语句
         clone_statement,  # CLONE 语句
         commit_statement,  # COMMIT 语句
+        create_database_statement,  # CREATE DATABASE 语句
         create_index_statement,  # CREATE INDEX 语句
         create_resource_group_statement,  # CREATE RESOURCE GROUP 语句
         create_role_statement,  # CREATE ROLE 语句
