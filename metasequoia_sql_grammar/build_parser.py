@@ -96,6 +96,7 @@ from metasequoia_sql_grammar.statement import get_diagnostics_statement
 from metasequoia_sql_grammar.statement import grant_and_revoke_statement
 from metasequoia_sql_grammar.statement import help_statement
 from metasequoia_sql_grammar.statement import import_statement
+from metasequoia_sql_grammar.statement import load_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import install_or_uninstall_statement
 from metasequoia_sql_grammar.statement import kill_statement
@@ -362,6 +363,7 @@ def build_grammar():
         grant_and_revoke_statement,  # GRANT 和 REVOKE 语句
         help_statement,  # HELP 语句
         import_statement,  # IMPORT TABLE 语句
+        load_statement,  # LOAD 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句
         install_or_uninstall_statement,  # INSTALL/UNINSTALL 语句
         kill_statement,  # KILL 语句

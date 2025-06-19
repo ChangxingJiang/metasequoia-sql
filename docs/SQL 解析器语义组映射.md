@@ -353,6 +353,24 @@
 | -------------------- | ----------- | --------------- | ---------------- |
 | `kill_statement`     | `KILL` 语句 | `KillStatement` | `kill`           |
 
+#### LOAD 语句（load statement）
+
+| 水杉解析器语义组名称         | 语义组类型               | 返回值类型                 | MySQL 语义组名称             |
+| ---------------------------- | ------------------------ | -------------------------- | ---------------------------- |
+| `load_statement`             | `LOAD` 语句              | `LoadStatement`            | `load_stmt`                  |
+| `opt_source_count`           | 可选的数据源计数         | `int`                      | `opt_source_count`           |
+| `opt_xml_rows_identified_by` | 可选的 XML 行标识符      | `Optional[str]`            | `opt_xml_rows_identified_by` |
+| `opt_ignore_lines`           | 可选的忽略行数           | `int`                      | `opt_ignore_lines`           |
+| `opt_field_or_var_spec`      | 可选的字段或变量的列表   | `List[Expression]`         | `opt_field_or_var_spec`      |
+| `fields_or_vars`             | 字段或变量的列表         | `List[Expression]`         | `fields_or_vars`             |
+| `field_or_var`               | 字段或变量               | `Expression`               | `field_or_var`               |
+| `opt_load_data_set_spec`     | 可选的 LOAD 数据设置列表 | `List[LoadDataSetElement]` | `opt_load_data_set_spec`     |
+| `load_data_set_list`         | LOAD 数据设置列表        | `List[LoadDataSetElement]` | `load_data_set_list`         |
+| `load_data_set_elem`         | LOAD 数据设置元素        | `LoadDataSetElement`       | `load_data_set_elem`         |
+| `opt_load_parallel`          | 可选的并行加载选项       | `int`                      | `opt_load_parallel`          |
+| `opt_load_memory`            | 可选的内存选项           | `int`                      | `opt_load_memory`            |
+| `opt_load_algorithm`         | 可选的算法选项           | `bool`                     | `opt_load_algorithm`         |
+
 #### LOCK 语句和 UNLOCK 语句（lock and unlock statement）
 
 | 水杉解析器语义组名称 | 语义组类型             | 返回值类型        | MySQL 语义组名称  |
@@ -1249,6 +1267,9 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_replica_thread_type_list` | 可选的副本线程选项的枚举值的列表                       | `EnumReplicaThreadType`        | `opt_replica_thread_option_list`         |
 | `replica_thread_type_list`     | 副本线程选项的枚举值的列表                             | `EnumReplicaThreadType`        | `replica_thread_option_list`             |
 | `replica_thread_type`          | 副本线程选项的枚举值                                   | `EnumReplicaThreadType`        | `replica_thread_option`                  |
+| `data_or_xml`                  | `LOAD` 语句中数据类型的枚举值                          | `EnumDataType`                 | `data_or_xml`                            |
+| `load_data_lock`               | `LOAD` 语句中锁定类型的枚举值                          | `EnumLoadDataLock`             | `load_data_lock`                         |
+| `load_source_type`             | `LOAD` 语句中数据源类型的枚举值                        | `EnumLoadSourceType`           | `load_source_type`                       |
 
 #### 固定的词语组合（fixed word）
 
@@ -1278,6 +1299,9 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_one_phase`                      | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
 | `opt_keyword_column`                         | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                               |
 | `opt_keyword_on_replace`                     | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                             |
+| `opt_keyword_from`                           | 可选的 `FROM` 关键字                                         | -          | `opt_from_keyword`                         |
+| `opt_keyword_local`                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                |
+| `opt_keyword_in_primary_key_order`           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                         |
 | `keyword_deallocate_or_drop`                 | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
 | `keyword_describe_or_explain`                | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
 | `keyword_table_or_tables`                    | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |
@@ -1291,6 +1315,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `keyword_visible_or_invisible`               | `VISIBLE` 关键字或 `INVISIBLE` 关键字                        | `bool`     | `visibility`                               |
 | `keyword_master_log_file_or_source_log_file` | `MASTER_LOG_FILE` 关键字或 `SOURCE_LOG_FILE` 关键字          | -          | `source_log_file`                          |
 | `keyword_master_log_pos_or_source_log_pos`   | `MASTER_LOG_POS` 关键字或 `SOURCE_LOG_POS` 关键字            | -          | `source_log_pos`                           |
+| `keyword_lines_or_rows`                      | `LINES` 关键字或 `ROWS` 关键字                               | -          | `lines_or_rows`                            |
 | `opt_braces`                                 | 可选的空括号                                                 | -          | `optional_braces`                          |
 | `opt_comma`                                  | 可选的逗号                                                   | -          | `opt_comma`                                |
 | `keyword_charset`                            | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |

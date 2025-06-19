@@ -40,6 +40,9 @@ __all__ = [
     "EnumViewAlgorithmType",
     "EnumViewSuidType",
     "EnumReplicaThreadType",
+    "EnumDataType",
+    "EnumLoadDataLock",
+    "EnumLoadSourceType",
 ]
 
 
@@ -369,3 +372,26 @@ class EnumReplicaThreadType(IntFlag):
     DEFAULT = 0
     SQL_THREAD = (1 << 0)
     RELAY_THREAD = (1 << 1)
+
+
+class EnumDataType(IntEnum):
+    """LOAD 语句中数据类型的枚举值"""
+
+    CSV = 1  # DATA
+    XML = 2  # XML
+
+
+class EnumLoadDataLock(IntEnum):
+    """LOAD 语句中锁定类型的枚举值"""
+
+    DEFAULT = 0  # %empty
+    CONCURRENT = 1  # CONCURRENT
+    LOW_PRIORITY = 2  # LOW_PRIORITY
+
+
+class EnumLoadSourceType(IntEnum):
+    """LOAD 语句中数据源类型的枚举值"""
+
+    FILE = 1  # INFILE
+    URL = 2  # URL
+    S3 = 3  # S3

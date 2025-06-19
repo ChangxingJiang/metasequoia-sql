@@ -35,6 +35,7 @@ from metasequoia_sql.ast.statement.get_diagnostics_statement import *
 from metasequoia_sql.ast.statement.grant_and_revoke_statement import *
 from metasequoia_sql.ast.statement.help_statement import *
 from metasequoia_sql.ast.statement.import_statement import *
+from metasequoia_sql.ast.statement.load_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *
 from metasequoia_sql.ast.statement.install_or_uninstall_statement import *
 from metasequoia_sql.ast.statement.kill_statement import *

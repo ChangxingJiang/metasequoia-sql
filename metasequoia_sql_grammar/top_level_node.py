@@ -229,9 +229,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["kill_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["load_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["load_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["lock_statement"]
         ),

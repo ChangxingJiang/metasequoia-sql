@@ -52,6 +52,9 @@ __all__ = [
     "OPT_REPLICA_THREAD_TYPE_LIST",
     "REPLICA_THREAD_TYPE_LIST",
     "REPLICA_THREAD_TYPE",
+    "DATA_OR_XML",
+    "LOAD_DATA_LOCK",
+    "LOAD_SOURCE_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1020,6 +1023,59 @@ REPLICA_THREAD_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_RELAY_THREAD],
             action=lambda x: ast.EnumReplicaThreadType.RELAY_THREAD
+        )
+    ]
+)
+
+# `LOAD` 语句中数据类型的枚举值
+DATA_OR_XML = ms_parser.create_group(
+    name="data_or_xml",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DATA],
+            action=lambda _: ast.EnumDataType.CSV
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_XML],
+            action=lambda _: ast.EnumDataType.XML
+        )
+    ]
+)
+
+# `LOAD` 语句中锁定类型的枚举值
+LOAD_DATA_LOCK = ms_parser.create_group(
+    name="load_data_lock",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumLoadDataLock.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_CONCURRENT],
+            action=lambda _: ast.EnumLoadDataLock.CONCURRENT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOW_PRIORITY],
+            action=lambda _: ast.EnumLoadDataLock.LOW_PRIORITY
+        )
+    ]
+)
+
+# `LOAD` 语句中数据源类型的枚举值
+LOAD_SOURCE_TYPE = ms_parser.create_group(
+    name="load_source_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INFILE],
+            action=lambda _: ast.EnumLoadSourceType.FILE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_URL],
+            action=lambda _: ast.EnumLoadSourceType.URL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_S3],
+            action=lambda _: ast.EnumLoadSourceType.S3
         )
     ]
 )

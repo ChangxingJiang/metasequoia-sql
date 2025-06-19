@@ -56,6 +56,12 @@ __all__ = [
     "OPT_EQUAL",
     "EQUAL",
     "OPT_TO_OR_EQ_OR_AS",
+
+    # LOAD 语句相关的固定词语组合
+    "OPT_KEYWORD_FROM",
+    "OPT_KEYWORD_LOCAL",
+    "OPT_KEYWORD_IN_PRIMARY_KEY_ORDER",
+    "KEYWORD_LINES_OR_ROWS",
 ]
 
 # 可选的 `OPT` 关键字
@@ -696,6 +702,62 @@ OPT_TO_OR_EQ_OR_AS = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AS]
+        )
+    ]
+)
+
+# 可选的 `FROM` 关键字
+OPT_KEYWORD_FROM = ms_parser.create_group(
+    name="opt_keyword_from",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FROM]
+        )
+    ]
+)
+
+# 可选的 `LOCAL` 关键字
+OPT_KEYWORD_LOCAL = ms_parser.create_group(
+    name="opt_keyword_local",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOCAL],
+            action=lambda _: True
+        )
+    ]
+)
+
+# 可选的 `IN PRIMARY KEY ORDER` 关键字组合
+OPT_KEYWORD_IN_PRIMARY_KEY_ORDER = ms_parser.create_group(
+    name="opt_keyword_in_primary_key_order",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: False
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IN, TType.KEYWORD_PRIMARY, TType.KEYWORD_KEY, TType.KEYWORD_ORDER],
+            action=lambda _: True
+        )
+    ]
+)
+
+# `LINES` 关键字或 `ROWS` 关键字
+KEYWORD_LINES_OR_ROWS = ms_parser.create_group(
+    name="keyword_lines_or_rows",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LINES]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ROWS]
         )
     ]
 )
