@@ -45,10 +45,13 @@ __all__ = [
     "TEXT_LITERAL_SYS_LIST",
     "TEXT_LITERAL_OR_HEX",
     "TEXT_LITERAL_SYS",
+    "TEXT_LITERAL_SYS_OR_NULL",
     "INT_LITERAL",
     "INT_LITERAL_OR_HEX",
     "PAREN_INT_LITERAL_OR_HEX",
     "NUM_LITERAL",
+    "OPT_NUM_LITERAL_OR_HEX_LIST",
+    "NUM_LITERAL_OR_HEX_LIST",
     "NUM_LITERAL_OR_HEX",
     "TEMPORAL_LITERAL",
     "LITERAL",
@@ -70,8 +73,35 @@ __all__ = [
     # 用户名字面值
     "USER_NAME_LIST",
     "USER_NAME",
+    "EXPLICIT_USER_NAME_OR_NULL",
     "EXPLICIT_USER_NAME",
 ]
+
+# 括号框柱的可选的字符串字面值的列表
+PARENS_OPT_TEXT_LITERAL_SYS_LIST = ms_parser.create_group(
+    name="parens_opt_text_literal_sys_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "opt_text_literal_sys_list", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        )
+    ]
+)
+
+# 可选的字符串字面值的列表
+OPT_TEXT_LITERAL_SYS_LIST = ms_parser.create_group(
+    name="opt_text_literal_sys_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["text_literal_sys_list"],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: []
+        )
+    ]
+)
 
 # 字符串字面值的列表
 TEXT_LITERAL_SYS_LIST = ms_parser.create_group(
@@ -110,6 +140,21 @@ TEXT_LITERAL_SYS = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.LITERAL_TEXT_STRING],
             action=lambda x: ast.StringLiteral(value=x[0])
+        )
+    ]
+)
+
+# 字符串字面值或 `NULL` 关键字
+TEXT_LITERAL_SYS_OR_NULL = ms_parser.create_group(
+    name="text_literal_sys_or_null",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["text_literal_sys"],
+            action=lambda x: x[0].get_str_value()
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NULL],
+            action=lambda _: None
         )
     ]
 )
@@ -164,6 +209,36 @@ NUM_LITERAL = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.LITERAL_DECIMAL_NUM],
             action=lambda x: ast.DecimalLiteral.create(source_string=x[0])
+        )
+    ]
+)
+
+# 可选的数值字面值或十六进制字面值的列表
+OPT_NUM_LITERAL_OR_HEX_LIST = ms_parser.create_group(
+    name="opt_num_literal_or_hex_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["num_literal_or_hex_list"],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: []
+        )
+    ]
+)
+
+# 数值字面值或十六进制字面值的列表
+NUM_LITERAL_OR_HEX_LIST = ms_parser.create_group(
+    name="num_literal_or_hex_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["num_literal_or_hex_list", TType.OPERATOR_COMMA, "num_literal_or_hex"],
+            action=lambda x: x[0] + [x[2].value]
+        ),
+        ms_parser.create_rule(
+            symbols=["num_literal_or_hex"],
+            action=lambda x: [x[0].value]
         )
     ]
 )
@@ -458,6 +533,20 @@ USER_NAME = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CURRENT_USER, "opt_braces"],
             action=lambda x: ast.UserName.create_by_current_user()
+        )
+    ]
+)
+
+# 用户名称（不匹配 `CURRENT_USER` 关键字）或 `NULL` 关键字
+EXPLICIT_USER_NAME_OR_NULL = ms_parser.create_group(
+    name="explicit_user_name_or_null",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["explicit_user_name"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NULL],
+            action=lambda _: None
         )
     ]
 )

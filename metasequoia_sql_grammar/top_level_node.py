@@ -42,7 +42,7 @@ SQL_STATEMENT_ENTRY = ms_parser.create_group(
     ]
 )
 
-# 标准 SQL 语句 TODO 待补充其他备选规则
+# 标准 SQL 语句
 SQL_STATEMENT = ms_parser.create_group(
     name="sql_statement",
     rules=[
@@ -97,9 +97,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["call_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["change"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["change_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["check_table_statement"]
         ),

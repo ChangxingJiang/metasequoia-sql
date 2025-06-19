@@ -43,6 +43,8 @@ __all__ = [
     "EnumDataType",
     "EnumLoadDataLock",
     "EnumLoadSourceType",
+    "EnumTablePrimaryKeyCheckType",
+    "EnumAssignGtidsType",
 ]
 
 
@@ -395,3 +397,12 @@ class EnumLoadSourceType(IntEnum):
     FILE = 1  # INFILE
     URL = 2  # URL
     S3 = 3  # S3
+
+
+class EnumTablePrimaryKeyCheckType(IntEnum):
+    """表主键检查类型的枚举值"""
+
+    STREAM = 1  # STREAM
+    ON = 2  # ON
+    OFF = 3  # OFF
+    GENERATE = 4  # GENERATE

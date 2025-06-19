@@ -50,6 +50,33 @@ __all__ = [
     "KEYWORD_NVARCHAR",
     "KEYWORD_VISIBLE_OR_INVISIBLE",
 
+    # 复制源相关的关键字组合
+    "KEYWORD_MASTER_AUTO_POSITION_OR_SOURCE_AUTO_POSITION",
+    "KEYWORD_MASTER_HOST_OR_SOURCE_HOST",
+    "KEYWORD_MASTER_BIND_OR_SOURCE_BIND",
+    "KEYWORD_MASTER_USER_OR_SOURCE_USER",
+    "KEYWORD_MASTER_PASSWORD_OR_SOURCE_PASSWORD",
+    "KEYWORD_MASTER_PORT_OR_SOURCE_PORT",
+    "KEYWORD_MASTER_CONNECT_RETRY_OR_SOURCE_CONNECT_RETRY",
+    "KEYWORD_MASTER_RETRY_COUNT_OR_SOURCE_RETRY_COUNT",
+    "KEYWORD_MASTER_DELAY_OR_SOURCE_DELAY",
+    "KEYWORD_MASTER_SSL_OR_SOURCE_SSL",
+    "KEYWORD_MASTER_SSL_CA_OR_SOURCE_SSL_CA",
+    "KEYWORD_MASTER_SSL_CAPATH_OR_SOURCE_SSL_CAPATH",
+    "KEYWORD_MASTER_SSL_CIPHER_OR_SOURCE_SSL_CIPHER",
+    "KEYWORD_MASTER_SSL_CRL_OR_SOURCE_SSL_CRL",
+    "KEYWORD_MASTER_SSL_CRLPATH_OR_SOURCE_SSL_CRLPATH",
+    "KEYWORD_MASTER_SSL_KEY_OR_SOURCE_SSL_KEY",
+    "KEYWORD_MASTER_SSL_VERIFY_SERVER_CERT_OR_SOURCE_SSL_VERIFY_SERVER_CERT",
+    "KEYWORD_MASTER_TLS_VERSION_OR_SOURCE_TLS_VERSION",
+    "KEYWORD_MASTER_TLS_CIPHERSUITES_OR_SOURCE_TLS_CIPHERSUITES",
+    "KEYWORD_MASTER_SSL_CERT_OR_SOURCE_SSL_CERT",
+    "KEYWORD_MASTER_PUBLIC_KEY_PATH_OR_SOURCE_PUBLIC_KEY_PATH",
+    "KEYWORD_GET_MASTER_PUBLIC_KEY_OR_GET_SOURCE_PUBLIC_KEY",
+    "KEYWORD_MASTER_HEARTBEAT_PERIOD_OR_SOURCE_HEARTBEAT_PERIOD",
+    "KEYWORD_MASTER_COMPRESSION_ALGORITHM_OR_SOURCE_COMPRESSION_ALGORITHM",
+    "KEYWORD_MASTER_ZSTD_COMPRESSION_LEVEL_OR_SOURCE_ZSTD_COMPRESSION_LEVEL",
+
     # 可选的运算符
     "OPT_BRACES",
     "OPT_COMMA",
@@ -758,6 +785,331 @@ KEYWORD_LINES_OR_ROWS = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ROWS]
+        )
+    ]
+)
+
+# `MASTER_AUTO_POSITION` 关键字或 `SOURCE_AUTO_POSITION` 关键字
+KEYWORD_MASTER_AUTO_POSITION_OR_SOURCE_AUTO_POSITION = ms_parser.create_group(
+    name="keyword_master_auto_position_or_source_auto_position",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_AUTO_POSITION]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_AUTO_POSITION]
+        )
+    ]
+)
+
+# `MASTER_HOST` 关键字或 `SOURCE_HOST` 关键字
+KEYWORD_MASTER_HOST_OR_SOURCE_HOST = ms_parser.create_group(
+    name="keyword_master_host_or_source_host",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_HOST]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_HOST]
+        )
+    ]
+)
+
+# `MASTER_BIND` 关键字或 `SOURCE_BIND` 关键字
+KEYWORD_MASTER_BIND_OR_SOURCE_BIND = ms_parser.create_group(
+    name="keyword_master_bind_or_source_bind",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_BIND]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_BIND]
+        )
+    ]
+)
+
+# `MASTER_USER` 关键字或 `SOURCE_USER` 关键字
+KEYWORD_MASTER_USER_OR_SOURCE_USER = ms_parser.create_group(
+    name="keyword_master_user_or_source_user",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_USER]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_USER]
+        )
+    ]
+)
+
+# `MASTER_PASSWORD` 关键字或 `SOURCE_PASSWORD` 关键字
+KEYWORD_MASTER_PASSWORD_OR_SOURCE_PASSWORD = ms_parser.create_group(
+    name="keyword_master_password_or_source_password",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_PASSWORD]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_PASSWORD]
+        )
+    ]
+)
+
+# `MASTER_PORT` 关键字或 `SOURCE_PORT` 关键字
+KEYWORD_MASTER_PORT_OR_SOURCE_PORT = ms_parser.create_group(
+    name="keyword_master_port_or_source_port",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_PORT]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_PORT]
+        )
+    ]
+)
+
+# `MASTER_CONNECT_RETRY` 关键字或 `SOURCE_CONNECT_RETRY` 关键字
+KEYWORD_MASTER_CONNECT_RETRY_OR_SOURCE_CONNECT_RETRY = ms_parser.create_group(
+    name="keyword_master_connect_retry_or_source_connect_retry",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_CONNECT_RETRY]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_CONNECT_RETRY]
+        )
+    ]
+)
+
+# `MASTER_RETRY_COUNT` 关键字或 `SOURCE_RETRY_COUNT` 关键字
+KEYWORD_MASTER_RETRY_COUNT_OR_SOURCE_RETRY_COUNT = ms_parser.create_group(
+    name="keyword_master_retry_count_or_source_retry_count",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_RETRY_COUNT]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_RETRY_COUNT]
+        )
+    ]
+)
+
+# `MASTER_DELAY` 关键字或 `SOURCE_DELAY` 关键字
+KEYWORD_MASTER_DELAY_OR_SOURCE_DELAY = ms_parser.create_group(
+    name="keyword_master_delay_or_source_delay",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_DELAY]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_DELAY]
+        )
+    ]
+)
+
+# `MASTER_SSL` 关键字或 `SOURCE_SSL` 关键字
+KEYWORD_MASTER_SSL_OR_SOURCE_SSL = ms_parser.create_group(
+    name="keyword_master_ssl_or_source_ssl",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL]
+        )
+    ]
+)
+
+# `MASTER_SSL_CA` 关键字或 `SOURCE_SSL_CA` 关键字
+KEYWORD_MASTER_SSL_CA_OR_SOURCE_SSL_CA = ms_parser.create_group(
+    name="keyword_master_ssl_ca_or_source_ssl_ca",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_CA]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_CA]
+        )
+    ]
+)
+
+# `MASTER_SSL_CAPATH` 关键字或 `SOURCE_SSL_CAPATH` 关键字
+KEYWORD_MASTER_SSL_CAPATH_OR_SOURCE_SSL_CAPATH = ms_parser.create_group(
+    name="keyword_master_ssl_capath_or_source_ssl_capath",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_CAPATH]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_CAPATH]
+        )
+    ]
+)
+
+# `MASTER_SSL_CIPHER` 关键字或 `SOURCE_SSL_CIPHER` 关键字
+KEYWORD_MASTER_SSL_CIPHER_OR_SOURCE_SSL_CIPHER = ms_parser.create_group(
+    name="keyword_master_ssl_cipher_or_source_ssl_cipher",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_CIPHER]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_CIPHER]
+        )
+    ]
+)
+
+# `MASTER_SSL_CRL` 关键字或 `SOURCE_SSL_CRL` 关键字
+KEYWORD_MASTER_SSL_CRL_OR_SOURCE_SSL_CRL = ms_parser.create_group(
+    name="keyword_master_ssl_crl_or_source_ssl_crl",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_CRL]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_CRL]
+        )
+    ]
+)
+
+# `MASTER_SSL_CRLPATH` 关键字或 `SOURCE_SSL_CRLPATH` 关键字
+KEYWORD_MASTER_SSL_CRLPATH_OR_SOURCE_SSL_CRLPATH = ms_parser.create_group(
+    name="keyword_master_ssl_crlpath_or_source_ssl_crlpath",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_CRLPATH]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_CRLPATH]
+        )
+    ]
+)
+
+# `MASTER_SSL_KEY` 关键字或 `SOURCE_SSL_KEY` 关键字
+KEYWORD_MASTER_SSL_KEY_OR_SOURCE_SSL_KEY = ms_parser.create_group(
+    name="keyword_master_ssl_key_or_source_ssl_key",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_KEY]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_KEY]
+        )
+    ]
+)
+
+# `MASTER_SSL_VERIFY_SERVER_CERT` 关键字或 `SOURCE_SSL_VERIFY_SERVER_CERT` 关键字
+KEYWORD_MASTER_SSL_VERIFY_SERVER_CERT_OR_SOURCE_SSL_VERIFY_SERVER_CERT = ms_parser.create_group(
+    name="keyword_master_ssl_verify_server_cert_or_source_ssl_verify_server_cert",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_VERIFY_SERVER_CERT]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_VERIFY_SERVER_CERT]
+        )
+    ]
+)
+
+# `MASTER_TLS_VERSION` 关键字或 `SOURCE_TLS_VERSION` 关键字
+KEYWORD_MASTER_TLS_VERSION_OR_SOURCE_TLS_VERSION = ms_parser.create_group(
+    name="keyword_master_tls_version_or_source_tls_version",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_TLS_VERSION]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_TLS_VERSION]
+        )
+    ]
+)
+
+# `MASTER_TLS_CIPHERSUITES` 关键字或 `SOURCE_TLS_CIPHERSUITES` 关键字
+KEYWORD_MASTER_TLS_CIPHERSUITES_OR_SOURCE_TLS_CIPHERSUITES = ms_parser.create_group(
+    name="keyword_master_tls_ciphersuites_or_source_tls_ciphersuites",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_TLS_CIPHERSUITES]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_TLS_CIPHERSUITES]
+        )
+    ]
+)
+
+# `MASTER_SSL_CERT` 关键字或 `SOURCE_SSL_CERT` 关键字
+KEYWORD_MASTER_SSL_CERT_OR_SOURCE_SSL_CERT = ms_parser.create_group(
+    name="keyword_master_ssl_cert_or_source_ssl_cert",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_SSL_CERT]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_SSL_CERT]
+        )
+    ]
+)
+
+# `MASTER_PUBLIC_KEY_PATH` 关键字或 `SOURCE_PUBLIC_KEY_PATH` 关键字
+KEYWORD_MASTER_PUBLIC_KEY_PATH_OR_SOURCE_PUBLIC_KEY_PATH = ms_parser.create_group(
+    name="keyword_master_public_key_path_or_source_public_key_path",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_PUBLIC_KEY_PATH]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_PUBLIC_KEY_PATH]
+        )
+    ]
+)
+
+# `GET_MASTER_PUBLIC_KEY` 关键字或 `GET_SOURCE_PUBLIC_KEY` 关键字
+KEYWORD_GET_MASTER_PUBLIC_KEY_OR_GET_SOURCE_PUBLIC_KEY = ms_parser.create_group(
+    name="keyword_get_master_public_key_or_get_source_public_key",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GET_MASTER_PUBLIC_KEY]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GET_SOURCE_PUBLIC_KEY]
+        )
+    ]
+)
+
+# `MASTER_HEARTBEAT_PERIOD` 关键字或 `SOURCE_HEARTBEAT_PERIOD` 关键字
+KEYWORD_MASTER_HEARTBEAT_PERIOD_OR_SOURCE_HEARTBEAT_PERIOD = ms_parser.create_group(
+    name="keyword_master_heartbeat_period_or_source_heartbeat_period",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_HEARTBEAT_PERIOD]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_HEARTBEAT_PERIOD]
+        )
+    ]
+)
+
+# `MASTER_COMPRESSION_ALGORITHM` 关键字或 `SOURCE_COMPRESSION_ALGORITHM` 关键字
+KEYWORD_MASTER_COMPRESSION_ALGORITHM_OR_SOURCE_COMPRESSION_ALGORITHM = ms_parser.create_group(
+    name="keyword_master_compression_algorithm_or_source_compression_algorithm",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_COMPRESSION_ALGORITHM]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_COMPRESSION_ALGORITHM]
+        )
+    ]
+)
+
+# `MASTER_ZSTD_COMPRESSION_LEVEL` 关键字或 `SOURCE_ZSTD_COMPRESSION_LEVEL` 关键字
+KEYWORD_MASTER_ZSTD_COMPRESSION_LEVEL_OR_SOURCE_ZSTD_COMPRESSION_LEVEL = ms_parser.create_group(
+    name="keyword_master_zstd_compression_level_or_source_zstd_compression_level",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_MASTER_ZSTD_COMPRESSION_LEVEL]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SOURCE_ZSTD_COMPRESSION_LEVEL]
         )
     ]
 )

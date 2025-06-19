@@ -597,6 +597,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_RELEASE = enum.auto()  # reserved keyword : SQL-2003-R
     KEYWORD_RELOAD = enum.auto()  # keyowrd
     KEYWORD_REMOVE = enum.auto()  # keyowrd
+    KEYWORD_ASSIGN_GTIDS_TO_ANONYMOUS_TRANSACTIONS = enum.auto()  # keyowrd
     KEYWORD_RENAME = enum.auto()  # reserved keyword
     KEYWORD_REORGANIZE = enum.auto()  # keyword
     KEYWORD_REPAIR = enum.auto()  # keyword
@@ -615,6 +616,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_REPLICATION = enum.auto()  # keyword
     KEYWORD_REQUIRE = enum.auto()  # reserved keyword
     KEYWORD_REQUIRE_ROW_FORMAT = enum.auto()  # keyword : MYSQL (MySQL 8.0)
+    KEYWORD_REQUIRE_TABLE_PRIMARY_KEY_CHECK = enum.auto()  # keyword
     KEYWORD_RESET = enum.auto()  # keyword
     KEYWORD_RESIGNAL = enum.auto()  # reserved keyword : SQL-2003-R
     KEYWORD_RESOURCE = enum.auto()  # keyword : MYSQL (MySQL 8.0)
@@ -685,6 +687,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_SOURCE_AUTO_POSITION = enum.auto()  # keyword (MySQL 8.0)
     KEYWORD_SOURCE_BIND = enum.auto()  # keyword (MySQL 8.0)
     KEYWORD_SOURCE_COMPRESSION_ALGORITHM = enum.auto()  # keyword (MySQL 8.0)
+    KEYWORD_SOURCE_CONNECTION_AUTO_FAILOVER = enum.auto()  # keyword
     KEYWORD_SOURCE_CONNECT_RETRY = enum.auto()  # keyword (MySQL 8.0)
     KEYWORD_SOURCE_DELAY = enum.auto()  # keyword (MySQL 8.0)
     KEYWORD_SOURCE_HEARTBEAT_PERIOD = enum.auto()  # keyword (MySQL 8.0)

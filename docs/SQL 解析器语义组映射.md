@@ -149,6 +149,13 @@
 
 #### CALL 语句（call statement）
 
+| 水杉解析器语义组名称        | 语义组类型          | 返回值类型        | MySQL 语义组名称            |
+| --------------------------- | ------------------- | ----------------- | --------------------------- |
+| `change_statement`          | `CHANGE` 语句       | `ChangeStatement` | `change`                    |
+| `change_replication_source` | `CHANGE` 复制源类型 | -                 | `change_replication_source` |
+
+#### CHANGE 语句（change statement）
+
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
 | -------------------- | ----------- | --------------- | ---------------- |
 | `call_statement`     | `CALL` 语句 | `CallStatement` | `call_stmt`      |
@@ -1066,11 +1073,23 @@
 | `identified_with_plugin_by_password`        | 使用插件和密码进行身份认证       | `IdentifiedWithPluginByPassword`       | `identified_with_plugin_by_password`        |
 | `identified_with_plugin_by_random_password` | 使用插件和随机密码进行身份认证   | `IdentifiedWithPluginByRandomPassword` | `identified_with_plugin_by_random_password` |
 
-#### 源文件定义（source file definition）
+#### 复制源定义（source definition）
 
-| 水杉解析器语义组名称 | 语义组含义 | 返回值类型 | MySQL 语义组名称 |
-| -------------------- | ---------- | ---------- | ---------------- |
-|                      |            |            |                  |
+| 水杉解析器语义组名称 | 语义组含义                | 返回值类型               | MySQL 语义组名称                             |
+| -------------------- | ------------------------- | ------------------------ | -------------------------------------------- |
+| `source_def_list`    | 复制源定义的列表          | `List[SourceDefinition]` | `source_defs`                                |
+| `source_def`         | 复制源定义                | `SourceDefinition`       | `source_def`                                 |
+| `source_file_def`    | 源文件定义                | `SourceFileDefinition`   | `source_file_def`                            |
+| `assign_gtids_type`  | 分配 GTIDs 给匿名事务定义 | `AssignGidsDefinition`   | `assign_gtids_to_anonymous_transactions_def` |
+
+#### 过滤器定义（filter definition）
+
+| 水杉解析器语义组名称      | 语义组含义         | 返回值类型               | MySQL 语义组名称          |
+| ------------------------- | ------------------ | ------------------------ | ------------------------- |
+| `filter_def_list`         | 过滤器定义的列表   | `List[FilterDefinition]` | `filter_defs`             |
+| `filter_def`              | 过滤器定义         | `FilterDefinition`       | `filter_def`              |
+| `opt_filter_db_pair_list` | 可选的数据库对列表 | `List[Tuple[str, str]]`  | `opt_filter_db_pair_list` |
+| `filter_db_pair_list`     | 数据库对列表       | `List[Tuple[str, str]]`  | `filter_db_pair_list`     |
 
 # 表（table）
 
@@ -1270,61 +1289,87 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `data_or_xml`                  | `LOAD` 语句中数据类型的枚举值                          | `EnumDataType`                 | `data_or_xml`                            |
 | `load_data_lock`               | `LOAD` 语句中锁定类型的枚举值                          | `EnumLoadDataLock`             | `load_data_lock`                         |
 | `load_source_type`             | `LOAD` 语句中数据源类型的枚举值                        | `EnumLoadSourceType`           | `load_source_type`                       |
+| `table_primary_key_check_type` | 表主键检查类型的枚举值                                 | `EnumTablePrimaryKeyCheckType` | `table_primary_key_check_def`            |
 
 #### 固定的词语组合（fixed word）
 
-| 水杉解析器语义组名称                         | 语义组类型                                                   | 返回值类型 | MySQL 语义组名称                           |
-| -------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------------------------------------ |
-| `opt_keyword_of`                             | 可选的 `OPT` 关键字                                          | -          | `opt_of`                                   |
-| `opt_keyword_all`                            | 可选的 `ALL` 关键字                                          | `bool`     | `opt_all`<br />`opt_replica_reset_options` |
-| `opt_keyword_into`                           | 可选的 `INTO` 关键字                                         | -          | `opt_INTO`                                 |
-| `opt_keyword_default`                        | 可选的 `DEFAULT` 关键字                                      | -          | `opt_default`                              |
-| `opt_keyword_storage`                        | 可选的 `STORAGE` 关键字                                      | -          | `opt_storage`                              |
-| `opt_keyword_temporary`                      | 可选的 `TEMPORARY` 关键字                                    | `bool`     | `opt_temporary`                            |
-| `opt_keyword_extended`                       | 可选的 `EXTENDED` 关键字                                     | `bool`     | `opt_extended`                             |
-| `opt_keyword_if_not_exists`                  | 可选的 `IF NOT EXISTS` 关键字                                | `bool`     | `opt_if_not_exists`                        |
-| `opt_keyword_if_exists`                      | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`                                |
-| `opt_keyword_force`                          | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`                                |
-| `opt_keyword_full`                           | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`                                 |
-| `opt_keyword_work`                           | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`                                 |
-| `opt_keyword_no_write_to_binlog`             | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog`                   |
-| `opt_keyword_table`                          | 可选的 `TABLE` 关键字                                        | -          | `opt_table`                                |
-| `opt_keyword_savepoint`                      | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`                            |
-| `opt_keyword_value`                          | 可选的 `VALUE` 关键字                                        | -          | `opt_value`                                |
-| `opt_keyword_privileges`                     | 可选的 `PRIVILEGES` 关键字                                   | -          | `opt_privileges`                           |
-| `opt_keyword_with_admin_option`              | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                    |
-| `opt_keyword_grant_option`                   | 可选的 `WITH GRANT OPTION` 关键字组合                        | -          | `grant_options`<br />`opt_grant_option`    |
-| `opt_keyword_ignore_unknown_user`            | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                  |
-| `opt_keyword_convert_xid`                    | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                          |
-| `opt_keyword_one_phase`                      | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                            |
-| `opt_keyword_column`                         | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                               |
-| `opt_keyword_on_replace`                     | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                             |
-| `opt_keyword_from`                           | 可选的 `FROM` 关键字                                         | -          | `opt_from_keyword`                         |
-| `opt_keyword_local`                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                |
-| `opt_keyword_in_primary_key_order`           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                         |
-| `keyword_deallocate_or_drop`                 | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                       |
-| `keyword_describe_or_explain`                | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                         |
-| `keyword_table_or_tables`                    | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                          |
-| `keyword_master_or_binary`                   | `MASTER` 关键字或 `BINARY` 关键字                            | -          | `master_or_binary`                         |
-| `keyword_from_or_in`                         | `FROM` 关键字或 `IN` 关键字                                  | -          | `from_or_in`                               |
-| `keyword_keys_or_index`                      | `KEYS`、`INDEX` 或 `INDEXES` 关键字                          | -          | `keys_or_index`                            |
-| `keyword_replica_or_slave`                   | `REPLICA` 或 `SLAVE` 关键字                                  | -          | `replica`                                  |
-| `keyword_master_or_binary_logs_and_gtids`    | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`          |
-| `keyword_begin_or_start`                     | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                           |
-| `keyword_next_from_or_from`                  | 可选的 `NEXT FROM` 或 `FROM` 关键字（用于 FETCH 语法中的噪声词） | -          | `sp_opt_fetch_noise`                       |
-| `keyword_visible_or_invisible`               | `VISIBLE` 关键字或 `INVISIBLE` 关键字                        | `bool`     | `visibility`                               |
-| `keyword_master_log_file_or_source_log_file` | `MASTER_LOG_FILE` 关键字或 `SOURCE_LOG_FILE` 关键字          | -          | `source_log_file`                          |
-| `keyword_master_log_pos_or_source_log_pos`   | `MASTER_LOG_POS` 关键字或 `SOURCE_LOG_POS` 关键字            | -          | `source_log_pos`                           |
-| `keyword_lines_or_rows`                      | `LINES` 关键字或 `ROWS` 关键字                               | -          | `lines_or_rows`                            |
-| `opt_braces`                                 | 可选的空括号                                                 | -          | `optional_braces`                          |
-| `opt_comma`                                  | 可选的逗号                                                   | -          | `opt_comma`                                |
-| `keyword_charset`                            | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                            |
-| `keyword_nchar`                              | `NCHAR` 关键字或 `NATIONAL CHAR` 关键字（兼容的 `NCHAR` 类型名称） | -          | `nchar`                                    |
-| `keyword_varchar`                            | `CHAR VARYING` 关键字或 `VARCHAR` 关键字（兼容的 `VARCHAR` 类型名称） | -          | `varchar`                                  |
-| `keyword_nvarchar`                           | `NVARCHAR` 关键字、`NATIONAL VARCHAR` 关键字、`Ncharacter_setCHAR VARCHAR` 关键字、`NATIONAL CHAR VARYING` 关键字或 `NCHAR VARYING` 关键字（兼容的 `NVARCHAR` 类型名称） | -          | `nvarchar`                                 |
-| `opt_equal`                                  | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                |
-| `equal`                                      | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                    |
-| `opt_to_or_eq_or_as`                         | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                   |
+| 水杉解析器语义组名称                                         | 语义组类型                                                   | 返回值类型 | MySQL 语义组名称                                   |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ---------- | -------------------------------------------------- |
+| `opt_keyword_of`                                             | 可选的 `OPT` 关键字                                          | -          | `opt_of`                                           |
+| `opt_keyword_all`                                            | 可选的 `ALL` 关键字                                          | `bool`     | `opt_all`<br />`opt_replica_reset_options`         |
+| `opt_keyword_into`                                           | 可选的 `INTO` 关键字                                         | -          | `opt_INTO`                                         |
+| `opt_keyword_default`                                        | 可选的 `DEFAULT` 关键字                                      | -          | `opt_default`                                      |
+| `opt_keyword_storage`                                        | 可选的 `STORAGE` 关键字                                      | -          | `opt_storage`                                      |
+| `opt_keyword_temporary`                                      | 可选的 `TEMPORARY` 关键字                                    | `bool`     | `opt_temporary`                                    |
+| `opt_keyword_extended`                                       | 可选的 `EXTENDED` 关键字                                     | `bool`     | `opt_extended`                                     |
+| `opt_keyword_if_not_exists`                                  | 可选的 `IF NOT EXISTS` 关键字                                | `bool`     | `opt_if_not_exists`                                |
+| `opt_keyword_if_exists`                                      | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`                                        |
+| `opt_keyword_force`                                          | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`                                        |
+| `opt_keyword_full`                                           | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`                                         |
+| `opt_keyword_work`                                           | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`                                         |
+| `opt_keyword_no_write_to_binlog`                             | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog`                           |
+| `opt_keyword_table`                                          | 可选的 `TABLE` 关键字                                        | -          | `opt_table`                                        |
+| `opt_keyword_savepoint`                                      | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`                                    |
+| `opt_keyword_value`                                          | 可选的 `VALUE` 关键字                                        | -          | `opt_value`                                        |
+| `opt_keyword_privileges`                                     | 可选的 `PRIVILEGES` 关键字                                   | -          | `opt_privileges`                                   |
+| `opt_keyword_with_admin_option`                              | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                            |
+| `opt_keyword_grant_option`                                   | 可选的 `WITH GRANT OPTION` 关键字组合                        | -          | `grant_options`<br />`opt_grant_option`            |
+| `opt_keyword_ignore_unknown_user`                            | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                          |
+| `opt_keyword_convert_xid`                                    | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                                  |
+| `opt_keyword_one_phase`                                      | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                                    |
+| `opt_keyword_column`                                         | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                                       |
+| `opt_keyword_on_replace`                                     | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                                     |
+| `opt_keyword_from`                                           | 可选的 `FROM` 关键字                                         | -          | `opt_from_keyword`                                 |
+| `opt_keyword_local`                                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                        |
+| `opt_keyword_in_primary_key_order`                           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                                 |
+| `keyword_deallocate_or_drop`                                 | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                               |
+| `keyword_describe_or_explain`                                | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                                 |
+| `keyword_table_or_tables`                                    | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                                  |
+| `keyword_master_or_binary`                                   | `MASTER` 关键字或 `BINARY` 关键字                            | -          | `master_or_binary`                                 |
+| `keyword_from_or_in`                                         | `FROM` 关键字或 `IN` 关键字                                  | -          | `from_or_in`                                       |
+| `keyword_keys_or_index`                                      | `KEYS`、`INDEX` 或 `INDEXES` 关键字                          | -          | `keys_or_index`                                    |
+| `keyword_replica_or_slave`                                   | `REPLICA` 或 `SLAVE` 关键字                                  | -          | `replica`                                          |
+| `keyword_master_or_binary_logs_and_gtids`                    | `MASTER` 关键字或 `BINARY LOGS AND GTIDS` 关键字组合         | -          | `master_or_binary_logs_and_gtids`                  |
+| `keyword_begin_or_start`                                     | `BEGIN` 关键字或 `START` 关键字                              | -          | `begin_or_start`                                   |
+| `keyword_next_from_or_from`                                  | 可选的 `NEXT FROM` 或 `FROM` 关键字（用于 FETCH 语法中的噪声词） | -          | `sp_opt_fetch_noise`                               |
+| `keyword_visible_or_invisible`                               | `VISIBLE` 关键字或 `INVISIBLE` 关键字                        | `bool`     | `visibility`                                       |
+| `keyword_master_log_file_or_source_log_file`                 | `MASTER_LOG_FILE` 关键字或 `SOURCE_LOG_FILE` 关键字          | -          | `source_log_file`                                  |
+| `keyword_master_log_pos_or_source_log_pos`                   | `MASTER_LOG_POS` 关键字或 `SOURCE_LOG_POS` 关键字            | -          | `source_log_pos`                                   |
+| `keyword_lines_or_rows`                                      | `LINES` 关键字或 `ROWS` 关键字                               | -          | `lines_or_rows`                                    |
+| `keyword_master_auto_position_or_source_auto_position`       | `MASTER_AUTO_POSITION` 关键字或 `SOURCE_AUTO_POSITION` 关键字 | -          | `change_replication_source_auto_position`          |
+| `keyword_master_host_or_source_host`                         | `MASTER_HOST` 关键字或 `SOURCE_HOST` 关键字                  | -          | `change_replication_source_host`                   |
+| `keyword_master_bind_or_source_bind`                         | `MASTER_BIND` 关键字或 `SOURCE_BIND` 关键字                  | -          | `change_replication_source_bind`                   |
+| `change_replication_source_user`                             | `MASTER_USER` 关键字或 `SOURCE_USER` 关键字                  | -          | `change_replication_source_user`                   |
+| `keyword_master_password_or_source_password`                 | `MASTER_PASSWORD` 关键字或 `SOURCE_PASSWORD` 关键字          | -          | `change_replication_source_password`               |
+| `keyword_master_port_or_source_port`                         | `MASTER_PORT` 关键字或 `SOURCE_PORT` 关键字                  | -          | `change_replication_source_port`                   |
+| `keyword_master_connect_retry_or_source_connect_retry`       | `MASTER_CONNECT_RETRY` 关键字或 `SOURCE_CONNECT_RETRY` 关键字 | -          | `change_replication_source_connect_retry`          |
+| `keyword_master_retry_count_or_source_retry_count`           | `MASTER_RETRY_COUNT` 关键字或 `SOURCE_RETRY_COUNT` 关键字    | -          | `change_replication_source_retry_count`            |
+| `keyword_master_delay_or_source_delay`                       | `MASTER_DELAY` 关键字或 `SOURCE_DELAY` 关键字                | -          | `change_replication_source_delay`                  |
+| `keyword_master_ssl_or_source_ssl`                           | `MASTER_SSL` 关键字或 `SOURCE_SSL` 关键字                    | -          | `change_replication_source_ssl`                    |
+| `keyword_master_ssl_ca_or_source_ssl_ca`                     | `MASTER_SSL_CA` 关键字或 `SOURCE_SSL_CA` 关键字              | -          | `change_replication_source_ssl_ca`                 |
+| `keyword_master_ssl_capath_or_source_ssl_capath`             | `MASTER_SSL_CAPATH` 关键字或 `SOURCE_SSL_CAPATH` 关键字      | -          | `change_replication_source_ssl_capath`             |
+| `keyword_master_ssl_cipher_or_source_ssl_cipher`             | `MASTER_SSL_CIPHER` 关键字或 `SOURCE_SSL_CIPHER` 关键字      | -          | `change_replication_source_ssl_cipher`             |
+| `keyword_master_ssl_crl_or_source_ssl_crl`                   | `MASTER_SSL_CRL` 关键字或 `SOURCE_SSL_CRL` 关键字            | -          | `change_replication_source_ssl_crl`                |
+| `keyword_master_ssl_crlpath_or_source_ssl_crlpath`           | `MASTER_SSL_CRLPATH` 关键字或 `SOURCE_SSL_CRLPATH` 关键字    | -          | `change_replication_source_ssl_crlpath`            |
+| `keyword_master_ssl_key_or_source_ssl_key`                   | `MASTER_SSL_KEY` 关键字或 `SOURCE_SSL_KEY` 关键字            | -          | `change_replication_source_ssl_key`                |
+| `keyword_master_ssl_verify_server_cert_or_source_ssl_verify_server_cert` | `MASTER_SSL_VERIFY_SERVER_CERT` 关键字或 `SOURCE_SSL_VERIFY_SERVER_CERT` 关键字 | -          | `change_replication_source_ssl_verify_server_cert` |
+| `keyword_master_tls_version_or_source_tls_version`           | `MASTER_TLS_VERSION` 关键字或 `SOURCE_TLS_VERSION` 关键字    | -          | `change_replication_source_tls_version`            |
+| `keyword_master_tls_ciphersuites_or_source_tls_ciphersuites` | `MASTER_TLS_CIPHERSUITES` 关键字或 `SOURCE_TLS_CIPHERSUITES` 关键字 | -          | `change_replication_source_tls_ciphersuites`       |
+| `keyword_master_ssl_cert_or_source_ssl_cert`                 | `MASTER_SSL_CERT` 关键字或 `SOURCE_SSL_CERT` 关键字          | -          | `change_replication_source_ssl_cert`               |
+| `keyword_master_public_key_path_or_source_public_key_path`   | `MASTER_PUBLIC_KEY_PATH` 关键字或 `SOURCE_PUBLIC_KEY_PATH` 关键字 | -          | `change_replication_source_public_key`             |
+| `keyword_get_master_public_key_or_get_source_public_key`     | `GET_MASTER_PUBLIC_KEY` 关键字或 `GET_SOURCE_PUBLIC_KEY` 关键字 | -          | `change_replication_source_get_source_public_key`  |
+| `keyword_master_heartbeat_period_or_source_heartbeat_period` | `MASTER_HEARTBEAT_PERIOD` 关键字或 `SOURCE_HEARTBEAT_PERIOD` 关键字 | -          | `change_replication_source_heartbeat_period`       |
+| `keyword_master_compression_algorithm_or_source_compression_algorithm` | `MASTER_COMPRESSION_ALGORITHM` 关键字或 `SOURCE_COMPRESSION_ALGORITHM` 关键字 | -          | `change_replication_source_compression_algorithm`  |
+| `keyword_master_zstd_compression_level_or_source_zstd_compression_level` | `MASTER_ZSTD_COMPRESSION_LEVEL` 关键字或 `SOURCE_ZSTD_COMPRESSION_LEVEL` 关键字 | -          | `change_replication_source_zstd_compression_level` |
+| `opt_braces`                                                 | 可选的空括号                                                 | -          | `optional_braces`                                  |
+| `opt_comma`                                                  | 可选的逗号                                                   | -          | `opt_comma`                                        |
+| `keyword_charset`                                            | `CHARSET` 关键字或 `CHAR SET` 关键字                         | -          | `character_set`                                    |
+| `keyword_nchar`                                              | `NCHAR` 关键字或 `NATIONAL CHAR` 关键字（兼容的 `NCHAR` 类型名称） | -          | `nchar`                                            |
+| `keyword_varchar`                                            | `CHAR VARYING` 关键字或 `VARCHAR` 关键字（兼容的 `VARCHAR` 类型名称） | -          | `varchar`                                          |
+| `keyword_nvarchar`                                           | `NVARCHAR` 关键字、`NATIONAL VARCHAR` 关键字、`Ncharacter_setCHAR VARCHAR` 关键字、`NATIONAL CHAR VARYING` 关键字或 `NCHAR VARYING` 关键字（兼容的 `NVARCHAR` 类型名称） | -          | `nvarchar`                                         |
+| `opt_equal`                                                  | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                        |
+| `equal`                                                      | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                            |
+| `opt_to_or_eq_or_as`                                         | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                           |
 
 #### 标识符（ident）
 
@@ -1340,9 +1385,10 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `ident_label_keyword`（MySQL）                         | 非保留关键字，可以用作存储过程标签名称（label name）         | `Ident`            | `label_keyword`                                              |
 | `ident_role_keyword`（MySQL）                          | 非保留关键字，可以用作角色名称（role name）                  | `Ident`            | `role_keyword`                                               |
 | `ident_variable_keyword`（MySQL）                      | 非保留关键字，可以作为 SET 语句中赋值操作左侧的变量名以及变量前缀 | `Ident`            | `lvalue_keyword`                                             |
+| `parens_opt_ident_list`                                | 括号框柱的可选的单个标识符（`ident`）的列表                  | `List[str]`        | `opt_filter_db_list`                                         |
 | `opt_ident_list`                                       | 可选的单个标识符（`ident`）的列表                            | `List[str]`        | `opt_name_list`                                              |
-| `ident_list`                                           | 单个标识符（`ident`）的列表                                  | `List[str]`        | `simple_ident_list`<br />`ident_string_list`<br />`using_list`<br />`reference_list`<br />`name_list`<br />`column_list`<br />`sp_fetch_list`<br />`sp_decl_idents` |
-| `ident`（MySQL）                                       | 单个标识符（`ident`）                                        | `Ident`            | `ident`<br />`schema`<br />`window_name`                     |
+| `ident_list`                                           | 单个标识符（`ident`）的列表                                  | `List[str]`        | `simple_ident_list`<br />`ident_string_list`<br />`using_list`<br />`reference_list`<br />`name_list`<br />`column_list`<br />`sp_fetch_list`<br />`sp_decl_idents`<br />`filter_db_list` |
+| `ident`（MySQL）                                       | 单个标识符（`ident`）                                        | `Ident`            | `ident`<br />`schema`<br />`window_name`<br />`filter_db_ident` |
 | `opt_ident_list_parens`                                | 可选的括号嵌套的单个标识符（`ident`）的列表                  | `List[str]`        | `opt_derived_column_list`<br />`opt_ref_list`<br />`opt_column_list` |
 | `opt_label_ident`                                      | 可选的 label 标识符                                          | `Optional[str]`    | `sp_opt_label`                                               |
 | `label_ident`（MySQL）                                 | 表示存储过程名称的标识符                                     | `Ident`            | `label_ident`                                                |
@@ -1354,6 +1400,10 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_identifier_list`                                  | 可选的通用标识符的列表                                       | `List[Identifier]` | `opt_table_list`                                             |
 | `identifier_list`                                      | 通用标识符的列表                                             | `List[Identifier]` | `table_list`                                                 |
 | `identifier`                                           | 通用标识符（`ident` 或 `ident.ident`）                       | `Identifier`       | `table_ident`<br />`sp_name`                                 |
+| `parens_opt_qualified_identifier_list`                 | 括号框柱的可选的完全限定的通用标识符的列表                   | `List[Identifier]` | `opt_filter_table_list`                                      |
+| `opt_qualified_identifier_list`                        | 可选的完全限定的通用标识符的列表                             | `List[Identifier]` |                                                              |
+| `qualified_identifier_list`                            | 完全限定的通用标识符的列表                                   | `List[Identifier]` | `filter_table_list`                                          |
+| `qualified_identifier`                                 | 完全限定的通用标识符（`ident.ident`）                        | `Identifier`       | `filter_table_ident`                                         |
 | `identifier_allow_default`                             | 允许 DEFAULT 前缀的标识符（`ident` 或 `ident.ident` 或 `DEFAULT.ident`） | `Identifier`       | `persisted_variable_ident`                                   |
 | `table_ident_opt_wild_list`                            | 表标识符及可选的 `.*` 的列表                                 | `List[Identifier]` | `table_alias_ref_list`                                       |
 | `table_ident_opt_wild`                                 | 表标识符及可选的 `.*`                                        | `Identifier`       | `table_ident_opt_wild`                                       |
@@ -1374,33 +1424,39 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 字面值（literal）
 
-| 水杉解析器语义组名称       | 语义组含义                                                   | 返回值类型            | MySQL 语义组名称                                             |
-| -------------------------- | ------------------------------------------------------------ | --------------------- | ------------------------------------------------------------ |
-| `text_literal_sys_list`    | 字符串字面值的列表                                           | `List[str]`           | `TEXT_STRING_sys_list`                                       |
-| `text_literal_or_hex`      | 字符串字面值或十六机制字符串                                 | `str`                 | `TEXT_STRING_hash`                                           |
-| `text_literal_sys`         | 字符串字面值（不包括 Unicode 字符串）                        | `StringLiteral`       | `TEXT_STRING_sys`<br />`TEXT_STRING_literal`<br />`TEXT_STRING_filesystem`<br />`TEXT_STRING_password`<br />`TEXT_STRING_validated`<br />`TEXT_STRING_sys_nonewline`<br />`filter_wild_db_table_string`<br />`json_attribute` |
-| `int_literal`              | 整数字面值                                                   | `IntLiteral`          | `int64_literal`                                              |
-| `int_literal_or_hex`       | 整数字面值或十六进制字面值                                   | `IntLiteral`          | `real_ulong_num`<br />`real_ulonglong_num`                   |
-| `paren_int_literal_or_hex` | 包含外层括号的整数字面值或十六进制字面值                     | `IntLiteral`          | `ws_num_codepoints`                                          |
-| `num_literal`              | 数值字面值（包含整数、浮点数和小数字面值）                   | `NumberLiteral`       | `NUM_literal`<br />`ulonglong_num`                           |
-| `num_literal_or_hex`       | 数值字面值或十六进制字面值                                   | `NumberLiteral`       | `ulong_num`                                                  |
-| `temporal_literal`         | 时间字面值                                                   | `TemporalLiteral`     | `temporal_literal`                                           |
-| `literal`                  | 非空字面值（包括数值、时间、布尔、真值、假值、十六进制、二进制字面值） | `Literal`             | `literal`                                                    |
-| `null_literal`             | 空值字面值                                                   | `Literal`             | `null_as_literal`                                            |
-| `literal_or_null`          | 可为空字面值                                                 | `Literal`             | `literal_or_null`                                            |
-| `text_literal`             | 字符串字面值                                                 | `StringLiteral`       | `text_literal`                                               |
-| `text_string`              | 字符串、二进制、十六进制字面值                               | `StringLiteral`       | `text_string`                                                |
-| `text_string_list`         | 逗号分隔的字符串、二进制、十六进制字面值的列表               | `List[StringLiteral]` | `string_list`                                                |
-| `signed_literal`           | 非空字面值或有符号的数值字面值                               | `Literal`             | `signed_literal`                                             |
-| `signed_literal_or_null`   | 可为空字面值或有符号的数值字面值                             | `Literal`             | `signed_literal_or_null`                                     |
-| `ident_or_text`            | 标识符或字符串字面值表示的名称                               | `Expression`          | `ident_or_text`【部分】                                      |
-| `size_number`              | 磁盘大小的数值                                               | `Expression`          | `size_number`                                                |
-| `role_name_list`           | 角色名称的列表                                               | `List[RoleName]`      | `role_list`                                                  |
-| `role_name`                | 角色名称                                                     | `RoleName`            | `role`                                                       |
-| `role_ident_or_text`       | 标识符或字符串字面值表示的角色名                             | `str`                 | `role_ident_or_text`                                         |
-| `user_name_list`           | 用户名称的列表                                               | `List[UserName]`      | `user_list`                                                  |
-| `user_name`                | 用户名称                                                     | `UserName`            | `user`                                                       |
-| `explicit_user_name`       | 用户名称（不匹配 `CURRENT_USER` 关键字）                     | `UserName`            | `user_ident_or_text`                                         |
+| 水杉解析器语义组名称               | 语义组含义                                                   | 返回值类型            | MySQL 语义组名称                                             |
+| ---------------------------------- | ------------------------------------------------------------ | --------------------- | ------------------------------------------------------------ |
+| `parens_opt_text_literal_sys_list` | 括号框柱的可选的字符串字面值的列表                           | `List[str]`           | `opt_filter_string_list`                                     |
+| `opt_text_literal_sys_list`        | 可选的字符串字面值的列表                                     | `List[str]`           |                                                              |
+| `text_literal_sys_list`            | 字符串字面值的列表                                           | `List[str]`           | `TEXT_STRING_sys_list`<br />`filter_string_list`             |
+| `text_literal_or_hex`              | 字符串字面值或十六机制字符串                                 | `str`                 | `TEXT_STRING_hash`                                           |
+| `text_literal_sys`                 | 字符串字面值（不包括 Unicode 字符串）                        | `StringLiteral`       | `TEXT_STRING_sys`<br />`TEXT_STRING_literal`<br />`TEXT_STRING_filesystem`<br />`TEXT_STRING_password`<br />`TEXT_STRING_validated`<br />`TEXT_STRING_sys_nonewline`<br />`filter_wild_db_table_string`<br />`json_attribute`<br />`filter_string` |
+| `text_literal_sys_or_null`         | 字符串字面值或 `NULL` 关键字                                 | `Optional[str]`       | `source_tls_ciphersuites_def`                                |
+| `int_literal`                      | 整数字面值                                                   | `IntLiteral`          | `int64_literal`                                              |
+| `int_literal_or_hex`               | 整数字面值或十六进制字面值                                   | `IntLiteral`          | `real_ulong_num`<br />`real_ulonglong_num`                   |
+| `paren_int_literal_or_hex`         | 包含外层括号的整数字面值或十六进制字面值                     | `IntLiteral`          | `ws_num_codepoints`                                          |
+| `num_literal`                      | 数值字面值（包含整数、浮点数和小数字面值）                   | `NumberLiteral`       | `NUM_literal`<br />`ulonglong_num`                           |
+| `opt_num_literal_or_hex_list`      | 可选的数值字面值或十六进制字面值的列表                       | `List[int]`           | `ignore_server_id_list`                                      |
+| `num_literal_or_hex_list`          | 数值字面值或十六进制字面值的列表                             | `List[int]`           |                                                              |
+| `num_literal_or_hex`               | 数值字面值或十六进制字面值                                   | `NumberLiteral`       | `ulong_num`<br />`ignore_server_id`                          |
+| `temporal_literal`                 | 时间字面值                                                   | `TemporalLiteral`     | `temporal_literal`                                           |
+| `literal`                          | 非空字面值（包括数值、时间、布尔、真值、假值、十六进制、二进制字面值） | `Literal`             | `literal`                                                    |
+| `null_literal`                     | 空值字面值                                                   | `Literal`             | `null_as_literal`                                            |
+| `literal_or_null`                  | 可为空字面值                                                 | `Literal`             | `literal_or_null`                                            |
+| `text_literal`                     | 字符串字面值                                                 | `StringLiteral`       | `text_literal`                                               |
+| `text_string`                      | 字符串、二进制、十六进制字面值                               | `StringLiteral`       | `text_string`                                                |
+| `text_string_list`                 | 逗号分隔的字符串、二进制、十六进制字面值的列表               | `List[StringLiteral]` | `string_list`                                                |
+| `signed_literal`                   | 非空字面值或有符号的数值字面值                               | `Literal`             | `signed_literal`                                             |
+| `signed_literal_or_null`           | 可为空字面值或有符号的数值字面值                             | `Literal`             | `signed_literal_or_null`                                     |
+| `ident_or_text`                    | 标识符或字符串字面值表示的名称                               | `Expression`          | `ident_or_text`【部分】                                      |
+| `size_number`                      | 磁盘大小的数值                                               | `Expression`          | `size_number`                                                |
+| `role_name_list`                   | 角色名称的列表                                               | `List[RoleName]`      | `role_list`                                                  |
+| `role_name`                        | 角色名称                                                     | `RoleName`            | `role`                                                       |
+| `role_ident_or_text`               | 标识符或字符串字面值表示的角色名                             | `str`                 | `role_ident_or_text`                                         |
+| `user_name_list`                   | 用户名称的列表                                               | `List[UserName]`      | `user_list`                                                  |
+| `user_name`                        | 用户名称                                                     | `UserName`            | `user`                                                       |
+| `explicit_user_name_or_null`       | 用户名称（不匹配 `CURRENT_USER` 关键字）或 `NULL` 关键字     | `Optional[UserName]`  | `privilege_check_def`                                        |
+| `explicit_user_name`               | 用户名称（不匹配 `CURRENT_USER` 关键字）                     | `UserName`            | `user_ident_or_text`                                         |
 
 #### 参数（param）
 

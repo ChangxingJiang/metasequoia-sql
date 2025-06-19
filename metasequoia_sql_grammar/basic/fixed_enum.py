@@ -55,6 +55,7 @@ __all__ = [
     "DATA_OR_XML",
     "LOAD_DATA_LOCK",
     "LOAD_SOURCE_TYPE",
+    "TABLE_PRIMARY_KEY_CHECK_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1076,6 +1077,29 @@ LOAD_SOURCE_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_S3],
             action=lambda _: ast.EnumLoadSourceType.S3
+        )
+    ]
+)
+
+# 表主键检查类型的枚举值
+TABLE_PRIMARY_KEY_CHECK_TYPE = ms_parser.create_group(
+    name="table_primary_key_check_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_STREAM],
+            action=lambda _: ast.EnumTablePrimaryKeyCheckType.STREAM
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ON],
+            action=lambda _: ast.EnumTablePrimaryKeyCheckType.ON
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_OFF],
+            action=lambda _: ast.EnumTablePrimaryKeyCheckType.OFF
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GENERATE],
+            action=lambda _: ast.EnumTablePrimaryKeyCheckType.GENERATE
         )
     ]
 )

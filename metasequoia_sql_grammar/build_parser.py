@@ -50,12 +50,14 @@ from metasequoia_sql_grammar.phrase import ddl_table_element
 from metasequoia_sql_grammar.phrase import dml_option
 from metasequoia_sql_grammar.phrase import event_attribute
 from metasequoia_sql_grammar.phrase import field_type
+from metasequoia_sql_grammar.phrase import filter_definition
 from metasequoia_sql_grammar.phrase import function_option
 from metasequoia_sql_grammar.phrase import identification
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import process_command
 from metasequoia_sql_grammar.phrase import server_option
+from metasequoia_sql_grammar.phrase import source_definition
 from metasequoia_sql_grammar.phrase import sql_state
 from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
@@ -75,6 +77,7 @@ from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
 from metasequoia_sql_grammar.statement import binlog_statement
 from metasequoia_sql_grammar.statement import call_statement
+from metasequoia_sql_grammar.statement import change_statement
 from metasequoia_sql_grammar.statement import check_table_statement
 from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import clone_statement
@@ -272,6 +275,7 @@ def build_grammar():
 
         # 短语
         field_type,  # 短语 - 字段类型
+        filter_definition,  # 短语 - 过滤器定义
         function_option,  # 短语 - 函数选项
         identification,  # 短语 - 身份认证
         json_table_option,  # 短语 - JSON 表选项
@@ -293,6 +297,7 @@ def build_grammar():
         datafile,  # 数据文件
         undofile,  # 撤销文件
         server_option,  # 服务器选项
+        source_definition,  # 复制源定义
 
         # 表达式
         general_expression,  # 表达式 - 通用表达式
@@ -341,7 +346,8 @@ def build_grammar():
         analyze_statement,  # ANALYZE TABLE 语句
         begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句
-        call_statement,  # ALTER TABLE 语句
+        call_statement,  # CALL 语句
+        change_statement,  # CHANGE 语句
         check_table_statement,  # CHECK TABLE 语句
         checksum_statement,  # CHECKSUM 语句
         clone_statement,  # CLONE 语句

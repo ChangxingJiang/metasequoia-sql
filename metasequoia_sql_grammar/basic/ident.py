@@ -11,15 +11,25 @@ __all__ = [
     "IDENT_SYS",
     "IDENT_2",
     "IDENT_3",
+
+    # 通用标识符
     "OPT_IDENTIFIER_LIST",
     "IDENTIFIER_LIST",
     "IDENTIFIER",
     "IDENTIFIER_ALLOW_DEFAULT",
+
+    # 完全限定通用标识符
+    "PARENS_OPT_QUALIFIED_IDENTIFIER_LIST",
+    "OPT_QUALIFIED_IDENTIFIER_LIST",
+    "QUALIFIED_IDENTIFIER_LIST",
+    "QUALIFIED_IDENTIFIER",
+
     "TABLE_IDENT_OPT_WILD_LIST",
     "TABLE_IDENT_OPT_WILD",
     "OPT_WILD",
     "SIMPLE_IDENT",
     "SIMPLE_IDENT_LIST",
+    "PARENS_OPT_IDENT_LIST",
     "OPT_IDENT_LIST",
     "IDENT_LIST",
     "OPT_IDENT_LIST_PARENS",
@@ -100,6 +110,54 @@ IDENTIFIER = ms_parser.create_group(
             symbols=["ident"],
             action=lambda x: ast.Identifier(schema_name=None, object_name=x[0].get_str_value())
         ),
+        ms_parser.create_rule(
+            symbols=["ident_2"],
+            action=lambda x: ast.Identifier(schema_name=x[0].value1, object_name=x[0].value2)
+        )
+    ]
+)
+
+# 括号框柱的可选的完全限定的通用标识符的列表
+PARENS_OPT_QUALIFIED_IDENTIFIER_LIST = ms_parser.create_group(
+    name="parens_opt_qualified_identifier_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "opt_qualified_identifier_list", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
+        )
+    ]
+)
+
+# 可选的完全限定的通用标识符的列表
+OPT_QUALIFIED_IDENTIFIER_LIST = ms_parser.create_group(
+    name="opt_qualified_identifier_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["qualified_identifier_list"],
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# 完全限定的通用标识符的列表
+QUALIFIED_IDENTIFIER_LIST = ms_parser.create_group(
+    name="qualified_identifier_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["qualified_identifier_list", TType.OPERATOR_COMMA, "qualified_identifier"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["qualified_identifier"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 完全限定的通用标识符（`ident.ident`）
+QUALIFIED_IDENTIFIER = ms_parser.create_group(
+    name="qualified_identifier",
+    rules=[
         ms_parser.create_rule(
             symbols=["ident_2"],
             action=lambda x: ast.Identifier(schema_name=x[0].value1, object_name=x[0].value2)
@@ -190,6 +248,17 @@ SIMPLE_IDENT_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["simple_ident"],
             action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# 括号框柱的可选的单个标识符（`ident`）的列表
+PARENS_OPT_IDENT_LIST = ms_parser.create_group(
+    name="parens_opt_ident_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LPAREN, "opt_ident_list", TType.OPERATOR_RPAREN],
+            action=lambda x: x[1]
         )
     ]
 )
