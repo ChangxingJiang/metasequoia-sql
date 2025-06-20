@@ -866,16 +866,6 @@ set_expr_or_default:
           }
         ;
 
-opt_retain_current_password:
-          %empty { $$= false; }
-        | RETAIN_SYM CURRENT_SYM PASSWORD { $$= true; }
-        ;
-
-opt_discard_old_password:
-          %empty { $$= false; }
-        | DISCARD_SYM OLD_SYM PASSWORD { $$= true; }
-
-
 opt_user_registration:
           factor INITIATE_SYM REGISTRATION_SYM
           {

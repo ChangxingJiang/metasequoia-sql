@@ -33,6 +33,8 @@ __all__ = [
     "OPT_KEYWORD_COLUMN",
     "OPT_KEYWORD_ON_REPLACE",
     "OPT_KEYWORD_AND",
+    "OPT_KEYWORD_RETAIN_CURRENT_PASSWORD",
+    "OPT_KEYWORD_DISCARD_OLD_PASSWORD",
 
     # 多种备选的关键字
     "KEYWORD_BEGIN_OR_START",
@@ -1126,6 +1128,36 @@ KEYWORD_MASTER_ZSTD_COMPRESSION_LEVEL_OR_SOURCE_ZSTD_COMPRESSION_LEVEL = ms_pars
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SOURCE_ZSTD_COMPRESSION_LEVEL]
+        )
+    ]
+)
+
+# 可选的 `RETAIN CURRENT PASSWORD` 关键字组合
+OPT_KEYWORD_RETAIN_CURRENT_PASSWORD = ms_parser.create_group(
+    name="opt_keyword_retain_current_password",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_RETAIN, TType.KEYWORD_CURRENT, TType.KEYWORD_PASSWORD],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `DISCARD OLD PASSWORD` 关键字组合
+OPT_KEYWORD_DISCARD_OLD_PASSWORD = ms_parser.create_group(
+    name="opt_keyword_discard_old_password",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DISCARD, TType.KEYWORD_OLD, TType.KEYWORD_PASSWORD],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
         )
     ]
 )

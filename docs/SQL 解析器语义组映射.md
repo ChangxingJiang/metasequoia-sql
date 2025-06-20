@@ -1426,6 +1426,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_local`                                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                        |
 | `opt_keyword_in_primary_key_order`                           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                                 |
 | `opt_keyword_and`                                            | 可选的 `AND` 关键字                                          | -          | `opt_and`                                          |
+| `opt_keyword_retain_current_password`                        | 可选的 `RETAIN CURRENT PASSWORD` 关键字组合                  | `bool`     | `opt_retain_current_password`                      |
+| `opt_keyword_discard_old_password`                           | 可选的 `DISCARD OLD PASSWORD` 关键字组合                     | `bool`     | `opt_discard_old_password`                         |
 | `keyword_deallocate_or_drop`                                 | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                               |
 | `keyword_describe_or_explain`                                | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                                 |
 | `keyword_table_or_tables`                                    | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                                  |
