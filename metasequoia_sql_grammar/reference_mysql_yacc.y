@@ -1,7 +1,3 @@
-%start start_entry
-
-%%
-
 start_entry:
           sql_statement
         | GRAMMAR_SELECTOR_EXPR bit_expr END_OF_INPUT
@@ -327,36 +323,6 @@ opt_logfile_group_name:
           {
             $$= $4;
           }
-        ;
-
-opt_logfile_group_options:
-          %empty { $$= nullptr; }
-        | logfile_group_option_list
-        ;
-
-logfile_group_option_list:`
-          logfile_group_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        | logfile_group_option_list opt_comma logfile_group_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        ;
-
-logfile_group_option:
-          ts_option_initial_size
-        | ts_option_undo_buffer_size
-        | ts_option_redo_buffer_size
-        | ts_option_nodegroup
-        | ts_option_engine
-        | ts_option_wait
-        | ts_option_comment
         ;
 
 /*
