@@ -223,6 +223,12 @@
 | ----------------------- | ------------------ | --------------------- | ------------------ |
 | `create_role_statement` | `CREATE ROLE` 语句 | `CreateRoleStatement` | `create_role_stmt` |
 
+#### CREATE SERVER 语句（create server statement）
+
+| 水杉解析器语义组名称      | 语义组类型           | 返回值类型              | MySQL 语义组名称 |
+| ------------------------- | -------------------- | ----------------------- | ---------------- |
+| `create_server_statement` | `CREATE SERVER` 语句 | `CreateServerStatement` | `create`【部分】 |
+
 #### CREATE SRS 语句（create srs statement）
 
 | 水杉解析器语义组名称     | 语义组类型          | 返回值类型           | MySQL 语义组名称  |

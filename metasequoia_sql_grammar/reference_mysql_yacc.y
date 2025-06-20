@@ -38,20 +38,6 @@ start_entry:
 create:
           CREATE view_or_trigger_or_sp_or_event
           {}
-        | CREATE SERVER_SYM ident_or_text FOREIGN DATA_SYM WRAPPER_SYM
-          ident_or_text OPTIONS_SYM '(' server_options_list ')'
-          {
-            Lex->sql_command= SQLCOM_CREATE_SERVER;
-            if ($3.length == 0)
-            {
-              my_error(ER_WRONG_VALUE, MYF(0), "server name", "");
-              MYSQL_YYABORT;
-            }
-            Lex->server_options.m_server_name= $3;
-            Lex->server_options.set_scheme($7);
-            Lex->m_sql_cmd=
-              NEW_PTN Sql_cmd_create_server(&Lex->server_options);
-          }
         ;
 
 event_tail:

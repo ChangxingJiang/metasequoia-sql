@@ -25,6 +25,7 @@ from metasequoia_sql.ast.statement.create_index_statement import *
 from metasequoia_sql.ast.statement.create_logfile_statement import *
 from metasequoia_sql.ast.statement.create_resource_group_statement import *
 from metasequoia_sql.ast.statement.create_role_statement import *
+from metasequoia_sql.ast.statement.create_server_statement import *
 from metasequoia_sql.ast.statement.create_srs_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.create_tablespace_statement import *

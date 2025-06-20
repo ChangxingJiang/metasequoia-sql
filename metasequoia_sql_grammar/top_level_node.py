@@ -131,6 +131,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["create_role_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["create_server_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["create_srs_statement"]
         ),
         ms_parser.create_rule(

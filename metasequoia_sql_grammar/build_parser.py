@@ -94,6 +94,7 @@ from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_logfile_statement
 from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
+from metasequoia_sql_grammar.statement import create_server_statement
 from metasequoia_sql_grammar.statement import create_srs_statement
 from metasequoia_sql_grammar.statement import create_table_statement
 from metasequoia_sql_grammar.statement import create_tablespace_statement
@@ -380,6 +381,7 @@ def build_grammar():
         create_logfile_statement,  # CREATE LOGFILE GROUP 语句
         create_resource_group_statement,  # CREATE RESOURCE GROUP 语句
         create_role_statement,  # CREATE ROLE 语句
+        create_server_statement,  # CREATE SERVER 语句
         create_srs_statement,  # CREATE SRS 语句
         create_table_statement,  # CREATE TABLE 语句
         create_tablespace_statement,  # CREATE TABLESPACE 语句
