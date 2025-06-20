@@ -866,53 +866,6 @@ set_expr_or_default:
           }
         ;
 
-opt_user_registration:
-          factor INITIATE_SYM REGISTRATION_SYM
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->nth_factor= $1;
-            m->init_registration= true;
-            m->requires_registration= true;
-            $$ = m;
-          }
-        | factor UNREGISTER_SYM
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->nth_factor= $1;
-            m->unregister= true;
-            $$ = m;
-          }
-        | factor FINISH_SYM REGISTRATION_SYM SET_SYM CHALLENGE_RESPONSE_SYM AS TEXT_STRING_hash
-          {
-            LEX_MFA *m = NEW_PTN LEX_MFA;
-            if (m == nullptr)
-              MYSQL_YYABORT;  // OOM
-            m->nth_factor= $1;
-            m->finish_registration= true;
-            m->requires_registration= true;
-            m->challenge_response= to_lex_cstring($7);
-            $$ = m;
-          }
-        ;
-
-factor:
-          NUM FACTOR_SYM
-          {
-            if (my_strcasecmp(system_charset_info, $1.str, "2") == 0) {
-              $$ = 2;
-            } else if (my_strcasecmp(system_charset_info, $1.str, "3") == 0) {
-              $$ = 3;
-            } else {
-               my_error(ER_WRONG_VALUE, MYF(0), "nth factor", $1.str);
-               MYSQL_YYABORT;
-            }
-          }
-        ;
-
 /**************************************************************************
 
  CREATE VIEW | TRIGGER | PROCEDURE statements.

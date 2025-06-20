@@ -66,6 +66,7 @@ from metasequoia_sql_grammar.phrase import thread_priority
 from metasequoia_sql_grammar.phrase import time_interval
 from metasequoia_sql_grammar.phrase import undofile
 from metasequoia_sql_grammar.phrase import user_attribute
+from metasequoia_sql_grammar.phrase import user_registration
 from metasequoia_sql_grammar.statement import alter_database_statement
 from metasequoia_sql_grammar.statement import alter_event_statement
 from metasequoia_sql_grammar.statement import alter_function_statement
@@ -298,6 +299,7 @@ def build_grammar():
         time_interval,  # 短语 - 时间间隔
         thread_priority,  # 短语 - 线程优先级
         user_attribute,  # 短语 - 用户属性
+        user_registration,  # 短语 - 用户注册
         dml_option,  # DML 选项
         ddl_column_attribute,  # DDL 字段属性
         ddl_table_element,  # DDL 表元素
