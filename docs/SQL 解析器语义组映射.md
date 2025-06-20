@@ -1406,6 +1406,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `handler_rkey_mode`            | `HANDLER` 语句索引键模式的枚举值                       | `EnumHandlerRkeyMode`           | `handler_rkey_mode`                                          |
 | `transaction_access_mode_type` | 事务访问模式类型的枚举值                               | `EnumTransactionAccessModeType` | `transaction_access_mode_types`<br />`transaction_access_mode` |
 | `isolation_type`               | 事务隔离级别类型的枚举值                               | `EnumIsolationType`             | `isolation_types`                                            |
+| `set_option_type`              | SET 语句选项                                           | `EnumSetOptionType`             | `option_type`                                                |
 
 #### 固定的词语组合（fixed word）
 

@@ -50,6 +50,7 @@ __all__ = [
     "EnumHandlerRkeyMode",
     "EnumTransactionAccessModeType",
     "EnumIsolationType",
+    "EnumSetOptionType",
 ]
 
 
@@ -461,3 +462,13 @@ class EnumIsolationType(IntEnum):
     READ_COMMITTED = 2  # READ COMMITTED
     REPEATABLE_READ = 3  # REPEATABLE READ
     SERIALIZABLE = 4  # SERIALIZABLE
+
+
+class EnumSetOptionType(IntEnum):
+    """SET 语句选项"""
+
+    GLOBAL = 1  # GLOBAL
+    PERSIST = 2  # PERSIST
+    PERSIST_ONLY = 3  # PERSIST ONLY
+    LOCAL = 4  # LOCAL
+    SESSION = 5  # SESSION

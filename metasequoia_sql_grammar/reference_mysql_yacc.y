@@ -750,14 +750,6 @@ option_value:
         | option_value_no_option_type { $$= $1; }
         ;
 
-option_type:
-          GLOBAL_SYM  { $$=OPT_GLOBAL; }
-        | PERSIST_SYM { $$=OPT_PERSIST; }
-        | PERSIST_ONLY_SYM { $$=OPT_PERSIST_ONLY; }
-        | LOCAL_SYM   { $$=OPT_SESSION; }
-        | SESSION_SYM { $$=OPT_SESSION; }
-        ;
-
 opt_set_var_ident_type:
           %empty          { $$=OPT_DEFAULT; }
         | PERSIST_SYM '.' { $$=OPT_PERSIST; }

@@ -59,6 +59,7 @@ __all__ = [
     "HANDLER_SCAN_FUNCTION",
     "HANDLER_RKEY_FUNCTION",
     "HANDLER_RKEY_MODE",
+    "SET_OPTION_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1206,6 +1207,33 @@ ISOLATION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SERIALIZABLE],
             action=lambda _: ast.EnumIsolationType.SERIALIZABLE
+        )
+    ]
+)
+
+# SET 语句选项类型的枚举值
+SET_OPTION_TYPE = ms_parser.create_group(
+    name="set_option_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GLOBAL],
+            action=lambda _: ast.EnumSetOptionType.GLOBAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PERSIST],
+            action=lambda _: ast.EnumSetOptionType.PERSIST
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PERSIST_ONLY],
+            action=lambda _: ast.EnumSetOptionType.PERSIST_ONLY
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOCAL],
+            action=lambda _: ast.EnumSetOptionType.LOCAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SESSION],
+            action=lambda _: ast.EnumSetOptionType.SESSION
         )
     ]
 )
