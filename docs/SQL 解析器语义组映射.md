@@ -1189,6 +1189,13 @@
 | -------------------- | -------------- | --------------- | -------------------- |
 | `opt_user_attribute` | 可选的用户属性 | `UserAttribute` | `opt_user_attribute` |
 
+#### 修改用户信息命令（alter user）
+
+| 水杉解析器语义组名称 | 语义组含义                | 返回值类型        | MySQL 语义组名称                   |
+| -------------------- | ------------------------- | ----------------- | ---------------------------------- |
+| `alter_user_list`    | `ALTER USER` 语义组的列表 | `List[AlterUser]` | `alter_user_list`                  |
+| `alter_user`         | `ALTER USER` 语义组       | `AlterUser`       | `alter_user`<br />`factor`【包含】 |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：

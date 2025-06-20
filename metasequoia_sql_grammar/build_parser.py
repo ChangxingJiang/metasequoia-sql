@@ -41,6 +41,7 @@ from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import account_lock_expire_option
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import alter_command
+from metasequoia_sql_grammar.phrase import alter_user
 from metasequoia_sql_grammar.phrase import connect_option
 from metasequoia_sql_grammar.phrase import cpu_range
 from metasequoia_sql_grammar.phrase import datafile
@@ -291,6 +292,7 @@ def build_grammar():
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
         account_lock_expire_option,  # 短语 - 账户锁定和密码过期选项
+        alter_user,  # 短语 - ALTER USER 操作
         connect_option,  # 短语 - 连接选项
         sql_state,  # 短语 - SQL状态
         time_interval,  # 短语 - 时间间隔
