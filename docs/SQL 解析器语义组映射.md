@@ -121,6 +121,13 @@
 | --------------------------------- | ---------------------------- | ------------------------------ | ---------------------------- |
 | `alter_undo_tablespace_statement` | `ALTER UNDO TABLESPACE` 语句 | `AlterUndoTablespaceStatement` | `alter_undo_tablespace_stmt` |
 
+#### ALTER USER 语句（alter user statement）
+
+| 水杉解析器语义组名称   | 语义组类型        | 返回值类型           | MySQL 语义组名称                                             |
+| ---------------------- | ----------------- | -------------------- | ------------------------------------------------------------ |
+| `alter_user_statement` | `ALTER USER` 语句 | `AlterUserStatement` | `alter_user_stmt`<br />`alter_user_command`【包含】<br />`user_func`【包含】 |
+| `opt_replace_password` | 可选的替换密码    | `Optional[str]`      | `opt_replace_password`                                       |
+
 #### ALTER VIEW 语句（alter view statement）
 
 | 水杉解析器语义组名称   | 语义组类型        | 返回值类型           | MySQL 语义组名称                                             |
@@ -1192,9 +1199,9 @@
 
 #### 用户属性（user attribute）
 
-| 水杉解析器语义组名称 | 语义组含义     | 返回值类型      | MySQL 语义组名称     |
-| -------------------- | -------------- | --------------- | -------------------- |
-| `opt_user_attribute` | 可选的用户属性 | `UserAttribute` | `opt_user_attribute` |
+| 水杉解析器语义组名称 | 语义组含义     | 返回值类型                | MySQL 语义组名称     |
+| -------------------- | -------------- | ------------------------- | -------------------- |
+| `opt_user_attribute` | 可选的用户属性 | `Optional[UserAttribute]` | `opt_user_attribute` |
 
 #### 修改用户信息命令（alter user）
 

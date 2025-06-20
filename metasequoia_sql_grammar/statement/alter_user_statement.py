@@ -11,9 +11,9 @@ __all__ = [
     "OPT_REPLACE_PASSWORD",
 ]
 
-# ALTER USER 语句
+# `ALTER USER` 语句
 ALTER_USER_STATEMENT = ms_parser.create_group(
-    name="alter_user_stmt",
+    name="alter_user_statement",
     rules=[
         # alter_user_command alter_user_list require_clause connect_options opt_account_lock_password_expire_options opt_user_attribute
         ms_parser.create_rule(
