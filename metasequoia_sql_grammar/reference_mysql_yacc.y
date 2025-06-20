@@ -1086,19 +1086,6 @@ factor:
           }
         ;
 
-create_user_list:
-          create_user
-          {
-            if (Lex->users_list.push_back($1))
-              MYSQL_YYABORT;
-          }
-        | create_user_list ',' create_user
-          {
-            if (Lex->users_list.push_back($3))
-              MYSQL_YYABORT;
-          }
-        ;
-
 alter_user_list:
        alter_user
          {
