@@ -127,9 +127,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["create_role_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["create_srs_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["create_srs_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["create_table_statement"]
         ),

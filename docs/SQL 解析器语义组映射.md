@@ -210,6 +210,15 @@
 | ----------------------- | ------------------ | --------------------- | ------------------ |
 | `create_role_statement` | `CREATE ROLE` 语句 | `CreateRoleStatement` | `create_role_stmt` |
 
+#### CREATE SRS 语句（create srs statement）
+
+| 水杉解析器语义组名称     | 语义组类型          | 返回值类型           | MySQL 语义组名称  |
+| ------------------------ | ------------------- | -------------------- | ----------------- |
+| `create_srs_statement`   | `CREATE SRS` 语句   | `CreateSrsStatement` | `create_srs_stmt` |
+| `opt_srs_attribute_list` | 可选的 SRS 属性列表 | `List[SrsAttribute]` | `srs_attributes`  |
+| `srs_attribute_list`     | SRS 属性列表        | `List[SrsAttribute]` |                   |
+| `srs_attribute`          | SRS 属性            | `SrsAttribute`       |                   |
+
 #### CREATE TABLE 语句（create table statement）
 
 | 水杉解析器语义组名称         | 语义组类型                                 | 返回值类型              | MySQL 语义组名称               |

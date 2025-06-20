@@ -23,6 +23,7 @@ from metasequoia_sql.ast.statement.create_database_statement import *
 from metasequoia_sql.ast.statement.create_index_statement import *
 from metasequoia_sql.ast.statement.create_resource_group_statement import *
 from metasequoia_sql.ast.statement.create_role_statement import *
+from metasequoia_sql.ast.statement.create_srs_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.create_view_statement import *
 from metasequoia_sql.ast.statement.deallocate_statement import *
