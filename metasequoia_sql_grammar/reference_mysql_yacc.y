@@ -95,26 +95,6 @@ create:
             Lex->m_sql_cmd= cmd;
             Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
-        | CREATE UNDO_SYM TABLESPACE_SYM ident ADD ts_datafile
-          opt_undo_tablespace_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; // OOM
-
-            if ($7 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $7))
-                MYSQL_YYABORT;
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_create_undo_tablespace{
-              CREATE_UNDO_TABLESPACE, $4, $6, pc};
-            if (!cmd)
-              MYSQL_YYABORT; //OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
         | CREATE SERVER_SYM ident_or_text FOREIGN DATA_SYM WRAPPER_SYM
           ident_or_text OPTIONS_SYM '(' server_options_list ')'
           {
@@ -786,15 +766,6 @@ group_replication:
           {
             LEX *lex = Lex;
             lex->sql_command = SQLCOM_STOP_GROUP_REPLICATION;
-          }
-        ;
-
-group_replication_start:
-          START_SYM GROUP_REPLICATION
-          {
-            LEX *lex = Lex;
-            lex->slave_connection.reset();
-            lex->sql_command = SQLCOM_START_GROUP_REPLICATION;
           }
         ;
 

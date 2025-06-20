@@ -229,6 +229,12 @@
 | `opt_create_table_option_3`  | `CREATE TABLE` 的选项（第 3 层）           | `TempCreateTableOption` | `opt_duplicate_as_qe`          |
 | `as_create_query_expression` | 可选择是否包含前置 `AS` 关键字的查询表达式 | `QueryExpression`       | `as_create_query_expression`   |
 
+#### CREATE UNDO TABLESPACE 语句（create undo tablespace statement）
+
+| 水杉解析器语义组名称               | 语义组类型                    | 返回值类型                      | MySQL 语义组名称 |
+| ---------------------------------- | ----------------------------- | ------------------------------- | ---------------- |
+| `create_undo_tablespace_statement` | `CREATE UNDO TABLESPACE` 语句 | `CreateUndoTablespaceStatement` | `create`【部分】 |
+
 #### CREATE VIEW 语句（create view statement）
 
 | 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称                                             |
@@ -1385,6 +1391,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_equal`                                                  | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                        |
 | `equal`                                                      | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                            |
 | `opt_to_or_eq_or_as`                                         | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                           |
+| `keyword_start_group_replication`                            | `START GROUP_REPLICATION` 关键字组合                         | -          | `group_replication_start`                          |
 
 #### 标识符（ident）
 
