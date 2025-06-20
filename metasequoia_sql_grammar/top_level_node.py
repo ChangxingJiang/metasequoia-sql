@@ -214,9 +214,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["grant_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["handler_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["handler_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["help_statement"]
         ),

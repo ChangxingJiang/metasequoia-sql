@@ -45,6 +45,9 @@ __all__ = [
     "EnumLoadSourceType",
     "EnumTablePrimaryKeyCheckType",
     "EnumAssignGtidsType",
+    "EnumHandlerScanFunction",
+    "EnumHandlerRkeyFunction",
+    "EnumHandlerRkeyMode",
 ]
 
 
@@ -406,3 +409,37 @@ class EnumTablePrimaryKeyCheckType(IntEnum):
     ON = 2  # ON
     OFF = 3  # OFF
     GENERATE = 4  # GENERATE
+
+
+class EnumHandlerScanFunction(IntEnum):
+    """HANDLER 语句扫描函数的枚举值"""
+
+    FIRST = 1  # FIRST
+    NEXT = 2  # NEXT
+
+
+class EnumHandlerRkeyFunction(IntEnum):
+    """HANDLER 语句索引键函数的枚举值"""
+
+    FIRST = 1  # FIRST
+    NEXT = 2  # NEXT
+    PREV = 3  # PREV
+    LAST = 4  # LAST
+
+
+class EnumHandlerRkeyMode(IntEnum):
+    """HANDLER 语句索引键模式的枚举值"""
+
+    EQ = 1  # = (等于)
+    GE = 2  # >= (大于等于)
+    LE = 3  # <= (小于等于)
+    GT = 4  # > (大于)
+    LT = 5  # < (小于)
+
+
+class EnumAssignGtidsType(IntEnum):
+    """分配 GTID 类型的枚举值"""
+
+    OFF = 1  # OFF
+    LOCAL = 2  # LOCAL
+    AUTOMATIC = 3  # AUTOMATIC

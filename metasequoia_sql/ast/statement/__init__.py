@@ -38,6 +38,7 @@ from metasequoia_sql.ast.statement.flush_statement import *
 from metasequoia_sql.ast.statement.get_diagnostics_statement import *
 from metasequoia_sql.ast.statement.grant_and_revoke_statement import *
 from metasequoia_sql.ast.statement.group_replication_statement import *
+from metasequoia_sql.ast.statement.handler_statement import *
 from metasequoia_sql.ast.statement.help_statement import *
 from metasequoia_sql.ast.statement.import_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *

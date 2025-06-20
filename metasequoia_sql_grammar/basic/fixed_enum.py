@@ -56,6 +56,9 @@ __all__ = [
     "LOAD_DATA_LOCK",
     "LOAD_SOURCE_TYPE",
     "TABLE_PRIMARY_KEY_CHECK_TYPE",
+    "HANDLER_SCAN_FUNCTION",
+    "HANDLER_RKEY_FUNCTION",
+    "HANDLER_RKEY_MODE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1100,6 +1103,71 @@ TABLE_PRIMARY_KEY_CHECK_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_GENERATE],
             action=lambda _: ast.EnumTablePrimaryKeyCheckType.GENERATE
+        )
+    ]
+)
+
+# `HANDLER` 语句扫描函数的枚举值
+HANDLER_SCAN_FUNCTION = ms_parser.create_group(
+    name="handler_scan_function",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FIRST],
+            action=lambda _: ast.EnumHandlerScanFunction.FIRST
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NEXT],
+            action=lambda _: ast.EnumHandlerScanFunction.NEXT
+        )
+    ]
+)
+
+# `HANDLER` 语句索引键函数的枚举值
+HANDLER_RKEY_FUNCTION = ms_parser.create_group(
+    name="handler_rkey_function",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FIRST],
+            action=lambda _: ast.EnumHandlerRkeyFunction.FIRST
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NEXT],
+            action=lambda _: ast.EnumHandlerRkeyFunction.NEXT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PREV],
+            action=lambda _: ast.EnumHandlerRkeyFunction.PREV
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LAST],
+            action=lambda _: ast.EnumHandlerRkeyFunction.LAST
+        )
+    ]
+)
+
+# `HANDLER` 语句索引键模式的枚举值
+HANDLER_RKEY_MODE = ms_parser.create_group(
+    name="handler_rkey_mode",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_EQ],
+            action=lambda _: ast.EnumHandlerRkeyMode.EQ
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_GT_EQ],
+            action=lambda _: ast.EnumHandlerRkeyMode.GE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LT_EQ],
+            action=lambda _: ast.EnumHandlerRkeyMode.LE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_GT],
+            action=lambda _: ast.EnumHandlerRkeyMode.GT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.OPERATOR_LT],
+            action=lambda _: ast.EnumHandlerRkeyMode.LT
         )
     ]
 )

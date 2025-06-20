@@ -100,6 +100,7 @@ from metasequoia_sql_grammar.statement import flush_statement
 from metasequoia_sql_grammar.statement import get_diagnostics_statement
 from metasequoia_sql_grammar.statement import grant_and_revoke_statement
 from metasequoia_sql_grammar.statement import group_replication_statement
+from metasequoia_sql_grammar.statement import handler_statement
 from metasequoia_sql_grammar.statement import help_statement
 from metasequoia_sql_grammar.statement import import_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
@@ -374,6 +375,7 @@ def build_grammar():
         get_diagnostics_statement,  # GET DIAGNOSTICS 语句
         grant_and_revoke_statement,  # GRANT 和 REVOKE 语句
         group_replication_statement,  # GROUP REPLICATION 语句
+        handler_statement,  # HANDLER 语句
         help_statement,  # HELP 语句
         import_statement,  # IMPORT TABLE 语句
         load_statement,  # LOAD 语句

@@ -349,6 +349,12 @@
 | `group_replication_password`              | `GROUP REPLICATION` 的 `PASSWORD` 选项      | `GroupReplicationPassword`          | `group_replication_password`          |
 | `group_replication_plugin_auth`           | `GROUP REPLICATION` 的插件认证选项          | `group_replication_plugin_auth`     | `group_replication_plugin_auth`       |
 
+#### HANDLER 语句(handler statement)
+
+| 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称 |
+| -------------------- | -------------- | ------------------ | ---------------- |
+| `handler_statement`  | `HANDLER` 语句 | `HandlerStatement` | `help`           |
+
 #### HELP 语句（help statement）
 
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
@@ -1323,6 +1329,9 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `load_data_lock`               | `LOAD` 语句中锁定类型的枚举值                          | `EnumLoadDataLock`             | `load_data_lock`                         |
 | `load_source_type`             | `LOAD` 语句中数据源类型的枚举值                        | `EnumLoadSourceType`           | `load_source_type`                       |
 | `table_primary_key_check_type` | 表主键检查类型的枚举值                                 | `EnumTablePrimaryKeyCheckType` | `table_primary_key_check_def`            |
+| `handler_scan_function`        | `HANDLER` 语句扫描函数的枚举值                         | `EnumHandlerScanFunction`      | `handler_scan_function`                  |
+| `handler_rkey_function`        | `HANDLER` 语句索引键函数的枚举值                       | `EnumHandlerRkeyFunction`      | `handler_rkey_function`                  |
+| `handler_rkey_mode`            | `HANDLER` 语句索引键模式的枚举值                       | `EnumHandlerRkeyMode`          | `handler_rkey_mode`                      |
 
 #### 固定的词语组合（fixed word）
 
