@@ -438,29 +438,6 @@ alter_user_command:
           }
         ;
 
-opt_user_attribute:
-          %empty
-          {
-            LEX *lex= Lex;
-            lex->alter_user_attribute =
-              enum_alter_user_attribute::ALTER_USER_COMMENT_NOT_USED;
-          }
-        | ATTRIBUTE_SYM TEXT_STRING_literal
-          {
-            LEX *lex= Lex;
-            lex->alter_user_attribute =
-              enum_alter_user_attribute::ALTER_USER_ATTRIBUTE;
-            lex->alter_user_comment_text = $2;
-          }
-        | COMMENT_SYM TEXT_STRING_literal
-          {
-            LEX *lex= Lex;
-            lex->alter_user_attribute =
-              enum_alter_user_attribute::ALTER_USER_COMMENT;
-            lex->alter_user_comment_text = $2;
-          }
-        ;
-
 user_func:
           USER '(' ')'
           {

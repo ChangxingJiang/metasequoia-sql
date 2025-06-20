@@ -1172,6 +1172,12 @@
 | `account_lock_expire_option_list`     | 账户锁定和密码过期选项列表       | `List[AccountLockExpireOption]` | `opt_account_lock_password_expire_option_list` |
 | `account_lock_expire_option`          | 账户锁定和密码过期选项           | `AccountLockExpireOption`       | `opt_account_lock_password_expire_option`      |
 
+#### 用户属性（user attribute）
+
+| 水杉解析器语义组名称 | 语义组含义     | 返回值类型      | MySQL 语义组名称     |
+| -------------------- | -------------- | --------------- | -------------------- |
+| `opt_user_attribute` | 可选的用户属性 | `UserAttribute` | `opt_user_attribute` |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：

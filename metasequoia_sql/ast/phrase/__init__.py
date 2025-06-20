@@ -25,3 +25,4 @@ from metasequoia_sql.ast.phrase.source_definition import *
 from metasequoia_sql.ast.phrase.sql_state import *
 from metasequoia_sql.ast.phrase.thread_priority import *
 from metasequoia_sql.ast.phrase.time_interval import *
+from metasequoia_sql.ast.phrase.user_attribute import *
