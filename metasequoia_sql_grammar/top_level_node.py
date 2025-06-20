@@ -143,6 +143,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["create_tablespace_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["create_trigger_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["create_user_statement"]
         ),
         ms_parser.create_rule(

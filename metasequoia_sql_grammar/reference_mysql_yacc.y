@@ -634,115 +634,16 @@ view_or_trigger_or_sp_or_event:
         ;
 
 definer_tail:
-          trigger_tail
-        | sp_tail
+          sp_tail
         | sf_tail
         | event_tail
         ;
 
 no_definer_tail:
-          trigger_tail
-        | sp_tail
+          sp_tail
         | sf_tail
         | udf_tail
         | event_tail
-        ;
-
-/**************************************************************************
-
- CREATE TRIGGER statement parts.
-
-**************************************************************************/
-
-trigger_follows_precedes_clause:
-            %empty
-            {
-              $$.ordering_clause= TRG_ORDER_NONE;
-              $$.anchor_trigger_name= NULL_CSTR;
-            }
-          |
-            trigger_action_order ident_or_text
-            {
-              $$.ordering_clause= $1;
-              $$.anchor_trigger_name= { $2.str, $2.length };
-            }
-          ;
-
-trigger_tail:
-          TRIGGER_SYM                     /* $1 */
-          opt_if_not_exists               /* $2 */
-          sp_name                         /* $3 */
-          trg_action_time                 /* $4 */
-          trg_event                       /* $5 */
-          ON_SYM                          /* $6 */
-          table_ident                     /* $7 */
-          FOR_SYM                         /* $8 */
-          EACH_SYM                        /* $9 */
-          ROW_SYM                         /* $10 */
-          trigger_follows_precedes_clause /* $11 */
-          {                               /* $12 */
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_RECURSIVE_CREATE, MYF(0), "TRIGGER");
-              MYSQL_YYABORT;
-            }
-
-            sp_head *sp= sp_start_parsing(thd, enum_sp_type::TRIGGER, $3);
-
-            if (!sp)
-              MYSQL_YYABORT;
-
-            sp->m_trg_chistics.action_time= (enum enum_trigger_action_time_type) $4;
-            sp->m_trg_chistics.event= (enum enum_trigger_event_type) $5;
-            sp->m_trg_chistics.ordering_clause= $11.ordering_clause;
-            sp->m_trg_chistics.anchor_trigger_name= $11.anchor_trigger_name;
-
-            lex->stmt_definition_begin= @1.cpp.start;
-            lex->create_info->options= $2 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-            lex->ident.str= const_cast<char *>(@7.cpp.start);
-            lex->ident.length= @9.cpp.start - @7.cpp.start;
-
-            lex->sphead= sp;
-            lex->spname= $3;
-
-            memset(&lex->sp_chistics, 0, sizeof(st_sp_chistics));
-            sp->m_chistics= &lex->sp_chistics;
-
-            // Default language is SQL
-            lex->sp_chistics.language = {"SQL",3};
-
-            sp->set_body_start(thd, @11.cpp.end);
-          }
-          sp_proc_stmt                    /* $13 */
-          {                               /* $14 */
-            THD *thd= YYTHD;
-            LEX *lex= Lex;
-            sp_head *sp= lex->sphead;
-
-            sp_finish_parsing(thd);
-
-            lex->sql_command= SQLCOM_CREATE_TRIGGER;
-
-            if (sp->is_not_allowed_in_function("trigger"))
-              MYSQL_YYABORT;
-
-            /*
-              We have to do it after parsing trigger body, because some of
-              sp_proc_stmt alternatives are not saving/restoring LEX, so
-              lex->query_tables can be wiped out.
-            */
-            if (!lex->query_block->add_table_to_list(thd, $7,
-                                                    nullptr,
-                                                    TL_OPTION_UPDATING,
-                                                    TL_READ_NO_INSERT,
-                                                    MDL_SHARED_NO_WRITE))
-              MYSQL_YYABORT;
-
-            Lex->m_sql_cmd= new (YYTHD->mem_root) Sql_cmd_create_trigger();
-          }
         ;
 
 /**************************************************************************

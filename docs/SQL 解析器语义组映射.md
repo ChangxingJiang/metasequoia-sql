@@ -256,6 +256,13 @@
 | `opt_ts_datafile_name`        | 可选的表空间数据文件名称 | `Optional[str]`             | `opt_ts_datafile_name`   |
 | `opt_logfile_group_name`      | 可选的日志文件组名称     | `Optional[str]`             | `opt_logfile_group_name` |
 
+#### CREATE TRIGGER 语句（create trigger statement）
+
+| 水杉解析器语义组名称              | 语义组类型                            | 返回值类型                     | MySQL 语义组名称                             |
+| --------------------------------- | ------------------------------------- | ------------------------------ | -------------------------------------------- |
+| `create_trigger_statement`        | `CREATE TRIGGER` 语句                 | `CreateTriggerStatement`       | `create`【部分】<br />`trigger_tail`【包含】 |
+| `trigger_follows_precedes_clause` | 触发器的 `FOLLOWS` 或 `PRECEDES` 子句 | `TriggerFollowsPrecedesClause` | `trigger_follows_precedes_clause`            |
+
 #### CREATE UNDO TABLESPACE 语句（create undo tablespace statement）
 
 | 水杉解析器语义组名称               | 语义组类型                    | 返回值类型                      | MySQL 语义组名称 |
