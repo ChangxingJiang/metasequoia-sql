@@ -205,6 +205,12 @@
 | `create_index_statement` | `CREATE INDEX` 语句    | `CreateIndexStmt` | `create_index_stmt` |
 | `opt_keyword_unique`     | 可选的 `UNIQUE` 关键字 | `EnumIndexType`   | `opt_unique`        |
 
+#### CREATE LOGFILE 语句（create logfile statement）
+
+| 水杉解析器语义组名称       | 语义组类型            | 返回值类型               | MySQL 语义组名称 |
+| -------------------------- | --------------------- | ------------------------ | ---------------- |
+| `create_logfile_statement` | `CREATE LOGFILE` 语句 | `CreateLogfileStatement` | `create`【部分】 |
+
 #### CREATE RESOURCE GROUP 语句（create resource group statement）
 
 | 水杉解析器语义组名称              | 语义组类型                   | 返回值类型                     | MySQL 语义组名称             |

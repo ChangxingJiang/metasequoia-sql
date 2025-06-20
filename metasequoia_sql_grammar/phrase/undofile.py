@@ -16,7 +16,7 @@ UNDOFILE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_UNDOFILE, "text_literal_sys"],
-            action=lambda x: x[1].get_srr_value()
+            action=lambda x: x[1].get_str_value()
         )
     ]
 )

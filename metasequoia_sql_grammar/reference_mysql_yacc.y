@@ -38,26 +38,6 @@ start_entry:
 create:
           CREATE view_or_trigger_or_sp_or_event
           {}
-        | CREATE LOGFILE_SYM GROUP_SYM ident ADD lg_undofile
-          opt_logfile_group_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($7 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $7))
-                MYSQL_YYABORT; /* purecov: inspected */
-            }
-
-            Lex->m_sql_cmd= NEW_PTN Sql_cmd_logfile_group{CREATE_LOGFILE_GROUP,
-                                                          $4, pc, $6};
-            if (!Lex->m_sql_cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ //OOM
-
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
         | CREATE SERVER_SYM ident_or_text FOREIGN DATA_SYM WRAPPER_SYM
           ident_or_text OPTIONS_SYM '(' server_options_list ')'
           {
