@@ -26,6 +26,7 @@ from metasequoia_sql.ast.statement.create_role_statement import *
 from metasequoia_sql.ast.statement.create_srs_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
 from metasequoia_sql.ast.statement.create_undo_tablespace_statement import *
+from metasequoia_sql.ast.statement.create_user_statement import *
 from metasequoia_sql.ast.statement.create_view_statement import *
 from metasequoia_sql.ast.statement.deallocate_statement import *
 from metasequoia_sql.ast.statement.delete_statement import *

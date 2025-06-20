@@ -235,6 +235,17 @@
 | ---------------------------------- | ----------------------------- | ------------------------------- | ---------------- |
 | `create_undo_tablespace_statement` | `CREATE UNDO TABLESPACE` 语句 | `CreateUndoTablespaceStatement` | `create`【部分】 |
 
+#### CREATE USER 语句（create user statement）
+
+| 水杉解析器语义组名称       | 语义组类型         | 返回值类型                    | MySQL 语义组名称           |
+| -------------------------- | ------------------ | ----------------------------- | -------------------------- |
+| `create_user_statement`    | `CREATE USER` 语句 | `CreateUserStatement`         | `create`【部分】           |
+| `default_role_clause`      | 默认角色子句       | `Optional[DefaultRoleClause]` | `default_role_clause`      |
+| `create_user_list`         | 创建用户的列表     | `List[CreateUser]`            | `create_user_list`         |
+| `create_user`              | 创建用户           | `CreateUser`                  | `create_user`              |
+| `opt_create_user_with_mfa` | 可选的多因子认证   | `List[Identification]`        | `opt_create_user_with_mfa` |
+| `initial_auth`             | 初始认证           | `InitialAuth`                 | `opt_initial_auth`         |
+
 #### CREATE VIEW 语句（create view statement）
 
 | 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称                                             |
@@ -1326,60 +1337,62 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 固定的枚举类型（fixed enum）
 
-| 水杉解析器语义组名称           | 语义组类型                                             | 返回值类型                     | MySQL 语义组名称                         |
-| ------------------------------ | ------------------------------------------------------ | ------------------------------ | ---------------------------------------- |
-| `opt_drop_restrict`            | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `EnumDropRestrict`             | `opt_restrict`                           |
-| `opt_show_command_type`        | 可选的 `SHOW` 语句命令类型的枚举值                     | `EnumShowCommandType`          | `opt_show_cmd_type`                      |
-| `opt_repair_type_list`         | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `EnumRepairType`               | `opt_mi_repair_types`                    |
-| `repair_type_list`             | `REPAIR` 语句命令类型的枚举值的列表                    | `EnumRepairType`               | `mi_repair_types`                        |
-| `repair_type`                  | `REPAIR` 语句命令类型的枚举值                          | `EnumRepairType`               | `mi_repair_type`                         |
-| `opt_check_type_list`          | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `EnumCheckType`                | `opt_mi_check_types`                     |
-| `check_type_list`              | `CHECK` 语句命令类型的枚举值的列表                     | `EnumCheckType`                | `mi_check_types`                         |
-| `check_type`                   | `CHECK` 语句命令类型的枚举值                           | `EnumCheckType`                | `mi_check_type`                          |
-| `opt_checksum_type`            | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `EnumChecksumType`             | `opt_checksum_type`                      |
-| `opt_profile_type_list`        | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `EnumProfileType`              | `opt_profile_defs`                       |
-| `profile_type_list`            | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `EnumProfileType`              | `profile_defs`                           |
-| `profile_type`                 | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `EnumProfileType`              | `profile_def`                            |
-| `opt_variable_type`            | 可选的变量类型的枚举值                                 | `EnumVariableType`             | `opt_var_type`                           |
-| `install_option_type`          | `INSTALL` 语句的安装选项的枚举值                       | `EnumInstallOptionType`        | `install_option_type`                    |
-| `kill_option_type`             | `KILL` 语句的选项的枚举值                              | `EnumKillOptionType`           | `kill_option`                            |
-| `lock_option_type`             | `LOCK` 语句的锁定选项的枚举值                          | `EnumLockOptionType`           | `lock_option`                            |
-| `opt_open_ssl_type`            | SSL 选项的枚举值                                       | `EnumOpenSslType`              | `opt_ssl`                                |
-| `opt_chain_type`               | `CHAIN` 选项的枚举值                                   | `EnumChainType`                | `opt_chain`                              |
-| `opt_release_type`             | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`              | `opt_release`                            |
-| `resource_group_type`          | 资源组类型的枚举值                                     | `EnumResourceGroupType`        | `resource_group_types`                   |
-| `signal_condition_type`        | `SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值    | `EnumSignalConditionType`      | `signal_condition_information_item_name` |
-| `flush_option_type_list`       | `FLUSH` 语句选项的枚举值的列表                         | `EnumFlushOptionType`          | `flush_options_list`                     |
-| `flush_option_type`            | `FLUSH` 语句选项的枚举值                               | `EnumFlushOptionType`          | `flush_option`                           |
-| `flush_lock_type`              | `FLUSH` 语句锁定选项的枚举值                           | `EnumFlushLockType`            | `opt_flush_lock`                         |
-| `opt_acl_type`                 | 可选的 ACL 类型枚举值                                  | `EnumAclType`                  | `opt_acl_type`                           |
-| `opt_join_or_resume`           | XA 事务中的 JOIN/RESUME 选项枚举值                     | `EnumXaJoinOrResume`           | `opt_join_or_resume`                     |
-| `opt_suspend`                  | XA 事务中的 SUSPEND 选项枚举值                         | `EnumXaSuspend`                | `opt_suspend`                            |
-| `opt_enable_disable`           | 资源组启用 / 禁用状态的枚举值                          | `EnumEnableDisable`            | `opt_resource_group_enable_disable`      |
-| `opt_view_check_option`        | 可选的视图检查选项的枚举值                             | `EnumViewCheckOption`          | `view_check_option`                      |
-| `opt_event_status_type`        | 可选的事件状态类型的枚举值                             | `EnumEventStatusType`          | `opt_ev_status`                          |
-| `handler_type`                 | 处理器类型的枚举值                                     | `EnumHandlerType`              | `sp_handler_type`                        |
-| `opt_event_completion_type`    | 可选的事件完成类型的枚举值                             | `EnumEventCompletionType`      | `opt_ev_on_completion`                   |
-| `event_completion_type`        | 事件完成类型的枚举值                                   | `EnumEventCompletionType`      | `ev_on_completion`                       |
-| `which_area`                   | 诊断区域的枚举值                                       | `EnumDiagnosticsAreaType`      | `which_area`                             |
-| `statement_information_type`   | 语句诊断信息项名称的枚举值                             | `EnumStatementInformationType` | `statement_information_item_name`        |
-| `condition_information_type`   | 条件诊断信息项名称的枚举值                             | `EnumConditionInformationType` | `condition_information_item_name`        |
-| `row_format_type`              | 行格式类型的枚举值                                     | `EnumRowFormatType`            | `row_types`                              |
-| `merge_insert_type`            | 向 MERGE 表插入数据的类型的枚举值                      | `EnumMergeInsertType`          | `merge_insert_types`                     |
-| `undo_tablespace_state`        | `UNDO TABLESPACE` 状态的枚举值                         | `EnumUndoTablespaceState`      | `undo_tablespace_state`                  |
-| `opt_view_algorithm_type`      | 可选的视图算法类型的枚举值                             | `EnumViewAlgorithmType`        |                                          |
-| `view_algorithm_type`          | 视图算法类型的枚举值                                   | `EnumViewAlgorithmType`        | `view_algorithm`                         |
-| `view_suid_type`               | 视图 SUID 类型的枚举值                                 | `EnumViewSuidType`             | `view_suid`                              |
-| `opt_replica_thread_type_list` | 可选的副本线程选项的枚举值的列表                       | `EnumReplicaThreadType`        | `opt_replica_thread_option_list`         |
-| `replica_thread_type_list`     | 副本线程选项的枚举值的列表                             | `EnumReplicaThreadType`        | `replica_thread_option_list`             |
-| `replica_thread_type`          | 副本线程选项的枚举值                                   | `EnumReplicaThreadType`        | `replica_thread_option`                  |
-| `data_or_xml`                  | `LOAD` 语句中数据类型的枚举值                          | `EnumDataType`                 | `data_or_xml`                            |
-| `load_data_lock`               | `LOAD` 语句中锁定类型的枚举值                          | `EnumLoadDataLock`             | `load_data_lock`                         |
-| `load_source_type`             | `LOAD` 语句中数据源类型的枚举值                        | `EnumLoadSourceType`           | `load_source_type`                       |
-| `table_primary_key_check_type` | 表主键检查类型的枚举值                                 | `EnumTablePrimaryKeyCheckType` | `table_primary_key_check_def`            |
-| `handler_scan_function`        | `HANDLER` 语句扫描函数的枚举值                         | `EnumHandlerScanFunction`      | `handler_scan_function`                  |
-| `handler_rkey_function`        | `HANDLER` 语句索引键函数的枚举值                       | `EnumHandlerRkeyFunction`      | `handler_rkey_function`                  |
-| `handler_rkey_mode`            | `HANDLER` 语句索引键模式的枚举值                       | `EnumHandlerRkeyMode`          | `handler_rkey_mode`                      |
+| 水杉解析器语义组名称           | 语义组类型                                             | 返回值类型                      | MySQL 语义组名称                                             |
+| ------------------------------ | ------------------------------------------------------ | ------------------------------- | ------------------------------------------------------------ |
+| `opt_drop_restrict`            | 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值           | `EnumDropRestrict`              | `opt_restrict`                                               |
+| `opt_show_command_type`        | 可选的 `SHOW` 语句命令类型的枚举值                     | `EnumShowCommandType`           | `opt_show_cmd_type`                                          |
+| `opt_repair_type_list`         | 可选的 `REPAIR` 语句命令类型的枚举值的列表             | `EnumRepairType`                | `opt_mi_repair_types`                                        |
+| `repair_type_list`             | `REPAIR` 语句命令类型的枚举值的列表                    | `EnumRepairType`                | `mi_repair_types`                                            |
+| `repair_type`                  | `REPAIR` 语句命令类型的枚举值                          | `EnumRepairType`                | `mi_repair_type`                                             |
+| `opt_check_type_list`          | 可选的 `CHECK` 语句命令类型的枚举值的列表              | `EnumCheckType`                 | `opt_mi_check_types`                                         |
+| `check_type_list`              | `CHECK` 语句命令类型的枚举值的列表                     | `EnumCheckType`                 | `mi_check_types`                                             |
+| `check_type`                   | `CHECK` 语句命令类型的枚举值                           | `EnumCheckType`                 | `mi_check_type`                                              |
+| `opt_checksum_type`            | 可选的 `CHECKSUM` 语句命令类型的枚举值                 | `EnumChecksumType`              | `opt_checksum_type`                                          |
+| `opt_profile_type_list`        | 可选的 `SHOW PROFILE` 语句中性能分析指标的枚举值的列表 | `EnumProfileType`               | `opt_profile_defs`                                           |
+| `profile_type_list`            | `SHOW PROFILE` 语句中性能分析指标的枚举值列表          | `EnumProfileType`               | `profile_defs`                                               |
+| `profile_type`                 | `SHOW PROFILE` 语句中性能分析指标的枚举值              | `EnumProfileType`               | `profile_def`                                                |
+| `opt_variable_type`            | 可选的变量类型的枚举值                                 | `EnumVariableType`              | `opt_var_type`                                               |
+| `install_option_type`          | `INSTALL` 语句的安装选项的枚举值                       | `EnumInstallOptionType`         | `install_option_type`                                        |
+| `kill_option_type`             | `KILL` 语句的选项的枚举值                              | `EnumKillOptionType`            | `kill_option`                                                |
+| `lock_option_type`             | `LOCK` 语句的锁定选项的枚举值                          | `EnumLockOptionType`            | `lock_option`                                                |
+| `opt_open_ssl_type`            | SSL 选项的枚举值                                       | `EnumOpenSslType`               | `opt_ssl`                                                    |
+| `opt_chain_type`               | `CHAIN` 选项的枚举值                                   | `EnumChainType`                 | `opt_chain`                                                  |
+| `opt_release_type`             | `RELEASE` 选项的枚举值                                 | `EnumReleaseType`               | `opt_release`                                                |
+| `resource_group_type`          | 资源组类型的枚举值                                     | `EnumResourceGroupType`         | `resource_group_types`                                       |
+| `signal_condition_type`        | `SIGNAL` 和 `RESIGNAL` 语句中条件信息项名称的枚举值    | `EnumSignalConditionType`       | `signal_condition_information_item_name`                     |
+| `flush_option_type_list`       | `FLUSH` 语句选项的枚举值的列表                         | `EnumFlushOptionType`           | `flush_options_list`                                         |
+| `flush_option_type`            | `FLUSH` 语句选项的枚举值                               | `EnumFlushOptionType`           | `flush_option`                                               |
+| `flush_lock_type`              | `FLUSH` 语句锁定选项的枚举值                           | `EnumFlushLockType`             | `opt_flush_lock`                                             |
+| `opt_acl_type`                 | 可选的 ACL 类型枚举值                                  | `EnumAclType`                   | `opt_acl_type`                                               |
+| `opt_join_or_resume`           | XA 事务中的 JOIN/RESUME 选项枚举值                     | `EnumXaJoinOrResume`            | `opt_join_or_resume`                                         |
+| `opt_suspend`                  | XA 事务中的 SUSPEND 选项枚举值                         | `EnumXaSuspend`                 | `opt_suspend`                                                |
+| `opt_enable_disable`           | 资源组启用 / 禁用状态的枚举值                          | `EnumEnableDisable`             | `opt_resource_group_enable_disable`                          |
+| `opt_view_check_option`        | 可选的视图检查选项的枚举值                             | `EnumViewCheckOption`           | `view_check_option`                                          |
+| `opt_event_status_type`        | 可选的事件状态类型的枚举值                             | `EnumEventStatusType`           | `opt_ev_status`                                              |
+| `handler_type`                 | 处理器类型的枚举值                                     | `EnumHandlerType`               | `sp_handler_type`                                            |
+| `opt_event_completion_type`    | 可选的事件完成类型的枚举值                             | `EnumEventCompletionType`       | `opt_ev_on_completion`                                       |
+| `event_completion_type`        | 事件完成类型的枚举值                                   | `EnumEventCompletionType`       | `ev_on_completion`                                           |
+| `which_area`                   | 诊断区域的枚举值                                       | `EnumDiagnosticsAreaType`       | `which_area`                                                 |
+| `statement_information_type`   | 语句诊断信息项名称的枚举值                             | `EnumStatementInformationType`  | `statement_information_item_name`                            |
+| `condition_information_type`   | 条件诊断信息项名称的枚举值                             | `EnumConditionInformationType`  | `condition_information_item_name`                            |
+| `row_format_type`              | 行格式类型的枚举值                                     | `EnumRowFormatType`             | `row_types`                                                  |
+| `merge_insert_type`            | 向 MERGE 表插入数据的类型的枚举值                      | `EnumMergeInsertType`           | `merge_insert_types`                                         |
+| `undo_tablespace_state`        | `UNDO TABLESPACE` 状态的枚举值                         | `EnumUndoTablespaceState`       | `undo_tablespace_state`                                      |
+| `opt_view_algorithm_type`      | 可选的视图算法类型的枚举值                             | `EnumViewAlgorithmType`         |                                                              |
+| `view_algorithm_type`          | 视图算法类型的枚举值                                   | `EnumViewAlgorithmType`         | `view_algorithm`                                             |
+| `view_suid_type`               | 视图 SUID 类型的枚举值                                 | `EnumViewSuidType`              | `view_suid`                                                  |
+| `opt_replica_thread_type_list` | 可选的副本线程选项的枚举值的列表                       | `EnumReplicaThreadType`         | `opt_replica_thread_option_list`                             |
+| `replica_thread_type_list`     | 副本线程选项的枚举值的列表                             | `EnumReplicaThreadType`         | `replica_thread_option_list`                                 |
+| `replica_thread_type`          | 副本线程选项的枚举值                                   | `EnumReplicaThreadType`         | `replica_thread_option`                                      |
+| `data_or_xml`                  | `LOAD` 语句中数据类型的枚举值                          | `EnumDataType`                  | `data_or_xml`                                                |
+| `load_data_lock`               | `LOAD` 语句中锁定类型的枚举值                          | `EnumLoadDataLock`              | `load_data_lock`                                             |
+| `load_source_type`             | `LOAD` 语句中数据源类型的枚举值                        | `EnumLoadSourceType`            | `load_source_type`                                           |
+| `table_primary_key_check_type` | 表主键检查类型的枚举值                                 | `EnumTablePrimaryKeyCheckType`  | `table_primary_key_check_def`                                |
+| `handler_scan_function`        | `HANDLER` 语句扫描函数的枚举值                         | `EnumHandlerScanFunction`       | `handler_scan_function`                                      |
+| `handler_rkey_function`        | `HANDLER` 语句索引键函数的枚举值                       | `EnumHandlerRkeyFunction`       | `handler_rkey_function`                                      |
+| `handler_rkey_mode`            | `HANDLER` 语句索引键模式的枚举值                       | `EnumHandlerRkeyMode`           | `handler_rkey_mode`                                          |
+| `transaction_access_mode_type` | 事务访问模式类型的枚举值                               | `EnumTransactionAccessModeType` | `transaction_access_mode_types`<br />`transaction_access_mode` |
+| `isolation_type`               | 事务隔离级别类型的枚举值                               | `EnumIsolationType`             | `isolation_types`                                            |
 
 #### 固定的词语组合（fixed word）
 

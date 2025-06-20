@@ -38,20 +38,6 @@ start_entry:
 create:
           CREATE view_or_trigger_or_sp_or_event
           {}
-        | CREATE USER opt_if_not_exists create_user_list default_role_clause
-                      require_clause connect_options
-                      opt_account_lock_password_expire_options
-                      opt_user_attribute
-          {
-            LEX *lex=Lex;
-            lex->sql_command = SQLCOM_CREATE_USER;
-            lex->default_roles= $5;
-            Lex->create_info= YYTHD->alloc_typed<HA_CREATE_INFO>();
-            if (Lex->create_info == nullptr)
-              MYSQL_YYABORT; // OOM
-            lex->create_info->options= $3 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-            MAKE_CMD_DCL_DUMMY();
-          }
         | CREATE LOGFILE_SYM GROUP_SYM ident ADD lg_undofile
           opt_logfile_group_options
           {
@@ -104,18 +90,6 @@ create:
             Lex->server_options.set_scheme($7);
             Lex->m_sql_cmd=
               NEW_PTN Sql_cmd_create_server(&Lex->server_options);
-          }
-        ;
-
-default_role_clause:
-          %empty
-          {
-            $$= nullptr;
-          }
-        |
-          DEFAULT_SYM ROLE_SYM role_list
-          {
-            $$= $3;
           }
         ;
 
@@ -850,13 +824,6 @@ transaction_characteristics:
           }
         ;
 
-transaction_access_mode:
-          transaction_access_mode_types
-          {
-            $$= NEW_PTN PT_transaction_access_mode(@$, $1);
-          }
-        ;
-
 opt_transaction_access_mode:
           %empty { $$= nullptr; }
         | ',' transaction_access_mode { $$= $2; }
@@ -872,18 +839,6 @@ isolation_level:
 opt_isolation_level:
           %empty { $$= nullptr; }
         | ',' isolation_level { $$= $2; }
-        ;
-
-transaction_access_mode_types:
-          READ_SYM ONLY_SYM { $$= true; }
-        | READ_SYM WRITE_SYM { $$= false; }
-        ;
-
-isolation_types:
-          READ_SYM UNCOMMITTED_SYM { $$= ISO_READ_UNCOMMITTED; }
-        | READ_SYM COMMITTED_SYM   { $$= ISO_READ_COMMITTED; }
-        | REPEATABLE_SYM READ_SYM  { $$= ISO_REPEATABLE_READ; }
-        | SERIALIZABLE_SYM         { $$= ISO_SERIALIZABLE; }
         ;
 
 set_expr_or_default:
@@ -951,72 +906,6 @@ opt_user_registration:
             m->requires_registration= true;
             m->challenge_response= to_lex_cstring($7);
             $$ = m;
-          }
-        ;
-
-create_user:
-          user identification opt_create_user_with_mfa
-          {
-            $$ = $1;
-            $$->first_factor_auth_info = *$2;
-            if ($$->add_mfa_identifications($3.mfa2, $3.mfa3))
-              MYSQL_YYABORT;  // OOM
-          }
-        | user identified_with_plugin opt_initial_auth
-          {
-            $$= $1;
-            /* set $3 as first factor auth method */
-            $3->nth_factor = 1;
-            $3->passwordless = false;
-            $$->first_factor_auth_info = *$3;
-            /* set $2 as second factor auth method */
-            $2->nth_factor = 2;
-            $2->passwordless = true;
-            if ($$->mfa_list.push_back($2))
-              MYSQL_YYABORT;  // OOM
-            $$->with_initial_auth = true;
-          }
-        | user opt_create_user_with_mfa
-          {
-            $$ = $1;
-            if ($$->add_mfa_identifications($2.mfa2, $2.mfa3))
-              MYSQL_YYABORT;  // OOM
-          }
-        ;
-
-opt_create_user_with_mfa:
-          %empty { $$ = {}; }
-        | AND_SYM identification
-          {
-            $2->nth_factor = 2;
-            $$ = {$2, nullptr};
-          }
-        | AND_SYM identification AND_SYM identification
-          {
-            $2->nth_factor = 2;
-            $4->nth_factor = 3;
-            $$ = {$2, $4};
-          }
-        ;
-
-opt_initial_auth:
-          INITIAL_SYM AUTHENTICATION_SYM identified_by_random_password
-           {
-            $$ = $3;
-            $3->passwordless = true;
-            $3->nth_factor = 2;
-          }
-        | INITIAL_SYM AUTHENTICATION_SYM identified_with_plugin_as_auth
-          {
-            $$ = $3;
-            $3->passwordless = true;
-            $3->nth_factor = 2;
-          }
-        | INITIAL_SYM AUTHENTICATION_SYM identified_by_password
-          {
-            $$ = $3;
-            $3->passwordless = true;
-            $3->nth_factor = 2;
           }
         ;
 
