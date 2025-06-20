@@ -87,6 +87,7 @@ from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
 from metasequoia_sql_grammar.statement import create_srs_statement
 from metasequoia_sql_grammar.statement import create_table_statement
+from metasequoia_sql_grammar.statement import create_undo_tablespace_statement
 from metasequoia_sql_grammar.statement import create_view_statement
 from metasequoia_sql_grammar.statement import deallocate_statement
 from metasequoia_sql_grammar.statement import delete_statement
@@ -98,6 +99,7 @@ from metasequoia_sql_grammar.statement import explain_statement
 from metasequoia_sql_grammar.statement import flush_statement
 from metasequoia_sql_grammar.statement import get_diagnostics_statement
 from metasequoia_sql_grammar.statement import grant_and_revoke_statement
+from metasequoia_sql_grammar.statement import group_replication_statement
 from metasequoia_sql_grammar.statement import help_statement
 from metasequoia_sql_grammar.statement import import_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
@@ -359,6 +361,7 @@ def build_grammar():
         create_role_statement,  # CREATE ROLE 语句
         create_srs_statement,  # CREATE SRS 语句
         create_table_statement,  # CREATE TABLE 语句
+        create_undo_tablespace_statement,  # CREATE UNDO TABLESPACE 语句
         create_view_statement,  # CREATE VIEW 语句
         deallocate_statement,  # DEALLOCATE 语句
         delete_statement,  # DELETE 语句
@@ -370,6 +373,7 @@ def build_grammar():
         flush_statement,  # FLUSH 语句
         get_diagnostics_statement,  # GET DIAGNOSTICS 语句
         grant_and_revoke_statement,  # GRANT 和 REVOKE 语句
+        group_replication_statement,  # GROUP REPLICATION 语句
         help_statement,  # HELP 语句
         import_statement,  # IMPORT TABLE 语句
         load_statement,  # LOAD 语句

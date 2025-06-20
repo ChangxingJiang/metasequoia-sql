@@ -25,6 +25,7 @@ from metasequoia_sql.ast.statement.create_resource_group_statement import *
 from metasequoia_sql.ast.statement.create_role_statement import *
 from metasequoia_sql.ast.statement.create_srs_statement import *
 from metasequoia_sql.ast.statement.create_table_statement import *
+from metasequoia_sql.ast.statement.create_undo_tablespace_statement import *
 from metasequoia_sql.ast.statement.create_view_statement import *
 from metasequoia_sql.ast.statement.deallocate_statement import *
 from metasequoia_sql.ast.statement.delete_statement import *
@@ -36,6 +37,7 @@ from metasequoia_sql.ast.statement.explain_statement import *
 from metasequoia_sql.ast.statement.flush_statement import *
 from metasequoia_sql.ast.statement.get_diagnostics_statement import *
 from metasequoia_sql.ast.statement.grant_and_revoke_statement import *
+from metasequoia_sql.ast.statement.group_replication_statement import *
 from metasequoia_sql.ast.statement.help_statement import *
 from metasequoia_sql.ast.statement.import_statement import *
 from metasequoia_sql.ast.statement.insert_or_replace_statement import *

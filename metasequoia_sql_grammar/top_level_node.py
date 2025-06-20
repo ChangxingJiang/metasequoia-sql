@@ -208,9 +208,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["get_diagnostics_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["group_replication"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["group_replication_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["grant_statement"]
         ),

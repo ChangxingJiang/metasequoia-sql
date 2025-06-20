@@ -760,63 +760,6 @@ user_func:
           }
         ;
 
-group_replication:
-          group_replication_start opt_group_replication_start_options
-        | STOP_SYM GROUP_REPLICATION
-          {
-            LEX *lex = Lex;
-            lex->sql_command = SQLCOM_STOP_GROUP_REPLICATION;
-          }
-        ;
-
-opt_group_replication_start_options:
-          %empty
-        | group_replication_start_options
-        ;
-
-group_replication_start_options:
-          group_replication_start_option
-        | group_replication_start_options ',' group_replication_start_option
-        ;
-
-group_replication_start_option:
-          group_replication_user
-        | group_replication_password
-        | group_replication_plugin_auth
-        ;
-
-group_replication_user:
-          USER EQ TEXT_STRING_sys_nonewline
-          {
-            Lex->slave_connection.user = $3.str;
-            if ($3.length == 0)
-            {
-              my_error(ER_GROUP_REPLICATION_USER_EMPTY_MSG, MYF(0));
-              MYSQL_YYABORT;
-            }
-          }
-        ;
-
-group_replication_password:
-          PASSWORD EQ TEXT_STRING_sys_nonewline
-          {
-            Lex->slave_connection.password = $3.str;
-            Lex->contains_plaintext_password = true;
-            if ($3.length > 32)
-            {
-              my_error(ER_GROUP_REPLICATION_PASSWORD_LENGTH, MYF(0));
-              MYSQL_YYABORT;
-            }
-          }
-        ;
-
-group_replication_plugin_auth:
-          DEFAULT_AUTH_SYM EQ TEXT_STRING_sys_nonewline
-          {
-            Lex->slave_connection.plugin_auth= $3.str;
-          }
-        ;
-
 stop_replica_stmt:
           STOP_SYM replica opt_replica_thread_option_list opt_channel
           {

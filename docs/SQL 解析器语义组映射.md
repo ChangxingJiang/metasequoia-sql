@@ -337,6 +337,18 @@
 | `opt_grant_as`           | 可选的 `GRANT AS` 子句   | `Optional[UserName]`    | `opt_grant_as`           |
 | `grant_identifier`       | `GRANT` 语句中的标识符   | `GrantIdentifier`       | `grant_ident`            |
 
+#### GROUP REPLICATION 语句（group replication statement）
+
+| 水杉解析器语义组名称                      | 语义组类型                                  | 返回值类型                          | MySQL 语义组名称                      |
+| ----------------------------------------- | ------------------------------------------- | ----------------------------------- | ------------------------------------- |
+| `group_replication_statement`             | `GROUP REPLICATION` 语句                    | `GroupReplicationStatement`         | `group_replication`                   |
+| `opt_group_replication_start_option_list` | 可选的 `GROUP REPLICATION START` 选项的列表 | `List[GroupReplicationStartOption]` | `opt_group_replication_start_options` |
+| `group_replication_start_option_list`     | `GROUP REPLICATION START` 选项的列表        | `List[GroupReplicationStartOption]` | `group_replication_start_options`     |
+| `group_replication_start_option`          | `GROUP REPLICATION START` 的选项            | `GroupReplicationStartOption`       | `group_replication_start_option`      |
+| `group_replication_user`                  | `GROUP REPLICATION` 的 `USER` 选项          | `GroupReplicationUser`              | `group_replication_user`              |
+| `group_replication_password`              | `GROUP REPLICATION` 的 `PASSWORD` 选项      | `GroupReplicationPassword`          | `group_replication_password`          |
+| `group_replication_plugin_auth`           | `GROUP REPLICATION` 的插件认证选项          | `group_replication_plugin_auth`     | `group_replication_plugin_auth`       |
+
 #### HELP 语句（help statement）
 
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
@@ -1391,7 +1403,6 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_equal`                                                  | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                        |
 | `equal`                                                      | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                            |
 | `opt_to_or_eq_or_as`                                         | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                           |
-| `keyword_start_group_replication`                            | `START GROUP_REPLICATION` 关键字组合                         | -          | `group_replication_start`                          |
 
 #### 标识符（ident）
 
