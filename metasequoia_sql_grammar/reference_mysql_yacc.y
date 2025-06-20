@@ -654,13 +654,6 @@ no_definer_tail:
 
 **************************************************************************/
 
-trigger_action_order:
-            FOLLOWS_SYM
-            { $$= TRG_ORDER_FOLLOWS; }
-          | PRECEDES_SYM
-            { $$= TRG_ORDER_PRECEDES; }
-          ;
-
 trigger_follows_precedes_clause:
             %empty
             {
