@@ -1554,6 +1554,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `simple_ident`                                         | 通用标识符（`ident` 或 `ident.ident` 或 `ident.ident.ident`） | `Expression`       | `simple_ident`<br />`simple_ident_nospvar`<br />`insert_column` |
 | `simple_ident_list`                                    | 逗号分隔的通用通配符的列表                                   | `List[Expression]` | `ident_list`<br />`insert_columns`                           |
 | `opt_ident`                                            | 可选的单个标识符                                             | `Optional[str]`    | `opt_existing_window_name`<br />`opt_ident`<br />`ident_or_empty` |
+| `ident_or_default`                                     | 标识符或 `DEFAULT` 关键字                                    | `Expression`       | `key_cache_name`                                             |
 
 #### 字符集名称（charset）
 

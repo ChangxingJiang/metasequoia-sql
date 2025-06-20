@@ -36,6 +36,7 @@ __all__ = [
     "OPT_IDENT",
     "VARIABLE_IDENTIFIER",
     "OPT_LABEL_IDENT",
+    "IDENT_OR_DEFAULT",
 ]
 
 # 不是保留字或非保留关键字的标识符
@@ -341,5 +342,19 @@ OPT_LABEL_IDENT = ms_parser.create_group(
             action=lambda x: x[0].get_str_value()
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 标识符或 `DEFAULT` 关键字
+IDENT_OR_DEFAULT = ms_parser.create_group(
+    name="ident_or_default",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident"]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT],
+            action=lambda _: ast.DefaultValue()
+        )
     ]
 )

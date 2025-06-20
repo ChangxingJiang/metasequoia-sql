@@ -426,11 +426,6 @@ assign_to_keycache:
           }
         ;
 
-key_cache_name:
-          ident    { $$= to_lex_cstring($1); }
-        | DEFAULT_SYM { $$ = default_key_cache_base; }
-        ;
-
 preload_stmt:
           LOAD INDEX_SYM INTO CACHE_SYM
           table_ident adm_partition opt_cache_key_list opt_ignore_leaves
