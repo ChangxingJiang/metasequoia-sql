@@ -32,6 +32,11 @@ __all__ = [
     "DROP_UNDO_TABLESPACE_OPTION_LIST",
     "DROP_UNDO_TABLESPACE_OPTION",
 
+    # `CREATE TABLESPACE` 选项列表
+    "OPT_CREATE_TABLESPACE_OPTION_LIST",
+    "CREATE_TABLESPACE_OPTION_LIST",
+    "CREATE_TABLESPACE_OPTION",
+
     # 基础选项
     "DDL_OPTION_STORAGE_ENGINE",
     "DDL_OPTION_WAIT",
@@ -390,6 +395,72 @@ DROP_UNDO_TABLESPACE_OPTION = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["ddl_option_storage_engine"]
+        )
+    ]
+)
+
+# 可选的 `CREATE TABLESPACE` 的选项的列表
+OPT_CREATE_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="opt_create_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_tablespace_option_list"]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST
+    ]
+)
+
+# `CREATE TABLESPACE` 的选项的列表
+CREATE_TABLESPACE_OPTION_LIST = ms_parser.create_group(
+    name="create_tablespace_option_list",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["create_tablespace_option_list", "opt_comma", "create_tablespace_option"],
+            action=ms_parser.template.action.LIST_APPEND_2
+        ),
+        ms_parser.create_rule(
+            symbols=["create_tablespace_option"],
+            action=ms_parser.template.action.LIST_INIT_0
+        )
+    ]
+)
+
+# `CREATE TABLESPACE` 的选项
+CREATE_TABLESPACE_OPTION = ms_parser.create_group(
+    name="create_tablespace_option",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ddl_option_initial_size"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_autoextend_size"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_max_size"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_extent_size"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_nodegroup"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_engine"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_wait"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_comment"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_file_block_size"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_tablespace_encryption"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ddl_option_tablespace_engine_attribute"]
         )
     ]
 )

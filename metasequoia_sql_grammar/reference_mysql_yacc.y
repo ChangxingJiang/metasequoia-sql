@@ -329,40 +329,6 @@ opt_logfile_group_name:
           }
         ;
 
-opt_tablespace_options:
-          %empty { $$= nullptr; }
-        | tablespace_option_list
-        ;
-
-tablespace_option_list:
-          tablespace_option
-          {
-            $$= NEW_PTN Mem_root_array<PT_alter_tablespace_option_base*>(YYMEM_ROOT);
-            if ($$ == nullptr || $$->push_back($1))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        | tablespace_option_list opt_comma tablespace_option
-          {
-            $$= $1;
-            if ($$->push_back($3))
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-          }
-        ;
-
-tablespace_option:
-          ts_option_initial_size
-        | ts_option_autoextend_size
-        | ts_option_max_size
-        | ts_option_extent_size
-        | ts_option_nodegroup
-        | ts_option_engine
-        | ts_option_wait
-        | ts_option_comment
-        | ts_option_file_block_size
-        | ts_option_encryption
-        | ts_option_engine_attribute
-        ;
-
 opt_logfile_group_options:
           %empty { $$= nullptr; }
         | logfile_group_option_list

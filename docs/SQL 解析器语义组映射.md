@@ -845,6 +845,9 @@
 | `opt_drop_undo_tablespace_option_list`     | 可选的 `UNDO TABLESPACE` 的选项的列表                   | `List[DdlOption]`                    | `opt_undo_tablespace_options`                             |
 | `drop_undo_tablespace_option_list`         | `UNDO TABLESPACE` 的选项的列表                          | `List[DdlOption]`                    | `undo_tablespace_option_list`                             |
 | `drop_undo_tablespace_option`              | `UNDO TABLESPACE` 的选项                                | `DdlOption`                          | `undo_tablespace_option`                                  |
+| `opt_create_tablespace_option_list`        |                                                         | `List[DdlOption]`                    | `opt_tablespace_options`                                  |
+| `create_tablespace_option_list`            | `CREATE TABLESPACE` 的选项的列表                        | `List[DdlOption]`                    | `tablespace_option_list`                                  |
+| `create_tablespace_option`                 | `CREATE TABLESPACE` 的选项                              | `DdlOption`                          | `tablespace_option`                                       |
 | `ddl_option_engine`                        | ALTER 选项：`ENGINE`                                    | `DdlOptionEngine`                    | `ts_option_engine`                                        |
 | `ddl_option_wait`                          | ALTER 选项：`WAIT` 或 `NO_WAIT`                         | `DdlOptionWait`                      | `ts_option_wait`                                          |
 | `ddl_option_initial_size`                  | 指定表空间初始大小的属性                                | `DdlOptionInitialSize`               | `ts_option_initial_size`                                  |
