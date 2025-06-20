@@ -349,11 +349,11 @@
 | `group_replication_password`              | `GROUP REPLICATION` 的 `PASSWORD` 选项      | `GroupReplicationPassword`          | `group_replication_password`          |
 | `group_replication_plugin_auth`           | `GROUP REPLICATION` 的插件认证选项          | `group_replication_plugin_auth`     | `group_replication_plugin_auth`       |
 
-#### HANDLER 语句(handler statement)
+#### HANDLER 语句（handler statement）
 
 | 水杉解析器语义组名称 | 语义组类型     | 返回值类型         | MySQL 语义组名称 |
 | -------------------- | -------------- | ------------------ | ---------------- |
-| `handler_statement`  | `HANDLER` 语句 | `HandlerStatement` | `help`           |
+| `handler_statement`  | `HANDLER` 语句 | `HandlerStatement` | `handler_stmt`   |
 
 #### HELP 语句（help statement）
 
@@ -615,6 +615,12 @@
 | `start_transaction_options_list`     | 事务选项的列表           | `StartTransactionOption`    | `start_transaction_option_list`     |
 | `start_transaction_options`          | 事务选项                 | `StartTransactionOption`    | `start_transaction_option`          |
 
+#### STOP REPLICA 语句（stop replica statement）
+
+| 水杉解析器语义组名称     | 语义组类型          | 返回值类型             | MySQL 语义组名称         |
+| ------------------------ | ------------------- | ---------------------- | ------------------------ |
+| `stop_replica_statement` | `STOP REPLICA` 语句 | `StopReplicaStatement` | `stop_replica_statement` |
+
 #### TRUNCATE 语句（truncate statement）
 
 | 水杉解析器语义组名称 | 语义组类型      | 返回值类型          | MySQL 语义组名称 |
@@ -845,6 +851,12 @@
 | `ddl_option_max_size`                      | 指定表空间最大大小的属性                                | `DdlOptionMaxSize`                   | `ts_option_max_size`                                      |
 | `ddl_option_tablespace_encryption`         | 指定表空间加密属性                                      | `DdlOptionTablespaceEncryption`      | `ts_option_encryption`                                    |
 | `ddl_option_tablespace_engine_attribute`   | 指定表空间引擎属性                                      | `DdlOptionTablespaceEngineAttribute` | `ts_option_engine_attribute`                              |
+| `ddl_option_extent_size`                   | 指定表空间段初始空间大小的属性                          | `DdlOptionExtentSize`                | `ts_option_extent_size`                                   |
+| `ddl_option_undo_buffer_size`              | 指定表空间的 UNDO 日志缓冲区大小的属性                  | `DdlOptionUndoBufferSize`            | `ts_option_undo_buffer_size`                              |
+| `ddl_option_redo_buffer_size`              | 指定表空间的 REDO 日志缓冲区大小的属性                  | `DdlOptionRedoBufferSize`            | `ts_option_redo_buffer_size`                              |
+| `ddl_option_nodegroup`                     | 指定表空间的节点组属性                                  | `DdlOptionNodeGroup`                 | `ts_option_nodegroup`                                     |
+| `ddl_option_comment`                       | 指定注释                                                | `DdlOptionComment`                   | `ts_option_comment`                                       |
+| `ddl_option_file_block_size`               | 指定表空间文件块大小                                    | `DdlOptionFileBlockSize`             | `ts_option_file_block_size`                               |
 
 `drop_undo_tablespace_option` 语义组与 `alter_option_engine` 语义组一致，但考虑可拓展性保留单独的 `drop_undo_tablespace_option` 语义组。
 

@@ -393,48 +393,6 @@ logfile_group_option:
         | ts_option_comment
         ;
 
-ts_option_extent_size:
-          EXTENT_SIZE_SYM opt_equal size_number
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_extent_size(@$, $3);
-          }
-        ;
-
-ts_option_undo_buffer_size:
-          UNDO_BUFFER_SIZE_SYM opt_equal size_number
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_undo_buffer_size(@$, $3);
-          }
-        ;
-
-ts_option_redo_buffer_size:
-          REDO_BUFFER_SIZE_SYM opt_equal size_number
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_redo_buffer_size(@$, $3);
-          }
-        ;
-
-ts_option_nodegroup:
-          NODEGROUP_SYM opt_equal real_ulong_num
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_nodegroup(@$, $3);
-          }
-        ;
-
-ts_option_comment:
-          COMMENT_SYM opt_equal TEXT_STRING_sys
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_comment(@$, $3);
-          }
-        ;
-
-ts_option_file_block_size:
-          FILE_BLOCK_SIZE_SYM opt_equal size_number
-          {
-            $$= NEW_PTN PT_alter_tablespace_option_file_block_size(@$, $3);
-          }
-        ;
-
 /*
   End tablespace part
 */
@@ -757,20 +715,6 @@ user_func:
 
             Lex->users_list.push_back(curr_user);
             $$= curr_user;
-          }
-        ;
-
-stop_replica_stmt:
-          STOP_SYM replica opt_replica_thread_option_list opt_channel
-          {
-            LEX *lex=Lex;
-            lex->sql_command = SQLCOM_SLAVE_STOP;
-            lex->type = 0;
-            lex->slave_thd_opt= $3;
-            if (lex->is_replication_deprecated_syntax_used())
-              push_deprecated_warn(YYTHD, "STOP SLAVE", "STOP REPLICA");
-            if (lex->set_channel_name($4))
-              MYSQL_YYABORT;  // OOM
           }
         ;
 

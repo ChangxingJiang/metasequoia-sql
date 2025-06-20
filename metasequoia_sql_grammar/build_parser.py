@@ -125,6 +125,7 @@ from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import shutdown_statement
 from metasequoia_sql_grammar.statement import signal_and_resignal_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
+from metasequoia_sql_grammar.statement import stop_replica_statement
 from metasequoia_sql_grammar.statement import truncate_statement
 from metasequoia_sql_grammar.statement import update_statement
 from metasequoia_sql_grammar.statement import use_statement
@@ -400,6 +401,7 @@ def build_grammar():
         shutdown_statement,  # SHUTDOWN 语句
         signal_and_resignal_statement,  # SIGNAL/RESIGNAL 语句
         start_transaction_statement,  # START TRANSACTION 语句
+        stop_replica_statement,  # STOP REPLICA 语句
         truncate_statement,  # TRUNCATE 语句
         update_statement,  # UPDATE 语句
         use_statement,  # USE 语句
