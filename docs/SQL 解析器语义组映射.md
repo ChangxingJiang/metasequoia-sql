@@ -1442,6 +1442,9 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `isolation_type`               | 事务隔离级别类型的枚举值                               | `EnumIsolationType`             | `isolation_types`                                            |
 | `opt_set_option_type`          | 可选的 SET 语句选项类型的枚举值                        | `EnumSetOptionType`             |                                                              |
 | `set_option_type`              | SET 语句选项类型的枚举值                               | `EnumSetOptionType`             | `option_type`                                                |
+| `trigger_action_time_type`     | 触发器动作时间类型的枚举值                             | `EnumTriggerActionTimeType`     | `trg_action_time`                                            |
+| `trigger_event_type`           | 触发器事件类型的枚举值                                 | `EnumTriggerEventType`          | `trg_event`                                                  |
+| `trigger_action_order_type`    | 触发器动作顺序类型的枚举值                             | `EnumTriggerActionOrderType`    | `trigger_action_order`                                       |
 
 #### 固定的词语组合（fixed word）
 

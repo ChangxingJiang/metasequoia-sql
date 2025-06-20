@@ -204,22 +204,6 @@ sp_opt_inout:
         | INOUT_SYM   { $$= sp_variable::MODE_INOUT; }
         ;
 
-trg_action_time:
-            BEFORE_SYM
-            { $$= TRG_ACTION_BEFORE; }
-          | AFTER_SYM
-            { $$= TRG_ACTION_AFTER; }
-          ;
-
-trg_event:
-            INSERT_SYM
-            { $$= TRG_EVENT_INSERT; }
-          | UPDATE_SYM
-            { $$= TRG_EVENT_UPDATE; }
-          | DELETE_SYM
-            { $$= TRG_EVENT_DELETE; }
-          ;
-
 /*
   End tablespace part
 */

@@ -51,6 +51,9 @@ __all__ = [
     "EnumTransactionAccessModeType",
     "EnumIsolationType",
     "EnumSetOptionType",
+    "EnumTriggerActionTimeType",
+    "EnumTriggerEventType",
+    "EnumTriggerActionOrderType",
 ]
 
 
@@ -473,3 +476,25 @@ class EnumSetOptionType(IntEnum):
     PERSIST_ONLY = 3  # PERSIST ONLY
     LOCAL = 4  # LOCAL
     SESSION = 5  # SESSION
+
+
+class EnumTriggerActionTimeType(IntEnum):
+    """触发器动作时间类型的枚举值"""
+
+    BEFORE = 1  # BEFORE
+    AFTER = 2  # AFTER
+
+
+class EnumTriggerEventType(IntEnum):
+    """触发器事件类型的枚举值"""
+
+    INSERT = 1  # INSERT
+    UPDATE = 2  # UPDATE
+    DELETE = 3  # DELETE
+
+
+class EnumTriggerActionOrderType(IntEnum):
+    """触发器动作顺序类型的枚举值"""
+
+    FOLLOWS = 1  # FOLLOWS
+    PRECEDES = 2  # PRECEDES

@@ -60,6 +60,9 @@ __all__ = [
     "HANDLER_RKEY_FUNCTION",
     "HANDLER_RKEY_MODE",
     "SET_OPTION_TYPE",
+    "TRIGGER_ACTION_TIME_TYPE",
+    "TRIGGER_EVENT_TYPE",
+    "TRIGGER_ACTION_ORDER_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1248,6 +1251,55 @@ SET_OPTION_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SESSION],
             action=lambda _: ast.EnumSetOptionType.SESSION
+        )
+    ]
+)
+
+# 触发器动作时间类型的枚举值
+TRIGGER_ACTION_TIME_TYPE = ms_parser.create_group(
+    name="trigger_action_time_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_BEFORE],
+            action=lambda _: ast.EnumTriggerActionTimeType.BEFORE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AFTER],
+            action=lambda _: ast.EnumTriggerActionTimeType.AFTER
+        )
+    ]
+)
+
+# 触发器事件类型的枚举值
+TRIGGER_EVENT_TYPE = ms_parser.create_group(
+    name="trigger_event_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INSERT],
+            action=lambda _: ast.EnumTriggerEventType.INSERT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UPDATE],
+            action=lambda _: ast.EnumTriggerEventType.UPDATE
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DELETE],
+            action=lambda _: ast.EnumTriggerEventType.DELETE
+        )
+    ]
+)
+
+# 触发器动作顺序类型的枚举值
+TRIGGER_ACTION_ORDER_TYPE = ms_parser.create_group(
+    name="trigger_action_order_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FOLLOWS],
+            action=lambda _: ast.EnumTriggerActionOrderType.FOLLOWS
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PRECEDES],
+            action=lambda _: ast.EnumTriggerActionOrderType.PRECEDES
         )
     ]
 )
