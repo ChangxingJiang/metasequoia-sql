@@ -134,6 +134,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["create_table_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["create_user_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["create_view_statement"]
         ),
         ms_parser.create_rule(
