@@ -1153,6 +1153,14 @@
 | `opt_filter_db_pair_list` | 可选的数据库对列表 | `List[Tuple[str, str]]`  | `opt_filter_db_pair_list` |
 | `filter_db_pair_list`     | 数据库对列表       | `List[Tuple[str, str]]`  | `filter_db_pair_list`     |
 
+#### 连接选项（connect option）
+
+| 水杉解析器语义组名称      | 语义组含义         | 返回值类型            | MySQL 语义组名称      |
+| ------------------------- | ------------------ | --------------------- | --------------------- |
+| `opt_connect_option_list` | 可选的连接选项列表 | `List[ConnectOption]` | `connect_options`     |
+| `connect_option_list`     | 连接选项的列表     | `List[ConnectOption]` | `connect_option_list` |
+| `connect_option`          | 连接选项           | `ConnectOption`       | `connect_option`      |
+
 # 表（table）
 
 MySQL 有一种语法扩展，允许将逗号分隔的表引用列表本身作为一个表引用使用。例如：

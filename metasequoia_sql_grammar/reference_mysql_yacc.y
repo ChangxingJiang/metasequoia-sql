@@ -634,43 +634,6 @@ opt_account_lock_password_expire_option:
           }
         ;
 
-connect_options:
-          %empty {}
-        | WITH connect_option_list
-        ;
-
-connect_option_list:
-          connect_option_list connect_option {}
-        | connect_option {}
-        ;
-
-connect_option:
-          MAX_QUERIES_PER_HOUR ulong_num
-          {
-            LEX *lex=Lex;
-            lex->mqh.questions=$2;
-            lex->mqh.specified_limits|= USER_RESOURCES::QUERIES_PER_HOUR;
-          }
-        | MAX_UPDATES_PER_HOUR ulong_num
-          {
-            LEX *lex=Lex;
-            lex->mqh.updates=$2;
-            lex->mqh.specified_limits|= USER_RESOURCES::UPDATES_PER_HOUR;
-          }
-        | MAX_CONNECTIONS_PER_HOUR ulong_num
-          {
-            LEX *lex=Lex;
-            lex->mqh.conn_per_hour= $2;
-            lex->mqh.specified_limits|= USER_RESOURCES::CONNECTIONS_PER_HOUR;
-          }
-        | MAX_USER_CONNECTIONS_SYM ulong_num
-          {
-            LEX *lex=Lex;
-            lex->mqh.user_conn= $2;
-            lex->mqh.specified_limits|= USER_RESOURCES::USER_CONNECTIONS;
-          }
-        ;
-
 user_func:
           USER '(' ')'
           {

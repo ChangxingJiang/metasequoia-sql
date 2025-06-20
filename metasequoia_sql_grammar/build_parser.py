@@ -40,6 +40,7 @@ from metasequoia_sql_grammar.expression import sum_function_expression
 from metasequoia_sql_grammar.expression import window_function_expression
 from metasequoia_sql_grammar.phrase import alias
 from metasequoia_sql_grammar.phrase import alter_command
+from metasequoia_sql_grammar.phrase import connect_option
 from metasequoia_sql_grammar.phrase import cpu_range
 from metasequoia_sql_grammar.phrase import datafile
 from metasequoia_sql_grammar.phrase import ddl_alter_option
@@ -286,6 +287,7 @@ def build_grammar():
         identification,  # 短语 - 身份认证
         json_table_option,  # 短语 - JSON 表选项
         alias,  # 短语 - 别名
+        connect_option,  # 短语 - 连接选项
         sql_state,  # 短语 - SQL状态
         time_interval,  # 短语 - 时间间隔
         thread_priority,  # 短语 - 线程优先级
