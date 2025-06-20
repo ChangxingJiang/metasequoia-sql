@@ -65,6 +65,11 @@ __all__ = [
     "DdlOptionMaxSize",
     "DdlOptionTablespaceEncryption",
     "DdlOptionTablespaceEngineAttribute",
+    "DdlOptionExtentSize",
+    "DdlOptionUndoBufferSize",
+    "DdlOptionRedoBufferSize",
+    "DdlOptionNodeGroup",
+    "DdlOptionFileBlockSize",
 ]
 
 
@@ -172,7 +177,7 @@ class DdlOptionPassword(DdlStrOptionBase):
 
 
 class DdlOptionComment(DdlStrOptionBase):
-    """DDL 选项：COMMENT（表属性）"""
+    """DDL 选项：COMMENT（表属性、表空间属性）"""
 
 
 class DdlOptionCompression(DdlStrOptionBase):
@@ -367,3 +372,23 @@ class DdlOptionTablespaceEncryption(DdlStrOptionBase):
 
 class DdlOptionTablespaceEngineAttribute(DdlStrOptionBase):
     """DDL 选项：ENGINE_ATTRIBUTE（表空间属性）"""
+
+
+class DdlOptionExtentSize(DdlExpressionOptionBase):
+    """DDL 选项：EXTENT_SIZE（表空间属性）"""
+
+
+class DdlOptionUndoBufferSize(DdlExpressionOptionBase):
+    """DDL 选项：UNDO_BUFFER_SIZE（表空间属性）"""
+
+
+class DdlOptionRedoBufferSize(DdlExpressionOptionBase):
+    """DDL 选项：REDO_BUFFER_SIZE（表空间属性）"""
+
+
+class DdlOptionNodeGroup(DdlIntOptionBase):
+    """DDL 选项：NODEGROUP（表空间属性）"""
+
+
+class DdlOptionFileBlockSize(DdlExpressionOptionBase):
+    """DDL 选项：FILE_BLOCK_SIZE（表空间属性）"""

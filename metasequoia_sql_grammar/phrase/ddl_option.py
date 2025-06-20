@@ -43,6 +43,12 @@ __all__ = [
     "DDL_OPTION_MAX_SIZE",
     "DDL_OPTION_TABLESPACE_ENCRYPTION",
     "DDL_OPTION_TABLESPACE_ENGINE_ATTRIBUTE",
+    "DDL_OPTION_EXTENT_SIZE",
+    "DDL_OPTION_UNDO_BUFFER_SIZE",
+    "DDL_OPTION_REDO_BUFFER_SIZE",
+    "DDL_OPTION_NODEGROUP",
+    "DDL_OPTION_COMMENT",
+    "DDL_OPTION_FILE_BLOCK_SIZE",
 
     # 选项值
     "TERNARY_OPTION_VALUE",
@@ -111,8 +117,7 @@ CREATE_TABLE_OPTION = ms_parser.create_group(
             action=lambda x: ast.DdlOptionPassword(value=x[2].get_str_value())
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_COMMENT, "opt_equal", "text_literal_sys"],
-            action=lambda x: ast.DdlOptionComment(value=x[2].get_str_value())
+            symbols=["ddl_option_comment"],
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_COMPRESSION, "opt_equal", "ident_or_text"],
@@ -487,6 +492,72 @@ DDL_OPTION_TABLESPACE_ENGINE_ATTRIBUTE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ENGINE_ATTRIBUTE, "opt_equal", "json_attribute"],
             action=lambda x: ast.DdlOptionTablespaceEngineAttribute(value=x[2].get_str_value())
+        )
+    ]
+)
+
+# 指定表空间段初始空间大小的属性
+DDL_OPTION_EXTENT_SIZE = ms_parser.create_group(
+    name="ddl_option_extent_size",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_EXTENT_SIZE, "opt_equal", "size_number"],
+            action=lambda x: ast.DdlOptionExtentSize(value=x[2])
+        )
+    ]
+)
+
+# 指定表空间的 UNDO 日志缓冲区大小的属性
+DDL_OPTION_UNDO_BUFFER_SIZE = ms_parser.create_group(
+    name="ddl_option_undo_buffer_size",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_UNDO_BUFFER_SIZE, "opt_equal", "size_number"],
+            action=lambda x: ast.DdlOptionUndoBufferSize(value=x[2])
+        )
+    ]
+)
+
+# 指定表空间的 REDO 日志缓冲区大小的属性
+DDL_OPTION_REDO_BUFFER_SIZE = ms_parser.create_group(
+    name="ddl_option_redo_buffer_size",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REDO_BUFFER_SIZE, "opt_equal", "size_number"],
+            action=lambda x: ast.DdlOptionRedoBufferSize(value=x[2])
+        )
+    ]
+)
+
+# 指定表空间的节点组属性
+DDL_OPTION_NODEGROUP = ms_parser.create_group(
+    name="ddl_option_nodegroup",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_NODEGROUP, "opt_equal", "int_literal_or_hex"],
+            action=lambda x: ast.DdlOptionNodeGroup(value=x[2].value)
+        )
+    ]
+)
+
+# 指定注释
+DDL_OPTION_COMMENT = ms_parser.create_group(
+    name="ddl_option_comment",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COMMENT, "opt_equal", "text_literal_sys"],
+            action=lambda x: ast.DdlOptionComment(value=x[2].get_str_value())
+        )
+    ]
+)
+
+# 指定表空间文件块大小
+DDL_OPTION_FILE_BLOCK_SIZE = ms_parser.create_group(
+    name="ddl_option_file_block_size",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FILE_BLOCK_SIZE, "opt_equal", "size_number"],
+            action=lambda x: ast.DdlOptionFileBlockSize(value=x[2])
         )
     ]
 )
