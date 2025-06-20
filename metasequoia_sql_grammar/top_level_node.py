@@ -445,9 +445,9 @@ SQL_STATEMENT = ms_parser.create_group(
         # ms_parser.create_rule(
         #     symbols=["start_replica_stmt"]  TODO
         # ),
-        # ms_parser.create_rule(
-        #     symbols=["stop_replica_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["stop_replica_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["truncate_statement"]
         ),
