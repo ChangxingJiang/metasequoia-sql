@@ -2,6 +2,7 @@
 基础元素
 """
 
+from metasequoia_sql.ast.phrase.account_lock_expire_option import *
 from metasequoia_sql.ast.phrase.alter_command import *
 from metasequoia_sql.ast.phrase.connect_option import *
 from metasequoia_sql.ast.phrase.cpu_range import *
