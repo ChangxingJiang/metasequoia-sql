@@ -467,6 +467,7 @@ class EnumIsolationType(IntEnum):
 class EnumSetOptionType(IntEnum):
     """SET 语句选项"""
 
+    DEFAULT = 0  # %empty
     GLOBAL = 1  # GLOBAL
     PERSIST = 2  # PERSIST
     PERSIST_ONLY = 3  # PERSIST ONLY

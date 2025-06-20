@@ -1211,6 +1211,20 @@ ISOLATION_TYPE = ms_parser.create_group(
     ]
 )
 
+# 可选的 SET 语句选项类型的枚举值
+OPT_SET_OPTION_TYPE = ms_parser.create_group(
+    name="opt_set_option_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["set_option_type"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumSetOptionType.DEFAULT
+        )
+    ]
+)
+
 # SET 语句选项类型的枚举值
 SET_OPTION_TYPE = ms_parser.create_group(
     name="set_option_type",

@@ -78,6 +78,8 @@ from metasequoia_sql_grammar.statement import alter_server_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import alter_tablespace_statement
 from metasequoia_sql_grammar.statement import alter_undo_tablespace_statement
+from metasequoia_sql_grammar.statement import set_transaction_statement
+from metasequoia_sql_grammar.statement import alter_user_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
 from metasequoia_sql_grammar.statement import binlog_statement
@@ -361,6 +363,7 @@ def build_grammar():
         alter_table_statement,  # ALTER TABLE 语句
         alter_tablespace_statement,  # ALTER TABLESPACE 语句
         alter_undo_tablespace_statement,  # ALTER UNDO TABLESPACE 语句
+        alter_user_statement,  # ALTER USER 语句
         analyze_statement,  # ANALYZE TABLE 语句
         begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句
@@ -411,6 +414,7 @@ def build_grammar():
         select_statement,  # SELECT 语句
         set_resource_group_statement,  # SET RESOURCE GROUP 语句
         set_role_statement,  # SET ROLE 语句
+        set_transaction_statement,  # SET TRANSACTION 语句
         show_statement,  # SHOW 语句
         shutdown_statement,  # SHUTDOWN 语句
         signal_and_resignal_statement,  # SIGNAL/RESIGNAL 语句

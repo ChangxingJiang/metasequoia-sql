@@ -541,6 +541,13 @@
 | -------------------- | --------------- | ------------------ | ---------------- |
 | `set_role_statement` | `SET ROLE` 语句 | `SetRoleStatement` | `set_role_stmt`  |
 
+#### SET TRANSACTION 语句（set transaction statement）
+
+| 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称                                             |
+| --------------------------- | ---------------------- | ------------------------- | ------------------------------------------------------------ |
+| `set_transaction_statement` | `SET TRANSACTION` 语句 | `SetTransactionStatement` | `set`【部分】<br />`start_option_value_list`【部分】<br />`start_option_value_list_following_option_type`【部分】<br />`transaction_characteristics`【包含】<br />`opt_transaction_access_mode`【包含】<br />`opt_isolation_level`【包含】 |
+| `isolation_level`           | 指定隔离级别子句       | `EnumIsolationType`       | `isolation_level`                                            |
+
 #### SHOW 语句（show statement）
 
 | 水杉解析器语义组名称               | 语义组类型                                     | 返回值类型                     | MySQL 语义组名称              |
@@ -1406,7 +1413,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `handler_rkey_mode`            | `HANDLER` 语句索引键模式的枚举值                       | `EnumHandlerRkeyMode`           | `handler_rkey_mode`                                          |
 | `transaction_access_mode_type` | 事务访问模式类型的枚举值                               | `EnumTransactionAccessModeType` | `transaction_access_mode_types`<br />`transaction_access_mode` |
 | `isolation_type`               | 事务隔离级别类型的枚举值                               | `EnumIsolationType`             | `isolation_types`                                            |
-| `set_option_type`              | SET 语句选项                                           | `EnumSetOptionType`             | `option_type`                                                |
+| `opt_set_option_type`          | 可选的 SET 语句选项类型的枚举值                        | `EnumSetOptionType`             |                                                              |
+| `set_option_type`              | SET 语句选项类型的枚举值                               | `EnumSetOptionType`             | `option_type`                                                |
 
 #### 固定的词语组合（fixed word）
 

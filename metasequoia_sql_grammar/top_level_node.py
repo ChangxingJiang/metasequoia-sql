@@ -299,6 +299,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["set_role_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["set_transaction_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["show_binary_log_status_statement"]
         ),
         ms_parser.create_rule(

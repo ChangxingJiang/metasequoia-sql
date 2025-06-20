@@ -9,6 +9,7 @@ from metasequoia_sql.ast.statement.alter_server_statement import *
 from metasequoia_sql.ast.statement.alter_table_statement import *
 from metasequoia_sql.ast.statement.alter_tablespace_statement import *
 from metasequoia_sql.ast.statement.alter_undo_tablespace_statement import *
+from metasequoia_sql.ast.statement.alter_user_statement import *
 from metasequoia_sql.ast.statement.alter_view_statement import *
 from metasequoia_sql.ast.statement.analyze_statement import *
 from metasequoia_sql.ast.statement.begin_statement import *
@@ -60,6 +61,7 @@ from metasequoia_sql.ast.statement.savepoint_statement import *
 from metasequoia_sql.ast.statement.select_statement import *
 from metasequoia_sql.ast.statement.set_resource_group_statement import *
 from metasequoia_sql.ast.statement.set_role_statement import *
+from metasequoia_sql.ast.statement.set_transaction_statement import *
 from metasequoia_sql.ast.statement.show_statement import *
 from metasequoia_sql.ast.statement.shutdown_statement import *
 from metasequoia_sql.ast.statement.signal_and_resignal_statement import *

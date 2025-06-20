@@ -664,10 +664,6 @@ start_option_value_list:
           {
             $$= NEW_PTN PT_start_option_value_list_no_type(@$, $1, @1, $2);
           }
-        | TRANSACTION_SYM transaction_characteristics
-          {
-            $$= NEW_PTN PT_start_option_value_list_transaction(@$, $2, @2);
-          }
         | option_type start_option_value_list_following_option_type
           {
             $$= NEW_PTN PT_start_option_value_list_type(@$, $1, $2);
@@ -714,12 +710,6 @@ start_option_value_list_following_option_type:
               NEW_PTN PT_start_option_value_list_following_option_type_eq(@$, $1,
                                                                           @1,
                                                                           $2);
-          }
-        | TRANSACTION_SYM transaction_characteristics
-          {
-            $$= NEW_PTN
-              PT_start_option_value_list_following_option_type_transaction(@$, $2,
-                                                                           @2);
           }
         ;
 
@@ -803,34 +793,6 @@ option_value_no_option_type:
           {
             $$ = NEW_PTN PT_set_names(@$, nullptr, nullptr);
           }
-        ;
-
-transaction_characteristics:
-          transaction_access_mode opt_isolation_level
-          {
-            $$= NEW_PTN PT_transaction_characteristics(@$, $1, $2);
-          }
-        | isolation_level opt_transaction_access_mode
-          {
-            $$= NEW_PTN PT_transaction_characteristics(@$, $1, $2);
-          }
-        ;
-
-opt_transaction_access_mode:
-          %empty { $$= nullptr; }
-        | ',' transaction_access_mode { $$= $2; }
-        ;
-
-isolation_level:
-          ISOLATION LEVEL_SYM isolation_types
-          {
-            $$= NEW_PTN PT_isolation_level(@$, $3);
-          }
-        ;
-
-opt_isolation_level:
-          %empty { $$= nullptr; }
-        | ',' isolation_level { $$= $2; }
         ;
 
 set_expr_or_default:
