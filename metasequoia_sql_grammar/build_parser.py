@@ -29,6 +29,7 @@ from metasequoia_sql_grammar.clause import order_by_clause
 from metasequoia_sql_grammar.clause import over_clause
 from metasequoia_sql_grammar.clause import partition_clause
 from metasequoia_sql_grammar.clause import qualify_clause
+from metasequoia_sql_grammar.clause import require_clause
 from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
 from metasequoia_sql_grammar.clause import window_partition_by_clause
@@ -331,6 +332,7 @@ def build_grammar():
         partition_clause,  # PARTITION 子句
         window_partition_by_clause,  # PARTITION BY 子句
         qualify_clause,  # QUALIFY 子句
+        require_clause,  # REQUIRE 子句
         where_clause,  # WHERE 子句
         window_clause,  # WINDOW 子句
         with_clause,  # WITH 子句

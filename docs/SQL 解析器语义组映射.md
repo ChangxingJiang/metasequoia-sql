@@ -770,6 +770,14 @@
 | -------------------- | --------------------- | ---------------------- | -------------------- |
 | `opt_qualify_clause` | 可选的 `QUALIFY` 子句 | `Optional[Expression]` | `opt_qualify_clause` |
 
+#### REQUIRE 子句（require clause）
+
+| 水杉解析器语义组名称   | 语义组类型         | 返回值类型                 | MySQL 语义组名称       |
+| ---------------------- | ------------------ | -------------------------- | ---------------------- |
+| `require_clause`       | `REQUIRE` 子句     | `Optional[RequireClause]`  | `require_clause`       |
+| `require_list`         | `REQUIRE` 列表     | `List[RequireListElement]` | `require_list`         |
+| `require_list_element` | `REQUIRE` 列表元素 | `RequireListElement`       | `require_list_element` |
+
 #### WHERE 子句（where clause）
 
 | 水杉解析器语义组名称 | 语义组类型          | 返回值类型             | MySQL 语义组名称   |
@@ -845,7 +853,7 @@
 | `opt_drop_undo_tablespace_option_list`     | 可选的 `UNDO TABLESPACE` 的选项的列表                   | `List[DdlOption]`                    | `opt_undo_tablespace_options`                             |
 | `drop_undo_tablespace_option_list`         | `UNDO TABLESPACE` 的选项的列表                          | `List[DdlOption]`                    | `undo_tablespace_option_list`                             |
 | `drop_undo_tablespace_option`              | `UNDO TABLESPACE` 的选项                                | `DdlOption`                          | `undo_tablespace_option`                                  |
-| `opt_create_tablespace_option_list`        |                                                         | `List[DdlOption]`                    | `opt_tablespace_options`                                  |
+| `opt_create_tablespace_option_list`        | 可选的 `CREATE TABLESPACE` 的选项的列表                 | `List[DdlOption]`                    | `opt_tablespace_options`                                  |
 | `create_tablespace_option_list`            | `CREATE TABLESPACE` 的选项的列表                        | `List[DdlOption]`                    | `tablespace_option_list`                                  |
 | `create_tablespace_option`                 | `CREATE TABLESPACE` 的选项                              | `DdlOption`                          | `tablespace_option`                                       |
 | `ddl_option_engine`                        | ALTER 选项：`ENGINE`                                    | `DdlOptionEngine`                    | `ts_option_engine`                                        |
@@ -1379,6 +1387,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_from`                                           | 可选的 `FROM` 关键字                                         | -          | `opt_from_keyword`                                 |
 | `opt_keyword_local`                                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                        |
 | `opt_keyword_in_primary_key_order`                           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                                 |
+| `opt_keyword_and`                                            | 可选的 `AND` 关键字                                          | -          | `opt_and`                                          |
 | `keyword_deallocate_or_drop`                                 | `DEALLOCATE` 关键字或 `DROP` 关键字                          | -          | `deallocate_or_drop`                               |
 | `keyword_describe_or_explain`                                | `DESCRIBE` 关键字或 `EXPLAIN` 关键字                         | -          | `describe_command`                                 |
 | `keyword_table_or_tables`                                    | `TABLE` 关键字或 `TABLES` 关键字                             | -          | `table_or_tables`                                  |

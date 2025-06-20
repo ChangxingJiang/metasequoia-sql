@@ -32,6 +32,7 @@ __all__ = [
     "OPT_KEYWORD_ONE_PHASE",
     "OPT_KEYWORD_COLUMN",
     "OPT_KEYWORD_ON_REPLACE",
+    "OPT_KEYWORD_AND",
 
     # 多种备选的关键字
     "KEYWORD_BEGIN_OR_START",
@@ -428,6 +429,21 @@ OPT_KEYWORD_ON_REPLACE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[],
             action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `AND` 关键字
+OPT_KEYWORD_AND = ms_parser.create_group(
+    name="opt_keyword_and",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: None
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AND],
+            action=lambda _: None
         )
     ]
 )

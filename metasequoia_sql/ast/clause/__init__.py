@@ -10,4 +10,5 @@ from metasequoia_sql.ast.clause.limit_clause import *
 from metasequoia_sql.ast.clause.locking_clause import *
 from metasequoia_sql.ast.clause.order_by_clause import *
 from metasequoia_sql.ast.clause.over_clause import *
+from metasequoia_sql.ast.clause.require_clause import *
 from metasequoia_sql.ast.clause.with_clause import *

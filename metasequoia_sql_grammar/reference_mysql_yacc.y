@@ -1144,49 +1144,6 @@ set_expr_or_default:
           }
         ;
 
-opt_and:
-          %empty
-        | AND_SYM
-        ;
-
-require_list:
-          require_list_element opt_and require_list
-        | require_list_element
-        ;
-
-require_list_element:
-          SUBJECT_SYM TEXT_STRING
-          {
-            LEX *lex=Lex;
-            if (lex->x509_subject)
-            {
-              my_error(ER_DUP_ARGUMENT, MYF(0), "SUBJECT");
-              MYSQL_YYABORT;
-            }
-            lex->x509_subject=$2.str;
-          }
-        | ISSUER_SYM TEXT_STRING
-          {
-            LEX *lex=Lex;
-            if (lex->x509_issuer)
-            {
-              my_error(ER_DUP_ARGUMENT, MYF(0), "ISSUER");
-              MYSQL_YYABORT;
-            }
-            lex->x509_issuer=$2.str;
-          }
-        | CIPHER_SYM TEXT_STRING
-          {
-            LEX *lex=Lex;
-            if (lex->ssl_cipher)
-            {
-              my_error(ER_DUP_ARGUMENT, MYF(0), "CIPHER");
-              MYSQL_YYABORT;
-            }
-            lex->ssl_cipher=$2.str;
-          }
-        ;
-
 opt_retain_current_password:
           %empty { $$= false; }
         | RETAIN_SYM CURRENT_SYM PASSWORD { $$= true; }
@@ -1496,26 +1453,6 @@ alter_user_list:
           {
             if (Lex->users_list.push_back($3))
               MYSQL_YYABORT;
-          }
-        ;
-
-require_clause:
-          %empty
-        | REQUIRE_SYM require_list
-          {
-            Lex->ssl_type=SSL_TYPE_SPECIFIED;
-          }
-        | REQUIRE_SYM SSL_SYM
-          {
-            Lex->ssl_type=SSL_TYPE_ANY;
-          }
-        | REQUIRE_SYM X509_SYM
-          {
-            Lex->ssl_type=SSL_TYPE_X509;
-          }
-        | REQUIRE_SYM NONE_SYM
-          {
-            Lex->ssl_type=SSL_TYPE_NONE;
           }
         ;
 
