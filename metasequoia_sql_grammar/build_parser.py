@@ -95,6 +95,7 @@ from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
 from metasequoia_sql_grammar.statement import create_srs_statement
 from metasequoia_sql_grammar.statement import create_table_statement
+from metasequoia_sql_grammar.statement import create_tablespace_statement
 from metasequoia_sql_grammar.statement import create_undo_tablespace_statement
 from metasequoia_sql_grammar.statement import create_user_statement
 from metasequoia_sql_grammar.statement import create_view_statement
@@ -379,6 +380,7 @@ def build_grammar():
         create_role_statement,  # CREATE ROLE 语句
         create_srs_statement,  # CREATE SRS 语句
         create_table_statement,  # CREATE TABLE 语句
+        create_tablespace_statement,  # CREATE TABLESPACE 语句
         create_undo_tablespace_statement,  # CREATE UNDO TABLESPACE 语句
         create_user_statement,  # CREATE USER 语句
         create_view_statement,  # CREATE VIEW 语句

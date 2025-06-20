@@ -58,25 +58,6 @@ create:
 
             Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
           }
-        | CREATE TABLESPACE_SYM ident opt_ts_datafile_name
-          opt_logfile_group_name opt_tablespace_options
-          {
-            auto pc= NEW_PTN Alter_tablespace_parse_context{YYTHD};
-            if (pc == nullptr)
-              MYSQL_YYABORT; /* purecov: inspected */ // OOM
-
-            if ($6 != nullptr)
-            {
-              if (YYTHD->is_error() || contextualize_array(pc, $6))
-                MYSQL_YYABORT;
-            }
-
-            auto cmd= NEW_PTN Sql_cmd_create_tablespace{$3, $4, $5, pc};
-            if (!cmd)
-              MYSQL_YYABORT; /* purecov: inspected */ //OOM
-            Lex->m_sql_cmd= cmd;
-            Lex->sql_command= SQLCOM_ALTER_TABLESPACE;
-          }
         | CREATE SERVER_SYM ident_or_text FOREIGN DATA_SYM WRAPPER_SYM
           ident_or_text OPTIONS_SYM '(' server_options_list ')'
           {
@@ -272,32 +253,6 @@ trg_event:
           | DELETE_SYM
             { $$= TRG_EVENT_DELETE; }
           ;
-/*
-  This part of the parser contains common code for all TABLESPACE
-  commands.
-  CREATE TABLESPACE_SYM name ...
-  ALTER TABLESPACE_SYM name ADD DATAFILE ...
-  CREATE LOGFILE GROUP_SYM name ...
-  ALTER LOGFILE GROUP_SYM name ADD UNDOFILE ..
-  DROP TABLESPACE_SYM name
-  DROP LOGFILE GROUP_SYM name
-*/
-
-opt_ts_datafile_name:
-      %empty { $$= { nullptr, 0}; }
-    | ADD ts_datafile
-      {
-        $$ = $2;
-      }
-    ;
-
-opt_logfile_group_name:
-          %empty { $$= { nullptr, 0}; }
-        | USE_SYM LOGFILE_SYM GROUP_SYM ident
-          {
-            $$= $4;
-          }
-        ;
 
 /*
   End tablespace part
