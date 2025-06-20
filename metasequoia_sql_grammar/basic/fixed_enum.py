@@ -1171,3 +1171,41 @@ HANDLER_RKEY_MODE = ms_parser.create_group(
         )
     ]
 )
+
+# 事务访问模式类型的枚举值
+TRANSACTION_ACCESS_MODE_TYPE = ms_parser.create_group(
+    name="transaction_access_mode_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_ONLY],
+            action=lambda _: ast.EnumTransactionAccessModeType.READ_ONLY
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_WRITE],
+            action=lambda _: ast.EnumTransactionAccessModeType.READ_WRITE
+        )
+    ]
+)
+
+# 事务隔离级别类型的枚举值
+ISOLATION_TYPE = ms_parser.create_group(
+    name="isolation_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_UNCOMMITTED],
+            action=lambda _: ast.EnumIsolationType.READ_UNCOMMITTED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_READ, TType.KEYWORD_COMMITTED],
+            action=lambda _: ast.EnumIsolationType.READ_COMMITTED
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REPEATABLE, TType.KEYWORD_READ],
+            action=lambda _: ast.EnumIsolationType.REPEATABLE_READ
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SERIALIZABLE],
+            action=lambda _: ast.EnumIsolationType.SERIALIZABLE
+        )
+    ]
+)

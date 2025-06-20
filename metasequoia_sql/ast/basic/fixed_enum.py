@@ -48,6 +48,8 @@ __all__ = [
     "EnumHandlerScanFunction",
     "EnumHandlerRkeyFunction",
     "EnumHandlerRkeyMode",
+    "EnumTransactionAccessModeType",
+    "EnumIsolationType",
 ]
 
 
@@ -443,3 +445,19 @@ class EnumAssignGtidsType(IntEnum):
     OFF = 1  # OFF
     LOCAL = 2  # LOCAL
     AUTOMATIC = 3  # AUTOMATIC
+
+
+class EnumTransactionAccessModeType(IntEnum):
+    """事务访问模式类型的枚举值"""
+
+    READ_ONLY = 1  # READ ONLY
+    READ_WRITE = 2  # READ WRITE
+
+
+class EnumIsolationType(IntEnum):
+    """事务隔离级别类型的枚举值"""
+
+    READ_UNCOMMITTED = 1  # READ UNCOMMITTED
+    READ_COMMITTED = 2  # READ COMMITTED
+    REPEATABLE_READ = 3  # REPEATABLE READ
+    SERIALIZABLE = 4  # SERIALIZABLE
