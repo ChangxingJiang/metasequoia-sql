@@ -1102,6 +1102,8 @@
 
 | 水杉解析器语义组名称                     | 语义组含义                           | 返回值类型                           | MySQL 语义组名称                                             |
 | ---------------------------------------- | ------------------------------------ | ------------------------------------ | ------------------------------------------------------------ |
+| `stored_routine_body`                    | 包含通过字符串定义的命令的处理命令   | `ProcessCommand`                     | `stored_routine_body`                                        |
+| `routine_string`                         | 函数定义字符串                       | `str`                                | `routine_string`                                             |
 | `process_command_list`                   | 分号分隔的处理命令的列表             | `List[ProcessCommand]`               | `sp_proc_stmts1`<br />`sp_proc_stmts`                        |
 | `opt_do_process_command`                 | 可选的 `DO` 关键字引导的处理命令     | `Optional[ProcessCommand]`           | `opt_ev_sql_stmt`                                            |
 | `process_command`                        | 处理命令                             | `ProcessCommand`                     | `sp_proc_stmt`<br />`ev_sql_stmt_inner`<br />`ev_sql_stmt`   |

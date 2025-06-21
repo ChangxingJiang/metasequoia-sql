@@ -828,35 +828,6 @@ sf_tail:
           }
         ;
 
-routine_string:
-          TEXT_STRING_literal
-        | DOLLAR_QUOTED_STRING_SYM
-
-stored_routine_body:
-          AS routine_string
-          {
-            sp_head *sp = Lex->sphead;
-            if (sp->is_sql()) {
-               YYTHD->syntax_error();
-               MYSQL_YYABORT;
-            }
-            sp->code = to_lex_cstring($2);
-
-            THD *thd = YYTHD;
-            sp_finish_parsing(thd);
-          }
-        | sp_proc_stmt
-          {
-            if (!Lex->sphead->is_sql()) {
-              YYTHD->syntax_error();
-              MYSQL_YYABORT;
-            }
-
-            THD *thd = YYTHD;
-            sp_finish_parsing(thd);
-          }
-        ;
-
 sp_tail:
           PROCEDURE_SYM         /*$1*/
           opt_if_not_exists     /*$2*/

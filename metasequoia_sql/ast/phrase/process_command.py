@@ -45,6 +45,7 @@ __all__ = [
     "ProcessCommandOpen",
     "ProcessCommandFetch",
     "ProcessCommandClose",
+    "ProcessCommandByString",
 ]
 
 
@@ -338,7 +339,7 @@ class ProcessCommandBlock(ProcessCommand):
         "_statement_list"
     )
 
-    def __init__(self, 
+    def __init__(self,
                  declare_list: List[ProcessCommandDeclare],
                  statement_list: List[ProcessCommand]):
         self._declare_list = declare_list
@@ -362,9 +363,9 @@ class ProcessCommandLabeledBlock(ProcessCommand):
         "_end_label"
     )
 
-    def __init__(self, 
-                 begin_label: str, 
-                 block_content: ProcessCommandBlock, 
+    def __init__(self,
+                 begin_label: str,
+                 block_content: ProcessCommandBlock,
                  end_label: Optional[str]):
         self._begin_label = begin_label
         self._block_content = block_content
@@ -407,9 +408,9 @@ class ProcessCommandLabeledControl(ProcessCommand):
         "_end_label"
     )
 
-    def __init__(self, 
-                 begin_label: str, 
-                 control_statement: ProcessCommand, 
+    def __init__(self,
+                 begin_label: str,
+                 control_statement: ProcessCommand,
                  end_label: Optional[str]):
         self._begin_label = begin_label
         self._control_statement = control_statement
@@ -564,3 +565,18 @@ class ProcessCommandClose(ProcessCommand):
     @property
     def cursor_name(self) -> str:
         return self._cursor_name
+
+
+class ProcessCommandByString(ProcessCommand):
+    """通过字符串定义的处理命令"""
+
+    __slots__ = (
+        "_value"
+    )
+
+    def __init__(self, value: str):
+        self._value = value
+
+    @property
+    def value(self) -> str:
+        return self._value

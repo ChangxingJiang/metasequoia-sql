@@ -8,6 +8,10 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    # 含有通过字符串定义的命令
+    "STORED_ROUTINE_BODY",
+    "ROUTINE_STRING",
+
     # 处理命令的基类
     "PROCESS_COMMAND_LIST",
     "OPT_DO_PROCESS_COMMAND",
@@ -54,6 +58,35 @@ __all__ = [
     "PROCESS_COMMAND_FETCH",
     "PROCESS_COMMAND_CLOSE",
 ]
+
+# 包含通过字符串定义的命令的处理命令
+STORED_ROUTINE_BODY = ms_parser.create_group(
+    name="stored_routine_body",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AS, "routine_string"],
+            action=lambda x: ast.ProcessCommandByString(value=x[1])
+        ),
+        ms_parser.create_rule(
+            symbols=["process_command"]
+        )
+    ]
+)
+
+# 函数定义字符串
+ROUTINE_STRING = ms_parser.create_group(
+    name="routine_string",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.DOLLAR_QUOTED_STRING],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=["text_literal_sys"],
+            action=lambda x: x[0].get_str_value()
+        )
+    ]
+)
 
 # 分号分隔的处理命令的列表
 PROCESS_COMMAND_LIST = ms_parser.create_group(
