@@ -59,6 +59,7 @@ from metasequoia_sql_grammar.phrase import identification
 from metasequoia_sql_grammar.phrase import json_table_option
 from metasequoia_sql_grammar.phrase import on_duplicate
 from metasequoia_sql_grammar.phrase import process_command
+from metasequoia_sql_grammar.phrase import schedule_time
 from metasequoia_sql_grammar.phrase import server_option
 from metasequoia_sql_grammar.phrase import source_definition
 from metasequoia_sql_grammar.phrase import sql_state
@@ -90,6 +91,7 @@ from metasequoia_sql_grammar.statement import checksum_statement
 from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import commit_statement
 from metasequoia_sql_grammar.statement import create_database_statement
+from metasequoia_sql_grammar.statement import create_event_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_logfile_statement
 from metasequoia_sql_grammar.statement import create_resource_group_statement
@@ -315,6 +317,7 @@ def build_grammar():
         ddl_alter_option,  # DDL 修改表选项
         cpu_range,  # CPU 范围
         process_command,  # 处理命令
+        schedule_time,  # 事件调度时间
         event_attribute,  # 事件属性
         alter_command,  # ALTER 命令
         datafile,  # 数据文件
@@ -378,6 +381,7 @@ def build_grammar():
         clone_statement,  # CLONE 语句
         commit_statement,  # COMMIT 语句
         create_database_statement,  # CREATE DATABASE 语句
+        create_event_statement,  # CREATE EVENT 语句
         create_index_statement,  # CREATE INDEX 语句
         create_logfile_statement,  # CREATE LOGFILE GROUP 语句
         create_resource_group_statement,  # CREATE RESOURCE GROUP 语句

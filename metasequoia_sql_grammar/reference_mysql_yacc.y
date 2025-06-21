@@ -40,40 +40,6 @@ create:
           {}
         ;
 
-event_tail:
-          EVENT_SYM opt_if_not_exists sp_name
-          {
-            THD *thd= YYTHD;
-            LEX *lex=Lex;
-
-            lex->stmt_definition_begin= @1.cpp.start;
-            lex->create_info->options= $2 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-            if (!(lex->event_parse_data= new (thd->mem_root) Event_parse_data()))
-              MYSQL_YYABORT;
-            lex->event_parse_data->identifier= $3;
-            lex->event_parse_data->on_completion=
-                                  Event_parse_data::ON_COMPLETION_DROP;
-
-            lex->sql_command= SQLCOM_CREATE_EVENT;
-            /* We need that for disallowing subqueries */
-            MAKE_CMD_DDL_DUMMY();
-          }
-          ON_SYM SCHEDULE_SYM ev_schedule_time
-          opt_ev_on_completion
-          opt_ev_status
-          opt_ev_comment
-          DO_SYM ev_sql_stmt
-          {
-            /*
-              sql_command is set here because some rules in ev_sql_stmt
-              can overwrite it
-            */
-            Lex->sql_command= SQLCOM_CREATE_EVENT;
-            assert(Lex->m_sql_cmd->sql_cmd_type() == SQL_CMD_DDL);
-            assert(Lex->m_sql_cmd->sql_command_code() == SQLCOM_CREATE_EVENT);
-          }
-        ;
-
 /* Stored FUNCTION parameter declaration list */
 sp_fdparam_list:
           %empty
@@ -636,14 +602,12 @@ view_or_trigger_or_sp_or_event:
 definer_tail:
           sp_tail
         | sf_tail
-        | event_tail
         ;
 
 no_definer_tail:
           sp_tail
         | sf_tail
         | udf_tail
-        | event_tail
         ;
 
 /**************************************************************************

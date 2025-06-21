@@ -1,1 +1,2 @@
 from metasequoia_sql_grammar.statement.alter_user_statement import *
+from metasequoia_sql_grammar.statement.create_event_statement import *

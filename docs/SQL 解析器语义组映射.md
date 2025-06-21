@@ -198,6 +198,12 @@
 | --------------------------- | ---------------------- | ------------------------- | ---------------- |
 | `create_database_statement` | `CREATE DATABASE` 语句 | `CreateDatabaseStatement` | `create`【部分】 |
 
+#### CREATE EVENT 语句（create event statement）
+
+| 水杉解析器语义组名称     | 语义组类型          | 返回值类型             | MySQL 语义组名称                           |
+| ------------------------ | ------------------- | ---------------------- | ------------------------------------------ |
+| `create_event_statement` | `CREATE EVENT` 语句 | `CreateEventStatement` | `create`【部分】<br />`event_tail`【包含】 |
+
 #### CREATE INDEX 语句（create index statement）
 
 | 水杉解析器语义组名称     | 语义组类型             | 返回值类型        | MySQL 语义组名称    |
