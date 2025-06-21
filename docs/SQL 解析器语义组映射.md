@@ -684,7 +684,11 @@
 
 #### START REPLICA 语句（start replica statement）
 
-
+| 水杉解析器语义组名称 | 语义组类型                                  | 返回值类型               | MySQL 语义组名称    |
+| -------------------- | ------------------------------------------- | ------------------------ | ------------------- |
+| `opt_replica_until`  | 可选的 `UNTIL` 关键字引导的数据源信息的列表 | `List[SourceDefinition]` | `opt_replica_until` |
+| `replica_until`      | 复制源信息的列表                            | `List[SourceDefinition]` | `replica_until`     |
+| `replica_until_item` | 复制源信息                                  | `SourceDefinition`       |                     |
 
 #### START TRANSACTION 语句（start transaction statement）
 

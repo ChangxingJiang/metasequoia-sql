@@ -117,55 +117,6 @@ opt_plugin_dir_option:
           }
         ;
 
-opt_replica_until:
-          %empty
-          {
-            LEX *lex= Lex;
-            lex->mi.slave_until= false;
-          }
-        | UNTIL_SYM replica_until
-          {
-            LEX *lex=Lex;
-            if (((lex->mi.log_file_name || lex->mi.pos) &&
-                lex->mi.gtid) ||
-               ((lex->mi.relay_log_name || lex->mi.relay_log_pos) &&
-                lex->mi.gtid) ||
-                !((lex->mi.log_file_name && lex->mi.pos) ||
-                  (lex->mi.relay_log_name && lex->mi.relay_log_pos) ||
-                  lex->mi.gtid ||
-                  lex->mi.until_after_gaps) ||
-                /* SQL_AFTER_MTS_GAPS is meaningless in combination */
-                /* with any other coordinates related options       */
-                ((lex->mi.log_file_name || lex->mi.pos || lex->mi.relay_log_name
-                  || lex->mi.relay_log_pos || lex->mi.gtid)
-                 && lex->mi.until_after_gaps))
-            {
-               my_error(ER_BAD_REPLICA_UNTIL_COND, MYF(0));
-               MYSQL_YYABORT;
-            }
-            lex->mi.slave_until= true;
-          }
-        ;
-
-replica_until:
-          source_file_def
-        | replica_until ',' source_file_def
-        | SQL_BEFORE_GTIDS EQ TEXT_STRING_sys
-          {
-            Lex->mi.gtid= $3.str;
-            Lex->mi.gtid_until_condition= LEX_MASTER_INFO::UNTIL_SQL_BEFORE_GTIDS;
-          }
-        | SQL_AFTER_GTIDS EQ TEXT_STRING_sys
-          {
-            Lex->mi.gtid= $3.str;
-            Lex->mi.gtid_until_condition= LEX_MASTER_INFO::UNTIL_SQL_AFTER_GTIDS;
-          }
-        | SQL_AFTER_MTS_GAPS
-          {
-            Lex->mi.until_after_gaps= true;
-          }
-        ;
-
 keycache_stmt:
           CACHE_SYM INDEX_SYM keycache_list IN_SYM key_cache_name
           {
