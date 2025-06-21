@@ -22,6 +22,7 @@ from metasequoia_sql.ast.statement.clone_statement import *
 from metasequoia_sql.ast.statement.commit_statement import *
 from metasequoia_sql.ast.statement.create_database_statement import *
 from metasequoia_sql.ast.statement.create_event_statement import *
+from metasequoia_sql.ast.statement.create_function_statement import *
 from metasequoia_sql.ast.statement.create_index_statement import *
 from metasequoia_sql.ast.statement.create_procedure_statement import *
 from metasequoia_sql.ast.statement.create_logfile_statement import *

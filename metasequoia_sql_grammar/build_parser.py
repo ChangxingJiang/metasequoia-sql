@@ -92,6 +92,7 @@ from metasequoia_sql_grammar.statement import clone_statement
 from metasequoia_sql_grammar.statement import commit_statement
 from metasequoia_sql_grammar.statement import create_database_statement
 from metasequoia_sql_grammar.statement import create_event_statement
+from metasequoia_sql_grammar.statement import create_function_statement
 from metasequoia_sql_grammar.statement import create_index_statement
 from metasequoia_sql_grammar.statement import create_procedure_statement
 from metasequoia_sql_grammar.statement import create_logfile_statement
@@ -383,6 +384,7 @@ def build_grammar():
         commit_statement,  # COMMIT 语句
         create_database_statement,  # CREATE DATABASE 语句
         create_event_statement,  # CREATE EVENT 语句
+        create_function_statement,  # CREATE FUNCTION 语句
         create_index_statement,  # CREATE INDEX 语句
         create_procedure_statement,  # CREATE PROCEDURE 语句
         create_logfile_statement,  # CREATE LOGFILE GROUP 语句

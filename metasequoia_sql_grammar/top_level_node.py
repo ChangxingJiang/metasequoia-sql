@@ -122,6 +122,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["create_event_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["create_function_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["create_index_statement"]
         ),
         ms_parser.create_rule(

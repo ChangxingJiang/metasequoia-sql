@@ -40,68 +40,6 @@ create:
           {}
         ;
 
-/* Stored FUNCTION parameter declaration list */
-sp_fdparam_list:
-          %empty
-        | sp_fdparams
-        ;
-
-sp_fdparams:
-          sp_fdparams ',' sp_fdparam
-        | sp_fdparam
-        ;
-
-sp_fdparam:
-          ident type opt_collate
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-
-            CONTEXTUALIZE($2);
-            enum_field_types field_type= $2->type;
-            const CHARSET_INFO *cs= $2->get_charset();
-            if (merge_sp_var_charset_and_collation(cs, $3, &cs))
-              MYSQL_YYABORT;
-
-            sp_pcontext *pctx= lex->get_sp_current_parsing_ctx();
-
-            if (sp_check_name(&$1))
-              MYSQL_YYABORT;
-
-            if (pctx->find_variable($1.str, $1.length, true))
-            {
-              my_error(ER_SP_DUP_PARAM, MYF(0), $1.str);
-              MYSQL_YYABORT;
-            }
-
-            sp_variable *spvar= pctx->add_variable(thd,
-                                                   $1,
-                                                   field_type,
-                                                   sp_variable::MODE_IN);
-
-            if (spvar->field_def.init(thd, "", field_type,
-                                      $2->get_length(), $2->get_dec(),
-                                      $2->get_type_flags(),
-                                      nullptr, nullptr, &NULL_CSTR, nullptr,
-                                      $2->get_interval_list(),
-                                      cs ? cs : thd->variables.collation_database,
-                                      $3 != nullptr, $2->get_uint_geom_type(),
-                                      nullptr, nullptr, {},
-                                      dd::Column::enum_hidden_type::HT_VISIBLE))
-            {
-              MYSQL_YYABORT;
-            }
-
-            if (prepare_sp_create_field(thd,
-                                        &spvar->field_def))
-            {
-              MYSQL_YYABORT;
-            }
-            spvar->field_def.field_name= spvar->name.str;
-            spvar->field_def.is_nullable= true;
-          }
-        ;
-
 udf_type:
           STRING_SYM {$$ = (int) STRING_RESULT; }
         | REAL_SYM {$$ = (int) REAL_RESULT; }
@@ -521,21 +459,12 @@ init_lex_create_info:
         ;
 
 view_or_trigger_or_sp_or_event:
-          definer init_lex_create_info definer_tail
+        no_definer init_lex_create_info no_definer_tail
           {}
-        | no_definer init_lex_create_info no_definer_tail
-          {}
-        ;
-
-definer_tail:
-          sp_tail
-        | sf_tail
         ;
 
 no_definer_tail:
-          sp_tail
-        | sf_tail
-        | udf_tail
+          udf_tail
         ;
 
 /**************************************************************************
@@ -611,147 +540,5 @@ udf_tail:
             lex->udf.name = $3;
             lex->udf.returns=(Item_result) $5;
             lex->udf.dl=$7.str;
-          }
-        ;
-
-sf_tail:
-          FUNCTION_SYM          /* $1 */
-          opt_if_not_exists     /* $2 */
-          sp_name               /* $3 */
-          '('                   /* $4 */
-          {                     /* $5 */
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-
-            lex->stmt_definition_begin= @1.cpp.start;
-            lex->spname= $3;
-
-            if (lex->sphead)
-            {
-              my_error(ER_SP_NO_RECURSIVE_CREATE, MYF(0), "FUNCTION");
-              MYSQL_YYABORT;
-            }
-
-
-            sp_head *sp= sp_start_parsing(thd, enum_sp_type::FUNCTION, lex->spname);
-
-            if (!sp)
-              MYSQL_YYABORT;
-
-            lex->sphead= sp;
-            lex->create_info->options= $2 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-
-            sp->m_parser_data.set_parameter_start_ptr(@4.cpp.end);
-          }
-          sp_fdparam_list       /* $6 */
-          ')'                   /* $7 */
-          {                     /* $8 */
-            Lex->sphead->m_parser_data.set_parameter_end_ptr(@7.cpp.start);
-          }
-          RETURNS_SYM           /* $9 */
-          type                  /* $10 */
-          opt_collate           /* $11 */
-          {                     /* $12 */
-            LEX *lex= Lex;
-            sp_head *sp= lex->sphead;
-
-            CONTEXTUALIZE($10);
-            enum_field_types field_type= $10->type;
-            const CHARSET_INFO *cs= $10->get_charset();
-            if (merge_sp_var_charset_and_collation(cs, $11, &cs))
-              MYSQL_YYABORT;
-
-            /*
-              This was disabled in 5.1.12. See bug #20701
-              When collation support in SP is implemented, then this test
-              should be removed.
-            */
-            if ((field_type == MYSQL_TYPE_STRING || field_type == MYSQL_TYPE_VARCHAR)
-                && ($10->get_type_flags() & BINCMP_FLAG))
-            {
-              my_error(ER_NOT_SUPPORTED_YET, MYF(0), "return value collation");
-              MYSQL_YYABORT;
-            }
-
-            if (sp->m_return_field_def.init(YYTHD, "", field_type,
-                                            $10->get_length(), $10->get_dec(),
-                                            $10->get_type_flags(), nullptr, nullptr, &NULL_CSTR, nullptr,
-                                            $10->get_interval_list(),
-                                            cs ? cs : YYTHD->variables.collation_database,
-                                            $11 != nullptr, $10->get_uint_geom_type(),
-                                            nullptr, nullptr, {},
-                                            dd::Column::enum_hidden_type::HT_VISIBLE))
-            {
-              MYSQL_YYABORT;
-            }
-
-            if (prepare_sp_create_field(YYTHD,
-                                        &sp->m_return_field_def))
-              MYSQL_YYABORT;
-
-            memset(&lex->sp_chistics, 0, sizeof(st_sp_chistics));
-
-            // Default language is SQL
-            lex->sp_chistics.language = {"SQL",3};
-          }
-          sp_c_chistics         /* $13 */
-          {                     /* $14 */
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-
-            lex->sphead->m_chistics= &lex->sp_chistics;
-            lex->sphead->set_body_start(thd, yylloc.cpp.start);
-          }
-          stored_routine_body   /* $15 */
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-            sp_head *sp= lex->sphead;
-
-            if (sp->is_not_allowed_in_function("function"))
-              MYSQL_YYABORT;
-
-            lex->sql_command= SQLCOM_CREATE_SPFUNCTION;
-
-            if (sp->is_sql() && !(sp->m_flags & sp_head::HAS_RETURN)) {
-              my_error(ER_SP_NORETURN, MYF(0), sp->m_qname.str);
-              MYSQL_YYABORT;
-            }
-
-            if (is_native_function(sp->m_name))
-            {
-              /*
-                This warning will be printed when
-                [1] A client query is parsed,
-                [2] A stored function is loaded by db_load_routine.
-                Printing the warning for [2] is intentional, to cover the
-                following scenario:
-                - A user define a SF 'foo' using MySQL 5.N
-                - An application uses select foo(), and works.
-                - MySQL 5.{N+1} defines a new native function 'foo', as
-                part of a new feature.
-                - MySQL 5.{N+1} documentation is updated, and should mention
-                that there is a potential incompatible change in case of
-                existing stored function named 'foo'.
-                - The user deploys 5.{N+1}. At this point, 'select foo()'
-                means something different, and the user code is most likely
-                broken (it's only safe if the code is 'select db.foo()').
-                With a warning printed when the SF is loaded (which has to occur
-                before the call), the warning will provide a hint explaining
-                the root cause of a later failure of 'select foo()'.
-                With no warning printed, the user code will fail with no
-                apparent reason.
-                Printing a warning each time db_load_routine is executed for
-                an ambiguous function is annoying, since that can happen a lot,
-                but in practice should not happen unless there *are* name
-                collisions.
-                If a collision exists, it should not be silenced but fixed.
-              */
-              push_warning_printf(thd,
-                                  Sql_condition::SL_NOTE,
-                                  ER_NATIVE_FCT_NAME_COLLISION,
-                                  ER_THD(thd, ER_NATIVE_FCT_NAME_COLLISION),
-                                  sp->m_name.str);
-            }
           }
         ;

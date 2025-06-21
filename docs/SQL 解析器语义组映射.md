@@ -204,6 +204,15 @@
 | ------------------------ | ------------------- | ---------------------- | ------------------------------------------ |
 | `create_event_statement` | `CREATE EVENT` 语句 | `CreateEventStatement` | `create`【部分】<br />`event_tail`【包含】 |
 
+#### CREATE FUNCTION 语句（create function statement）
+
+| 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称                        |
+| --------------------------- | ---------------------- | ------------------------- | --------------------------------------- |
+| `create_function_statement` | `CREATE FUNCTION` 语句 | `CreateFunctionStatement` | `create`【部分】<br />`sf_tail`【包含】 |
+| `opt_function_param_list`   | 可选的存储函数参数列表 | `List[FunctionParam]`     | `sp_fdparam_list`                       |
+| `function_param_list`       | 存储函数参数列表       | `List[FunctionParam]`     | `sp_fdparams`                           |
+| `function_param`            | 存储函数参数           | `FunctionParam`           | `sp_fdparam`                            |
+
 #### CREATE INDEX 语句（create index statement）
 
 | 水杉解析器语义组名称     | 语义组类型             | 返回值类型        | MySQL 语义组名称    |
@@ -672,6 +681,10 @@
 | `opt_set_signal_information`   | `SIGNAL` 和 `RESIGNAL` 语句中可选的 `SET` 关键字引导的信号项子句 | `List[SignalInformation]`        | `opt_set_signal_information`                  |
 | `signal_information_item_list` | `SIGNAL` 和 `RESIGNAL` 语句中的信息项列表                    | `List[SignalInformation]`        | `signal_information_item_list`                |
 | `signal_allowed_expr`          | `SIGNAL` 和 `RESIGNAL` 语句中信息项的值允许的表达式          | `Expression`                     | `signal_allowed_expr`<br />`condition_number` |
+
+#### START REPLICA 语句（start replica statement）
+
+
 
 #### START TRANSACTION 语句（start transaction statement）
 
