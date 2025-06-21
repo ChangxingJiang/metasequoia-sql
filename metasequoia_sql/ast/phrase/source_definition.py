@@ -52,6 +52,9 @@ __all__ = [
     "SourceLogPosDefinition",
     "RelayLogFileDefinition",
     "RelayLogPosDefinition",
+    "SqlBeforeGtids",
+    "SqlAfterGtids",
+    "SqlAfterMtsGaps",
 
     # 枚举值
     "EnumAssignGtidsType",
@@ -99,6 +102,9 @@ class SourceDefinitionType(IntEnum):
     LOG_POS = 35  # MASTER_LOG_POS/SOURCE_LOG_POS
     RELAY_LOG_FILE = 36  # RELAY_LOG_FILE
     RELAY_LOG_POS = 37  # RELAY_LOG_POS
+    SQL_BEFORE_GTIDS = 38  # SQL_BEFORE_GTIDS
+    SQL_AFTER_GTIDS = 39  # SQL_AFTER_GTIDS
+    SQL_AFTER_MTS_GAPS = 40  # SQL_AFTER_MTS_GAPS
 
 
 class SourceDefinition(Node):
@@ -895,3 +901,41 @@ class RelayLogPosDefinition(SourceFileDefinition):
     @property
     def value(self) -> int:
         return self._value
+
+
+class SqlBeforeGtids(SourceDefinition):
+    """数据源定义：SQL_BEFORE_GTIDS"""
+
+    __slots__ = (
+        "_value"
+    )
+
+    def __init__(self, value: str):
+        super().__init__(SourceDefinitionType.SQL_BEFORE_GTIDS)
+        self._value = value
+
+    @property
+    def value(self) -> str:
+        return self._value
+
+
+class SqlAfterGtids(SourceDefinition):
+    """数据源定义：SQL_AFTER_GTIDS"""
+    __slots__ = (
+        "_value"
+    )
+
+    def __init__(self, value: str):
+        super().__init__(SourceDefinitionType.SQL_AFTER_GTIDS)
+        self._value = value
+
+    @property
+    def value(self) -> str:
+        return self._value
+
+
+class SqlAfterMtsGaps(SourceDefinition):
+    """数据源定义：SQL_AFTER_MTS_GAPS"""
+
+    def __init__(self):
+        super().__init__(SourceDefinitionType.SQL_AFTER_MTS_GAPS)
