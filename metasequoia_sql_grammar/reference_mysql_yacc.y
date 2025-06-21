@@ -40,13 +40,6 @@ create:
           {}
         ;
 
-udf_type:
-          STRING_SYM {$$ = (int) STRING_RESULT; }
-        | REAL_SYM {$$ = (int) REAL_RESULT; }
-        | DECIMAL_SYM {$$ = (int) DECIMAL_RESULT; }
-        | INT_SYM {$$ = (int) INT_RESULT; }
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }

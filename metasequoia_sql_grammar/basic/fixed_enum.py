@@ -64,6 +64,7 @@ __all__ = [
     "TRIGGER_EVENT_TYPE",
     "TRIGGER_ACTION_ORDER_TYPE",
     "PROCEDURE_PARAM_MODE",
+    "UDF_RETURN_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1324,6 +1325,29 @@ PROCEDURE_PARAM_MODE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INOUT],
             action=lambda _: ast.EnumProcedureParamMode.INOUT
+        )
+    ]
+)
+
+# UDF 函数返回值类型的枚举值
+UDF_RETURN_TYPE = ms_parser.create_group(
+    name="udf_return_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_STRING],
+            action=lambda _: ast.EnumUdfReturnType.STRING
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_REAL],
+            action=lambda _: ast.EnumUdfReturnType.REAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DECIMAL],
+            action=lambda _: ast.EnumUdfReturnType.DECIMAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INT],
+            action=lambda _: ast.EnumUdfReturnType.INT
         )
     ]
 )

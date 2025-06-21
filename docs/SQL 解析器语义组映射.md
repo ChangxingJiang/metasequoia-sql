@@ -1483,6 +1483,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `trigger_event_type`           | 触发器事件类型的枚举值                                 | `EnumTriggerEventType`          | `trg_event`                                                  |
 | `trigger_action_order_type`    | 触发器动作顺序类型的枚举值                             | `EnumTriggerActionOrderType`    | `trigger_action_order`                                       |
 | `procedure_param_mode`         | 存储过程参数模式的枚举值                               | `EnumProcedureParamMode`        | `sp_opt_inout`                                               |
+| `udf_return_type`              | UDF 函数返回值类型的枚举值                             | `EnumUdfReturnType`             | `udf_type`                                                   |
 
 #### 固定的词语组合（fixed word）
 

@@ -55,6 +55,7 @@ __all__ = [
     "EnumTriggerEventType",
     "EnumTriggerActionOrderType",
     "EnumProcedureParamMode",
+    "EnumUdfReturnType",
 ]
 
 
@@ -507,3 +508,12 @@ class EnumProcedureParamMode(IntEnum):
     IN = 1  # IN
     OUT = 2  # OUT
     INOUT = 3  # INOUT
+
+
+class EnumUdfReturnType(IntEnum):
+    """UDF 函数返回值类型的枚举值"""
+
+    STRING = 1  # STRING
+    REAL = 2  # REAL
+    DECIMAL = 3  # DECIMAL
+    INT = 4  # INT
