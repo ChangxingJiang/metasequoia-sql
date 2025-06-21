@@ -6,7 +6,6 @@ from typing import Optional
 
 from metasequoia_parser.common import Terminal
 from metasequoia_parser.lexical import LexicalFSM
-
 from metasequoia_sql.lexical.lex_constants import LEX_BIN_CHARSET
 from metasequoia_sql.lexical.lex_constants import LEX_BIN_MARK_CHARSET
 from metasequoia_sql.lexical.lex_constants import LEX_ESCAPE_HASH
@@ -666,6 +665,26 @@ def lex_at_end_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.LEX_HOSTNAME, value=fsm.text[fsm.start_idx: fsm.idx])
 
 
+def lex_at_dollar(fsm: LexFSM) -> Optional[Terminal]:
+    """处理 LEX_AT_DOLLAR 状态的逻辑，指向结束的 $$ 之后的第 1 个字符"""
+    if fsm.text[fsm.idx + 1] != "$":
+        fsm.state = LexStates.LEX_START
+        return None
+    fsm.idx += 2  # 指向 $$ 之后的下一个字符
+    ch = fsm.text[fsm.idx]
+    last_dollar = False
+    while ch != "\x00":
+        if ch == "$":
+            if last_dollar is True:
+                fsm.idx += 1
+                return Terminal(symbol_id=TType.DOLLAR_QUOTED_STRING, value=fsm.text[fsm.start_idx + 2: fsm.idx - 1])
+            last_dollar = True
+        else:
+            last_dollar = False
+        fsm.idx += 1
+        ch = fsm.text[fsm.idx]
+
+
 # 处理各种状态的映射关系
 LEX_ACTION_MAP = {
     LexStates.LEX_START: lex_start_action,
@@ -714,4 +733,5 @@ LEX_ACTION_MAP = {
     LexStates.LEX_AT_AT: lex_at_at_action,
     LexStates.LEX_AT_AT_END: lex_at_at_end_action,
     LexStates.LEX_AT_END: lex_at_end_action,
+    LexStates.LEX_DOLLAR: lex_at_dollar,
 }

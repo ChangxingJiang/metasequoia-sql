@@ -82,6 +82,7 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     # 特殊元素
     LEX_HOSTNAME = enum.auto()  # @ 之后的 Token
     PARAM_MARKER = enum.auto()  # ? 开头的参数值
+    DOLLAR_QUOTED_STRING = enum.auto()  # $$ ... $$
 
     # 关键字
     KEYWORD_ACCESSIBLE = enum.auto()  # reserved keyword

@@ -66,7 +66,7 @@ LEX_START_STATE_MAP = {
     "!": LexStates.LEX_BANG,
     "\"": LexStates.LEX_STRING_OR_DELIMITER,
     "#": LexStates.LEX_COMMENT,
-    "$": LexStates.LEX_IDENT,
+    "$": LexStates.LEX_DOLLAR,
     "%": LexStates.LEX_PERCENT,
     "&": LexStates.LEX_AMP,
     "'": LexStates.LEX_STRING,

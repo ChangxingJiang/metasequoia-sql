@@ -41,6 +41,7 @@ class LexStates(enum.IntEnum):
     LEX_COMMA = enum.auto()  # ,
     LEX_LBRACE = enum.auto()  # {
     LEX_RBRACE = enum.auto()  # }
+    LEX_DOLLAR = enum.auto()  # $
 
     # 十六进制字面值
     LEX_IDENT_OR_HEX = enum.auto()  # [xX] (标识符 or 十六进制字面值)
