@@ -19,7 +19,16 @@ START_ENTRY = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["sql_statement_entry"]
-        )
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.GRAMMAR_EXPRESSION, "expr", TType.SYSTEM_END_OF_INPUT],
+            action=lambda x: x[1]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.GRAMMAR_FIELD_TYPE, "field_type", TType.SYSTEM_END_OF_INPUT],
+            action=lambda x: x[1]
+        ),
+
     ]
 )
 
