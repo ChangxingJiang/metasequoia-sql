@@ -54,6 +54,7 @@ __all__ = [
     "EnumTriggerActionTimeType",
     "EnumTriggerEventType",
     "EnumTriggerActionOrderType",
+    "EnumProcedureParamMode",
 ]
 
 
@@ -498,3 +499,11 @@ class EnumTriggerActionOrderType(IntEnum):
 
     FOLLOWS = 1  # FOLLOWS
     PRECEDES = 2  # PRECEDES
+
+
+class EnumProcedureParamMode(IntEnum):
+    """存储过程参数模式的枚举值"""
+
+    IN = 1  # IN
+    OUT = 2  # OUT
+    INOUT = 3  # INOUT

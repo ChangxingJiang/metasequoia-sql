@@ -217,6 +217,15 @@
 | -------------------------- | --------------------- | ------------------------ | ---------------- |
 | `create_logfile_statement` | `CREATE LOGFILE` 语句 | `CreateLogfileStatement` | `create`【部分】 |
 
+#### CREATE PROCEDURE 语句（create procedure statement）
+
+| 水杉解析器语义组名称         | 语义组类型              | 返回值类型                 | MySQL 语义组名称                        |
+| ---------------------------- | ----------------------- | -------------------------- | --------------------------------------- |
+| `create_procedure_statement` | `CREATE PROCEDURE` 语句 | `CreateProcedureStatement` | `create`【部分】<br />`sp_tail`【包含】 |
+| `opt_procedure_param_list`   | 可选的存储过程参数列表  | `List[ProcedureParam]`     | `sp_pdparam_list`                       |
+| `procedure_param_list`       | 存储过程参数列表        | `List[ProcedureParam]`     | `sp_pdparams`                           |
+| `procedure_param`            | 存储过程参数            | `ProcedureParam`           | `sp_pdparam`                            |
+
 #### CREATE RESOURCE GROUP 语句（create resource group statement）
 
 | 水杉解析器语义组名称              | 语义组类型                   | 返回值类型                     | MySQL 语义组名称             |
@@ -1460,6 +1469,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `trigger_action_time_type`     | 触发器动作时间类型的枚举值                             | `EnumTriggerActionTimeType`     | `trg_action_time`                                            |
 | `trigger_event_type`           | 触发器事件类型的枚举值                                 | `EnumTriggerEventType`          | `trg_event`                                                  |
 | `trigger_action_order_type`    | 触发器动作顺序类型的枚举值                             | `EnumTriggerActionOrderType`    | `trigger_action_order`                                       |
+| `procedure_param_mode`         | 存储过程参数模式的枚举值                               | `EnumProcedureParamMode`        | `sp_opt_inout`                                               |
 
 #### 固定的词语组合（fixed word）
 

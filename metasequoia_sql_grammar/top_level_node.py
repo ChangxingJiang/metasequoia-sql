@@ -128,6 +128,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["create_logfile_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["create_procedure_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["create_resource_group_statement"]
         ),
         ms_parser.create_rule(

@@ -63,6 +63,7 @@ __all__ = [
     "TRIGGER_ACTION_TIME_TYPE",
     "TRIGGER_EVENT_TYPE",
     "TRIGGER_ACTION_ORDER_TYPE",
+    "PROCEDURE_PARAM_MODE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1300,6 +1301,29 @@ TRIGGER_ACTION_ORDER_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_PRECEDES],
             action=lambda _: ast.EnumTriggerActionOrderType.PRECEDES
+        )
+    ]
+)
+
+# 存储过程参数模式的枚举值
+PROCEDURE_PARAM_MODE = ms_parser.create_group(
+    name="procedure_param_mode",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumProcedureParamMode.IN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IN],
+            action=lambda _: ast.EnumProcedureParamMode.IN
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_OUT],
+            action=lambda _: ast.EnumProcedureParamMode.OUT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INOUT],
+            action=lambda _: ast.EnumProcedureParamMode.INOUT
         )
     ]
 )
