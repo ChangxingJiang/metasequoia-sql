@@ -141,6 +141,7 @@ from metasequoia_sql_grammar.statement import set_role_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import shutdown_statement
 from metasequoia_sql_grammar.statement import signal_and_resignal_statement
+from metasequoia_sql_grammar.statement import start_replica_statement
 from metasequoia_sql_grammar.statement import start_transaction_statement
 from metasequoia_sql_grammar.statement import stop_replica_statement
 from metasequoia_sql_grammar.statement import truncate_statement

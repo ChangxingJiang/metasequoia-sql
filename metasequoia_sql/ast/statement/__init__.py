@@ -72,6 +72,7 @@ from metasequoia_sql.ast.statement.set_transaction_statement import *
 from metasequoia_sql.ast.statement.show_statement import *
 from metasequoia_sql.ast.statement.shutdown_statement import *
 from metasequoia_sql.ast.statement.signal_and_resignal_statement import *
+from metasequoia_sql.ast.statement.start_replica_statement import *
 from metasequoia_sql.ast.statement.start_transaction_statement import *
 from metasequoia_sql.ast.statement.stop_replica_statement import *
 from metasequoia_sql.ast.statement.truncate_statement import *

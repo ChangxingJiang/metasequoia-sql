@@ -473,11 +473,11 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["signal_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["start_replica_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["start_transaction_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["start_replica_stmt"]  TODO
-        # ),
         ms_parser.create_rule(
             symbols=["stop_replica_statement"]
         ),

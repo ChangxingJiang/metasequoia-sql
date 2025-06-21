@@ -684,11 +684,16 @@
 
 #### START REPLICA 语句（start replica statement）
 
-| 水杉解析器语义组名称 | 语义组类型                                  | 返回值类型               | MySQL 语义组名称    |
-| -------------------- | ------------------------------------------- | ------------------------ | ------------------- |
-| `opt_replica_until`  | 可选的 `UNTIL` 关键字引导的数据源信息的列表 | `List[SourceDefinition]` | `opt_replica_until` |
-| `replica_until`      | 复制源信息的列表                            | `List[SourceDefinition]` | `replica_until`     |
-| `replica_until_item` | 复制源信息                                  | `SourceDefinition`       |                     |
+| 水杉解析器语义组名称      | 语义组类型                                  | 返回值类型               | MySQL 语义组名称          |
+| ------------------------- | ------------------------------------------- | ------------------------ | ------------------------- |
+| `start_replica_statement` | `START REPLICA` 语句                        | `StartReplicaStatement`  | `start_replica_stmt`      |
+| `opt_replica_until`       | 可选的 `UNTIL` 关键字引导的数据源信息的列表 | `List[SourceDefinition]` | `opt_replica_until`       |
+| `replica_until`           | 复制源信息的列表                            | `List[SourceDefinition]` | `replica_until`           |
+| `replica_until_item`      | 复制源信息                                  | `SourceDefinition`       |                           |
+| `opt_user_option`         | 可选的用户选项                              | `Optional[str]`          | `opt_user_option`         |
+| `opt_password_option`     | 可选的密码选项                              | `Optional[str]`          | `opt_password_option`     |
+| `opt_default_auth_option` | 可选的默认认证选项                          | `Optional[str]`          | `opt_default_auth_option` |
+| `opt_plugin_dir_option`   | 可选的插件目录选项                          | `Optional[str]`          | `opt_plugin_dir_option`   |
 
 #### START TRANSACTION 语句（start transaction statement）
 
