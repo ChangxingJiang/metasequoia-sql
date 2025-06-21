@@ -112,9 +112,6 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["commit_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["create"]  TODO
-        # ),
         ms_parser.create_rule(
             symbols=["create_database_statement"]
         ),

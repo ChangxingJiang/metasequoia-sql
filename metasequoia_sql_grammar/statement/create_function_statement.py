@@ -18,6 +18,7 @@ __all__ = [
 CREATE_FUNCTION_STATEMENT = ms_parser.create_group(
     name="create_function_statement",
     rules=[
+        # 标准存储函数
         ms_parser.create_rule(
             symbols=[
                 TType.KEYWORD_CREATE,  # 0
@@ -34,7 +35,7 @@ CREATE_FUNCTION_STATEMENT = ms_parser.create_group(
                 "create_function_option_list",  # 11
                 "stored_routine_body",  # 12
             ],
-            action=lambda x: ast.CreateFunctionStatement(
+            action=lambda x: ast.CreateFunctionStandardStatement(
                 definer=x[1],
                 if_not_exists=x[3],
                 function_name=x[4],
@@ -43,6 +44,45 @@ CREATE_FUNCTION_STATEMENT = ms_parser.create_group(
                 return_collate=x[10],
                 option_list=x[11],
                 body=x[12]
+            )
+        ),
+        # 聚合 UDF 函数
+        ms_parser.create_rule(
+            symbols=[
+                TType.KEYWORD_CREATE,  # 0
+                TType.KEYWORD_AGGREGATE,  # 1
+                TType.KEYWORD_FUNCTION,  # 2
+                "opt_keyword_if_not_exists",  # 3
+                "ident",  # 4
+                TType.KEYWORD_RETURNS,  # 5
+                "udf_return_type",  # 6
+                TType.KEYWORD_SONAME,  # 7
+                "text_literal_sys",  # 8
+            ],
+            action=lambda x: ast.CreateFunctionAggregateUdfStatement(
+                if_not_exists=x[3],
+                function_name=x[4].get_str_value(),
+                return_type=x[6],
+                library_name=x[8].get_str_value()
+            )
+        ),
+        # 标准 UDF 函数
+        ms_parser.create_rule(
+            symbols=[
+                TType.KEYWORD_CREATE,  # 0
+                TType.KEYWORD_FUNCTION,  # 1
+                "opt_keyword_if_not_exists",  # 2
+                "ident",  # 3
+                TType.KEYWORD_RETURNS,  # 4
+                "udf_return_type",  # 5
+                TType.KEYWORD_SONAME,  # 6
+                "text_literal_sys",  # 7
+            ],
+            action=lambda x: ast.CreateFunctionUdfStatement(
+                if_not_exists=x[2],
+                function_name=x[3].get_str_value(),
+                return_type=x[5],
+                library_name=x[7].get_str_value()
             )
         )
     ]

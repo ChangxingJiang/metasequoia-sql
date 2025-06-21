@@ -35,11 +35,6 @@ start_entry:
          }
         ;
 
-create:
-          CREATE view_or_trigger_or_sp_or_event
-          {}
-        ;
-
 old_or_new_charset_name_or_default:
           old_or_new_charset_name { $$=$1;   }
         | DEFAULT_SYM    { $$=nullptr; }
@@ -383,106 +378,5 @@ set_expr_or_default:
         | SYSTEM_SYM
           {
             $$= NEW_PTN Item_string(@$, "SYSTEM", 6, system_charset_info);
-          }
-        ;
-
-/**************************************************************************
-
- CREATE VIEW | TRIGGER | PROCEDURE statements.
-
-**************************************************************************/
-
-init_lex_create_info:
-          %empty
-          {
-            // Initialize context for 'CREATE view_or_trigger_or_sp_or_event'
-            Lex->create_info= YYTHD->alloc_typed<HA_CREATE_INFO>();
-            if (Lex->create_info == nullptr)
-              MYSQL_YYABORT; // OOM
-          }
-        ;
-
-view_or_trigger_or_sp_or_event:
-        no_definer init_lex_create_info no_definer_tail
-          {}
-        ;
-
-no_definer_tail:
-          udf_tail
-        ;
-
-/**************************************************************************
-
- CREATE FUNCTION | PROCEDURE statements parts.
-
-**************************************************************************/
-
-udf_tail:
-          AGGREGATE_SYM         /* $1 */
-          FUNCTION_SYM          /* $2 */
-          opt_if_not_exists     /* $3 */
-          ident                 /* $4 */
-          RETURNS_SYM           /* $5 */
-          udf_type              /* $6 */
-          SONAME_SYM            /* $7 */
-          TEXT_STRING_sys       /* $8 */
-          {                     /* $9 */
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-
-            if (is_native_function($4))
-            {
-              if($3)
-              {
-                /*
-                  IF NOT EXISTS clause is unsupported when creating a UDF with
-                  the same name as a native function
-                */
-                my_error(ER_IF_NOT_EXISTS_UNSUPPORTED_UDF_NATIVE_FCT_NAME_COLLISION, MYF(0), $4.str);
-              }
-              else
-                my_error(ER_NATIVE_FCT_NAME_COLLISION, MYF(0), $4.str);
-              MYSQL_YYABORT;
-            }
-            lex->sql_command = SQLCOM_CREATE_FUNCTION;
-            lex->udf.type= UDFTYPE_AGGREGATE;
-            lex->stmt_definition_begin= @2.cpp.start;
-            lex->create_info->options= $3 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-            lex->udf.name = $4;
-            lex->udf.returns=(Item_result) $6;
-            lex->udf.dl=$8.str;
-          }
-        | FUNCTION_SYM          /* $1 */
-          opt_if_not_exists     /* $2 */
-          ident                 /* $3 */
-          RETURNS_SYM           /* $4 */
-          udf_type              /* $5 */
-          SONAME_SYM            /* $6 */
-          TEXT_STRING_sys       /* $7 */
-          {
-            THD *thd= YYTHD;
-            LEX *lex= thd->lex;
-
-            if (is_native_function($3))
-            {
-              if($2)
-              {
-                /*
-                  IF NOT EXISTS clause is unsupported when creating a UDF with
-                  the same name as a native function
-                */
-                my_error(ER_IF_NOT_EXISTS_UNSUPPORTED_UDF_NATIVE_FCT_NAME_COLLISION, MYF(0), $3.str);
-              }
-              else
-                my_error(ER_NATIVE_FCT_NAME_COLLISION, MYF(0), $3.str);
-              MYSQL_YYABORT;
-            }
-            lex->sql_command = SQLCOM_CREATE_FUNCTION;
-            lex->udf.type= UDFTYPE_FUNCTION;
-            lex->stmt_definition_begin= @1.cpp.start;
-            lex->create_info->options= $2 ? HA_LEX_CREATE_IF_NOT_EXISTS : 0;
-            lex->udf.name = $3;
-            lex->udf.returns=(Item_result) $5;
-            lex->udf.dl=$7.str;
           }
         ;

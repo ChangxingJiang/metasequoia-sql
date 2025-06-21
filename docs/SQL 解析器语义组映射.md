@@ -206,12 +206,12 @@
 
 #### CREATE FUNCTION 语句（create function statement）
 
-| 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称                        |
-| --------------------------- | ---------------------- | ------------------------- | --------------------------------------- |
-| `create_function_statement` | `CREATE FUNCTION` 语句 | `CreateFunctionStatement` | `create`【部分】<br />`sf_tail`【包含】 |
-| `opt_function_param_list`   | 可选的存储函数参数列表 | `List[FunctionParam]`     | `sp_fdparam_list`                       |
-| `function_param_list`       | 存储函数参数列表       | `List[FunctionParam]`     | `sp_fdparams`                           |
-| `function_param`            | 存储函数参数           | `FunctionParam`           | `sp_fdparam`                            |
+| 水杉解析器语义组名称        | 语义组类型             | 返回值类型                | MySQL 语义组名称                                             |
+| --------------------------- | ---------------------- | ------------------------- | ------------------------------------------------------------ |
+| `create_function_statement` | `CREATE FUNCTION` 语句 | `CreateFunctionStatement` | `create`【部分】<br />`sf_tail`【包含】<br />`udf_tail`【包含】 |
+| `opt_function_param_list`   | 可选的存储函数参数列表 | `List[FunctionParam]`     | `sp_fdparam_list`                                            |
+| `function_param_list`       | 存储函数参数列表       | `List[FunctionParam]`     | `sp_fdparams`                                                |
+| `function_param`            | 存储函数参数           | `FunctionParam`           | `sp_fdparam`                                                 |
 
 #### CREATE INDEX 语句（create index statement）
 
@@ -1701,6 +1701,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
   - `NOT_SYM`：一般场景下的 `NOT` 关键字
   - `NOT2_SYM`：配置了 `MODE_HIGH_NOT_PRECEDENCE` 模式的 `NOT` 关键字（如果配置，则直接在词法解析层进行替换）
 - MySQL 在词法解析层将 `EXPLAIN` 映射为 `DESCRIBE` 终结符（在 `lex.h` 文件中），而我们将这个等价逻辑放在语法解析层中实现。
+- 将 MySQL 的 `view_or_trigger_or_sp_or_event`、`init_lex_create_info`、`definer_tail`、`no_definer_tail` 语义组中的各种不同的 `CREATE` 语句拆分为各自的语义组，不再进行合并
 
 ## 查询层级
 

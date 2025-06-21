@@ -13,10 +13,14 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.phrase.function_option import FunctionOption
     from metasequoia_sql.ast.phrase.process_command import ProcessCommand
     from metasequoia_sql.ast.basic.charset_name import Charset
+    from metasequoia_sql.ast.basic.fixed_enum import EnumUdfReturnType
 
 __all__ = [
     "FunctionParam",
     "CreateFunctionStatement",
+    "CreateFunctionStandardStatement",
+    "CreateFunctionUdfStatement",
+    "CreateFunctionAggregateUdfStatement",
 ]
 
 
@@ -53,7 +57,11 @@ class FunctionParam(Node):
 
 
 class CreateFunctionStatement(Statement):
-    """CREATE FUNCTION 语句"""
+    """CREATE FUNCTION 语句的基类"""
+
+
+class CreateFunctionStandardStatement(CreateFunctionStatement):
+    """标准 CREATE FUNCTION 语句"""
 
     __slots__ = (
         "_definer",
@@ -117,3 +125,81 @@ class CreateFunctionStatement(Statement):
     @property
     def body(self) -> "ProcessCommand":
         return self._body
+
+
+class CreateFunctionUdfStatement(CreateFunctionStatement):
+    """CREATE UDF FUNCTION 语句"""
+
+    __slots__ = (
+        "_if_not_exists",
+        "_function_name",
+        "_return_type",
+        "_library_name",
+    )
+
+    def __init__(
+            self,
+            if_not_exists: bool,
+            function_name: str,
+            return_type: "EnumUdfReturnType",
+            library_name: str,
+    ):
+        self._if_not_exists = if_not_exists
+        self._function_name = function_name
+        self._return_type = return_type
+        self._library_name = library_name
+
+    @property
+    def if_not_exists(self) -> bool:
+        return self._if_not_exists
+
+    @property
+    def function_name(self) -> str:
+        return self._function_name
+
+    @property
+    def return_type(self) -> "EnumUdfReturnType":
+        return self._return_type
+
+    @property
+    def library_name(self) -> str:
+        return self._library_name
+
+
+class CreateFunctionAggregateUdfStatement(CreateFunctionStatement):
+    """CREATE AGGREGATE UDF FUNCTION 语句"""
+
+    __slots__ = (
+        "_if_not_exists",
+        "_function_name",
+        "_return_type",
+        "_library_name",
+    )
+
+    def __init__(
+            self,
+            if_not_exists: bool,
+            function_name: str,
+            return_type: "EnumUdfReturnType",
+            library_name: str,
+    ):
+        self._if_not_exists = if_not_exists
+        self._function_name = function_name
+        self._return_type = return_type
+        self._library_name = library_name
+
+    @property
+    def if_not_exists(self) -> bool:
+        return self._if_not_exists
+
+    @property
+    def function_name(self) -> str:
+        return self._function_name
+
+    @property
+    def return_type(self) -> "EnumUdfReturnType":
+        return self._return_type
+
+    @property
+    def library_name(self) -> str:
+        return self._library_name
