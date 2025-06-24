@@ -13,7 +13,7 @@ __all__ = [
     "OPT_END_OF_INPUT",
 ]
 
-# 入口语义组 TODO 待补充其他备选规则
+# 入口语义组
 START_ENTRY = ms_parser.create_group(
     name="start_entry",
     rules=[
@@ -27,8 +27,7 @@ START_ENTRY = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.GRAMMAR_FIELD_TYPE, "field_type", TType.SYSTEM_END_OF_INPUT],
             action=lambda x: x[1]
-        ),
-
+        )
     ]
 )
 
