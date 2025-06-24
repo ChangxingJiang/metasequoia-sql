@@ -35,6 +35,7 @@ __all__ = [
     "OPT_KEYWORD_AND",
     "OPT_KEYWORD_RETAIN_CURRENT_PASSWORD",
     "OPT_KEYWORD_DISCARD_OLD_PASSWORD",
+    "OPT_KEYWORD_IGNORE_LEAVES",
 
     # 多种备选的关键字
     "KEYWORD_BEGIN_OR_START",
@@ -1153,6 +1154,21 @@ OPT_KEYWORD_DISCARD_OLD_PASSWORD = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DISCARD, TType.KEYWORD_OLD, TType.KEYWORD_PASSWORD],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `IGNORE LEAVES` 关键字组合
+OPT_KEYWORD_IGNORE_LEAVES = ms_parser.create_group(
+    name="opt_keyword_ignore_leaves",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_IGNORE, TType.KEYWORD_LEAVES],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(

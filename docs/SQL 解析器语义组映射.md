@@ -462,6 +462,19 @@
 | `install_statement`          | `INSTALL` 语句                               | `InstallStatement`      | `install_stmt`               |
 | `uninstall_statement`        | `UNINSTALL` 语句                             | `UninstallStatement`    | `uninstall`                  |
 
+#### KEYCACHE 语句和 PRELOAD 语句（keycache and preload statement）
+
+| 水杉解析器语义组名称 | 语义组类型         | 返回值类型               | MySQL 语义组名称     |
+| -------------------- | ------------------ | ------------------------ | -------------------- |
+| `keycache_statement` | `CACHE INDEX` 语句 | `KeycacheStatement`      | `keycache_stmt`      |
+| `preload_statement`  | `LOAD INDEX` 语句  | `PreloadStatement`       | `preload_stmt`       |
+| `preload_list`       | 预加载列表         | `List[PreloadKeys]`      | `preload_list`       |
+| `preload_keys`       | 预加载键           | `PreloadKeys`            | `preload_keys`       |
+| `adm_partition`      | 管理分区           | `AdmPartition`           | `adm_partition`      |
+| `keycache_list`      | 键缓存列表         | `List[AssignToKeycache]` | `keycache_list`      |
+| `assign_to_keycache` | 分配到键缓存       | `AssignToKeycache`       | `assign_to_keycache` |
+| `opt_cache_key_list` | 可选的缓存键列表   | `List[str]`              | `opt_cache_key_list` |
+
 #### KILL 语句（kill statement）
 
 | 水杉解析器语义组名称 | 语义组类型  | 返回值类型      | MySQL 语义组名称 |
@@ -1576,6 +1589,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_equal`                                                  | 可选的 `=` 运算符或 `:=` 运算符                              | -          | `opt_equal`                                        |
 | `equal`                                                      | `=` 运算符或 `:=` 运算符                                     | -          | `equal`                                            |
 | `opt_to_or_eq_or_as`                                         | `TO` 关键字、`=` 运算符或 `AS` 关键字                        | -          | `opt_to`                                           |
+| `opt_keyword_ignore_leaves`                                  | 可选的 `IGNORE LEAVES` 关键字组合                            | `bool`     | `opt_ignore_leaves`                                |
 
 #### 标识符（ident）
 

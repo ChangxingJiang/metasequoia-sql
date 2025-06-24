@@ -260,6 +260,9 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["install_statement"]
         ),
         ms_parser.create_rule(
+            symbols=["keycache_statement"]
+        ),
+        ms_parser.create_rule(
             symbols=["kill_statement"]
         ),
         ms_parser.create_rule(
@@ -271,12 +274,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["optimize_table_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["keycache_stmt"]  TODO
-        # ),
-        # ms_parser.create_rule(
-        #     symbols=["preload_stmt"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["preload_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["prepare_statement"]
         ),

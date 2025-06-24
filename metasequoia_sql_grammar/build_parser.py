@@ -122,6 +122,7 @@ from metasequoia_sql_grammar.statement import help_statement
 from metasequoia_sql_grammar.statement import import_statement
 from metasequoia_sql_grammar.statement import insert_or_replace_statement
 from metasequoia_sql_grammar.statement import install_or_uninstall_statement
+from metasequoia_sql_grammar.statement import keycache_and_preload_statement
 from metasequoia_sql_grammar.statement import kill_statement
 from metasequoia_sql_grammar.statement import load_statement
 from metasequoia_sql_grammar.statement import lock_or_unlock_statement
