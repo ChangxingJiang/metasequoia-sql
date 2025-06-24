@@ -1,15 +1,3 @@
-old_or_new_charset_name_or_default:
-          old_or_new_charset_name { $$=$1;   }
-        | DEFAULT_SYM    { $$=nullptr; }
-        ;
-
-/*
-  SQLCOM_SET_OPTION statement.
-
-  Note that to avoid shift/reduce conflicts, we have separate rules for the
-  first option listed in the statement.
-*/
-
 set:
           SET_SYM start_option_value_list
           {
@@ -18,7 +6,6 @@ set:
         ;
 
 
-// Start of option value list
 start_option_value_list:
           option_value_no_option_type option_value_list_continued
           {
@@ -30,7 +17,6 @@ start_option_value_list:
           }
         ;
 
-// Start of option value list, option_type was given
 start_option_value_list_following_option_type:
           option_value_following_option_type option_value_list_continued
           {
@@ -41,13 +27,11 @@ start_option_value_list_following_option_type:
           }
         ;
 
-// Remainder of the option value list after first option value.
 option_value_list_continued:
           %empty                { $$= nullptr; }
         | ',' option_value_list { $$= $2; }
         ;
 
-// Repeating list of option values after first option value.
 option_value_list:
           option_value
           {
@@ -59,7 +43,6 @@ option_value_list:
           }
         ;
 
-// Wrapper around option values following the first option value in the stmt.
 option_value:
           option_type option_value_following_option_type
           {
@@ -68,7 +51,6 @@ option_value:
         | option_value_no_option_type { $$= $1; }
         ;
 
-// Option values with preceding option_type.
 option_value_following_option_type:
           lvalue_variable equal set_expr_or_default
           {
@@ -77,7 +59,6 @@ option_value_following_option_type:
           }
         ;
 
-// Option values without preceding option_type.
 option_value_no_option_type:
           lvalue_variable equal set_expr_or_default
           {
@@ -111,30 +92,5 @@ option_value_no_option_type:
         | NAMES_SYM DEFAULT_SYM
           {
             $$ = NEW_PTN PT_set_names(@$, nullptr, nullptr);
-          }
-        ;
-
-set_expr_or_default:
-          expr
-        | DEFAULT_SYM { $$= nullptr; }
-        | ON_SYM
-          {
-            $$= NEW_PTN Item_string(@$, "ON", 2, system_charset_info);
-          }
-        | ALL
-          {
-            $$= NEW_PTN Item_string(@$, "ALL", 3, system_charset_info);
-          }
-        | BINARY_SYM
-          {
-            $$= NEW_PTN Item_string(@$, "binary", 6, system_charset_info);
-          }
-        | ROW_SYM
-          {
-            $$= NEW_PTN Item_string(@$, "ROW", 3, system_charset_info);
-          }
-        | SYSTEM_SYM
-          {
-            $$= NEW_PTN Item_string(@$, "SYSTEM", 6, system_charset_info);
           }
         ;

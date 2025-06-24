@@ -599,6 +599,12 @@
 | `query_expression_parens` | 嵌套任意层括号的查询表达式                                   | `QueryExpression`       | `query_expression_parens`                            |
 | `select_statement`        | `SELECT` 语句                                                | `SelectStatement`       | `select_stmt`<br />`select_stmt_with_into`【不兼容】 |
 
+#### SET 语句（set statement）
+
+| 水杉解析器语义组名称  | 语义组类型                                | 返回值类型   | MySQL 语义组名称      |
+| --------------------- | ----------------------------------------- | ------------ | --------------------- |
+| `set_expr_or_default` | `SET` 语句中的值表达式或 `DEFAULT` 关键字 | `Expression` | `set_expr_or_default` |
+
 #### SET PASSWORD 语句（set password statement）
 
 | 水杉解析器语义组名称     | 语义组类型          | 返回值类型             | MySQL 语义组名称 |
@@ -1642,13 +1648,14 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 字符集名称（charset）
 
-| 水杉解析器语义组名称 | 语义组含义                               | 返回值类型          | MySQL 语义组名称                                             |
-| -------------------- | ---------------------------------------- | ------------------- | ------------------------------------------------------------ |
-| `charset_ascii`      | ASCII 相关字符集名称关键字               | `CharsetTypeEnum`   | `ascii`                                                      |
-| `charset_unicode`    | UNICODE 相关字符集名称关键字             | `CharsetTypeEnum`   | `unicode`                                                    |
-| `charset_name`       | 字符集（排序规则）名称或 `BINARY` 关键字 | `Charset`           | `charset_name`<br />`old_or_new_charset_name`<br />`collation_name` |
-| `opt_charset`        | 可选的指定字符集信息                     | `Charset`           | `opt_charset_with_opt_binary`                                |
-| `opt_collate`        | 指定比较和排序规则                       | `Optional[Charset]` | `opt_collate`                                                |
+| 水杉解析器语义组名称      | 语义组含义                               | 返回值类型          | MySQL 语义组名称                                             |
+| ------------------------- | ---------------------------------------- | ------------------- | ------------------------------------------------------------ |
+| `charset_ascii`           | ASCII 相关字符集名称关键字               | `CharsetTypeEnum`   | `ascii`                                                      |
+| `charset_unicode`         | UNICODE 相关字符集名称关键字             | `CharsetTypeEnum`   | `unicode`                                                    |
+| `charset_name_or_default` | 字符集名称或 `DEFAULT` 关键字            | `Optional[Charset]` | `old_or_new_charset_name_or_default`                         |
+| `charset_name`            | 字符集（排序规则）名称或 `BINARY` 关键字 | `Charset`           | `charset_name`<br />`old_or_new_charset_name`<br />`collation_name` |
+| `opt_charset`             | 可选的指定字符集信息                     | `Charset`           | `opt_charset_with_opt_binary`                                |
+| `opt_collate`             | 指定比较和排序规则                       | `Optional[Charset]` | `opt_collate`                                                |
 
 #### 字面值（literal）
 

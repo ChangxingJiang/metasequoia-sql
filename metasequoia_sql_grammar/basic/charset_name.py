@@ -10,6 +10,7 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "CHARSET_ASCII",
     "CHARSET_UNICODE",
+    "CHARSET_NAME_OR_DEFAULT",
     "CHARSET_NAME",
     "OPT_CHARSET",
     "OPT_COLLATE",
@@ -49,6 +50,21 @@ CHARSET_UNICODE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_UNICODE, TType.KEYWORD_BINARY],
             action=lambda x: ast.CharsetTypeEnum.UNICODE_BINARY
+        )
+    ]
+)
+
+# 字符集名称或 `DEFAULT` 关键字
+CHARSET_NAME_OR_DEFAULT = ms_parser.create_group(
+    name="charset_name_or_default",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["charset_name"],
+            action=lambda x: x[0]
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DEFAULT],
+            action=lambda _: None
         )
     ]
 )
