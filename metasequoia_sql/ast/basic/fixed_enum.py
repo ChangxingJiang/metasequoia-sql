@@ -56,6 +56,7 @@ __all__ = [
     "EnumTriggerActionOrderType",
     "EnumProcedureParamMode",
     "EnumUdfReturnType",
+    "EnumSetVariableType",
 ]
 
 
@@ -517,3 +518,14 @@ class EnumUdfReturnType(IntEnum):
     REAL = 2  # REAL
     DECIMAL = 3  # DECIMAL
     INT = 4  # INT
+
+
+class EnumSetVariableType(IntEnum):
+    """SET 语句中变量类型的枚举值"""
+
+    DEFAULT = 0  # %empty
+    PERSIST = 1  # PERSIST
+    PERSIST_ONLY = 2  # PERSIST ONLY
+    GLOBAL = 3  # GLOBAL
+    LOCAL = 4  # LOCAL
+    SESSION = 5  # SESSION

@@ -100,15 +100,6 @@ option_value:
         | option_value_no_option_type { $$= $1; }
         ;
 
-opt_set_var_ident_type:
-          %empty          { $$=OPT_DEFAULT; }
-        | PERSIST_SYM '.' { $$=OPT_PERSIST; }
-        | PERSIST_ONLY_SYM '.' {$$=OPT_PERSIST_ONLY; }
-        | GLOBAL_SYM '.'  { $$=OPT_GLOBAL; }
-        | LOCAL_SYM '.'   { $$=OPT_SESSION; }
-        | SESSION_SYM '.' { $$=OPT_SESSION; }
-         ;
-
 // Option values with preceding option_type.
 option_value_following_option_type:
           lvalue_variable equal set_expr_or_default

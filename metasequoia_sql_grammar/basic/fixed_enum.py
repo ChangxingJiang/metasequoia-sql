@@ -65,6 +65,7 @@ __all__ = [
     "TRIGGER_ACTION_ORDER_TYPE",
     "PROCEDURE_PARAM_MODE",
     "UDF_RETURN_TYPE",
+    "OPT_SET_VARIABLE_TYPE",
 ]
 
 # 可选的 `DROP` 语句中 `RESTRICT` 选项的枚举值
@@ -1348,6 +1349,37 @@ UDF_RETURN_TYPE = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INT],
             action=lambda _: ast.EnumUdfReturnType.INT
+        )
+    ]
+)
+
+# 可选的 `SET` 语句中变量类型的枚举值
+OPT_SET_VARIABLE_TYPE = ms_parser.create_group(
+    name="opt_set_variable_type",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumSetVariableType.DEFAULT
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PERSIST],
+            action=lambda _: ast.EnumSetVariableType.PERSIST
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_PERSIST_ONLY],
+            action=lambda _: ast.EnumSetVariableType.PERSIST_ONLY
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_GLOBAL],
+            action=lambda _: ast.EnumSetVariableType.GLOBAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LOCAL],
+            action=lambda _: ast.EnumSetVariableType.LOCAL
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SESSION],
+            action=lambda _: ast.EnumSetVariableType.SESSION
         )
     ]
 )
