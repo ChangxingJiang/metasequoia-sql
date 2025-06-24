@@ -28,38 +28,6 @@ start_option_value_list:
           {
             $$= NEW_PTN PT_start_option_value_list_type(@$, $1, $2);
           }
-        | PASSWORD equal TEXT_STRING_password opt_replace_password opt_retain_current_password
-          {
-            $$= NEW_PTN PT_option_value_no_option_type_password(@$, $3.str, $4.str,
-                                                                $5,
-                                                                false,
-                                                                @4);
-          }
-        | PASSWORD TO_SYM RANDOM_SYM opt_replace_password opt_retain_current_password
-          {
-            // RANDOM PASSWORD GENERATION AND RETURN RESULT SET...
-            $$= NEW_PTN PT_option_value_no_option_type_password(@$, $3.str, $4.str,
-                                                                $5,
-                                                                true,
-                                                                @4);
-          }
-        | PASSWORD FOR_SYM user equal TEXT_STRING_password opt_replace_password opt_retain_current_password
-          {
-            $$= NEW_PTN PT_option_value_no_option_type_password_for(@$, $3, $5.str,
-                                                                    $6.str,
-                                                                    $7,
-                                                                    false,
-                                                                    @6);
-          }
-        | PASSWORD FOR_SYM user TO_SYM RANDOM_SYM opt_replace_password opt_retain_current_password
-          {
-            // RANDOM PASSWORD GENERATION AND RETURN RESULT SET...
-            $$= NEW_PTN PT_option_value_no_option_type_password_for(@$, $3, $5.str,
-                                                                    $6.str,
-                                                                    $7,
-                                                                    true,
-                                                                    @6);
-          }
         ;
 
 // Start of option value list, option_type was given

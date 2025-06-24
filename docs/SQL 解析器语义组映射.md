@@ -599,6 +599,12 @@
 | `query_expression_parens` | 嵌套任意层括号的查询表达式                                   | `QueryExpression`       | `query_expression_parens`                            |
 | `select_statement`        | `SELECT` 语句                                                | `SelectStatement`       | `select_stmt`<br />`select_stmt_with_into`【不兼容】 |
 
+#### SET PASSWORD 语句（set password statement）
+
+| 水杉解析器语义组名称     | 语义组类型          | 返回值类型             | MySQL 语义组名称 |
+| ------------------------ | ------------------- | ---------------------- | ---------------- |
+| `set_password_statement` | `SET PASSWORD` 语句 | `SetPasswordStatement` | `set`【部分】    |
+
 #### SET RESOURCE GROUP 语句（set resource group statement）
 
 | 水杉解析器语义组名称           | 语义组类型                | 返回值类型                  | MySQL 语义组名称                               |

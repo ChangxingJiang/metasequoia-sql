@@ -137,6 +137,7 @@ from metasequoia_sql_grammar.statement import restart_statement
 from metasequoia_sql_grammar.statement import rollback_statement
 from metasequoia_sql_grammar.statement import savepoint_statement
 from metasequoia_sql_grammar.statement import select_statement
+from metasequoia_sql_grammar.statement import set_password_statement
 from metasequoia_sql_grammar.statement import set_resource_group_statement
 from metasequoia_sql_grammar.statement import set_role_statement
 from metasequoia_sql_grammar.statement import show_statement
@@ -430,6 +431,7 @@ def build_grammar():
         rollback_statement,  # ROLLBACK 语句
         savepoint_statement,  # SAVEPOINT 语句
         select_statement,  # SELECT 语句
+        set_password_statement,  # SET PASSWORD 语句
         set_resource_group_statement,  # SET RESOURCE GROUP 语句
         set_role_statement,  # SET ROLE 语句
         set_transaction_statement,  # SET TRANSACTION 语句
