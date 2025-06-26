@@ -81,21 +81,21 @@ class EnumRepairType(IntFlag):
     """枚举类型：REPAIR 语句的命令类型"""
 
     DEFAULT = 0
-    QUICK = (1 << 0)  # QUICK
-    EXTENDED = (1 << 1)  # EXTENDED
-    USE = (1 << 2)  # USE
+    QUICK = 1 << 0  # QUICK
+    EXTENDED = 1 << 1  # EXTENDED
+    USE = 1 << 2  # USE
 
 
 class EnumCheckType(IntFlag):
     """枚举类型：CHECK 语句的命令类型"""
 
     DEFAULT = 0
-    QUICK = (1 << 0)  # QUICK
-    FAST = (1 << 1)  # FAST
-    MEDIUM = (1 << 2)  # MEDIUM
-    EXTENDED = (1 << 3)  # EXTENDED
-    CHANGED = (1 << 4)  # CHANGED
-    FOR_UPGRADE = (1 << 5)  # FOR UPGRADE
+    QUICK = 1 << 0  # QUICK
+    FAST = 1 << 1  # FAST
+    MEDIUM = 1 << 2  # MEDIUM
+    EXTENDED = 1 << 3  # EXTENDED
+    CHANGED = 1 << 4  # CHANGED
+    FOR_UPGRADE = 1 << 5  # FOR UPGRADE
 
 
 class EnumChecksumType(IntEnum):
@@ -110,15 +110,15 @@ class EnumProfileType(IntFlag):
     """`SHOW PROFILE` 语句中性能分析指标的枚举值"""
 
     DEFAULT = 0
-    CPU = (1 << 0)  # CPU
-    MEMORY = (1 << 1)  # MEMORY
-    BLOCK_IO = (1 << 2)  # BLOCK IO
-    CONTEXT_SWITCHES = (1 << 3)  # CONTEXT SWITCHES
-    PAGE_FAULTS = (1 << 4)  # PAGE FAULTS
-    IPC = (1 << 5)  # IPC
-    SWAPS = (1 << 6)  # SWAPS
-    SOURCE = (1 << 7)  # SOURCE
-    ALL = (1 << 8)  # ALL
+    CPU = 1 << 0  # CPU
+    MEMORY = 1 << 1  # MEMORY
+    BLOCK_IO = 1 << 2  # BLOCK IO
+    CONTEXT_SWITCHES = 1 << 3  # CONTEXT SWITCHES
+    PAGE_FAULTS = 1 << 4  # PAGE FAULTS
+    IPC = 1 << 5  # IPC
+    SWAPS = 1 << 6  # SWAPS
+    SOURCE = 1 << 7  # SOURCE
+    ALL = 1 << 8  # ALL
 
 
 class EnumVariableType(IntEnum):
@@ -208,17 +208,17 @@ class EnumFlushOptionType(IntFlag):
     """`FLUSH` 语句选项的枚举值"""
 
     DEFAULT = 0  # 默认值
-    ERROR_LOGS = (1 << 0)  # ERROR LOGS
-    ENGINE_LOGS = (1 << 1)  # ENGINE LOGS  
-    GENERAL_LOGS = (1 << 2)  # GENERAL LOGS
-    SLOW_LOGS = (1 << 3)  # SLOW LOGS
-    BINARY_LOGS = (1 << 4)  # BINARY LOGS
-    RELAY_LOGS = (1 << 5)  # RELAY LOGS
-    PRIVILEGES = (1 << 6)  # PRIVILEGES
-    LOGS = (1 << 7)  # LOGS
-    STATUS = (1 << 8)  # STATUS
-    RESOURCES = (1 << 9)  # RESOURCES
-    OPTIMIZER_COSTS = (1 << 10)  # OPTIMIZER_COSTS
+    ERROR_LOGS = 1 << 0  # ERROR LOGS
+    ENGINE_LOGS = 1 << 1  # ENGINE LOGS
+    GENERAL_LOGS = 1 << 2  # GENERAL LOGS
+    SLOW_LOGS = 1 << 3  # SLOW LOGS
+    BINARY_LOGS = 1 << 4  # BINARY LOGS
+    RELAY_LOGS = 1 << 5  # RELAY LOGS
+    PRIVILEGES = 1 << 6  # PRIVILEGES
+    LOGS = 1 << 7  # LOGS
+    STATUS = 1 << 8  # STATUS
+    RESOURCES = 1 << 9  # RESOURCES
+    OPTIMIZER_COSTS = 1 << 10  # OPTIMIZER_COSTS
 
 
 class EnumFlushLockType(IntEnum):
@@ -384,8 +384,8 @@ class EnumReplicaThreadType(IntFlag):
     """副本线程选项的枚举值"""
 
     DEFAULT = 0
-    SQL_THREAD = (1 << 0)
-    RELAY_THREAD = (1 << 1)
+    SQL_THREAD = 1 << 0
+    RELAY_THREAD = 1 << 1
 
 
 class EnumDataType(IntEnum):
