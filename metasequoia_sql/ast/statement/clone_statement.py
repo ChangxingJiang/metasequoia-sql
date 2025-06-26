@@ -32,10 +32,26 @@ class TempDatadirSsl:
 
     @property
     def data_directory(self) -> Optional[str]:
+        """
+        数据目录路径
+
+        Returns
+        -------
+        Optional[str]
+            数据目录路径
+        """
         return self._data_directory
 
     @property
     def open_ssl(self) -> "EnumOpenSslType":
+        """
+        SSL 加密类型
+
+        Returns
+        -------
+        EnumOpenSslType
+            SSL 加密类型
+        """
         return self._open_ssl
 
 
@@ -55,6 +71,14 @@ class CloneLocalStatement(CloneStatement):
 
     @property
     def data_directory(self) -> str:
+        """
+        数据目录路径
+
+        Returns
+        -------
+        str
+            数据目录路径
+        """
         return self._data_directory
 
 
@@ -71,6 +95,7 @@ class CloneInstanceStatement(CloneStatement):
 
     def __init__(self, user: "UserName", port: int, password: str, data_directory: Optional[str],
                  open_ssl: "EnumOpenSslType"):
+        # pylint: disable=R0913
         self._user = user
         self._port = port
         self._password = password
@@ -79,20 +104,60 @@ class CloneInstanceStatement(CloneStatement):
 
     @property
     def user(self) -> "UserName":
+        """
+        用户名
+
+        Returns
+        -------
+        UserName
+            用户名信息
+        """
         return self._user
 
     @property
     def port(self) -> int:
+        """
+        端口号
+
+        Returns
+        -------
+        int
+            端口号
+        """
         return self._port
 
     @property
     def password(self) -> str:
+        """
+        密码
+
+        Returns
+        -------
+        str
+            密码
+        """
         return self._password
 
     @property
     def data_directory(self) -> Optional[str]:
+        """
+        数据目录路径
+
+        Returns
+        -------
+        Optional[str]
+            数据目录路径
+        """
         return self._data_directory
 
     @property
     def open_ssl(self) -> "EnumOpenSslType":
+        """
+        SSL 加密类型
+
+        Returns
+        -------
+        EnumOpenSslType
+            SSL 加密类型
+        """
         return self._open_ssl

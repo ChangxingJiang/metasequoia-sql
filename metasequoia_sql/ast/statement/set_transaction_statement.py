@@ -9,9 +9,9 @@ from metasequoia_sql.ast.base import Statement
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.fixed_enum import EnumTransactionAccessModeType, EnumIsolationType, EnumSetOptionType
 
-__all__ = (
+__all__ = [
     "SetTransactionStatement"
-)
+]
 
 
 class SetTransactionStatement(Statement):

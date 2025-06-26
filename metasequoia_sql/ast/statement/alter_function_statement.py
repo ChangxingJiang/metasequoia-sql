@@ -29,8 +29,24 @@ class AlterFunctionStatement(Statement):
 
     @property
     def function_name(self) -> "Identifier":
+        """
+        函数名称
+
+        Returns
+        -------
+        Identifier
+            函数名称
+        """
         return self._function_name
 
     @property
     def option_list(self) -> List["FunctionOption"]:
-        return self._option_list 
+        """
+        函数选项列表
+
+        Returns
+        -------
+        List[FunctionOption]
+            函数选项列表
+        """
+        return self._option_list

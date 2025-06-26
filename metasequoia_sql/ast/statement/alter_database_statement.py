@@ -28,8 +28,24 @@ class AlterDatabaseStatement(Statement):
 
     @property
     def database_name(self) -> Optional[str]:
+        """
+        数据库名称
+
+        Returns
+        -------
+        Optional[str]
+            数据库名称，如果为 None 则表示当前数据库
+        """
         return self._database_name
 
     @property
     def option_list(self) -> List["DdlOption"]:
+        """
+        DDL 选项列表
+
+        Returns
+        -------
+        List[DdlOption]
+            DDL 选项列表
+        """
         return self._option_list

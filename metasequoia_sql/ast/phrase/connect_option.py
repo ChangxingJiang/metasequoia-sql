@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from metasequoia_sql.ast.base import Node
 
 if TYPE_CHECKING:
-    from metasequoia_sql.ast.base import Expression
+    pass
 
 __all__ = [
     "ConnectOption",
@@ -24,10 +24,26 @@ class ConnectOption(Node):
     __slots__ = ["_value"]
 
     def __init__(self, value: int):
+        """
+        初始化连接选项。
+
+        Parameters
+        ----------
+        value : int
+            连接选项的值
+        """
         self._value = value
 
     @property
     def value(self) -> int:
+        """
+        获取连接选项的值。
+
+        Returns
+        -------
+        int
+            连接选项的值
+        """
         return self._value
 
 
@@ -44,4 +60,4 @@ class MaxConnectionsPerHour(ConnectOption):
 
 
 class MaxUserConnections(ConnectOption):
-    """最大用户连接数限制""" 
+    """最大用户连接数限制"""

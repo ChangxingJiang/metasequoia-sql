@@ -1,3 +1,5 @@
+# pylint: disable=C0302
+
 """
 固定的枚举类型（fixed enum）
 """

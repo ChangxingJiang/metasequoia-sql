@@ -26,6 +26,7 @@ class DeleteStatement(Statement):
 
 
 class DeleteFromStatement(DeleteStatement):
+    # pylint: disable=R0902
     """DELETE ... FROM ... 格式的 DELETE 语句"""
 
     __slots__ = (
@@ -48,6 +49,7 @@ class DeleteFromStatement(DeleteStatement):
                  where_clause: Optional[Expression],
                  order_by_clause: Optional["OrderByClause"],
                  limit_clause: Optional["LimitClause"]):
+        # pylint: disable=R0913
         self._with_clause = with_clause
         self._options = options
         self._table_name = table_name
@@ -59,34 +61,98 @@ class DeleteFromStatement(DeleteStatement):
 
     @property
     def with_clause(self) -> Optional["WithClause"]:
+        """
+        WITH 子句
+
+        Returns
+        -------
+        Optional["WithClause"]
+            WITH 子句
+        """
         return self._with_clause
 
     @property
     def options(self) -> "DmlOption":
+        """
+        DML 选项
+
+        Returns
+        -------
+        DmlOption
+            DML 选项
+        """
         return self._options
 
     @property
     def table_name(self) -> "Identifier":
+        """
+        表名标识符
+
+        Returns
+        -------
+        Identifier
+            表名标识符
+        """
         return self._table_name
 
     @property
     def table_alias(self) -> Optional[str]:
+        """
+        表别名
+
+        Returns
+        -------
+        Optional[str]
+            表别名
+        """
         return self._table_alias
 
     @property
     def use_partition(self) -> Optional[List[Expression]]:
+        """
+        使用分区表达式列表
+
+        Returns
+        -------
+        Optional[List[Expression]]
+            使用分区表达式列表
+        """
         return self._use_partition
 
     @property
     def where_clause(self) -> Optional[Expression]:
+        """
+        WHERE 子句表达式
+
+        Returns
+        -------
+        Optional[Expression]
+            WHERE 子句表达式
+        """
         return self._where_clause
 
     @property
     def order_by_clause(self) -> Optional["OrderByClause"]:
+        """
+        ORDER BY 子句
+
+        Returns
+        -------
+        Optional["OrderByClause"]
+            ORDER BY 子句
+        """
         return self._order_by_clause
 
     @property
     def limit_clause(self) -> Optional["LimitClause"]:
+        """
+        LIMIT 子句
+
+        Returns
+        -------
+        Optional["LimitClause"]
+            LIMIT 子句
+        """
         return self._limit_clause
 
 
@@ -108,6 +174,7 @@ class DeleteColumnFromStatement(DeleteStatement):
                  from_table_list: List[Table],
                  where_clause: Optional[Expression]
                  ):
+        # pylint: disable=R0913
         self._with_clause = with_clause
         self._options = options
         self._wild_table_list = wild_table_list
@@ -116,22 +183,62 @@ class DeleteColumnFromStatement(DeleteStatement):
 
     @property
     def with_clause(self) -> Optional["WithClause"]:
+        """
+        WITH 子句
+
+        Returns
+        -------
+        Optional["WithClause"]
+            WITH 子句
+        """
         return self._with_clause
 
     @property
     def options(self) -> "DmlOption":
+        """
+        DML 选项
+
+        Returns
+        -------
+        DmlOption
+            DML 选项
+        """
         return self._options
 
     @property
     def wild_table_list(self) -> List["Identifier"]:
+        """
+        通配符表列表
+
+        Returns
+        -------
+        List["Identifier"]
+            通配符表列表
+        """
         return self._wild_table_list
 
     @property
     def from_table_list(self) -> List[Table]:
+        """
+        FROM 表列表
+
+        Returns
+        -------
+        List[Table]
+            FROM 表列表
+        """
         return self._from_table_list
 
     @property
     def where_clause(self) -> Optional[Expression]:
+        """
+        WHERE 子句表达式
+
+        Returns
+        -------
+        Optional[Expression]
+            WHERE 子句表达式
+        """
         return self._where_clause
 
 
@@ -153,6 +260,7 @@ class DeleteFromUsingStatement(DeleteStatement):
                  using_table_list: List[Table],
                  where_clause: Optional[Expression]
                  ):
+        # pylint: disable=R0913
         self._with_clause = with_clause
         self._options = options
         self._from_table_list = from_table_list
@@ -161,20 +269,60 @@ class DeleteFromUsingStatement(DeleteStatement):
 
     @property
     def with_clause(self) -> Optional["WithClause"]:
+        """
+        WITH 子句
+
+        Returns
+        -------
+        Optional["WithClause"]
+            WITH 子句
+        """
         return self._with_clause
 
     @property
     def options(self) -> "DmlOption":
+        """
+        DML 选项
+
+        Returns
+        -------
+        DmlOption
+            DML 选项
+        """
         return self._options
 
     @property
     def from_table_list(self) -> List["Identifier"]:
+        """
+        FROM 表列表
+
+        Returns
+        -------
+        List["Identifier"]
+            FROM 表列表
+        """
         return self._from_table_list
 
     @property
     def using_table_list(self) -> List[Table]:
+        """
+        USING 表列表
+
+        Returns
+        -------
+        List[Table]
+            USING 表列表
+        """
         return self._using_table_list
 
     @property
     def where_clause(self) -> Optional[Expression]:
+        """
+        WHERE 子句表达式
+
+        Returns
+        -------
+        Optional[Expression]
+            WHERE 子句表达式
+        """
         return self._where_clause

@@ -30,12 +30,36 @@ class AlterUndoTablespaceStatement(Statement):
 
     @property
     def tablespace_name(self) -> str:
+        """
+        撤销表空间名称
+
+        Returns
+        -------
+        str
+            撤销表空间名称
+        """
         return self._tablespace_name
 
     @property
     def state(self) -> "EnumUndoTablespaceState":
+        """
+        撤销表空间状态
+
+        Returns
+        -------
+        EnumUndoTablespaceState
+            撤销表空间状态
+        """
         return self._state
 
     @property
     def option_list(self) -> List["DdlOption"]:
+        """
+        DDL 选项列表
+
+        Returns
+        -------
+        List["DdlOption"]
+            DDL 选项列表
+        """
         return self._option_list

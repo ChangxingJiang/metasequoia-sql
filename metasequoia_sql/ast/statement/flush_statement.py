@@ -29,6 +29,14 @@ class FlushStatement(Statement):
 
     @property
     def no_write_to_binlog(self) -> bool:
+        """
+        是否不写入二进制日志
+
+        Returns
+        -------
+        bool
+            是否不写入二进制日志
+        """
         return self._no_write_to_binlog
 
 
@@ -50,10 +58,26 @@ class FlushTablesStatement(FlushStatement):
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        表名称列表
+
+        Returns
+        -------
+        List[Identifier]
+            表名称列表
+        """
         return self._table_list
 
     @property
     def flush_lock_type(self) -> "EnumFlushLockType":
+        """
+        刷新锁类型
+
+        Returns
+        -------
+        EnumFlushLockType
+            刷新锁类型
+        """
         return self._flush_lock_type
 
 
@@ -70,4 +94,12 @@ class FlushOptionsStatement(FlushStatement):
 
     @property
     def flush_options(self) -> "EnumFlushOptionType":
+        """
+        刷新选项类型
+
+        Returns
+        -------
+        EnumFlushOptionType
+            刷新选项类型
+        """
         return self._flush_options

@@ -2,8 +2,6 @@
 线程优先级短语（thread priority phrase）
 """
 
-from typing import Optional
-
 from metasequoia_sql.ast.base import Node
 
 __all__ = [
@@ -44,4 +42,4 @@ class ThreadPriority(Node):
         int
             优先级值
         """
-        return self._value 
+        return self._value

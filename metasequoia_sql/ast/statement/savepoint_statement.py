@@ -23,7 +23,7 @@ class SavepointStatement(Statement):
     """
 
     __slots__ = (
-        "_savepoint_name"
+        "_savepoint_name",
     )
 
     def __init__(self, savepoint_name: str) -> None:
@@ -47,4 +47,4 @@ class SavepointStatement(Statement):
         Identifier
             保存点的名称
         """
-        return self._savepoint_name 
+        return self._savepoint_name

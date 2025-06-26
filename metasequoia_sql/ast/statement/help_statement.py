@@ -18,7 +18,7 @@ class HelpStatement(Statement):
     """
 
     __slots__ = (
-        "_search_string"
+        "_search_string",
     )
 
     def __init__(self, search_string: str) -> None:
@@ -42,4 +42,4 @@ class HelpStatement(Statement):
         str
             要搜索的帮助主题
         """
-        return self._search_string 
+        return self._search_string

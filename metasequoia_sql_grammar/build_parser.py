@@ -5,6 +5,7 @@
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -79,7 +80,6 @@ from metasequoia_sql_grammar.statement import alter_server_statement
 from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import alter_tablespace_statement
 from metasequoia_sql_grammar.statement import alter_undo_tablespace_statement
-from metasequoia_sql_grammar.statement import set_transaction_statement
 from metasequoia_sql_grammar.statement import alter_user_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
@@ -94,8 +94,8 @@ from metasequoia_sql_grammar.statement import create_database_statement
 from metasequoia_sql_grammar.statement import create_event_statement
 from metasequoia_sql_grammar.statement import create_function_statement
 from metasequoia_sql_grammar.statement import create_index_statement
-from metasequoia_sql_grammar.statement import create_procedure_statement
 from metasequoia_sql_grammar.statement import create_logfile_statement
+from metasequoia_sql_grammar.statement import create_procedure_statement
 from metasequoia_sql_grammar.statement import create_resource_group_statement
 from metasequoia_sql_grammar.statement import create_role_statement
 from metasequoia_sql_grammar.statement import create_server_statement
@@ -141,6 +141,7 @@ from metasequoia_sql_grammar.statement import set_password_statement
 from metasequoia_sql_grammar.statement import set_resource_group_statement
 from metasequoia_sql_grammar.statement import set_role_statement
 from metasequoia_sql_grammar.statement import set_statement
+from metasequoia_sql_grammar.statement import set_transaction_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import shutdown_statement
 from metasequoia_sql_grammar.statement import signal_and_resignal_statement
@@ -159,6 +160,14 @@ from metasequoia_sql_grammar.table import table_function
 
 
 def build_grammar():
+    """
+    构建 SQL 语法解析器的语法规则
+
+    Returns
+    -------
+    Grammar
+        构建好的语法规则对象，包含所有 SQL 语句的解析规则和优先级配置
+    """
     grammar_builder = ms_parser.create_grammar(
         groups=[],
         terminal_type_enum=TType,
@@ -418,7 +427,9 @@ def build_grammar():
         import_statement,  # IMPORT TABLE 语句
         load_statement,  # LOAD 语句
         insert_or_replace_statement,  # INSERT 语句或 UPDATE 语句
-        install_or_uninstall_statement,  # INSTALL/UNINSTALL 语句
+        install_or_uninstall_statement,  # INSTALL 语句或 UNINSTALL 语句
+        start_replica_statement,  # START REPLICA 语句
+        keycache_and_preload_statement,  # KEYCACHE 语句或 PRELOAD 语句
         kill_statement,  # KILL 语句
         lock_or_unlock_statement,  # LOCK/UNLOCK 语句
         optimize_table_statement,  # OPTIMIZE TABLE 语句

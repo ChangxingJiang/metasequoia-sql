@@ -33,8 +33,24 @@ class AlterServerStatement(Statement):
 
     @property
     def server_name(self) -> str:
+        """
+        服务器名称
+
+        Returns
+        -------
+        str
+            服务器名称
+        """
         return self._server_name
 
     @property
     def server_options(self) -> List["ServerOption"]:
+        """
+        服务器选项列表
+
+        Returns
+        -------
+        List["ServerOption"]
+            服务器选项列表
+        """
         return self._server_options

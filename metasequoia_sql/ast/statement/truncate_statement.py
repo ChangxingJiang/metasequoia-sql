@@ -23,7 +23,7 @@ class TruncateStatement(Statement):
     """
 
     __slots__ = (
-        "_table_ident"
+        "_table_ident",
     )
 
     def __init__(self, table_ident: "Identifier") -> None:
@@ -47,4 +47,4 @@ class TruncateStatement(Statement):
         Identifier
             要清空的表的标识符
         """
-        return self._table_ident 
+        return self._table_ident

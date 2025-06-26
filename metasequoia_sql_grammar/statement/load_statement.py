@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 LOAD 语句（load statement）
 """
@@ -99,10 +101,7 @@ OPT_SOURCE_COUNT = ms_parser.create_group(
 OPT_XML_ROWS_IDENTIFIED_BY = ms_parser.create_group(
     name="opt_xml_rows_identified_by",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ROWS, TType.KEYWORD_IDENTIFIED, TType.KEYWORD_BY, "text_string"],
             action=lambda x: x[3].get_str_value()
@@ -129,10 +128,7 @@ OPT_IGNORE_LINES = ms_parser.create_group(
 OPT_FIELD_OR_VAR_SPEC = ms_parser.create_group(
     name="opt_field_or_var_spec",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: []
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST,
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "fields_or_vars", TType.OPERATOR_RPAREN],
             action=lambda x: x[1]
@@ -178,10 +174,7 @@ FIELD_OR_VAR = ms_parser.create_group(
 OPT_LOAD_DATA_SET_SPEC = ms_parser.create_group(
     name="opt_load_data_set_spec",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: []
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SET, "load_data_set_list"],
             action=lambda x: x[1]

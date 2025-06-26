@@ -47,10 +47,26 @@ class PasswordExpireInterval(AccountLockExpireOption):
     __slots__ = ["_days"]
 
     def __init__(self, days: int):
+        """
+        初始化密码间隔过期选项。
+
+        Parameters
+        ----------
+        days : int
+            密码过期的天数
+        """
         self._days = days
 
     @property
     def days(self) -> int:
+        """
+        获取密码过期的天数。
+
+        Returns
+        -------
+        int
+            密码过期的天数
+        """
         return self._days
 
 
@@ -68,10 +84,26 @@ class PasswordHistory(AccountLockExpireOption):
     __slots__ = ["_length"]
 
     def __init__(self, length: int):
+        """
+        初始化密码历史长度选项。
+
+        Parameters
+        ----------
+        length : int
+            密码历史记录长度
+        """
         self._length = length
 
     @property
     def length(self) -> int:
+        """
+        获取密码历史记录长度。
+
+        Returns
+        -------
+        int
+            密码历史记录长度
+        """
         return self._length
 
 
@@ -85,10 +117,26 @@ class PasswordReuseInterval(AccountLockExpireOption):
     __slots__ = ["_days"]
 
     def __init__(self, days: int):
+        """
+        初始化密码重用间隔选项。
+
+        Parameters
+        ----------
+        days : int
+            密码重用间隔天数
+        """
         self._days = days
 
     @property
     def days(self) -> int:
+        """
+        获取密码重用间隔天数。
+
+        Returns
+        -------
+        int
+            密码重用间隔天数
+        """
         return self._days
 
 
@@ -114,10 +162,26 @@ class FailedLoginAttempts(AccountLockExpireOption):
     __slots__ = ["_attempts"]
 
     def __init__(self, attempts: int):
+        """
+        初始化失败登录尝试次数限制选项。
+
+        Parameters
+        ----------
+        attempts : int
+            失败登录尝试次数限制
+        """
         self._attempts = attempts
 
     @property
     def attempts(self) -> int:
+        """
+        获取失败登录尝试次数限制。
+
+        Returns
+        -------
+        int
+            失败登录尝试次数限制
+        """
         return self._attempts
 
 
@@ -127,10 +191,26 @@ class PasswordLockTime(AccountLockExpireOption):
     __slots__ = ["_time"]
 
     def __init__(self, time: int):
+        """
+        初始化密码锁定时间选项。
+
+        Parameters
+        ----------
+        time : int
+            密码锁定时间
+        """
         self._time = time
 
     @property
     def time(self) -> int:
+        """
+        获取密码锁定时间。
+
+        Returns
+        -------
+        int
+            密码锁定时间
+        """
         return self._time
 
 

@@ -41,18 +41,50 @@ class LockingClause(Node):
     __slots__ = ["_lock_strength", "_table_list", "_locked_row_action"]
 
     def __init__(self, lock_strength: LockStrength, table_list: List["Identifier"], locked_row_action: LockedRowAction):
+        """初始化锁指定子句
+        
+        Parameters
+        ----------
+        lock_strength : LockStrength
+            锁类型
+        table_list : List[Identifier]
+            表标识符列表
+        locked_row_action : LockedRowAction
+            锁的行行为
+        """
         self._lock_strength = lock_strength
         self._table_list = table_list
         self._locked_row_action = locked_row_action
 
     @property
     def lock_strength(self) -> LockStrength:
+        """获取锁类型
+        
+        Returns
+        -------
+        LockStrength
+            锁类型
+        """
         return self._lock_strength
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """获取表标识符列表
+        
+        Returns
+        -------
+        List[Identifier]
+            表标识符列表
+        """
         return self._table_list
 
     @property
     def locked_row_action(self) -> LockedRowAction:
+        """获取锁的行行为
+        
+        Returns
+        -------
+        LockedRowAction
+            锁的行行为
+        """
         return self._locked_row_action

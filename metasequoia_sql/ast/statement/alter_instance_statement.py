@@ -48,14 +48,30 @@ class AlterInstanceActionReloadTlsForChannel(AlterInstanceAction):
     """ALTER INSTANCE 操作：RELOAD TLS FOR CHANNEL"""
 
     __slots__ = (
-        "_channel_name"
+        "_channel_name",
     )
 
     def __init__(self, channel_name: str):
+        """
+        初始化 RELOAD TLS FOR CHANNEL 操作
+
+        Parameters
+        ----------
+        channel_name : str
+            通道名称
+        """
         self._channel_name = channel_name
 
     @property
     def channel_name(self) -> str:
+        """
+        通道名称
+
+        Returns
+        -------
+        str
+            通道名称
+        """
         return self._channel_name
 
 
@@ -63,14 +79,30 @@ class AlterInstanceActionReloadTlsForChannelNoRollback(AlterInstanceAction):
     """ALTER INSTANCE 操作：RELOAD TLS FOR CHANNEL NO ROLLBACK ON ERROR"""
 
     __slots__ = (
-        "_channel_name"
+        "_channel_name",
     )
 
     def __init__(self, channel_name: str):
+        """
+        初始化 RELOAD TLS FOR CHANNEL NO ROLLBACK ON ERROR 操作
+
+        Parameters
+        ----------
+        channel_name : str
+            通道名称
+        """
         self._channel_name = channel_name
 
     @property
     def channel_name(self) -> str:
+        """
+        通道名称
+
+        Returns
+        -------
+        str
+            通道名称
+        """
         return self._channel_name
 
 
@@ -94,8 +126,24 @@ class AlterInstanceStatement(Statement):
     )
 
     def __init__(self, action: AlterInstanceAction):
+        """
+        初始化 ALTER INSTANCE 语句
+
+        Parameters
+        ----------
+        action : AlterInstanceAction
+            ALTER INSTANCE 操作
+        """
         self._action = action
 
     @property
     def action(self) -> AlterInstanceAction:
+        """
+        ALTER INSTANCE 操作
+
+        Returns
+        -------
+        AlterInstanceAction
+            ALTER INSTANCE 操作
+        """
         return self._action

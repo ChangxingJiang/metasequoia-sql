@@ -50,10 +50,7 @@ DEFAULT_ROLE_CLAUSE = ms_parser.create_group(
     name="default_role_clause",
     rules=[
         # 空选项
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         # DEFAULT ROLE role_list
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_DEFAULT, TType.KEYWORD_ROLE, "role_name_list"],
@@ -114,10 +111,7 @@ OPT_CREATE_USER_WITH_MFA = ms_parser.create_group(
     name="opt_create_user_with_mfa",
     rules=[
         # 空选项
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: []
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST,
         # AND identification（第二因子）
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AND, "identification"],

@@ -40,6 +40,7 @@ class AlterResourceGroupStatement(Statement):
                  priority: Optional["ThreadPriority"] = None,
                  enable_disable: "EnumEnableDisable" = None,
                  force: bool = False):
+        # pylint: disable=R0913
         """
         初始化ALTER RESOURCE GROUP语句节点。
 

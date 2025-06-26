@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 CREATE FUNCTION 语句（create function statement）
 """

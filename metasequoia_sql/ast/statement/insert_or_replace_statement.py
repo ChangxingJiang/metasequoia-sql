@@ -25,7 +25,7 @@ class RowValue(Node):
     """INSERT 和 REPLACE 语句中的行数据"""
 
     __slots__ = (
-        "_value_list"
+        "_value_list",
     )
 
     def __init__(self, value_list: List[Expression]):
@@ -33,6 +33,14 @@ class RowValue(Node):
 
     @property
     def value_list(self) -> List[Expression]:
+        """
+        值列表
+
+        Returns
+        -------
+        List[Expression]
+            值列表
+        """
         return self._value_list
 
 
@@ -50,10 +58,26 @@ class TempInsertColumnAndValue(Node):
 
     @property
     def column_list(self) -> List[Expression]:
+        """
+        字段名称列表
+
+        Returns
+        -------
+        List[Expression]
+            字段名称列表
+        """
         return self._column_list
 
     @property
     def value_list(self) -> List[RowValue]:
+        """
+        值列表
+
+        Returns
+        -------
+        List[RowValue]
+            值列表
+        """
         return self._value_list
 
 
@@ -71,10 +95,26 @@ class TempInsertColumnAndQuery(Node):
 
     @property
     def column_list(self) -> List[Expression]:
+        """
+        字段名称列表
+
+        Returns
+        -------
+        List[Expression]
+            字段名称列表
+        """
         return self._column_list
 
     @property
     def query_expression(self) -> "QueryExpression":
+        """
+        查询表达式
+
+        Returns
+        -------
+        QueryExpression
+            查询表达式
+        """
         return self._query_expression
 
 
@@ -92,14 +132,31 @@ class TempInsertAlias(Node):
 
     @property
     def table_alias(self) -> Optional[str]:
+        """
+        表别名
+
+        Returns
+        -------
+        Optional[str]
+            表别名
+        """
         return self._table_alias
 
     @property
     def column_alias_list(self) -> Optional[List[str]]:
+        """
+        字段别名列表
+
+        Returns
+        -------
+        Optional[List[str]]
+            字段别名列表
+        """
         return self._column_alias_list
 
 
 class InsertOrReplaceStatement(Node):
+    # pylint: disable=R0902
     """INSERT 语句和 REPLACE 语句
 
     标注格式：https://dev.mysql.com/doc/refman/8.4/en/insert.html
@@ -132,6 +189,7 @@ class InsertOrReplaceStatement(Node):
                  query_expression: Optional["QueryExpression"],
                  on_duplicate_key_update_list: List["UpdateElement"]
                  ):
+        # pylint: disable=R0913
         self._is_replace = is_replace
         self._dml_option = dml_option
         self._table_name = table_name
@@ -154,6 +212,7 @@ class InsertOrReplaceStatement(Node):
                                 column_alias_list: Optional[List[str]],
                                 on_duplicate_key_update_list: List["UpdateElement"]
                                 ) -> "InsertOrReplaceStatement":
+        # pylint: disable=R0913
         """构造第 1 种格式的 INSERT 语句"""
         return InsertOrReplaceStatement(
             is_replace=False,
@@ -178,6 +237,7 @@ class InsertOrReplaceStatement(Node):
                              column_alias_list: Optional[List[str]],
                              on_duplicate_key_update_list: List["UpdateElement"]
                              ) -> "InsertOrReplaceStatement":
+        # pylint: disable=R0913
         """构造第 2 种格式的 INSERT 语句"""
         return InsertOrReplaceStatement(
             is_replace=False,
@@ -200,6 +260,7 @@ class InsertOrReplaceStatement(Node):
                                column_list: List[Expression],
                                query_expression: "QueryExpression",
                                on_duplicate_key_update_list: List["UpdateElement"]):
+        # pylint: disable=R0913
         """构造第 3 种格式的 INSERT 语句"""
         return InsertOrReplaceStatement(
             is_replace=False,
@@ -279,44 +340,132 @@ class InsertOrReplaceStatement(Node):
 
     @property
     def is_replace(self) -> bool:
+        """
+        是否为 REPLACE 语句
+
+        Returns
+        -------
+        bool
+            是否为 REPLACE 语句
+        """
         return self._is_replace
 
     @property
     def dml_option(self) -> "DmlOption":
+        """
+        DML 选项
+
+        Returns
+        -------
+        DmlOption
+            DML 选项
+        """
         return self._dml_option
 
     @property
     def table_name(self) -> "Identifier":
+        """
+        表名称
+
+        Returns
+        -------
+        Identifier
+            表名称
+        """
         return self._table_name
 
     @property
     def use_partition(self) -> Optional[List[Expression]]:
+        """
+        使用分区
+
+        Returns
+        -------
+        Optional[List[Expression]]
+            使用分区
+        """
         return self._use_partition
 
     @property
     def column_list(self) -> List[Expression]:
+        """
+        字段列表
+
+        Returns
+        -------
+        List[Expression]
+            字段列表
+        """
         return self._column_list
 
     @property
     def value_list(self) -> List[RowValue]:
+        """
+        值列表
+
+        Returns
+        -------
+        List[RowValue]
+            值列表
+        """
         return self._value_list
 
     @property
     def set_update_list(self) -> List["UpdateElement"]:
+        """
+        SET 更新列表
+
+        Returns
+        -------
+        List[UpdateElement]
+            SET 更新列表
+        """
         return self._set_update_list
 
     @property
     def table_alias(self) -> Optional[str]:
+        """
+        表别名
+
+        Returns
+        -------
+        Optional[str]
+            表别名
+        """
         return self._table_alias
 
     @property
     def column_alias_list(self) -> Optional[List[str]]:
+        """
+        字段别名列表
+
+        Returns
+        -------
+        Optional[List[str]]
+            字段别名列表
+        """
         return self._column_alias_list
 
     @property
     def query_expression(self) -> Optional["QueryExpression"]:
+        """
+        查询表达式
+
+        Returns
+        -------
+        Optional[QueryExpression]
+            查询表达式
+        """
         return self._query_expression
 
     @property
     def on_duplicate_key_update_list(self) -> List["UpdateElement"]:
+        """
+        ON DUPLICATE KEY UPDATE 列表
+
+        Returns
+        -------
+        List[UpdateElement]
+            ON DUPLICATE KEY UPDATE 列表
+        """
         return self._on_duplicate_key_update_list

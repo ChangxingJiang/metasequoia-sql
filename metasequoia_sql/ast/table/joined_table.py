@@ -42,20 +42,56 @@ class JoinedTableBase(Table):
     __slots__ = ["_left_operand", "_right_operand", "_join_type"]
 
     def __init__(self, left_operand: Table, right_operand: Table, join_type: EnumJoinType):
+        """
+        初始化关联表
+
+        Parameters
+        ----------
+        left_operand : Table
+            左操作数表
+        right_operand : Table
+            右操作数表
+        join_type : EnumJoinType
+            关联类型
+        """
         self._left_operand = left_operand
         self._right_operand = right_operand
         self._join_type = join_type
 
     @property
     def left_operand(self) -> Table:
+        """
+        左操作数表
+
+        Returns
+        -------
+        Table
+            左操作数表
+        """
         return self._left_operand
 
     @property
     def right_operand(self) -> Table:
+        """
+        右操作数表
+
+        Returns
+        -------
+        Table
+            右操作数表
+        """
         return self._right_operand
 
     @property
     def join_type(self) -> EnumJoinType:
+        """
+        关联类型
+
+        Returns
+        -------
+        EnumJoinType
+            关联类型
+        """
         return self._join_type
 
 
@@ -70,6 +106,14 @@ class JoinedTableOn(JoinedTableBase):
 
     @property
     def on_condition(self) -> Expression:
+        """
+        ON 条件表达式
+
+        Returns
+        -------
+        Expression
+            ON 条件表达式
+        """
         return self._on_condition
 
 
@@ -84,6 +128,14 @@ class JoinedTableUsing(JoinedTableBase):
 
     @property
     def using_list(self) -> List["Ident"]:
+        """
+        USING 列名列表
+
+        Returns
+        -------
+        List[Ident]
+            USING 列名列表
+        """
         return self._using_list
 
 

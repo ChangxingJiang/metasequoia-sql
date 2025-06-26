@@ -45,14 +45,38 @@ class FunctionParam(Node):
 
     @property
     def param_name(self) -> str:
+        """
+        参数名称
+
+        Returns
+        -------
+        str
+            参数名称
+        """
         return self._param_name
 
     @property
     def param_type(self) -> "FieldType":
+        """
+        参数类型
+
+        Returns
+        -------
+        FieldType
+            参数类型
+        """
         return self._param_type
 
     @property
     def param_collate(self) -> Optional["Charset"]:
+        """
+        参数排序规则
+
+        Returns
+        -------
+        Optional["Charset"]
+            参数排序规则
+        """
         return self._param_collate
 
 
@@ -61,6 +85,7 @@ class CreateFunctionStatement(Statement):
 
 
 class CreateFunctionStandardStatement(CreateFunctionStatement):
+    # pylint: disable=R0902
     """标准 CREATE FUNCTION 语句"""
 
     __slots__ = (
@@ -85,6 +110,7 @@ class CreateFunctionStandardStatement(CreateFunctionStatement):
             option_list: List["FunctionOption"],
             body: "ProcessCommand",
     ):
+        # pylint: disable=R0913
         self._definer = definer
         self._if_not_exists = if_not_exists
         self._function_name = function_name
@@ -96,34 +122,98 @@ class CreateFunctionStandardStatement(CreateFunctionStatement):
 
     @property
     def definer(self) -> Optional["UserName"]:
+        """
+        函数定义者
+
+        Returns
+        -------
+        Optional["UserName"]
+            函数定义者用户名
+        """
         return self._definer
 
     @property
     def if_not_exists(self) -> bool:
+        """
+        是否使用 IF NOT EXISTS 选项
+
+        Returns
+        -------
+        bool
+            是否使用 IF NOT EXISTS 选项
+        """
         return self._if_not_exists
 
     @property
     def function_name(self) -> "Identifier":
+        """
+        函数名称标识符
+
+        Returns
+        -------
+        Identifier
+            函数名称标识符
+        """
         return self._function_name
 
     @property
     def param_list(self) -> List["FunctionParam"]:
+        """
+        函数参数列表
+
+        Returns
+        -------
+        List["FunctionParam"]
+            函数参数列表
+        """
         return self._param_list
 
     @property
     def return_type(self) -> "FieldType":
+        """
+        函数返回类型
+
+        Returns
+        -------
+        FieldType
+            函数返回类型
+        """
         return self._return_type
 
     @property
     def return_collate(self) -> Optional["Charset"]:
+        """
+        返回值排序规则
+
+        Returns
+        -------
+        Optional["Charset"]
+            返回值排序规则
+        """
         return self._return_collate
 
     @property
     def option_list(self) -> List["FunctionOption"]:
+        """
+        函数选项列表
+
+        Returns
+        -------
+        List["FunctionOption"]
+            函数选项列表
+        """
         return self._option_list
 
     @property
     def body(self) -> "ProcessCommand":
+        """
+        函数执行体
+
+        Returns
+        -------
+        ProcessCommand
+            函数执行体
+        """
         return self._body
 
 
@@ -151,18 +241,50 @@ class CreateFunctionUdfStatement(CreateFunctionStatement):
 
     @property
     def if_not_exists(self) -> bool:
+        """
+        是否使用 IF NOT EXISTS 选项
+
+        Returns
+        -------
+        bool
+            是否使用 IF NOT EXISTS 选项
+        """
         return self._if_not_exists
 
     @property
     def function_name(self) -> str:
+        """
+        函数名称
+
+        Returns
+        -------
+        str
+            函数名称
+        """
         return self._function_name
 
     @property
     def return_type(self) -> "EnumUdfReturnType":
+        """
+        UDF 函数返回类型
+
+        Returns
+        -------
+        EnumUdfReturnType
+            UDF 函数返回类型
+        """
         return self._return_type
 
     @property
     def library_name(self) -> str:
+        """
+        库名称
+
+        Returns
+        -------
+        str
+            库名称
+        """
         return self._library_name
 
 
@@ -190,16 +312,48 @@ class CreateFunctionAggregateUdfStatement(CreateFunctionStatement):
 
     @property
     def if_not_exists(self) -> bool:
+        """
+        是否使用 IF NOT EXISTS 选项
+
+        Returns
+        -------
+        bool
+            是否使用 IF NOT EXISTS 选项
+        """
         return self._if_not_exists
 
     @property
     def function_name(self) -> str:
+        """
+        函数名称
+
+        Returns
+        -------
+        str
+            函数名称
+        """
         return self._function_name
 
     @property
     def return_type(self) -> "EnumUdfReturnType":
+        """
+        聚合 UDF 函数返回类型
+
+        Returns
+        -------
+        EnumUdfReturnType
+            聚合 UDF 函数返回类型
+        """
         return self._return_type
 
     @property
     def library_name(self) -> str:
+        """
+        库名称
+
+        Returns
+        -------
+        str
+            库名称
+        """
         return self._library_name

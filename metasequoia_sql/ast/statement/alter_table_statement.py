@@ -27,14 +27,30 @@ class AlterTableStatement(Node):
 
     def __init__(self,
                  table_ident: "Identifier",
-                 command_list: List[Union[AlterCommand, AlterOption, DdlOption]]) -> None:
+                 command_list: List[Union["AlterCommand", "AlterOption", "DdlOption"]]) -> None:
         self._table_ident = table_ident
         self._command_list = command_list
 
     @property
     def table_ident(self) -> "Identifier":
+        """
+        表标识符
+
+        Returns
+        -------
+        Identifier
+            表标识符
+        """
         return self._table_ident
 
     @property
-    def command_list(self) -> List[Union[AlterCommand, AlterOption, DdlOption]]:
+    def command_list(self) -> List[Union["AlterCommand", "AlterOption", "DdlOption"]]:
+        """
+        ALTER 命令列表
+
+        Returns
+        -------
+        List[Union["AlterCommand", "AlterOption", "DdlOption"]]
+            ALTER 命令列表
+        """
         return self._command_list

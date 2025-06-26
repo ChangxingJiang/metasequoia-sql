@@ -53,15 +53,38 @@ class LeadOrLagInfo(Node):
     __slots__ = ["_offset", "_default_value"]
 
     def __init__(self, offset: Optional[Expression], default_value: Optional[Expression]):
+        """初始化 LEAD/LAG 信息
+        
+        Parameters
+        ----------
+        offset : Optional[Expression]
+            偏移量表达式
+        default_value : Optional[Expression]
+            默认值表达式
+        """
         self._offset = offset
         self._default_value = default_value
 
     @property
     def offset(self) -> Optional[Expression]:
+        """获取偏移量表达式
+        
+        Returns
+        -------
+        Optional[Expression]
+            偏移量表达式
+        """
         return self._offset
 
     @property
     def default_value(self) -> Optional[Expression]:
+        """获取默认值表达式
+        
+        Returns
+        -------
+        Optional[Expression]
+            默认值表达式
+        """
         return self._default_value
 
 
@@ -71,10 +94,24 @@ class FuncWindowBase(Expression):
     __slots__ = ["_window_clause"]
 
     def __init__(self, window_clause: "Window"):
+        """初始化窗口函数基类
+        
+        Parameters
+        ----------
+        window_clause : Window
+            窗口子句
+        """
         self._window_clause = window_clause
 
     @property
     def window_clause(self) -> "Window":
+        """获取窗口子句
+        
+        Returns
+        -------
+        Window
+            窗口子句
+        """
         return self._window_clause
 
 
@@ -104,11 +141,27 @@ class FuncWindowNtile(FuncWindowBase):
     __slots__ = ["_param"]
 
     def __init__(self, param: Expression, window_clause: "Window"):
+        """初始化 NTILE 窗口函数
+        
+        Parameters
+        ----------
+        param : Expression
+            参数表达式
+        window_clause : Window
+            窗口子句
+        """
         super().__init__(window_clause)
         self._param = param
 
     @property
     def param(self) -> Expression:
+        """获取参数表达式
+        
+        Returns
+        -------
+        Expression
+            参数表达式
+        """
         return self._param
 
 
@@ -119,6 +172,22 @@ class FuncWindowLeadOrLag(FuncWindowBase):
 
     def __init__(self, param: Expression, offset: Optional[Expression], default_value: Optional[Expression],
                  null_treatment: NullTreatment, window_clause: "Window"):
+        # pylint: disable=R0913
+        """初始化 LEAD/LAG 窗口函数基类
+        
+        Parameters
+        ----------
+        param : Expression
+            参数表达式
+        offset : Optional[Expression]
+            偏移量表达式
+        default_value : Optional[Expression]
+            默认值表达式
+        null_treatment : NullTreatment
+            NULL 处理策略
+        window_clause : Window
+            窗口子句
+        """
         super().__init__(window_clause)
         self._param = param
         self._offset = offset
@@ -127,18 +196,46 @@ class FuncWindowLeadOrLag(FuncWindowBase):
 
     @property
     def param(self) -> Expression:
+        """获取参数表达式
+        
+        Returns
+        -------
+        Expression
+            参数表达式
+        """
         return self._param
 
     @property
     def offset(self) -> Optional[Expression]:
+        """获取偏移量表达式
+        
+        Returns
+        -------
+        Optional[Expression]
+            偏移量表达式
+        """
         return self._offset
 
     @property
     def default_value(self) -> Optional[Expression]:
+        """获取默认值表达式
+        
+        Returns
+        -------
+        Optional[Expression]
+            默认值表达式
+        """
         return self._default_value
 
     @property
     def null_treatment(self) -> NullTreatment:
+        """获取 NULL 处理策略
+        
+        Returns
+        -------
+        NullTreatment
+            NULL 处理策略
+        """
         return self._null_treatment
 
 
@@ -156,16 +253,41 @@ class FuncWindowFirstValueOrLastValue(FuncWindowBase):
     __slots__ = ["_param", "_null_treatment"]
 
     def __init__(self, param: Expression, null_treatment: NullTreatment, window_clause: "Window"):
+        """初始化 FIRST_VALUE/LAST_VALUE 窗口函数基类
+        
+        Parameters
+        ----------
+        param : Expression
+            参数表达式
+        null_treatment : NullTreatment
+            NULL 处理策略
+        window_clause : Window
+            窗口子句
+        """
         super().__init__(window_clause)
         self._param = param
         self._null_treatment = null_treatment
 
     @property
     def param(self) -> Expression:
+        """获取参数表达式
+        
+        Returns
+        -------
+        Expression
+            参数表达式
+        """
         return self._param
 
     @property
     def null_treatment(self) -> NullTreatment:
+        """获取 NULL 处理策略
+        
+        Returns
+        -------
+        NullTreatment
+            NULL 处理策略
+        """
         return self._null_treatment
 
 
@@ -184,6 +306,22 @@ class FuncWindowNthValue(FuncWindowBase):
 
     def __init__(self, param_1: Expression, param_2: Expression, from_first_or_last: FromFirstOrLast,
                  null_treatment: NullTreatment, window_clause: "Window"):
+        # pylint: disable=R0913
+        """初始化 NTH_VALUE 窗口函数
+        
+        Parameters
+        ----------
+        param_1 : Expression
+            第一个参数表达式
+        param_2 : Expression
+            第二个参数表达式
+        from_first_or_last : FromFirstOrLast
+            FROM FIRST/LAST 选项
+        null_treatment : NullTreatment
+            NULL 处理策略
+        window_clause : Window
+            窗口子句
+        """
         super().__init__(window_clause)
         self._param1 = param_1
         self._param2 = param_2
@@ -192,16 +330,44 @@ class FuncWindowNthValue(FuncWindowBase):
 
     @property
     def param1(self) -> Expression:
+        """获取第一个参数表达式
+        
+        Returns
+        -------
+        Expression
+            第一个参数表达式
+        """
         return self._param1
 
     @property
     def param2(self) -> Expression:
+        """获取第二个参数表达式
+        
+        Returns
+        -------
+        Expression
+            第二个参数表达式
+        """
         return self._param2
 
     @property
     def from_first_or_last(self) -> FromFirstOrLast:
+        """获取 FROM FIRST/LAST 选项
+        
+        Returns
+        -------
+        FromFirstOrLast
+            FROM FIRST/LAST 选项
+        """
         return self._from_first_or_last
 
     @property
     def null_treatment(self) -> NullTreatment:
+        """获取 NULL 处理策略
+        
+        Returns
+        -------
+        NullTreatment
+            NULL 处理策略
+        """
         return self._null_treatment

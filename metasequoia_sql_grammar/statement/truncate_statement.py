@@ -20,4 +20,4 @@ TRUNCATE_STATEMENT = ms_parser.create_group(
             action=lambda x: ast.TruncateStatement(table_ident=x[2])
         )
     ]
-) 
+)

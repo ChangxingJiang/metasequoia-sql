@@ -34,10 +34,26 @@ class StatementInformationItem(Node):
 
     @property
     def item_name(self) -> "EnumStatementInformationType":
+        """
+        语句信息项名称
+
+        Returns
+        -------
+        EnumStatementInformationType
+            语句信息项名称
+        """
         return self._item_name
 
     @property
     def target_variable(self) -> Expression:
+        """
+        目标变量
+
+        Returns
+        -------
+        Expression
+            目标变量
+        """
         return self._target_variable
 
 
@@ -51,6 +67,14 @@ class StatementInformation(Node):
 
     @property
     def statement_information_item_list(self) -> List[StatementInformationItem]:
+        """
+        语句信息项列表
+
+        Returns
+        -------
+        List[StatementInformationItem]
+            语句信息项列表
+        """
         return self._statement_information_item_list
 
 
@@ -65,10 +89,26 @@ class ConditionInformationItem(Node):
 
     @property
     def item_name(self) -> "EnumConditionInformationType":
+        """
+        条件信息项名称
+
+        Returns
+        -------
+        EnumConditionInformationType
+            条件信息项名称
+        """
         return self._item_name
 
     @property
     def target_variable(self) -> Expression:
+        """
+        目标变量
+
+        Returns
+        -------
+        Expression
+            目标变量
+        """
         return self._target_variable
 
 
@@ -83,10 +123,26 @@ class ConditionInformation(Node):
 
     @property
     def condition_number(self) -> Expression:
+        """
+        条件编号
+
+        Returns
+        -------
+        Expression
+            条件编号
+        """
         return self._condition_number
 
     @property
     def condition_information_item_list(self) -> List[ConditionInformationItem]:
+        """
+        条件信息项列表
+
+        Returns
+        -------
+        List[ConditionInformationItem]
+            条件信息项列表
+        """
         return self._condition_information_item_list
 
 
@@ -103,10 +159,26 @@ class DiagnosticsInformation(Node):
 
     @property
     def statement_information(self) -> Optional[StatementInformation]:
+        """
+        语句信息
+
+        Returns
+        -------
+        Optional[StatementInformation]
+            语句信息
+        """
         return self._statement_information
 
     @property
     def condition_information(self) -> Optional[ConditionInformation]:
+        """
+        条件信息
+
+        Returns
+        -------
+        Optional[ConditionInformation]
+            条件信息
+        """
         return self._condition_information
 
 
@@ -123,8 +195,24 @@ class GetDiagnosticsStatement(Statement):
 
     @property
     def which_area(self) -> "EnumDiagnosticsAreaType":
+        """
+        诊断区域类型
+
+        Returns
+        -------
+        EnumDiagnosticsAreaType
+            诊断区域类型
+        """
         return self._which_area
 
     @property
     def diagnostics_information(self) -> DiagnosticsInformation:
+        """
+        诊断信息
+
+        Returns
+        -------
+        DiagnosticsInformation
+            诊断信息
+        """
         return self._diagnostics_information

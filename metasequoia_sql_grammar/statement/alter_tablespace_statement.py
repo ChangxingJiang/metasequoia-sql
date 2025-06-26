@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 ALTER TABLESPACE 语句（alter tablespace statement）
 """

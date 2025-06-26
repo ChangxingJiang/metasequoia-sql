@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 SIGNAL/RESIGNAL 语句（signal or resignal statement）
 """
@@ -10,7 +12,7 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "SIGNAL_STATEMENT",
     "RESIGNAL_STATEMENT",
-    
+
     # 信号值
     "OPT_SIGNAL_VALUE",
     "SIGNAL_VALUE",
@@ -42,7 +44,6 @@ RESIGNAL_STATEMENT = ms_parser.create_group(
         )
     ]
 )
-
 
 # `RESIGNAL` 语句中可选的信号值
 OPT_SIGNAL_VALUE = ms_parser.create_group(

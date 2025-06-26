@@ -16,10 +16,7 @@ OPT_USER_ATTRIBUTE = ms_parser.create_group(
     name="opt_user_attribute",
     rules=[
         # 空选项 - 不使用用户属性注释
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         # 用户属性
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ATTRIBUTE, "text_literal_sys"],

@@ -42,10 +42,24 @@ class JsonOnResponse(Node):
 
     @property
     def response_type(self) -> JsonOnResponseTypeEnum:
+        """获取响应类型。
+        
+        Returns
+        -------
+        JsonOnResponseTypeEnum
+            响应类型
+        """
         return self._response_type
 
     @property
     def default_value(self) -> Optional[Expression]:
+        """获取默认值。
+        
+        Returns
+        -------
+        Optional[Expression]
+            默认值表达式
+        """
         return self._default_value
 
 
@@ -60,8 +74,22 @@ class JsonOnEmptyOnError(Node):
 
     @property
     def on_empty(self) -> JsonOnResponse:
+        """获取空值处理方法。
+        
+        Returns
+        -------
+        JsonOnResponse
+            空值处理方法
+        """
         return self._on_empty
 
     @property
     def on_error(self) -> JsonOnResponse:
+        """获取错误处理方法。
+        
+        Returns
+        -------
+        JsonOnResponse
+            错误处理方法
+        """
         return self._on_error

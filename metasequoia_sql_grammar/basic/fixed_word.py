@@ -1,3 +1,5 @@
+# pylint: disable=C0302,R0801
+
 """
 固定的词语组合
 """
@@ -440,10 +442,7 @@ OPT_KEYWORD_ON_REPLACE = ms_parser.create_group(
 OPT_KEYWORD_AND = ms_parser.create_group(
     name="opt_keyword_and",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AND],
             action=lambda _: None

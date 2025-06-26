@@ -69,10 +69,24 @@ class FieldDefinition(TableElement):
 
     @property
     def field_type(self) -> "FieldType":
+        """获取字段类型。
+        
+        Returns
+        -------
+        FieldType
+            字段类型
+        """
         return self._field_type
 
     @property
     def attribute_list(self) -> List["ColumnAttribute"]:
+        """获取字段属性列表。
+        
+        Returns
+        -------
+        List[ColumnAttribute]
+            字段属性列表
+        """
         return self._attribute_list
 
 
@@ -92,6 +106,7 @@ class GeneratedFieldDefinition(FieldDefinition):
                  generated_expression: Expression,
                  stored_attribute: EnumStoredAttribute,
                  attribute_list: List["ColumnAttribute"]):
+        # pylint: disable=R0913
         super().__init__(field_type, attribute_list)
         self._collate_charset = collate_charset
         self._generated_always = generated_always
@@ -100,18 +115,46 @@ class GeneratedFieldDefinition(FieldDefinition):
 
     @property
     def collate_charset(self) -> Optional["Charset"]:
+        """获取排序字符集。
+        
+        Returns
+        -------
+        Optional[Charset]
+            排序字符集
+        """
         return self._collate_charset
 
     @property
     def generated_always(self) -> bool:
+        """获取是否总是生成。
+        
+        Returns
+        -------
+        bool
+            是否总是生成
+        """
         return self._generated_always
 
     @property
     def generated_expression(self) -> Expression:
+        """获取生成表达式。
+        
+        Returns
+        -------
+        Expression
+            生成表达式
+        """
         return self._generated_expression
 
     @property
     def stored_attribute(self) -> EnumStoredAttribute:
+        """获取存储属性。
+        
+        Returns
+        -------
+        EnumStoredAttribute
+            存储属性
+        """
         return self._stored_attribute
 
 
@@ -151,10 +194,24 @@ class TempOnUpdateOnDelete(Node):
 
     @property
     def on_update(self) -> EnumReferenceActionOption:
+        """获取外键更新时的行为选项。
+        
+        Returns
+        -------
+        EnumReferenceActionOption
+            更新行为选项
+        """
         return self._on_update
 
     @property
     def on_delete(self) -> EnumReferenceActionOption:
+        """获取外键删除时的行为选项。
+        
+        Returns
+        -------
+        EnumReferenceActionOption
+            删除行为选项
+        """
         return self._on_delete
 
 
@@ -175,6 +232,7 @@ class ReferencesDefinition(Node):
                  match_clause: EnumReferenceMatch,
                  on_update: EnumReferenceActionOption,
                  on_delete: EnumReferenceActionOption):
+        # pylint: disable=R0913
         self._table_ident = table_ident
         self._column_list = column_list
         self._match_clause = match_clause
@@ -183,22 +241,57 @@ class ReferencesDefinition(Node):
 
     @property
     def table_ident(self) -> "Identifier":
+        """获取表标识符。
+        
+        Returns
+        -------
+        Identifier
+            表标识符
+        """
         return self._table_ident
 
     @property
     def column_list(self) -> List[str]:
+        """获取字段列表。
+        
+        Returns
+        -------
+        List[str]
+            字段列表
+        """
         return self._column_list
 
     @property
     def match_clause(self) -> EnumReferenceMatch:
+        """获取匹配子句。
+        
+        Returns
+        -------
+        EnumReferenceMatch
+            匹配子句
+        """
         return self._match_clause
 
     @property
     def on_update(self) -> EnumReferenceActionOption:
+        """获取外键更新时的行为选项。
+        
+        Returns
+        -------
+        EnumReferenceActionOption
+            更新行为选项
+        """
         return self._on_update
 
     @property
     def on_delete(self) -> EnumReferenceActionOption:
+        """获取外键删除时的行为选项。
+        
+        Returns
+        -------
+        EnumReferenceActionOption
+            删除行为选项
+        """
         return self._on_delete
 
 
@@ -221,14 +314,35 @@ class ColumnDefinition(Node):
 
     @property
     def column_name(self) -> str:
+        """获取字段名称。
+        
+        Returns
+        -------
+        str
+            字段名称
+        """
         return self._column_name
 
     @property
     def field_definition(self) -> FieldDefinition:
+        """获取字段定义。
+        
+        Returns
+        -------
+        FieldDefinition
+            字段定义
+        """
         return self._field_definition
 
     @property
     def references_definition(self) -> Optional[ReferencesDefinition]:
+        """获取外键引用定义。
+        
+        Returns
+        -------
+        Optional[ReferencesDefinition]
+            外键引用定义
+        """
         return self._references_definition
 
 
@@ -248,10 +362,24 @@ class TempIndexNameAndType(Node):
 
     @property
     def index_name(self) -> Optional[str]:
+        """获取索引名称。
+        
+        Returns
+        -------
+        Optional[str]
+            索引名称
+        """
         return self._index_name
 
     @property
     def index_structure_type(self) -> "EnumIndexStructureType":
+        """获取索引结构类型。
+        
+        Returns
+        -------
+        EnumIndexStructureType
+            索引结构类型
+        """
         return self._index_structure_type
 
 
@@ -278,27 +406,85 @@ class IndexKeyDefinition(Node):
     @staticmethod
     def create_by_column(column_name: str, index_length: Optional[int],
                          order_direction: "EnumOrderDirection") -> "IndexKeyDefinition":
+        """通过字段名称创建索引键定义。
+        
+        Parameters
+        ----------
+        column_name : str
+            字段名称
+        index_length : Optional[int]
+            索引长度
+        order_direction : EnumOrderDirection
+            排序方向
+            
+        Returns
+        -------
+        IndexKeyDefinition
+            索引键定义
+        """
         return IndexKeyDefinition(column_name, index_length, None, order_direction)
 
     @staticmethod
     def create_by_expression(expression: Expression,
                              order_direction: "EnumOrderDirection") -> "IndexKeyDefinition":
+        """通过表达式创建索引键定义。
+        
+        Parameters
+        ----------
+        expression : Expression
+            表达式
+        order_direction : EnumOrderDirection
+            排序方向
+            
+        Returns
+        -------
+        IndexKeyDefinition
+            索引键定义
+        """
         return IndexKeyDefinition(None, None, expression, order_direction)
 
     @property
     def column_name(self) -> str:
+        """获取字段名称。
+        
+        Returns
+        -------
+        str
+            字段名称
+        """
         return self._column_name
 
     @property
     def index_length(self) -> Optional[int]:
+        """获取索引长度。
+        
+        Returns
+        -------
+        Optional[int]
+            索引长度
+        """
         return self._index_length
 
     @property
     def expression(self) -> Optional[Expression]:
+        """获取表达式。
+        
+        Returns
+        -------
+        Optional[Expression]
+            表达式
+        """
         return self._expression
 
     @property
     def order_direction(self) -> "EnumOrderDirection":
+        """获取排序方向。
+        
+        Returns
+        -------
+        EnumOrderDirection
+            排序方向
+        """
         return self._order_direction
 
 
@@ -330,6 +516,7 @@ class IndexDefinition(TableElement):
                  index_key_list: List["IndexKeyDefinition"],
                  index_options: List["IndexAttribute"]
                  ):
+        # pylint: disable=R0913
         self._index_type = index_type
         self._index_name = index_name
         self._index_structure_type = index_structure_type
@@ -338,22 +525,57 @@ class IndexDefinition(TableElement):
 
     @property
     def index_type(self) -> EnumIndexType:
+        """获取索引类型。
+        
+        Returns
+        -------
+        EnumIndexType
+            索引类型
+        """
         return self._index_type
 
     @property
     def index_name(self) -> Optional[str]:
+        """获取索引名称。
+        
+        Returns
+        -------
+        Optional[str]
+            索引名称
+        """
         return self._index_name
 
     @property
     def index_structure_type(self) -> "EnumIndexStructureType":
+        """获取索引结构类型。
+        
+        Returns
+        -------
+        EnumIndexStructureType
+            索引结构类型
+        """
         return self._index_structure_type
 
     @property
     def index_key_list(self) -> List["IndexKeyDefinition"]:
+        """获取索引键列表。
+        
+        Returns
+        -------
+        List[IndexKeyDefinition]
+            索引键列表
+        """
         return self._index_key_list
 
     @property
     def index_options(self) -> List["IndexAttribute"]:
+        """获取索引选项列表。
+        
+        Returns
+        -------
+        List[IndexAttribute]
+            索引选项列表
+        """
         return self._index_options
 
 
@@ -380,18 +602,46 @@ class ForeignKeyDefinition(TableElement):
 
     @property
     def constraint_name(self) -> Optional[str]:
+        """获取约束名称。
+        
+        Returns
+        -------
+        Optional[str]
+            约束名称
+        """
         return self._constraint_name
 
     @property
     def index_name(self) -> Optional[str]:
+        """获取索引名称。
+        
+        Returns
+        -------
+        Optional[str]
+            索引名称
+        """
         return self._index_name
 
     @property
     def column_list(self) -> Optional[IndexKeyDefinition]:
+        """获取字段列表。
+        
+        Returns
+        -------
+        Optional[IndexKeyDefinition]
+            字段列表
+        """
         return self._column_list
 
     @property
     def references(self) -> ReferencesDefinition:
+        """获取外键引用定义。
+        
+        Returns
+        -------
+        ReferencesDefinition
+            外键引用定义
+        """
         return self._references
 
 
@@ -415,12 +665,33 @@ class CheckConstraintDefinition(TableElement):
 
     @property
     def constraint_name(self) -> Optional[str]:
+        """获取约束名称。
+        
+        Returns
+        -------
+        Optional[str]
+            约束名称
+        """
         return self._constraint_name
 
     @property
     def check_expression(self) -> Expression:
+        """获取检查表达式。
+        
+        Returns
+        -------
+        Expression
+            检查表达式
+        """
         return self._check_expression
 
     @property
     def enforced(self) -> Optional[bool]:
+        """获取是否强制执行。
+        
+        Returns
+        -------
+        Optional[bool]
+            是否强制执行
+        """
         return self._enforced

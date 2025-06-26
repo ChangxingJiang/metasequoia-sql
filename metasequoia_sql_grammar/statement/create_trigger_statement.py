@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 CREATE TRIGGER 语句（create trigger statement）
 """

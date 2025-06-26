@@ -58,18 +58,50 @@ class ScheduleTimeEvery(ScheduleTime):
 
     @property
     def interval_expression(self) -> Expression:
+        """
+        时间间隔表达式
+
+        Returns
+        -------
+        Expression
+            时间间隔表达式
+        """
         return self._interval_expression
 
     @property
     def interval_type(self) -> "TimeUnitEnum":
+        """
+        时间间隔类型
+
+        Returns
+        -------
+        TimeUnitEnum
+            时间间隔类型（如 SECOND、MINUTE、HOUR 等）
+        """
         return self._interval_type
 
     @property
     def starts_expression(self) -> Optional[Expression]:
+        """
+        开始时间表达式
+
+        Returns
+        -------
+        Optional[Expression]
+            开始时间表达式，如果为 None 则表示立即开始
+        """
         return self._starts_expression
 
     @property
     def ends_expression(self) -> Optional[Expression]:
+        """
+        结束时间表达式
+
+        Returns
+        -------
+        Optional[Expression]
+            结束时间表达式，如果为 None 则表示永不结束
+        """
         return self._ends_expression
 
 
@@ -93,4 +125,12 @@ class ScheduleTimeAt(ScheduleTime):
 
     @property
     def execute_at_expression(self) -> Expression:
+        """
+        执行时间表达式
+
+        Returns
+        -------
+        Expression
+            执行时间表达式
+        """
         return self._execute_at_expression

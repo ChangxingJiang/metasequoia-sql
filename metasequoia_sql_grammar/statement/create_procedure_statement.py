@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 CREATE PROCEDURE 语句（create procedure statement）
 """

@@ -41,33 +41,13 @@ class UserRegistration(Node):
 class UserRegistrationInitiate(UserRegistration):
     """
     初始化注册：factor INITIATE REGISTRATION
-    
-    Parameters
-    ----------
-    factor : int
-        因子编号（2 或 3）
     """
-
-    __slots__ = ()
-
-    def __init__(self, factor: int):
-        super().__init__(factor)
 
 
 class UserRegistrationUnregister(UserRegistration):
     """
     取消注册：factor UNREGISTER
-    
-    Parameters
-    ----------
-    factor : int
-        因子编号（2 或 3）
     """
-
-    __slots__ = ()
-
-    def __init__(self, factor: int):
-        super().__init__(factor)
 
 
 class UserRegistrationFinish(UserRegistration):

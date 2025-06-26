@@ -3,6 +3,7 @@ FLUSH 语句（flush statement）
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
@@ -42,4 +43,4 @@ FLUSH_STATEMENT = ms_parser.create_group(
             )
         )
     ]
-) 
+)

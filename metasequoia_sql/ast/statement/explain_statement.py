@@ -25,7 +25,7 @@ class ExplainOptions(Node):
 
     def __init__(self,
                  explain_format: Optional[str] = None,
-                 is_analysis: bool = bool,
+                 is_analysis: bool = False,
                  explain_into: Optional[str] = None
                  ):
         self._explain_format = explain_format
@@ -34,14 +34,38 @@ class ExplainOptions(Node):
 
     @property
     def explain_format(self) -> Optional[str]:
+        """
+        解释格式
+
+        Returns
+        -------
+        Optional[str]
+            解释格式
+        """
         return self._explain_format
 
     @property
     def is_analysis(self) -> bool:
+        """
+        是否进行分析
+
+        Returns
+        -------
+        bool
+            是否进行分析
+        """
         return self._is_analysis
 
     @property
     def explain_into(self) -> Optional[str]:
+        """
+        解释结果输出位置
+
+        Returns
+        -------
+        Optional[str]
+            解释结果输出位置
+        """
         return self._explain_into
 
 
@@ -49,7 +73,7 @@ class ExplainStatement(Statement):
     """EXPLAIN 语句"""
 
     __slots__ = (
-        "_options"
+        "_options",
     )
 
     def __init__(self, options: ExplainOptions):
@@ -57,6 +81,14 @@ class ExplainStatement(Statement):
 
     @property
     def options(self) -> ExplainOptions:
+        """
+        解释选项
+
+        Returns
+        -------
+        ExplainOptions
+            解释选项
+        """
         return self._options
 
 
@@ -75,10 +107,26 @@ class ExplainStatementForStatement(ExplainStatement):
 
     @property
     def schema_name(self) -> Optional[str]:
+        """
+        数据库名称
+
+        Returns
+        -------
+        Optional[str]
+            数据库名称
+        """
         return self._schema_name
 
     @property
     def statement(self) -> Statement:
+        """
+        要解释的语句
+
+        Returns
+        -------
+        Statement
+            要解释的语句
+        """
         return self._statement
 
 
@@ -86,7 +134,7 @@ class ExplainStatementForConnection(ExplainStatement):
     """用于解释连接的 EXPLAIN 语句"""
 
     __slots__ = (
-        "_thread_id"
+        "_thread_id",
     )
 
     def __init__(self, options: ExplainOptions, thread_id: int):
@@ -95,4 +143,12 @@ class ExplainStatementForConnection(ExplainStatement):
 
     @property
     def thread_id(self) -> int:
+        """
+        线程 ID
+
+        Returns
+        -------
+        int
+            线程 ID
+        """
         return self._thread_id

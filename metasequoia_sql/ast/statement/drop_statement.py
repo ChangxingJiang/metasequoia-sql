@@ -50,10 +50,26 @@ class DropDatabaseStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def schema_name(self) -> str:
+        """
+        数据库名称
+
+        Returns
+        -------
+        str
+            数据库名称
+        """
         return self._schema_name
 
 
@@ -71,10 +87,26 @@ class DropEventStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def event_name(self) -> "Identifier":
+        """
+        事件名称
+
+        Returns
+        -------
+        Identifier
+            事件名称
+        """
         return self._event_name
 
 
@@ -92,10 +124,26 @@ class DropFunctionStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def function_name(self) -> "Identifier":
+        """
+        函数名称
+
+        Returns
+        -------
+        Identifier
+            函数名称
+        """
         return self._function_name
 
 
@@ -117,6 +165,7 @@ class DropIndexStatement(Statement):
                  algorithm: Optional["AlterOptionAlgorithm"],
                  validation: Optional["AlterOptionWithValidation"]
                  ):
+        # pylint: disable=R0913
         self._index_name = index_name
         self._table_name = table_name
         self._lock = lock
@@ -125,22 +174,62 @@ class DropIndexStatement(Statement):
 
     @property
     def index_name(self) -> str:
+        """
+        索引名称
+
+        Returns
+        -------
+        str
+            索引名称
+        """
         return self._index_name
 
     @property
     def table_name(self) -> str:
+        """
+        表名称
+
+        Returns
+        -------
+        str
+            表名称
+        """
         return self._table_name
 
     @property
     def lock(self) -> Optional["AlterOptionLock"]:
+        """
+        锁选项
+
+        Returns
+        -------
+        Optional[AlterOptionLock]
+            锁选项
+        """
         return self._lock
 
     @property
     def algorithm(self) -> Optional["AlterOptionAlgorithm"]:
+        """
+        算法选项
+
+        Returns
+        -------
+        Optional[AlterOptionAlgorithm]
+            算法选项
+        """
         return self._algorithm
 
     @property
     def validation(self) -> Optional["AlterOptionWithValidation"]:
+        """
+        验证选项
+
+        Returns
+        -------
+        Optional[AlterOptionWithValidation]
+            验证选项
+        """
         return self._validation
 
 
@@ -158,10 +247,26 @@ class DropLogfileStatement(Statement):
 
     @property
     def logfile_name(self) -> str:
+        """
+        日志文件名称
+
+        Returns
+        -------
+        str
+            日志文件名称
+        """
         return self._logfile_name
 
     @property
     def options(self) -> List["AlterOption"]:
+        """
+        修改选项列表
+
+        Returns
+        -------
+        List[AlterOption]
+            修改选项列表
+        """
         return self._options
 
 
@@ -179,10 +284,26 @@ class DropProcedureStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def procedure_name(self) -> "Identifier":
+        """
+        存储过程名称
+
+        Returns
+        -------
+        Identifier
+            存储过程名称
+        """
         return self._procedure_name
 
 
@@ -200,10 +321,26 @@ class DropResourceGroupStatement(Statement):
 
     @property
     def group_name(self) -> str:
+        """
+        资源组名称
+
+        Returns
+        -------
+        str
+            资源组名称
+        """
         return self._group_name
 
     @property
     def is_force(self) -> bool:
+        """
+        是否强制删除
+
+        Returns
+        -------
+        bool
+            是否强制删除
+        """
         return self._is_force
 
 
@@ -221,10 +358,26 @@ class DropRoleStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def role_list(self) -> List["RoleName"]:
+        """
+        角色名称列表
+
+        Returns
+        -------
+        List[RoleName]
+            角色名称列表
+        """
         return self._role_list
 
 
@@ -242,10 +395,26 @@ class DropServerStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def server_name(self) -> str:
+        """
+        服务器名称
+
+        Returns
+        -------
+        str
+            服务器名称
+        """
         return self._server_name
 
 
@@ -263,10 +432,26 @@ class DropSrsStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def srs_id(self) -> int:
+        """
+        空间参考系统 ID
+
+        Returns
+        -------
+        int
+            空间参考系统 ID
+        """
         return self._srs_id
 
 
@@ -284,10 +469,26 @@ class DropTablespaceStatement(Statement):
 
     @property
     def tablespace_name(self) -> str:
+        """
+        表空间名称
+
+        Returns
+        -------
+        str
+            表空间名称
+        """
         return self._tablespace_name
 
     @property
     def options(self) -> List["AlterOption"]:
+        """
+        修改选项列表
+
+        Returns
+        -------
+        List[AlterOption]
+            修改选项列表
+        """
         return self._options
 
 
@@ -305,10 +506,26 @@ class DropUndoTablespaceStatement(Statement):
 
     @property
     def tablespace_name(self) -> str:
+        """
+        UNDO 表空间名称
+
+        Returns
+        -------
+        str
+            UNDO 表空间名称
+        """
         return self._tablespace_name
 
     @property
     def options(self) -> List["AlterOption"]:
+        """
+        修改选项列表
+
+        Returns
+        -------
+        List[AlterOption]
+            修改选项列表
+        """
         return self._options
 
 
@@ -334,18 +551,50 @@ class DropTableStatement(Statement):
 
     @property
     def temporary(self) -> bool:
+        """
+        是否为临时表
+
+        Returns
+        -------
+        bool
+            是否为临时表
+        """
         return self._temporary
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        表名称列表
+
+        Returns
+        -------
+        List[Identifier]
+            表名称列表
+        """
         return self._table_list
 
     @property
     def restrict(self) -> "EnumDropRestrict":
+        """
+        删除限制类型
+
+        Returns
+        -------
+        EnumDropRestrict
+            删除限制类型
+        """
         return self._restrict
 
 
@@ -363,10 +612,26 @@ class DropTriggerStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def trigger_name(self) -> str:
+        """
+        触发器名称
+
+        Returns
+        -------
+        str
+            触发器名称
+        """
         return self._trigger_name
 
 
@@ -384,10 +649,26 @@ class DropUserStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def user_list(self) -> List["UserName"]:
+        """
+        用户名称列表
+
+        Returns
+        -------
+        List[UserName]
+            用户名称列表
+        """
         return self._user_list
 
 
@@ -407,12 +688,36 @@ class DropViewStatement(Statement):
 
     @property
     def if_exists(self) -> bool:
+        """
+        是否指定 IF EXISTS
+
+        Returns
+        -------
+        bool
+            是否指定 IF EXISTS
+        """
         return self._if_exists
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        视图名称列表
+
+        Returns
+        -------
+        List[Identifier]
+            视图名称列表
+        """
         return self._table_list
 
     @property
     def restrict(self) -> "EnumDropRestrict":
+        """
+        删除限制类型
+
+        Returns
+        -------
+        EnumDropRestrict
+            删除限制类型
+        """
         return self._restrict

@@ -28,8 +28,24 @@ class CommitStatement(Statement):
 
     @property
     def chain_type(self) -> "EnumChainType":
+        """
+        链式事务类型
+
+        Returns
+        -------
+        EnumChainType
+            链式事务类型
+        """
         return self._chain_type
 
     @property
     def release_type(self) -> "EnumReleaseType":
+        """
+        释放类型
+
+        Returns
+        -------
+        EnumReleaseType
+            释放类型
+        """
         return self._release_type

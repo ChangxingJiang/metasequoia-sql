@@ -41,6 +41,7 @@ class CreateResourceGroupStatement(Statement):
                  vcpu_list: Optional["CpuRange"] = None,
                  priority: Optional["ThreadPriority"] = None,
                  enable_disable: "EnumEnableDisable" = None):
+        # pylint: disable=R0913
         """
         初始化CREATE RESOURCE GROUP语句节点。
 
@@ -121,4 +122,4 @@ class CreateResourceGroupStatement(Statement):
         EnumEnableDisable
             启用/禁用状态
         """
-        return self._enable_disable 
+        return self._enable_disable

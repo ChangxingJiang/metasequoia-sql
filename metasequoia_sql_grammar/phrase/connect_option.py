@@ -17,10 +17,7 @@ __all__ = [
 OPT_CONNECT_OPTION_LIST = ms_parser.create_group(
     name="opt_connect_option_list",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: []
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_WITH, "connect_option_list"],
             action=lambda x: x[1]

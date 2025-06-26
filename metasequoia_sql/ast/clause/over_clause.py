@@ -67,18 +67,48 @@ class WindowBorder(Node):
     def __init__(self, boundary_type: WindowBoundaryTypeEnum,
                  value: Optional[Expression] = None,
                  time_unit: Optional[TimeUnitEnum] = None):
+        """初始化窗口边界
+        
+        Parameters
+        ----------
+        boundary_type : WindowBoundaryTypeEnum
+            边界类型
+        value : Optional[Expression], optional
+            边界值表达式, by default None
+        time_unit : Optional[TimeUnitEnum], optional
+            时间单位, by default None
+        """
         self._boundary_type = boundary_type
         self._value = value
         self._time_unit = time_unit
 
     @staticmethod
     def create_unbounded_preceding() -> "WindowBorder":
+        """创建 UNBOUNDED PRECEDING 边界
+        
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.UNBOUNDED_PRECEDING
         )
 
     @staticmethod
     def create_value_preceding(value: Expression) -> "WindowBorder":
+        """创建 VALUE PRECEDING 边界
+        
+        Parameters
+        ----------
+        value : Expression
+            边界值表达式
+            
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.VALUE_PRECEDING,
             value=value
@@ -86,6 +116,20 @@ class WindowBorder(Node):
 
     @staticmethod
     def create_interval_preceding(value: Expression, time_unit: TimeUnitEnum) -> "WindowBorder":
+        """创建 INTERVAL PRECEDING 边界
+        
+        Parameters
+        ----------
+        value : Expression
+            间隔值表达式
+        time_unit : TimeUnitEnum
+            时间单位
+            
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.INTERVAL_PRECEDING,
             value=value,
@@ -94,18 +138,44 @@ class WindowBorder(Node):
 
     @staticmethod
     def create_current_row() -> "WindowBorder":
+        """创建 CURRENT ROW 边界
+        
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.CURRENT_ROW
         )
 
     @staticmethod
     def create_unbounded_following() -> "WindowBorder":
+        """创建 UNBOUNDED FOLLOWING 边界
+        
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.UNBOUNDED_FOLLOWING
         )
 
     @staticmethod
     def create_value_following(value: Expression) -> "WindowBorder":
+        """创建 VALUE FOLLOWING 边界
+        
+        Parameters
+        ----------
+        value : Expression
+            边界值表达式
+            
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.VALUE_FOLLOWING,
             value=value
@@ -113,6 +183,20 @@ class WindowBorder(Node):
 
     @staticmethod
     def create_interval_following(value: Expression, time_unit: TimeUnitEnum) -> "WindowBorder":
+        """创建 INTERVAL FOLLOWING 边界
+        
+        Parameters
+        ----------
+        value : Expression
+            间隔值表达式
+        time_unit : TimeUnitEnum
+            时间单位
+            
+        Returns
+        -------
+        WindowBorder
+            窗口边界实例
+        """
         return WindowBorder(
             boundary_type=WindowBoundaryTypeEnum.INTERVAL_FOLLOWING,
             value=value,
@@ -121,14 +205,35 @@ class WindowBorder(Node):
 
     @property
     def boundary_type(self) -> WindowBoundaryTypeEnum:
+        """获取边界类型
+        
+        Returns
+        -------
+        WindowBoundaryTypeEnum
+            边界类型
+        """
         return self._boundary_type
 
     @property
     def value(self) -> Optional[Expression]:
+        """获取边界值表达式
+        
+        Returns
+        -------
+        Optional[Expression]
+            边界值表达式
+        """
         return self._value
 
     @property
     def time_unit(self) -> Optional[TimeUnitEnum]:
+        """获取时间单位
+        
+        Returns
+        -------
+        Optional[TimeUnitEnum]
+            时间单位
+        """
         return self._time_unit
 
 
@@ -142,11 +247,32 @@ class WindowBorders(Node):
     __slots__ = ["_start_border", "_end_border"]
 
     def __init__(self, start_border: WindowBorder, end_border: WindowBorder):
+        """初始化窗口两侧边界
+        
+        Parameters
+        ----------
+        start_border : WindowBorder
+            开始边界
+        end_border : WindowBorder
+            结束边界
+        """
         self._start_border = start_border
         self._end_border = end_border
 
     @staticmethod
     def create_by_start_border(start_border: WindowBorder) -> "WindowBorders":
+        """通过开始边界创建窗口边界，结束边界默认为 CURRENT ROW
+        
+        Parameters
+        ----------
+        start_border : WindowBorder
+            开始边界
+            
+        Returns
+        -------
+        WindowBorders
+            窗口边界实例
+        """
         return WindowBorders(
             start_border=start_border,
             end_border=WindowBorder.create_current_row()
@@ -154,10 +280,24 @@ class WindowBorders(Node):
 
     @property
     def start_border(self) -> WindowBorder:
+        """获取开始边界
+        
+        Returns
+        -------
+        WindowBorder
+            开始边界
+        """
         return self._start_border
 
     @property
     def end_border(self) -> WindowBorder:
+        """获取结束边界
+        
+        Returns
+        -------
+        WindowBorder
+            结束边界
+        """
         return self._end_border
 
 
@@ -170,20 +310,52 @@ class WindowFrame(Node):
                  border_type: WindowBorderTypeEnum,
                  borders: WindowBorders,
                  exclusion: WindowExclusionTypeEnum):
+        """初始化窗口框架子句
+        
+        Parameters
+        ----------
+        border_type : WindowBorderTypeEnum
+            边界类型
+        borders : WindowBorders
+            窗口边界
+        exclusion : WindowExclusionTypeEnum
+            排除类型
+        """
         self._border_type = border_type
         self._borders = borders
         self._exclusion = exclusion
 
     @property
     def border_type(self) -> WindowBorderTypeEnum:
+        """获取边界类型
+        
+        Returns
+        -------
+        WindowBorderTypeEnum
+            边界类型
+        """
         return self._border_type
 
     @property
     def borders(self) -> WindowBorders:
+        """获取窗口边界
+        
+        Returns
+        -------
+        WindowBorders
+            窗口边界
+        """
         return self._borders
 
     @property
     def exclusion(self) -> WindowExclusionTypeEnum:
+        """获取排除类型
+        
+        Returns
+        -------
+        WindowExclusionTypeEnum
+            排除类型
+        """
         return self._exclusion
 
 
@@ -197,6 +369,19 @@ class Window(Node):
                  partition_clause: Optional[List[Expression]],
                  order_clause: Optional[OrderByClause],
                  frame_clause: Optional[WindowFrame]):
+        """初始化窗口
+        
+        Parameters
+        ----------
+        name : Optional[str]
+            窗口名称
+        partition_clause : Optional[List[Expression]]
+            分区子句表达式列表
+        order_clause : Optional[OrderByClause]
+            排序子句
+        frame_clause : Optional[WindowFrame]
+            窗口框架子句
+        """
         self._name = name
         self._partition_clause = partition_clause
         self._order_clause = order_clause
@@ -204,6 +389,18 @@ class Window(Node):
 
     @staticmethod
     def create_by_name(name: str) -> "Window":
+        """通过名称创建窗口
+        
+        Parameters
+        ----------
+        name : str
+            窗口名称
+            
+        Returns
+        -------
+        Window
+            窗口实例
+        """
         return Window(
             name=name,
             partition_clause=None,
@@ -213,16 +410,44 @@ class Window(Node):
 
     @property
     def name(self) -> Optional[str]:
+        """获取窗口名称
+        
+        Returns
+        -------
+        Optional[str]
+            窗口名称
+        """
         return self._name
 
     @property
     def partition_clause(self) -> Optional[List[Expression]]:
+        """获取分区子句表达式列表
+        
+        Returns
+        -------
+        Optional[List[Expression]]
+            分区子句表达式列表
+        """
         return self._partition_clause
 
     @property
     def order_clause(self) -> Optional[OrderByClause]:
+        """获取排序子句
+        
+        Returns
+        -------
+        Optional[OrderByClause]
+            排序子句
+        """
         return self._order_clause
 
     @property
     def frame_clause(self) -> Optional[WindowFrame]:
+        """获取窗口框架子句
+        
+        Returns
+        -------
+        Optional[WindowFrame]
+            窗口框架子句
+        """
         return self._frame_clause

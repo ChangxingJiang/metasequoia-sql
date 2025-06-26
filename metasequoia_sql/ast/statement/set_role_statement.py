@@ -2,7 +2,6 @@
 SET ROLE 语句（set role statement）
 """
 
-from enum import IntEnum
 from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Statement
@@ -13,7 +12,7 @@ if TYPE_CHECKING:
 __all__ = [
     "SetRoleStatement",
     "SetRoleListStatement",
-    "SetRoleNoneStatement", 
+    "SetRoleNoneStatement",
     "SetRoleDefaultStatement",
     "SetRoleAllStatement",
     "SetDefaultRoleStatement",
@@ -44,6 +43,14 @@ class SetRoleListStatement(SetRoleStatement):
 
     @property
     def role_list(self) -> List["RoleName"]:
+        """
+        角色列表
+
+        Returns
+        -------
+        List[RoleName]
+            角色列表
+        """
         return self._role_list
 
 
@@ -56,7 +63,6 @@ class SetRoleNoneStatement(SetRoleStatement):
         """
         构造 SET ROLE NONE 语句节点
         """
-        pass
 
 
 class SetRoleDefaultStatement(SetRoleStatement):
@@ -68,7 +74,6 @@ class SetRoleDefaultStatement(SetRoleStatement):
         """
         构造 SET ROLE DEFAULT 语句节点
         """
-        pass
 
 
 class SetRoleAllStatement(SetRoleStatement):
@@ -89,6 +94,14 @@ class SetRoleAllStatement(SetRoleStatement):
 
     @property
     def except_role_list(self) -> Optional[List["RoleName"]]:
+        """
+        排除的角色列表
+
+        Returns
+        -------
+        Optional[List[RoleName]]
+            排除的角色列表
+        """
         return self._except_role_list
 
 
@@ -113,10 +126,26 @@ class SetDefaultRoleStatement(SetRoleStatement):
 
     @property
     def role_list(self) -> List["RoleName"]:
+        """
+        角色列表
+
+        Returns
+        -------
+        List[RoleName]
+            角色列表
+        """
         return self._role_list
 
     @property
     def user_list(self) -> List["UserName"]:
+        """
+        用户列表
+
+        Returns
+        -------
+        List[UserName]
+            用户列表
+        """
         return self._user_list
 
 
@@ -138,6 +167,14 @@ class SetDefaultRoleNoneStatement(SetRoleStatement):
 
     @property
     def user_list(self) -> List["UserName"]:
+        """
+        用户列表
+
+        Returns
+        -------
+        List[UserName]
+            用户列表
+        """
         return self._user_list
 
 
@@ -159,4 +196,12 @@ class SetDefaultRoleAllStatement(SetRoleStatement):
 
     @property
     def user_list(self) -> List["UserName"]:
-        return self._user_list 
+        """
+        用户列表
+
+        Returns
+        -------
+        List[UserName]
+            用户列表
+        """
+        return self._user_list

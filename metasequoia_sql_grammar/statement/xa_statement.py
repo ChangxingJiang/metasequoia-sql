@@ -58,7 +58,7 @@ XID = ms_parser.create_group(
             symbols=["text_string"],
             action=lambda x: ast.XaId(gtrid=x[0].get_str_value())
         ),
-        # text_string ',' text_string  
+        # text_string ',' text_string
         ms_parser.create_rule(
             symbols=["text_string", TType.OPERATOR_COMMA, "text_string"],
             action=lambda x: ast.XaId(gtrid=x[0].get_str_value(), bqual=x[2].get_str_value())

@@ -38,10 +38,26 @@ class ChangeStatement(Statement, ABC):
 
     @property
     def change_type(self) -> ChangeType:
+        """
+        CHANGE 语句类型
+
+        Returns
+        -------
+        ChangeType
+            CHANGE 语句类型
+        """
         return self._change_type
 
     @property
     def channel_list(self) -> List[str]:
+        """
+        通道列表
+
+        Returns
+        -------
+        List[str]
+            通道列表
+        """
         return self._channel_list
 
 
@@ -58,6 +74,14 @@ class ChangeReplicationSourceStatement(ChangeStatement):
 
     @property
     def source_def_list(self) -> List["SourceDefinition"]:
+        """
+        源定义列表
+
+        Returns
+        -------
+        List["SourceDefinition"]
+            源定义列表
+        """
         return self._source_def_list
 
 
@@ -74,4 +98,12 @@ class ChangeReplicationFilterStatement(ChangeStatement):
 
     @property
     def filter_def_list(self) -> List["FilterDefinition"]:
+        """
+        过滤器定义列表
+
+        Returns
+        -------
+        List["FilterDefinition"]
+            过滤器定义列表
+        """
         return self._filter_def_list

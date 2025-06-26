@@ -2,7 +2,7 @@
 DO 语句（do statement）
 """
 
-from typing import List, TYPE_CHECKING
+from typing import List
 
 from metasequoia_sql.ast.base import Expression, Statement
 
@@ -20,7 +20,7 @@ class DoStatement(Statement):
     """
 
     __slots__ = (
-        "_expressions"
+        "_expressions",
     )
 
     def __init__(self, expressions: List[Expression]) -> None:
@@ -44,4 +44,4 @@ class DoStatement(Statement):
         List[Expression]
             要执行的表达式列表
         """
-        return self._expressions 
+        return self._expressions

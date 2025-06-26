@@ -46,6 +46,13 @@ class FilterDefinition(Node, ABC):
 
     @property
     def filter_type(self) -> FilterType:
+        """获取过滤器类型。
+        
+        Returns
+        -------
+        FilterType
+            过滤器类型
+        """
         return self._filter_type
 
 
@@ -60,6 +67,13 @@ class ReplicateDoDbFilter(FilterDefinition):
 
     @property
     def db_list(self) -> List[str]:
+        """获取数据库列表。
+        
+        Returns
+        -------
+        List[str]
+            数据库列表
+        """
         return self._db_list
 
 
@@ -74,6 +88,13 @@ class ReplicateIgnoreDbFilter(FilterDefinition):
 
     @property
     def db_list(self) -> List[str]:
+        """获取数据库列表。
+        
+        Returns
+        -------
+        List[str]
+            数据库列表
+        """
         return self._db_list
 
 
@@ -88,6 +109,13 @@ class ReplicateDoTableFilter(FilterDefinition):
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """获取表列表。
+        
+        Returns
+        -------
+        List[Identifier]
+            表列表
+        """
         return self._table_list
 
 
@@ -102,6 +130,13 @@ class ReplicateIgnoreTableFilter(FilterDefinition):
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """获取表列表。
+        
+        Returns
+        -------
+        List[Identifier]
+            表列表
+        """
         return self._table_list
 
 
@@ -116,6 +151,13 @@ class ReplicateWildDoTableFilter(FilterDefinition):
 
     @property
     def pattern_list(self) -> List[str]:
+        """获取模式列表。
+        
+        Returns
+        -------
+        List[str]
+            模式列表
+        """
         return self._pattern_list
 
 
@@ -130,6 +172,13 @@ class ReplicateWildIgnoreTableFilter(FilterDefinition):
 
     @property
     def pattern_list(self) -> List[str]:
+        """获取模式列表。
+        
+        Returns
+        -------
+        List[str]
+            模式列表
+        """
         return self._pattern_list
 
 
@@ -144,4 +193,11 @@ class ReplicateRewriteDbFilter(FilterDefinition):
 
     @property
     def db_pair_list(self) -> List[Tuple[str, str]]:
+        """获取数据库配对列表。
+        
+        Returns
+        -------
+        List[Tuple[str, str]]
+            数据库配对列表
+        """
         return self._db_pair_list

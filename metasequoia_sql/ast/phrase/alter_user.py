@@ -470,6 +470,7 @@ class AlterUserAddTwoFactors(AlterUser):
             second_factor: int,
             second_identification: "Identification"
     ):
+        # pylint: disable=R0913
         super().__init__(user)
         self._first_factor = first_factor
         self._first_identification = first_identification
@@ -555,6 +556,7 @@ class AlterUserModifyTwoFactors(AlterUser):
             second_factor: int,
             second_identification: "Identification"
     ):
+        # pylint: disable=R0913
         super().__init__(user)
         self._first_factor = first_factor
         self._first_identification = first_identification

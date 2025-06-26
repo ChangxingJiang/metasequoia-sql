@@ -301,10 +301,7 @@ OPT_WITH_ROLES = ms_parser.create_group(
 OPT_EXCEPT_ROLE_LIST = ms_parser.create_group(
     name="opt_except_role_list",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda x: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EXCEPT, "user_name_list"],
             action=lambda x: x[1]
@@ -318,7 +315,7 @@ OPT_GRANT_AS = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AS, "user_name", "opt_with_roles"],
-            action=lambda x: x[1]  # TODO MySQL 后半部分没有意义，后续可以考虑补充
+            action=lambda x: x[1]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

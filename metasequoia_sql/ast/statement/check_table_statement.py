@@ -29,8 +29,24 @@ class CheckTableStatement(Node):
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        表标识符列表
+
+        Returns
+        -------
+        List["Identifier"]
+            表标识符列表
+        """
         return self._table_list
 
     @property
     def check_type(self) -> "EnumCheckType":
+        """
+        检查类型
+
+        Returns
+        -------
+        EnumCheckType
+            检查类型
+        """
         return self._check_type

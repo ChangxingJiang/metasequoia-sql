@@ -28,8 +28,24 @@ class CreateRoleStatement(Statement):
 
     @property
     def if_not_exists(self) -> bool:
+        """
+        是否使用 IF NOT EXISTS 选项
+
+        Returns
+        -------
+        bool
+            是否使用 IF NOT EXISTS 选项
+        """
         return self._if_not_exists
 
     @property
     def role_list(self) -> List["RoleName"]:
+        """
+        角色名称列表
+
+        Returns
+        -------
+        List["RoleName"]
+            角色名称列表
+        """
         return self._role_list

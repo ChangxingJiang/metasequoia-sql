@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 CREATE EVENT 语句（create event statement）
 """

@@ -28,8 +28,24 @@ class KillStatement(Statement):
 
     @property
     def option_type(self) -> "EnumKillOptionType":
+        """
+        选项类型
+
+        Returns
+        -------
+        EnumKillOptionType
+            选项类型
+        """
         return self._option_type
 
     @property
     def target_id(self) -> Expression:
+        """
+        目标 ID
+
+        Returns
+        -------
+        Expression
+            目标 ID
+        """
         return self._target_id

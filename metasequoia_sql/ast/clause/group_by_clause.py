@@ -27,13 +27,36 @@ class GroupByClause(Node):
     __slots__ = ["_columns", "_olap_opt"]
 
     def __init__(self, columns: List[Expression], olap_opt: EnumOlapOpt) -> None:
+        """初始化 GROUP BY 子句
+        
+        Parameters
+        ----------
+        columns : List[Expression]
+            分组列表达式列表
+        olap_opt : EnumOlapOpt
+            OLAP 选项
+        """
         self._columns = columns
         self._olap_opt = olap_opt
 
     @property
     def columns(self) -> List[Expression]:
+        """获取分组列表达式列表
+        
+        Returns
+        -------
+        List[Expression]
+            分组列表达式列表
+        """
         return self._columns
 
     @property
     def olap_opt(self) -> EnumOlapOpt:
+        """获取 OLAP 选项
+        
+        Returns
+        -------
+        EnumOlapOpt
+            OLAP 选项
+        """
         return self._olap_opt

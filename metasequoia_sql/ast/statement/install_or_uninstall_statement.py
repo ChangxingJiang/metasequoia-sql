@@ -4,7 +4,7 @@ INSTALL/UNINSTALL 语句（install/uninstall statement）
 
 from typing import List, TYPE_CHECKING
 
-from metasequoia_sql.ast.base import Statement, Expression
+from metasequoia_sql.ast.base import Expression, Statement
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.ident import Identifier
@@ -37,14 +37,38 @@ class InstallSetValue:
 
     @property
     def option_type(self) -> "EnumInstallOptionType":
+        """
+        选项类型
+
+        Returns
+        -------
+        EnumInstallOptionType
+            选项类型
+        """
         return self._option_type
 
     @property
     def variable(self) -> "Identifier":
+        """
+        变量
+
+        Returns
+        -------
+        Identifier
+            变量
+        """
         return self._variable
 
     @property
     def value(self) -> Expression:
+        """
+        值
+
+        Returns
+        -------
+        Expression
+            值
+        """
         return self._value
 
 
@@ -66,10 +90,26 @@ class InstallPluginStatement(InstallStatement):
 
     @property
     def plugin_name(self) -> "Identifier":
+        """
+        插件名称
+
+        Returns
+        -------
+        Identifier
+            插件名称
+        """
         return self._plugin_name
 
     @property
     def soname(self) -> str:
+        """
+        共享库名称
+
+        Returns
+        -------
+        str
+            共享库名称
+        """
         return self._soname
 
 
@@ -87,10 +127,26 @@ class InstallComponentStatement(InstallStatement):
 
     @property
     def component_list(self) -> List[str]:
+        """
+        组件列表
+
+        Returns
+        -------
+        List[str]
+            组件列表
+        """
         return self._component_list
 
     @property
     def set_value_list(self) -> List[InstallSetValue]:
+        """
+        SET 值列表
+
+        Returns
+        -------
+        List[InstallSetValue]
+            SET 值列表
+        """
         return self._set_value_list
 
 
@@ -110,6 +166,14 @@ class UninstallPluginStatement(UninstallStatement):
 
     @property
     def plugin_name(self) -> "Identifier":
+        """
+        插件名称
+
+        Returns
+        -------
+        Identifier
+            插件名称
+        """
         return self._plugin_name
 
 
@@ -125,4 +189,12 @@ class UninstallComponentStatement(UninstallStatement):
 
     @property
     def component_list(self) -> List[str]:
-        return self._component_list 
+        """
+        组件列表
+
+        Returns
+        -------
+        List[str]
+            组件列表
+        """
+        return self._component_list

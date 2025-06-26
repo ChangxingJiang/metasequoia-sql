@@ -8,6 +8,7 @@ __all__ = [
     "BinlogStatement"
 ]
 
+
 class BinlogStatement(Statement):
     """
     二进制日志语句的抽象语法树节点。
@@ -17,7 +18,7 @@ class BinlogStatement(Statement):
     """
 
     __slots__ = (
-        "_event_string"
+        "_event_string",
     )
 
     def __init__(self, event_string: str) -> None:

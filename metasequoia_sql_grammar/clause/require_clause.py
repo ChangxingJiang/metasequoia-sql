@@ -17,10 +17,7 @@ __all__ = [
 REQUIRE_CLAUSE = ms_parser.create_group(
     name="require_clause",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_REQUIRE, "require_list"],
             action=lambda x: ast.RequireList(x[1])

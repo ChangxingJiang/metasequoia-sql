@@ -32,10 +32,26 @@ class HistogramUpdateParam(Node):
 
     @property
     def num_buckets(self) -> Optional[int]:
+        """
+        直方图桶数量
+
+        Returns
+        -------
+        Optional[int]
+            直方图桶数量
+        """
         return self._num_buckets
 
     @property
     def data(self) -> Optional[str]:
+        """
+        直方图数据
+
+        Returns
+        -------
+        Optional[str]
+            直方图数据
+        """
         return self._data
 
 
@@ -64,14 +80,38 @@ class Histogram(Node):
 
     @property
     def command_type(self) -> EnumHistogramCommandType:
+        """
+        直方图命令类型
+
+        Returns
+        -------
+        EnumHistogramCommandType
+            直方图命令类型
+        """
         return self._command_type
 
     @property
     def column_list(self) -> List[str]:
+        """
+        列名列表
+
+        Returns
+        -------
+        List[str]
+            列名列表
+        """
         return self._column_list
 
     @property
     def update_param(self) -> Optional[HistogramUpdateParam]:
+        """
+        直方图更新参数
+
+        Returns
+        -------
+        Optional[HistogramUpdateParam]
+            直方图更新参数
+        """
         return self._update_param
 
 
@@ -91,12 +131,36 @@ class AnalyzeTableStatement(Statement):
 
     @property
     def no_write_to_binlog(self) -> bool:
+        """
+        是否不写入二进制日志
+
+        Returns
+        -------
+        bool
+            是否不写入二进制日志
+        """
         return self._no_write_to_binlog
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        表标识符列表
+
+        Returns
+        -------
+        List["Identifier"]
+            表标识符列表
+        """
         return self._table_list
 
     @property
     def opt_histogram(self) -> Optional[Histogram]:
+        """
+        可选的直方图
+
+        Returns
+        -------
+        Optional[Histogram]
+            可选的直方图
+        """
         return self._opt_histogram

@@ -81,14 +81,29 @@ class DdlStrOptionBase(DdlOption):
     """字符串类型的 DDL 选项"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: Optional[str]) -> None:
+        """
+        初始化字符串类型的 DDL 选项。
+
+        Parameters
+        ----------
+        value : Optional[str]
+            选项值
+        """
         self._value = value
 
     @property
     def value(self) -> Optional[str]:
+        """获取选项值。
+        
+        Returns
+        -------
+        Optional[str]
+            选项值
+        """
         return self._value
 
 
@@ -96,14 +111,29 @@ class DdlIntOptionBase(DdlOption):
     """整数类型的 DDL 选项"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: int) -> None:
+        """
+        初始化整数类型的 DDL 选项。
+
+        Parameters
+        ----------
+        value : int
+            选项值
+        """
         self._value = value
 
     @property
     def value(self) -> int:
+        """获取选项值。
+        
+        Returns
+        -------
+        int
+            选项值
+        """
         return self._value
 
 
@@ -111,14 +141,29 @@ class DdlExpressionOptionBase(DdlOption):
     """表达式类型的 DDL 选项"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: Expression):
+        """
+        初始化表达式类型的 DDL 选项。
+
+        Parameters
+        ----------
+        value : Expression
+            选项值表达式
+        """
         self._value = value
 
     @property
     def value(self) -> Expression:
+        """获取选项值表达式。
+        
+        Returns
+        -------
+        Expression
+            选项值表达式
+        """
         return self._value
 
 
@@ -126,14 +171,29 @@ class DdlCharsetOptionBase(DdlOption):
     """字符集类型的 DDL 选项"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: "Charset"):
+        """
+        初始化字符集类型的 DDL 选项。
+
+        Parameters
+        ----------
+        value : Charset
+            选项值字符集
+        """
         self._value = value
 
     @property
     def value(self) -> "Charset":
+        """获取选项值字符集。
+        
+        Returns
+        -------
+        Charset
+            选项值字符集
+        """
         return self._value
 
 
@@ -141,14 +201,29 @@ class DdlBoolOptionBase(DdlOption):
     """布尔值类型的 DDL 选项"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: bool):
+        """
+        初始化布尔值类型的 DDL 选项。
+
+        Parameters
+        ----------
+        value : bool
+            选项值
+        """
         self._value = value
 
     @property
     def value(self) -> bool:
+        """获取选项值。
+        
+        Returns
+        -------
+        bool
+            选项值
+        """
         return self._value
 
 
@@ -224,14 +299,29 @@ class DdlOptionRowFormat(DdlOption):
     """DDL 选项：ROW_FORMAT（表属性）"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: "EnumRowFormatType"):
+        """
+        初始化行格式选项。
+
+        Parameters
+        ----------
+        value : EnumRowFormatType
+            行格式类型
+        """
         self._value = value
 
     @property
     def value(self) -> "EnumRowFormatType":
+        """获取行格式类型。
+        
+        Returns
+        -------
+        EnumRowFormatType
+            行格式类型
+        """
         return self._value
 
 
@@ -239,14 +329,29 @@ class DdlOptionUnion(DdlOption):
     """DDL 选项：UNION（表属性）"""
 
     __slots__ = (
-        "_table_list"
+        "_table_list",
     )
 
     def __init__(self, table_list: List["Identifier"]):
+        """
+        初始化联合表选项。
+
+        Parameters
+        ----------
+        table_list : List[Identifier]
+            表标识符列表
+        """
         self._table_list = table_list
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """获取表标识符列表。
+        
+        Returns
+        -------
+        List[Identifier]
+            表标识符列表
+        """
         return self._table_list
 
 
@@ -266,14 +371,30 @@ class DdlOptionReadOnly(DdlOption):
     """DDL 选项：READ ONLY（数据库属性）"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: Expression):
+        """
+        初始化只读选项。
+
+        Parameters
+        ----------
+        value : Expression
+            选项值表达式
+        """
         self._value = value
 
     @property
     def value(self) -> Expression:
+        """
+        只读选项值
+
+        Returns
+        -------
+        Expression
+            选项值表达式
+        """
         return self._value
 
 
@@ -281,14 +402,29 @@ class DdlOptionInsertMethod(DdlOption):
     """DDL 选项：INSERT_METHOD（表属性）"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: "EnumMergeInsertType"):
+        """
+        初始化插入方法选项。
+
+        Parameters
+        ----------
+        value : EnumMergeInsertType
+            合并插入类型
+        """
         self._value = value
 
     @property
     def value(self) -> "EnumMergeInsertType":
+        """获取合并插入类型。
+        
+        Returns
+        -------
+        EnumMergeInsertType
+            合并插入类型
+        """
         return self._value
 
 
@@ -315,14 +451,29 @@ class DdlOptionStorage(DdlOption):
     """DDL 选项：STORAGE（表属性）"""
 
     __slots__ = (
-        "_value"
+        "_value",
     )
 
     def __init__(self, value: EnumStorageType):
+        """
+        初始化存储类型选项。
+
+        Parameters
+        ----------
+        value : EnumStorageType
+            存储类型
+        """
         self._value = value
 
     @property
     def value(self) -> EnumStorageType:
+        """获取存储类型。
+        
+        Returns
+        -------
+        EnumStorageType
+            存储类型
+        """
         return self._value
 
 

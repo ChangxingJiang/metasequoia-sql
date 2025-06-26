@@ -34,13 +34,34 @@ class FieldTypeParams(Node):
 
     @property
     def option_1(self) -> Optional[Decimal]:
+        """获取第一个参数。
+        
+        Returns
+        -------
+        Optional[Decimal]
+            第一个参数
+        """
         return self._option_1
 
     @property
     def option_2(self) -> Optional[Decimal]:
+        """获取第二个参数。
+        
+        Returns
+        -------
+        Optional[Decimal]
+            第二个参数
+        """
         return self._option_2
 
     def as_param_list(self) -> List[Expression]:
+        """将参数转换为表达式列表。
+        
+        Returns
+        -------
+        List[Expression]
+            表达式列表
+        """
         param_list = []
         if self._option_1 is not None:
             param_list.append(DecimalLiteral(self._option_1))
@@ -94,18 +115,47 @@ class CastType(Node):
 
     @staticmethod
     def default() -> "CastType":
+        """
+        创建默认的转换类型
+
+        Returns
+        -------
+        CastType
+            默认的转换类型实例
+        """
         return CastType(field_type=CastTypeEnum.DEFAULT)
 
     @property
     def field_type(self) -> CastTypeEnum:
+        """获取字段类型。
+        
+        Returns
+        -------
+        CastTypeEnum
+            字段类型
+        """
         return self._field_type
 
     @property
     def params(self) -> FieldTypeParams:
+        """获取类型参数。
+        
+        Returns
+        -------
+        FieldTypeParams
+            类型参数
+        """
         return self._type_params
 
     @property
-    def charset(self) -> Charset:
+    def charset(self) -> Optional[Charset]:
+        """获取字符集。
+        
+        Returns
+        -------
+        Optional[Charset]
+            字符集
+        """
         return self._charset
 
 
@@ -185,6 +235,23 @@ class FieldType(Node):
                  options: Optional[FieldOption] = None,
                  enum_value_list: Optional[List[str]] = None,
                  charset: Optional[Charset] = None):
+        # pylint: disable=R0913
+        """
+        初始化字段类型。
+
+        Parameters
+        ----------
+        field_type : FieldTypeEnum
+            字段类型
+        params : Optional[FieldTypeParams], optional
+            类型参数
+        options : Optional[FieldOption], optional
+            字段选项
+        enum_value_list : Optional[List[str]], optional
+            枚举值列表
+        charset : Optional[Charset], optional
+            字符集
+        """
         self._field_type = field_type
         self._params = params
         self._options = options
@@ -193,20 +260,55 @@ class FieldType(Node):
 
     @property
     def field_type(self) -> FieldTypeEnum:
+        """获取字段类型。
+        
+        Returns
+        -------
+        FieldTypeEnum
+            字段类型
+        """
         return self._field_type
 
     @property
     def params(self) -> Optional[FieldTypeParams]:
+        """获取类型参数。
+        
+        Returns
+        -------
+        Optional[FieldTypeParams]
+            类型参数
+        """
         return self._params
 
     @property
     def options(self) -> Optional[FieldOption]:
+        """获取字段选项。
+        
+        Returns
+        -------
+        Optional[FieldOption]
+            字段选项
+        """
         return self._options
 
     @property
     def enum_value_list(self) -> Optional[List[str]]:
+        """获取枚举值列表。
+        
+        Returns
+        -------
+        Optional[List[str]]
+            枚举值列表
+        """
         return self._enum_value_list
 
     @property
     def charset(self) -> Optional[Charset]:
+        """获取字符集。
+        
+        Returns
+        -------
+        Optional[Charset]
+            字符集
+        """
         return self._charset

@@ -35,9 +35,30 @@ class SetOptionValue(Node):
 
     @property
     def option_type(self) -> "EnumSetOptionType":
+        """
+        选项类型
+
+        Returns
+        -------
+        EnumSetOptionType
+            选项类型
+        """
         return self._option_type
 
     def set_option_type(self, option_type: "EnumSetOptionType") -> "SetOptionValue":
+        """
+        设置选项类型
+
+        Parameters
+        ----------
+        option_type : EnumSetOptionType
+            选项类型
+
+        Returns
+        -------
+        SetOptionValue
+            设置选项值
+        """
         self._option_type = option_type
         return self
 
@@ -62,10 +83,26 @@ class SetVariableValue(SetOptionValue):
 
     @property
     def variable(self) -> "Identifier":
+        """
+        变量标识符
+
+        Returns
+        -------
+        Identifier
+            变量标识符
+        """
         return self._variable
 
     @property
     def value(self) -> Expression:
+        """
+        设置的值
+
+        Returns
+        -------
+        Expression
+            设置的值
+        """
         return self._value
 
 
@@ -89,10 +126,26 @@ class SetUserVariableValue(SetOptionValue):
 
     @property
     def variable(self) -> "UserVariable":
+        """
+        用户变量
+
+        Returns
+        -------
+        UserVariable
+            用户变量
+        """
         return self._variable
 
     @property
     def value(self) -> Expression:
+        """
+        设置的值
+
+        Returns
+        -------
+        Expression
+            设置的值
+        """
         return self._value
 
 
@@ -120,14 +173,38 @@ class SetSystemVariableValue(SetOptionValue):
 
     @property
     def variable_type(self) -> "EnumSetVariableType":
+        """
+        变量类型
+
+        Returns
+        -------
+        EnumSetVariableType
+            变量类型
+        """
         return self._variable_type
 
     @property
     def variable(self) -> "Identifier":
+        """
+        变量标识符
+
+        Returns
+        -------
+        Identifier
+            变量标识符
+        """
         return self._variable
 
     @property
     def value(self) -> Expression:
+        """
+        设置的值
+
+        Returns
+        -------
+        Expression
+            设置的值
+        """
         return self._value
 
 
@@ -148,6 +225,14 @@ class SetCharsetValue(SetOptionValue):
 
     @property
     def charset(self) -> Optional["Charset"]:
+        """
+        字符集
+
+        Returns
+        -------
+        Optional[Charset]
+            字符集，None 表示 DEFAULT
+        """
         return self._charset
 
 
@@ -162,6 +247,14 @@ class SetNamesInvalidValue(SetOptionValue):
 
     @property
     def value(self) -> Expression:
+        """
+        值
+
+        Returns
+        -------
+        Expression
+            值
+        """
         return self._value
 
 
@@ -185,20 +278,31 @@ class SetNamesValue(SetOptionValue):
 
     @property
     def charset(self) -> "Charset":
+        """
+        字符集
+
+        Returns
+        -------
+        Charset
+            字符集
+        """
         return self._charset
 
     @property
     def collation(self) -> Optional["Charset"]:
+        """
+        排序规则
+
+        Returns
+        -------
+        Optional[Charset]
+            排序规则
+        """
         return self._collation
 
 
 class SetNamesDefaultValue(SetOptionValue):
     """设置NAMES为默认值 (NAMES DEFAULT)"""
-
-    __slots__ = []
-
-    def __init__(self, option_type: "EnumSetOptionType"):
-        super().__init__(option_type)
 
 
 class SetStatement(Statement):
@@ -217,4 +321,12 @@ class SetStatement(Statement):
 
     @property
     def option_values(self) -> List[SetOptionValue]:
+        """
+        选项值列表
+
+        Returns
+        -------
+        List[SetOptionValue]
+            选项值列表
+        """
         return self._option_values

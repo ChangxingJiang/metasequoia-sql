@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 索引指定子句（index hint clause）
 """

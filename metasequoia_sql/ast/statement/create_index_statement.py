@@ -18,6 +18,7 @@ __all__ = [
 
 
 class CreateIndexStmt(Statement):
+    # pylint: disable=R0902
     """CREATE INDEX 语句"""
 
     __slots__ = (
@@ -41,6 +42,7 @@ class CreateIndexStmt(Statement):
                  alter_lock: Optional["AlterOptionLock"],
                  alter_algorithm: Optional["AlterOptionAlgorithm"]
                  ):
+        # pylint: disable=R0913
         self._index_type = index_type
         self._index_name = index_name
         self._index_structure_type = index_structure_type
@@ -52,32 +54,96 @@ class CreateIndexStmt(Statement):
 
     @property
     def index_type(self) -> "EnumIndexType":
+        """
+        索引类型
+
+        Returns
+        -------
+        EnumIndexType
+            索引类型
+        """
         return self._index_type
 
     @property
     def index_name(self) -> str:
+        """
+        索引名称
+
+        Returns
+        -------
+        str
+            索引名称
+        """
         return self._index_name
 
     @property
     def index_structure_type(self) -> Optional["IndexAttrUsingIndexType"]:
+        """
+        索引结构类型
+
+        Returns
+        -------
+        Optional["IndexAttrUsingIndexType"]
+            索引结构类型
+        """
         return self._index_structure_type
 
     @property
     def table_name(self) -> "Identifier":
+        """
+        表名标识符
+
+        Returns
+        -------
+        Identifier
+            表名标识符
+        """
         return self._table_name
 
     @property
     def index_key_list(self) -> List["IndexKeyDefinition"]:
+        """
+        索引键定义列表
+
+        Returns
+        -------
+        List["IndexKeyDefinition"]
+            索引键定义列表
+        """
         return self._index_key_list
 
     @property
     def index_options(self) -> List["IndexAttribute"]:
+        """
+        索引属性列表
+
+        Returns
+        -------
+        List["IndexAttribute"]
+            索引属性列表
+        """
         return self._index_options
 
     @property
     def alter_lock(self) -> Optional["AlterOptionLock"]:
+        """
+        ALTER 锁选项
+
+        Returns
+        -------
+        Optional["AlterOptionLock"]
+            ALTER 锁选项
+        """
         return self._alter_lock
 
     @property
     def alter_algorithm(self) -> Optional["AlterOptionAlgorithm"]:
+        """
+        ALTER 算法选项
+
+        Returns
+        -------
+        Optional["AlterOptionAlgorithm"]
+            ALTER 算法选项
+        """
         return self._alter_algorithm

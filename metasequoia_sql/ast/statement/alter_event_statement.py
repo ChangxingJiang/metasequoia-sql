@@ -19,6 +19,7 @@ __all__ = [
 
 
 class AlterEventStatement(Statement):
+    # pylint: disable=R0902
     """ALTER EVENT 语句"""
 
     __slots__ = (
@@ -41,6 +42,7 @@ class AlterEventStatement(Statement):
                  event_status: Optional["EnumEventStatusType"],
                  event_comment: Optional[str],
                  process_command: Optional["ProcessCommand"]):
+        # pylint: disable=R0913
         """
         初始化 ALTER EVENT 语句
 
@@ -74,32 +76,96 @@ class AlterEventStatement(Statement):
 
     @property
     def definer(self) -> Optional["UserName"]:
+        """
+        定义者子句
+
+        Returns
+        -------
+        Optional[UserName]
+            定义者子句，如果为 None 则表示使用当前用户
+        """
         return self._definer
 
     @property
     def event_name(self) -> "Identifier":
+        """
+        事件名称
+
+        Returns
+        -------
+        Identifier
+            事件名称
+        """
         return self._event_name
 
     @property
     def schedule_time(self) -> Optional["ScheduleTime"]:
+        """
+        调度时间
+
+        Returns
+        -------
+        Optional[ScheduleTime]
+            调度时间，如果为 None 则表示不修改调度时间
+        """
         return self._schedule_time
 
     @property
     def completion_type(self) -> Optional["EnumEventCompletionType"]:
+        """
+        完成类型
+
+        Returns
+        -------
+        Optional[EnumEventCompletionType]
+            完成类型，如果为 None 则表示不修改完成类型
+        """
         return self._completion_type
 
     @property
     def event_rename(self) -> Optional["Identifier"]:
+        """
+        事件重命名
+
+        Returns
+        -------
+        Optional[Identifier]
+            事件重命名，如果为 None 则表示不重命名
+        """
         return self._event_rename
 
     @property
     def event_status(self) -> Optional["EnumEventStatusType"]:
+        """
+        事件状态
+
+        Returns
+        -------
+        Optional[EnumEventStatusType]
+            事件状态，如果为 None 则表示不修改状态
+        """
         return self._event_status
 
     @property
     def event_comment(self) -> Optional[str]:
+        """
+        事件注释
+
+        Returns
+        -------
+        Optional[str]
+            事件注释，如果为 None 则表示不修改注释
+        """
         return self._event_comment
 
     @property
     def process_command(self) -> Optional["ProcessCommand"]:
+        """
+        事件执行的 SQL 语句
+
+        Returns
+        -------
+        Optional[ProcessCommand]
+            事件执行的 SQL 语句，如果为 None 则表示不修改
+        """
         return self._process_command

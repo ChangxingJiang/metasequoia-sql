@@ -49,6 +49,7 @@ class SelectOption(IntFlag):
 
 
 class SimpleQuery(QueryBody):
+    # pylint: disable=R0902
     """简单查询（包括查询选项、查询字段表达式、INTO 子句、FROM 子句、WHERE 子句、GROUP BY 子句、HAVING 子句、WINDOW 子句和 QUALIFY 子句）"""
 
     __slots__ = ["_select_option", "_select_item_list", "_into_clause", "_from_clause", "_where_clause",
@@ -65,6 +66,7 @@ class SimpleQuery(QueryBody):
                  window_clause: Optional[List["Window"]],
                  qualify_clause: Optional[Expression]
                  ):
+        # pylint: disable=R0913
         self._select_option = select_option
         self._select_item_list = select_item_list
         self._into_clause = into_clause
@@ -77,38 +79,110 @@ class SimpleQuery(QueryBody):
 
     @property
     def select_option(self) -> SelectOption:
+        """
+        查询选项
+
+        Returns
+        -------
+        SelectOption
+            查询选项
+        """
         return self._select_option
 
     @property
     def select_item_list(self) -> List[Expression]:
+        """
+        查询字段列表
+
+        Returns
+        -------
+        List[Expression]
+            查询字段列表
+        """
         return self._select_item_list
 
     @property
     def into_clause(self) -> Optional["IntoClause"]:
+        """
+        INTO 子句
+
+        Returns
+        -------
+        Optional[IntoClause]
+            INTO 子句
+        """
         return self._into_clause
 
     @property
     def from_clause(self) -> Optional[List[Table]]:
+        """
+        FROM 子句
+
+        Returns
+        -------
+        Optional[List[Table]]
+            FROM 子句
+        """
         return self._from_clause
 
     @property
     def where_clause(self) -> Optional[Expression]:
+        """
+        WHERE 子句
+
+        Returns
+        -------
+        Optional[Expression]
+            WHERE 子句
+        """
         return self._where_clause
 
     @property
     def group_by_clause(self) -> Optional["GroupByClause"]:
+        """
+        GROUP BY 子句
+
+        Returns
+        -------
+        Optional[GroupByClause]
+            GROUP BY 子句
+        """
         return self._group_by_clause
 
     @property
     def having_clause(self) -> Optional[Expression]:
+        """
+        HAVING 子句
+
+        Returns
+        -------
+        Optional[Expression]
+            HAVING 子句
+        """
         return self._having_clause
 
     @property
     def window_clause(self) -> Optional[List["Window"]]:
+        """
+        WINDOW 子句
+
+        Returns
+        -------
+        Optional[List[Window]]
+            WINDOW 子句
+        """
         return self._window_clause
 
     @property
     def quality_clause(self) -> Optional[Expression]:
+        """
+        QUALIFY 子句
+
+        Returns
+        -------
+        Optional[Expression]
+            QUALIFY 子句
+        """
         return self._qualify_clause
 
 
@@ -122,6 +196,14 @@ class TableValueConstructor(QueryBody):
 
     @property
     def row_list(self) -> List["Row"]:
+        """
+        行列表
+
+        Returns
+        -------
+        List[Row]
+            行列表
+        """
         return self._row_list
 
 
@@ -135,6 +217,14 @@ class ExplicitTable(QueryBody):
 
     @property
     def table_ident(self) -> "Identifier":
+        """
+        表标识符
+
+        Returns
+        -------
+        Identifier
+            表标识符
+        """
         return self._table_ident
 
 
@@ -158,14 +248,38 @@ class UnionBase(QueryBody):
 
     @property
     def left_operand(self) -> QueryBody:
+        """
+        左操作数
+
+        Returns
+        -------
+        QueryBody
+            左操作数
+        """
         return self._left_operand
 
     @property
     def union_option(self) -> UnionOption:
+        """
+        联合选项
+
+        Returns
+        -------
+        UnionOption
+            联合选项
+        """
         return self._union_option
 
     @property
     def right_operand(self) -> QueryBody:
+        """
+        右操作数
+
+        Returns
+        -------
+        QueryBody
+            右操作数
+        """
         return self._right_operand
 
 
@@ -192,6 +306,7 @@ class QueryExpression(Node):
                  order_by_clause: Optional["OrderByClause"],
                  limit_clause: Optional["LimitClause"],
                  locking_clause_list: Optional[List["LockingClause"]] = None):
+        # pylint: disable=R0913
         if locking_clause_list is None:
             locking_clause_list = []
 
@@ -203,25 +318,78 @@ class QueryExpression(Node):
 
     @property
     def with_clause(self) -> Optional["WithClause"]:
+        """
+        WITH 子句
+
+        Returns
+        -------
+        Optional[WithClause]
+            WITH 子句
+        """
         return self._with_clause
 
     @property
     def query_body(self) -> QueryBody:
+        """
+        查询体
+
+        Returns
+        -------
+        QueryBody
+            查询体
+        """
         return self._query_body
 
     @property
     def order_clause(self) -> Optional["OrderByClause"]:
+        """
+        ORDER BY 子句
+
+        Returns
+        -------
+        Optional[OrderByClause]
+            ORDER BY 子句
+        """
         return self._order_clause
 
     @property
     def limit_clause(self) -> Optional["LimitClause"]:
+        """
+        LIMIT 子句
+
+        Returns
+        -------
+        Optional[LimitClause]
+            LIMIT 子句
+        """
         return self._limit_clause
 
     @property
     def locking_clause_list(self) -> List["LockingClause"]:
+        """
+        锁定子句列表
+
+        Returns
+        -------
+        List[LockingClause]
+            锁定子句列表
+        """
         return self._locking_clause_list
 
     def set_locking_clause(self, locking_clause_list: List["LockingClause"]) -> "QueryExpression":
+        """
+        设置锁定子句
+
+        Parameters
+        ----------
+        locking_clause_list : List[LockingClause]
+            锁定子句列表
+
+        Returns
+        -------
+        QueryExpression
+            查询表达式
+        """
         self._locking_clause_list = locking_clause_list
         return self
 
@@ -239,4 +407,12 @@ class SelectStatement(Statement):
 
     @property
     def query_expression(self) -> QueryExpression:
+        """
+        查询表达式
+
+        Returns
+        -------
+        QueryExpression
+            查询表达式
+        """
         return self._query_expression

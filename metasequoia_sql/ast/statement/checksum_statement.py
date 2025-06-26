@@ -29,8 +29,24 @@ class ChecksumStatement(Statement):
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        表标识符列表
+
+        Returns
+        -------
+        List["Identifier"]
+            表标识符列表
+        """
         return self._table_list
 
     @property
     def checksum_type(self) -> "EnumChecksumType":
+        """
+        校验和类型
+
+        Returns
+        -------
+        EnumChecksumType
+            校验和类型
+        """
         return self._checksum_type

@@ -23,4 +23,12 @@ class ImportTableStatement(Statement):
 
     @property
     def file_list(self) -> List[str]:
+        """
+        文件列表
+
+        Returns
+        -------
+        List[str]
+            文件列表
+        """
         return self._file_list

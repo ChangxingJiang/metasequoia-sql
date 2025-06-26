@@ -18,7 +18,7 @@ class SqlState(Node):
     """
 
     __slots__ = (
-        "_sqlstate_value"
+        "_sqlstate_value",
     )
 
     def __init__(self, sqlstate_value: str) -> None:
@@ -42,4 +42,4 @@ class SqlState(Node):
         str
             SQL状态值
         """
-        return self._sqlstate_value 
+        return self._sqlstate_value

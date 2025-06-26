@@ -25,12 +25,28 @@ class StartTransactionStatement(Statement):
     """START TRANSACTION 语句"""
 
     __slots__ = (
-        "_options"
+        "_options",
     )
 
     def __init__(self, options: StartTransactionOption):
+        """
+        初始化 START TRANSACTION 语句
+
+        Parameters
+        ----------
+        options : StartTransactionOption
+            事务选项
+        """
         self._options = options
 
     @property
     def options(self) -> StartTransactionOption:
+        """
+        事务选项
+
+        Returns
+        -------
+        StartTransactionOption
+            事务选项
+        """
         return self._options

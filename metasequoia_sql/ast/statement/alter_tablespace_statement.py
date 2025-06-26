@@ -33,30 +33,72 @@ class AlterTablespaceStatement(Statement):
     def __init__(self,
                  tablespace_name: str,
                  action_type: EnumAlterTablespaceActionType,
-                 datafile: str = None, target_name: Optional[str] = None,
-                 option_list: List["DdlOption"] = None):
+                 datafile: Optional[str] = None,
+                 target_name: Optional[str] = None,
+                 option_list: Optional[List["DdlOption"]] = None):
+        # pylint: disable=R0913
         self._tablespace_name = tablespace_name
         self._action_type = action_type  # ADD, DROP, RENAME, ALTER
         self._datafile = datafile
         self._target_name = target_name  # for RENAME operation
-        self._option_list = option_list
+        self._option_list = option_list if option_list is not None else []
 
     @property
     def tablespace_name(self) -> str:
+        """
+        表空间名称
+
+        Returns
+        -------
+        str
+            表空间名称
+        """
         return self._tablespace_name
 
     @property
-    def action_type(self) -> str:
+    def action_type(self) -> EnumAlterTablespaceActionType:
+        """
+        操作类型
+
+        Returns
+        -------
+        EnumAlterTablespaceActionType
+            操作类型（ADD、DROP、RENAME、ALTER）
+        """
         return self._action_type
 
     @property
-    def datafile(self) -> str:
+    def datafile(self) -> Optional[str]:
+        """
+        数据文件路径
+
+        Returns
+        -------
+        Optional[str]
+            数据文件路径
+        """
         return self._datafile
 
     @property
     def target_name(self) -> Optional[str]:
+        """
+        目标名称
+
+        Returns
+        -------
+        Optional[str]
+            目标名称（用于重命名操作）
+        """
         return self._target_name
 
     @property
     def option_list(self) -> List["DdlOption"]:
+        """
+        DDL 选项列表
+
+        Returns
+        -------
+        List["DdlOption"]
+            DDL 选项列表
+        """
         return self._option_list

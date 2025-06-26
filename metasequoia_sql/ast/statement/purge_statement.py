@@ -28,6 +28,14 @@ class PurgeToOption(PurgeOption):
 
     @property
     def log_file(self) -> str:
+        """
+        日志文件
+
+        Returns
+        -------
+        str
+            日志文件
+        """
         return self._log_file
 
 
@@ -43,6 +51,14 @@ class PurgeBeforeOption(PurgeOption):
 
     @property
     def before_expression(self) -> Expression:
+        """
+        BEFORE 表达式
+
+        Returns
+        -------
+        Expression
+            BEFORE 表达式
+        """
         return self._before_expression
 
 
@@ -58,4 +74,12 @@ class PurgeStatement(Statement):
 
     @property
     def purge_option(self) -> PurgeOption:
+        """
+        清除选项
+
+        Returns
+        -------
+        PurgeOption
+            清除选项
+        """
         return self._purge_option

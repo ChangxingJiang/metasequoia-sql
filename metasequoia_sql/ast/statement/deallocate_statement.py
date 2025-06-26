@@ -24,7 +24,7 @@ class DeallocateStatement(Statement):
     """
 
     __slots__ = (
-        "_statement_name"
+        "_statement_name",
     )
 
     def __init__(self, statement_name: str) -> None:

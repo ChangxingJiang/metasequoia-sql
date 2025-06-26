@@ -27,8 +27,24 @@ class SetResourceGroupStatement(Statement):
 
     @property
     def resource_group_name(self) -> str:
+        """
+        资源组名称
+
+        Returns
+        -------
+        str
+            资源组名称
+        """
         return self._resource_group_name
 
     @property
-    def thread_id_list(self) -> List[int]:
+    def thread_id_list(self) -> Optional[List[int]]:
+        """
+        线程 ID 列表
+
+        Returns
+        -------
+        Optional[List[int]]
+            线程 ID 列表
+        """
         return self._thread_id_list

@@ -36,7 +36,7 @@ SET_ROLE_STATEMENT = ms_parser.create_group(
                      TType.KEYWORD_TO, "user_name_list"],
             action=lambda x: ast.SetDefaultRoleStatement(role_list=x[3], user_list=x[5])
         ),
-        # SET DEFAULT ROLE NONE TO role_list  
+        # SET DEFAULT ROLE NONE TO role_list
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_SET, TType.KEYWORD_DEFAULT, TType.KEYWORD_ROLE, TType.KEYWORD_NONE,
                      TType.KEYWORD_TO, "user_name_list"],

@@ -41,14 +41,38 @@ class SrsAttribute(Node):
 
     @property
     def attribute_type(self) -> SrsAttributeType:
+        """
+        SRS 属性类型
+
+        Returns
+        -------
+        SrsAttributeType
+            SRS 属性类型
+        """
         return self._attribute_type
 
     @property
     def value(self) -> str:
+        """
+        属性值
+
+        Returns
+        -------
+        str
+            属性值
+        """
         return self._value
 
     @property
     def organization_coordsys_id(self) -> Optional[int]:
+        """
+        组织坐标系 ID
+
+        Returns
+        -------
+        Optional[int]
+            组织坐标系 ID
+        """
         return self._organization_coordsys_id
 
 
@@ -69,16 +93,48 @@ class CreateSrsStatement(Statement):
 
     @property
     def srid(self) -> int:
+        """
+        空间参考系标识符
+
+        Returns
+        -------
+        int
+            空间参考系标识符
+        """
         return self._srid
 
     @property
     def attributes(self) -> list[SrsAttribute]:
+        """
+        SRS 属性列表
+
+        Returns
+        -------
+        list[SrsAttribute]
+            SRS 属性列表
+        """
         return self._attributes
 
     @property
     def or_replace(self) -> bool:
+        """
+        是否使用 OR REPLACE 选项
+
+        Returns
+        -------
+        bool
+            是否使用 OR REPLACE 选项
+        """
         return self._or_replace
 
     @property
     def if_not_exists(self) -> bool:
+        """
+        是否使用 IF NOT EXISTS 选项
+
+        Returns
+        -------
+        bool
+            是否使用 IF NOT EXISTS 选项
+        """
         return self._if_not_exists

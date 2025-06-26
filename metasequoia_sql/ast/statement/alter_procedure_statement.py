@@ -29,8 +29,24 @@ class AlterProcedureStatement(Statement):
 
     @property
     def procedure_name(self) -> "Identifier":
+        """
+        存储过程名称
+
+        Returns
+        -------
+        Identifier
+            存储过程名称标识符
+        """
         return self._procedure_name
 
     @property
     def option_list(self) -> List["FunctionOption"]:
-        return self._option_list 
+        """
+        函数选项列表
+
+        Returns
+        -------
+        List["FunctionOption"]
+            函数选项列表
+        """
+        return self._option_list

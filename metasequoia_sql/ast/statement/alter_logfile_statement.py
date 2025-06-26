@@ -26,12 +26,36 @@ class AlterLogfileStatement(Statement):
 
     @property
     def group_name(self) -> str:
+        """
+        日志文件组名称
+
+        Returns
+        -------
+        str
+            日志文件组名称
+        """
         return self._group_name
 
     @property
     def undofile(self) -> str:
+        """
+        撤销文件路径
+
+        Returns
+        -------
+        str
+            撤销文件路径
+        """
         return self._undofile
 
     @property
     def option_list(self) -> List["DdlOption"]:
+        """
+        DDL 选项列表
+
+        Returns
+        -------
+        List["DdlOption"]
+            DDL 选项列表
+        """
         return self._option_list

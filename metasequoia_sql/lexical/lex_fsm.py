@@ -30,6 +30,8 @@ __all__ = [
 
 
 class LexFSM(LexicalFSM):
+    # pylint: disable=R0903
+
     """SQL 词法解析器"""
 
     def __init__(self, text: str):
@@ -53,7 +55,8 @@ class LexFSM(LexicalFSM):
                 return terminal
 
 
-def _find_end_mark(fsm: LexFSM, mark: str) -> str:
+
+def _find_end_mark(fsm: LexFSM, mark: str) -> Optional[str]:
     """寻找对应的闭引号字符（mark），返回构造的字符串
 
     指针位置：
@@ -90,6 +93,7 @@ def _find_end_mark(fsm: LexFSM, mark: str) -> str:
             result.append(ch)
             fsm.idx += 1
         ch = fsm.text[fsm.idx]
+    return None  # 原则上不会运行到这里
 
 
 def lex_start_action(fsm: LexFSM) -> None:
@@ -105,11 +109,13 @@ def lex_start_action(fsm: LexFSM) -> None:
 
 
 def lex_eof_action(fsm: LexFSM) -> Terminal:
+    # pylint: disable=W0613
     """处理 LEX_EOF 状态的逻辑，不移动指针"""
     return Terminal(symbol_id=TType.SYSTEM_END_OF_INPUT, value=None)
 
 
 def lex_error_action(fsm: LexFSM) -> Terminal:
+    # pylint: disable=W0613
     """处理 LEX_ERROR 状态的逻辑，不移动指针"""
     return Terminal(symbol_id=TType.SYSTEM_ABORT, value=None)
 
@@ -418,7 +424,6 @@ def lex_string_action(fsm: LexFSM) -> Terminal:
 def lex_string_or_delimiter_action(fsm: LexFSM) -> None:
     """处理 LEX_STRING_OR_DELIMITER 状态的逻辑，指向元素之后的第 1 个字符 TODO 待增加作为反引号的模式"""
     fsm.state = LexStates.LEX_STRING
-    return None
 
 
 def lex_ident_or_nchar_action(fsm: LexFSM) -> Optional[Terminal]:
@@ -594,7 +599,6 @@ def lex_comment_action(fsm: LexFSM) -> None:
         fsm.idx += 1
         ch = fsm.text[fsm.idx]
     fsm.state = LexStates.LEX_START
-    return None
 
 
 def lex_long_comment_action(fsm: LexFSM) -> None:
@@ -607,6 +611,7 @@ def lex_long_comment_action(fsm: LexFSM) -> None:
             return None
         fsm.idx += 1
         ch = fsm.text[fsm.idx]
+    return None  # 不会运行到这里
 
 
 def lex_semicolon_action(fsm: LexFSM) -> Terminal:
@@ -683,6 +688,7 @@ def lex_at_dollar(fsm: LexFSM) -> Optional[Terminal]:
             last_dollar = False
         fsm.idx += 1
         ch = fsm.text[fsm.idx]
+    return None  # 不会运行到这里
 
 
 # 处理各种状态的映射关系

@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 字面值的语义组
 

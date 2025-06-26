@@ -17,10 +17,7 @@ __all__ = [
 OPT_ACCOUNT_LOCK_EXPIRE_OPTION_LIST = ms_parser.create_group(
     name="opt_account_lock_expire_option_list",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: []
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_LIST,
         ms_parser.create_rule(
             symbols=["account_lock_expire_option_list"],
             action=lambda x: x[0]

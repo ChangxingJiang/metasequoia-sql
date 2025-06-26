@@ -37,14 +37,38 @@ class TableLock:
 
     @property
     def table_name(self) -> "Identifier":
+        """
+        表名称
+
+        Returns
+        -------
+        Identifier
+            表名称
+        """
         return self._table_name
 
     @property
     def alias(self) -> Optional[str]:
+        """
+        表别名
+
+        Returns
+        -------
+        Optional[str]
+            表别名
+        """
         return self._alias
 
     @property
     def lock_option(self) -> "EnumLockOptionType":
+        """
+        锁选项
+
+        Returns
+        -------
+        EnumLockOptionType
+            锁选项
+        """
         return self._lock_option
 
 
@@ -64,6 +88,14 @@ class LockTablesStatement(LockStatement):
 
     @property
     def table_lock_list(self) -> List[TableLock]:
+        """
+        表锁列表
+
+        Returns
+        -------
+        List[TableLock]
+            表锁列表
+        """
         return self._table_lock_list
 
 

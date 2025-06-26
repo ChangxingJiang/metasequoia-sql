@@ -2,7 +2,7 @@
 重命名语句的抽象语法树节点。
 """
 
-from typing import List, Tuple, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Tuple
 
 from metasequoia_sql.ast.base import Statement
 
@@ -30,7 +30,7 @@ class RenameTableStatement(RenameStatement):
     """
 
     __slots__ = (
-        "_table_pairs"
+        "_table_pairs",
     )
 
     def __init__(self, table_pairs: List[Tuple["Identifier", "Identifier"]]) -> None:
@@ -38,6 +38,14 @@ class RenameTableStatement(RenameStatement):
 
     @property
     def table_pairs(self) -> List[Tuple["Identifier", "Identifier"]]:
+        """
+        表重命名对列表
+
+        Returns
+        -------
+        List[Tuple[Identifier, Identifier]]
+            表重命名对列表
+        """
         return self._table_pairs
 
 
@@ -50,7 +58,7 @@ class RenameUserStatement(RenameStatement):
     """
 
     __slots__ = (
-        "_user_pairs"
+        "_user_pairs",
     )
 
     def __init__(self, user_pairs: List[Tuple["UserName", "UserName"]]) -> None:
@@ -58,4 +66,12 @@ class RenameUserStatement(RenameStatement):
 
     @property
     def user_pairs(self) -> List[Tuple["UserName", "UserName"]]:
+        """
+        用户重命名对列表
+
+        Returns
+        -------
+        List[Tuple[UserName, UserName]]
+            用户重命名对列表
+        """
         return self._user_pairs

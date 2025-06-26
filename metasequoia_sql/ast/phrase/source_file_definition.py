@@ -29,6 +29,14 @@ class SourceLogFileDefinition(SourceFileDefinition):
 
     @property
     def file_name(self) -> str:
+        """
+        日志文件名称
+
+        Returns
+        -------
+        str
+            日志文件名称
+        """
         return self._file_name
 
 
@@ -44,6 +52,14 @@ class SourceLogPositionDefinition(SourceFileDefinition):
 
     @property
     def position(self) -> int:
+        """
+        日志文件位置
+
+        Returns
+        -------
+        int
+            日志文件位置
+        """
         return self._position
 
 
@@ -59,6 +75,14 @@ class RelayLogFileDefinition(SourceFileDefinition):
 
     @property
     def file_name(self) -> str:
+        """
+        中继日志文件名称
+
+        Returns
+        -------
+        str
+            中继日志文件名称
+        """
         return self._file_name
 
 
@@ -74,4 +98,12 @@ class RelayLogPositionDefinition(SourceFileDefinition):
 
     @property
     def position(self) -> int:
+        """
+        中继日志文件位置
+
+        Returns
+        -------
+        int
+            中继日志文件位置
+        """
         return self._position

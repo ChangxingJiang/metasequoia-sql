@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 RESET 语句（reset statement）
 """
@@ -71,10 +73,7 @@ RESET_OPTION = ms_parser.create_group(
 SOURCE_RESET_OPTIONS = ms_parser.create_group(
     name="source_reset_options",
     rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda x: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_TO, "int_literal_or_hex"],
             action=lambda x: x[1].value

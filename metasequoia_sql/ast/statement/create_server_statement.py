@@ -40,12 +40,36 @@ class CreateServerStatement(Statement):
 
     @property
     def server_name(self) -> str:
+        """
+        服务器名称
+
+        Returns
+        -------
+        str
+            服务器名称
+        """
         return self._server_name
 
     @property
     def wrapper_name(self) -> str:
+        """
+        外部数据包装器名称
+
+        Returns
+        -------
+        str
+            外部数据包装器名称
+        """
         return self._wrapper_name
 
     @property
     def options(self) -> List["ServerOption"]:
+        """
+        服务器选项列表
+
+        Returns
+        -------
+        List["ServerOption"]
+            服务器选项列表
+        """
         return self._options

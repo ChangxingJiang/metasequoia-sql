@@ -49,6 +49,13 @@ class Identification(Node):
 
     @property
     def identification_type(self) -> IdentificationType:
+        """获取身份认证类型。
+        
+        Returns
+        -------
+        IdentificationType
+            身份认证类型
+        """
         return self._identification_type
 
 
@@ -69,6 +76,13 @@ class IdentifiedByPassword(Identification):
 
     @property
     def password(self) -> str:
+        """获取明文密码。
+        
+        Returns
+        -------
+        str
+            明文密码
+        """
         return self._password
 
 
@@ -78,6 +92,9 @@ class IdentifiedByRandomPassword(Identification):
     __slots__ = []
 
     def __init__(self):
+        """
+        初始化随机密码身份认证。
+        """
         super().__init__(IdentificationType.BY_RANDOM_PASSWORD)
 
 
@@ -98,6 +115,13 @@ class IdentifiedWithPlugin(Identification):
 
     @property
     def plugin(self) -> str:
+        """获取认证插件名称。
+        
+        Returns
+        -------
+        str
+            认证插件名称
+        """
         return self._plugin
 
 
@@ -121,10 +145,24 @@ class IdentifiedWithPluginAsAuth(Identification):
 
     @property
     def plugin(self) -> str:
+        """获取认证插件名称。
+        
+        Returns
+        -------
+        str
+            认证插件名称
+        """
         return self._plugin
 
     @property
     def auth_string(self) -> str:
+        """获取认证字符串。
+        
+        Returns
+        -------
+        str
+            认证字符串（哈希）
+        """
         return self._auth_string
 
 
@@ -148,10 +186,24 @@ class IdentifiedWithPluginByPassword(Identification):
 
     @property
     def plugin(self) -> str:
+        """获取认证插件名称。
+        
+        Returns
+        -------
+        str
+            认证插件名称
+        """
         return self._plugin
 
     @property
     def password(self) -> str:
+        """获取明文密码。
+        
+        Returns
+        -------
+        str
+            明文密码
+        """
         return self._password
 
 
@@ -172,4 +224,11 @@ class IdentifiedWithPluginByRandomPassword(Identification):
 
     @property
     def plugin(self) -> str:
+        """获取认证插件名称。
+        
+        Returns
+        -------
+        str
+            认证插件名称
+        """
         return self._plugin

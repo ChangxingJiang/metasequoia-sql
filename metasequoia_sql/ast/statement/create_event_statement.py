@@ -19,6 +19,7 @@ __all__ = [
 
 
 class CreateEventStatement(Statement):
+    # pylint: disable=R0902
     """CREATE EVENT 语句"""
 
     __slots__ = (
@@ -41,6 +42,7 @@ class CreateEventStatement(Statement):
                  event_status: Optional["EnumEventStatusType"],
                  event_comment: Optional[str],
                  event_body: "ProcessCommand"):
+        # pylint: disable=R0913
         """
         初始化 CREATE EVENT 语句
 
@@ -74,32 +76,96 @@ class CreateEventStatement(Statement):
 
     @property
     def definer(self) -> Optional["UserName"]:
+        """
+        事件定义者
+
+        Returns
+        -------
+        Optional["UserName"]
+            事件定义者用户名
+        """
         return self._definer
 
     @property
     def if_not_exists(self) -> bool:
+        """
+        是否使用 IF NOT EXISTS 选项
+
+        Returns
+        -------
+        bool
+            是否使用 IF NOT EXISTS 选项
+        """
         return self._if_not_exists
 
     @property
     def event_name(self) -> "Identifier":
+        """
+        事件名称标识符
+
+        Returns
+        -------
+        Identifier
+            事件名称标识符
+        """
         return self._event_name
 
     @property
     def schedule_time(self) -> "ScheduleTime":
+        """
+        事件调度时间
+
+        Returns
+        -------
+        ScheduleTime
+            事件调度时间
+        """
         return self._schedule_time
 
     @property
     def completion_type(self) -> Optional["EnumEventCompletionType"]:
+        """
+        事件完成类型
+
+        Returns
+        -------
+        Optional["EnumEventCompletionType"]
+            事件完成类型
+        """
         return self._completion_type
 
     @property
     def event_status(self) -> Optional["EnumEventStatusType"]:
+        """
+        事件状态
+
+        Returns
+        -------
+        Optional["EnumEventStatusType"]
+            事件状态
+        """
         return self._event_status
 
     @property
     def event_comment(self) -> Optional[str]:
+        """
+        事件注释
+
+        Returns
+        -------
+        Optional[str]
+            事件注释
+        """
         return self._event_comment
 
     @property
     def event_body(self) -> "ProcessCommand":
+        """
+        事件执行体
+
+        Returns
+        -------
+        ProcessCommand
+            事件执行体
+        """
         return self._event_body

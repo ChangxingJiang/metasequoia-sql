@@ -33,6 +33,14 @@ class GroupReplicationUser(GroupReplicationStartOption):
 
     @property
     def user(self) -> str:
+        """
+        用户名
+
+        Returns
+        -------
+        str
+            用户名
+        """
         return self._user
 
 
@@ -46,6 +54,14 @@ class GroupReplicationPassword(GroupReplicationStartOption):
 
     @property
     def password(self) -> str:
+        """
+        密码
+
+        Returns
+        -------
+        str
+            密码
+        """
         return self._password
 
 
@@ -59,6 +75,14 @@ class GroupReplicationPluginAuth(GroupReplicationStartOption):
 
     @property
     def plugin_auth(self) -> str:
+        """
+        插件认证
+
+        Returns
+        -------
+        str
+            插件认证
+        """
         return self._plugin_auth
 
 
@@ -76,10 +100,16 @@ class GroupReplicationStartStatement(GroupReplicationStatement):
 
     @property
     def options(self) -> List[GroupReplicationStartOption]:
+        """
+        启动选项列表
+
+        Returns
+        -------
+        List[GroupReplicationStartOption]
+            启动选项列表
+        """
         return self._options
 
 
 class GroupReplicationStopStatement(GroupReplicationStatement):
     """STOP GROUP_REPLICATION 语句"""
-
-    __slots__ = []

@@ -28,8 +28,24 @@ class CallStatement(Statement):
 
     @property
     def function_name(self) -> "Identifier":
+        """
+        函数名标识符
+
+        Returns
+        -------
+        Identifier
+            函数名标识符
+        """
         return self._function_name
 
     @property
     def arguments(self) -> List[Expression]:
+        """
+        函数参数列表
+
+        Returns
+        -------
+        List[Expression]
+            函数参数列表
+        """
         return self._arguments

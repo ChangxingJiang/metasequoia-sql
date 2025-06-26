@@ -31,12 +31,36 @@ class RepairTableStatement(Statement):
 
     @property
     def no_write_to_binlog(self) -> bool:
+        """
+        是否不写入二进制日志
+
+        Returns
+        -------
+        bool
+            是否不写入二进制日志
+        """
         return self._no_write_to_binlog
 
     @property
     def table_list(self) -> List["Identifier"]:
+        """
+        表列表
+
+        Returns
+        -------
+        List[Identifier]
+            表列表
+        """
         return self._table_list
 
     @property
     def repair_type(self) -> "EnumRepairType":
+        """
+        修复类型
+
+        Returns
+        -------
+        EnumRepairType
+            修复类型
+        """
         return self._repair_type

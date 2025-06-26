@@ -40,18 +40,50 @@ class IndexHint(Node):
                  index_hint_type: EnumIndexHintType,
                  index_hint_for: EnumIndexHintFor,
                  index_name_list: List[str]):
+        """初始化索引指定子句
+        
+        Parameters
+        ----------
+        index_hint_type : EnumIndexHintType
+            索引指定类型
+        index_hint_for : EnumIndexHintFor
+            索引用途
+        index_name_list : List[str]
+            索引名称列表
+        """
         self._index_hint_type = index_hint_type
         self._index_hint_for = index_hint_for
         self._index_name_list = index_name_list
 
     @property
     def index_hint_type(self) -> EnumIndexHintType:
+        """获取索引指定类型
+        
+        Returns
+        -------
+        EnumIndexHintType
+            索引指定类型
+        """
         return self._index_hint_type
 
     @property
     def index_hint_for(self) -> EnumIndexHintFor:
+        """获取索引用途
+        
+        Returns
+        -------
+        EnumIndexHintFor
+            索引用途
+        """
         return self._index_hint_for
 
     @property
     def index_name_list(self) -> List[str]:
+        """获取索引名称列表
+        
+        Returns
+        -------
+        List[str]
+            索引名称列表
+        """
         return self._index_name_list

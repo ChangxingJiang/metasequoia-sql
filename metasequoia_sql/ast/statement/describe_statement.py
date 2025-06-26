@@ -30,8 +30,24 @@ class DescribeStatement(Statement):
 
     @property
     def table_name(self) -> "Identifier":
+        """
+        表名标识符
+
+        Returns
+        -------
+        Identifier
+            表名标识符
+        """
         return self._table_name
 
     @property
     def describe_column(self) -> Optional[str]:
+        """
+        描述的列名
+
+        Returns
+        -------
+        Optional[str]
+            描述的列名
+        """
         return self._describe_column

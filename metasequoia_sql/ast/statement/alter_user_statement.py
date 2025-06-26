@@ -2,7 +2,7 @@
 ALTER USER 语句相关的 AST 节点类
 """
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Statement
 
@@ -19,11 +19,11 @@ if TYPE_CHECKING:
 __all__ = [
     "AlterUserStatement",
     "AlterUserStandardStatement",
-    "AlterUserCurrentUserRandomPasswordStatement", 
+    "AlterUserCurrentUserRandomPasswordStatement",
     "AlterUserCurrentUserPasswordStatement",
     "AlterUserCurrentUserDiscardPasswordStatement",
     "AlterUserDefaultRoleAllStatement",
-    "AlterUserDefaultRoleNoneStatement", 
+    "AlterUserDefaultRoleNoneStatement",
     "AlterUserDefaultRoleListStatement",
     "AlterUserRegistrationStatement",
     "AlterUserCurrentUserRegistrationStatement",
@@ -40,10 +40,10 @@ class AlterUserStatement(Statement):
         是否包含 IF EXISTS 选项
     """
     __slots__ = ("_if_exists",)
-    
+
     def __init__(self, if_exists: bool):
         self._if_exists = if_exists
-    
+
     @property
     def if_exists(self) -> bool:
         """是否包含 IF EXISTS 选项"""
@@ -53,7 +53,8 @@ class AlterUserStatement(Statement):
 class AlterUserStandardStatement(AlterUserStatement):
     """
     标准的 ALTER USER 语句：
-    alter_user_command alter_user_list require_clause connect_options opt_account_lock_password_expire_options opt_user_attribute
+    alter_user_command alter_user_list require_clause connect_options opt_account_lock_password_expire_options
+    opt_user_attribute
     
     Parameters
     ----------
@@ -71,46 +72,47 @@ class AlterUserStandardStatement(AlterUserStatement):
         用户属性
     """
     __slots__ = (
-        "_user_list", "_require_clause", "_connect_options", 
+        "_user_list", "_require_clause", "_connect_options",
         "_account_lock_expire_options", "_user_attribute"
     )
-    
+
     def __init__(
-        self,
-        if_exists: bool,
-        user_list: List["AlterUser"],
-        require_clause: "RequireClause",
-        connect_options: List["ConnectOption"],
-        account_lock_expire_options: List["AccountLockExpireOption"],
-        user_attribute: Optional["UserAttribute"]
+            self,
+            if_exists: bool,
+            user_list: List["AlterUser"],
+            require_clause: "RequireClause",
+            connect_options: List["ConnectOption"],
+            account_lock_expire_options: List["AccountLockExpireOption"],
+            user_attribute: Optional["UserAttribute"]
     ):
+        # pylint: disable=R0913
         super().__init__(if_exists)
         self._user_list = user_list
         self._require_clause = require_clause
         self._connect_options = connect_options
         self._account_lock_expire_options = account_lock_expire_options
         self._user_attribute = user_attribute
-    
+
     @property
     def user_list(self) -> List["AlterUser"]:
         """用户修改列表"""
         return self._user_list
-    
+
     @property
     def require_clause(self) -> "RequireClause":
         """REQUIRE 子句"""
         return self._require_clause
-    
+
     @property
     def connect_options(self) -> List["ConnectOption"]:
         """连接选项列表"""
         return self._connect_options
-    
+
     @property
     def account_lock_expire_options(self) -> List["AccountLockExpireOption"]:
         """账户锁定和密码过期选项列表"""
         return self._account_lock_expire_options
-    
+
     @property
     def user_attribute(self) -> Optional["UserAttribute"]:
         """用户属性"""
@@ -134,29 +136,29 @@ class AlterUserCurrentUserRandomPasswordStatement(AlterUserStatement):
         是否保留当前密码
     """
     __slots__ = ("_identification", "_replace_password", "_retain_current_password")
-    
+
     def __init__(
-        self,
-        if_exists: bool,
-        identification: "Identification",
-        replace_password: Optional[str],
-        retain_current_password: bool
+            self,
+            if_exists: bool,
+            identification: "Identification",
+            replace_password: Optional[str],
+            retain_current_password: bool
     ):
         super().__init__(if_exists)
         self._identification = identification
         self._replace_password = replace_password
         self._retain_current_password = retain_current_password
-    
+
     @property
     def identification(self) -> "Identification":
         """认证信息"""
         return self._identification
-    
+
     @property
     def replace_password(self) -> Optional[str]:
         """替换的当前密码"""
         return self._replace_password
-    
+
     @property
     def retain_current_password(self) -> bool:
         """是否保留当前密码"""
@@ -180,29 +182,29 @@ class AlterUserCurrentUserPasswordStatement(AlterUserStatement):
         是否保留当前密码
     """
     __slots__ = ("_identification", "_replace_password", "_retain_current_password")
-    
+
     def __init__(
-        self,
-        if_exists: bool,
-        identification: "Identification",
-        replace_password: Optional[str],
-        retain_current_password: bool
+            self,
+            if_exists: bool,
+            identification: "Identification",
+            replace_password: Optional[str],
+            retain_current_password: bool
     ):
         super().__init__(if_exists)
         self._identification = identification
         self._replace_password = replace_password
         self._retain_current_password = retain_current_password
-    
+
     @property
     def identification(self) -> "Identification":
         """认证信息"""
         return self._identification
-    
+
     @property
     def replace_password(self) -> Optional[str]:
         """替换的当前密码"""
         return self._replace_password
-    
+
     @property
     def retain_current_password(self) -> bool:
         """是否保留当前密码"""
@@ -219,10 +221,6 @@ class AlterUserCurrentUserDiscardPasswordStatement(AlterUserStatement):
     if_exists : bool
         是否包含 IF EXISTS 选项
     """
-    __slots__ = ()
-    
-    def __init__(self, if_exists: bool):
-        super().__init__(if_exists)
 
 
 class AlterUserDefaultRoleAllStatement(AlterUserStatement):
@@ -238,11 +236,11 @@ class AlterUserDefaultRoleAllStatement(AlterUserStatement):
         用户名
     """
     __slots__ = ("_user",)
-    
+
     def __init__(self, if_exists: bool, user: "UserName"):
         super().__init__(if_exists)
         self._user = user
-    
+
     @property
     def user(self) -> "UserName":
         """用户名"""
@@ -262,11 +260,11 @@ class AlterUserDefaultRoleNoneStatement(AlterUserStatement):
         用户名
     """
     __slots__ = ("_user",)
-    
+
     def __init__(self, if_exists: bool, user: "UserName"):
         super().__init__(if_exists)
         self._user = user
-    
+
     @property
     def user(self) -> "UserName":
         """用户名"""
@@ -288,17 +286,17 @@ class AlterUserDefaultRoleListStatement(AlterUserStatement):
         角色名列表
     """
     __slots__ = ("_user", "_role_list")
-    
+
     def __init__(self, if_exists: bool, user: "UserName", role_list: List["RoleName"]):
         super().__init__(if_exists)
         self._user = user
         self._role_list = role_list
-    
+
     @property
     def user(self) -> "UserName":
         """用户名"""
         return self._user
-    
+
     @property
     def role_list(self) -> List["RoleName"]:
         """角色名列表"""
@@ -320,17 +318,17 @@ class AlterUserRegistrationStatement(AlterUserStatement):
         用户注册操作
     """
     __slots__ = ("_user", "_user_registration")
-    
+
     def __init__(self, if_exists: bool, user: "UserName", user_registration: "UserRegistration"):
         super().__init__(if_exists)
         self._user = user
         self._user_registration = user_registration
-    
+
     @property
     def user(self) -> "UserName":
         """用户名"""
         return self._user
-    
+
     @property
     def user_registration(self) -> "UserRegistration":
         """用户注册操作"""
@@ -350,12 +348,12 @@ class AlterUserCurrentUserRegistrationStatement(AlterUserStatement):
         用户注册操作
     """
     __slots__ = ("_user_registration",)
-    
+
     def __init__(self, if_exists: bool, user_registration: "UserRegistration"):
         super().__init__(if_exists)
         self._user_registration = user_registration
-    
+
     @property
     def user_registration(self) -> "UserRegistration":
         """用户注册操作"""
-        return self._user_registration 
+        return self._user_registration

@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 DDL 选项（ddl option）
 """

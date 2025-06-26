@@ -3,6 +3,7 @@ ALTER USER 语句相关的语义组
 """
 
 import metasequoia_parser as ms_parser
+
 from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
@@ -15,7 +16,8 @@ __all__ = [
 ALTER_USER_STATEMENT = ms_parser.create_group(
     name="alter_user_statement",
     rules=[
-        # alter_user_command alter_user_list require_clause connect_options opt_account_lock_password_expire_options opt_user_attribute
+        # alter_user_command alter_user_list require_clause connect_options opt_account_lock_password_expire_options
+        # opt_user_attribute
         ms_parser.create_rule(
             symbols=[
                 TType.KEYWORD_ALTER,
@@ -181,14 +183,11 @@ OPT_REPLACE_PASSWORD = ms_parser.create_group(
     name="opt_replace_password",
     rules=[
         # 空选项
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: None
-        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL,
         # REPLACE TEXT_STRING_password
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_REPLACE, "text_literal_sys"],
             action=lambda x: x[1].get_str_value()
         )
     ]
-) 
+)

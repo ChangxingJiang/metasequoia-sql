@@ -2,14 +2,14 @@
 REQUIRE 子句（require clause）
 """
 
-from typing import List, Optional
+from typing import List
 
 from metasequoia_sql.ast.base import Node
 
 __all__ = [
     "RequireListElement",
     "RequireSubject",
-    "RequireIssuer", 
+    "RequireIssuer",
     "RequireCipher",
     "RequireClause",
     "RequireNone",
@@ -25,10 +25,24 @@ class RequireListElement(Node):
     __slots__ = ["_value"]
 
     def __init__(self, value: str):
+        """初始化 REQUIRE 列表元素
+        
+        Parameters
+        ----------
+        value : str
+            元素值
+        """
         self._value = value
 
     @property
     def value(self) -> str:
+        """获取元素值
+        
+        Returns
+        -------
+        str
+            元素值
+        """
         return self._value
 
 
@@ -51,28 +65,13 @@ class RequireClause(Node):
 class RequireNone(RequireClause):
     """REQUIRE NONE 子句"""
 
-    __slots__ = []
-
-    def __init__(self):
-        pass
-
 
 class RequireSsl(RequireClause):
     """REQUIRE SSL 子句"""
 
-    __slots__ = []
-
-    def __init__(self):
-        pass
-
 
 class RequireX509(RequireClause):
     """REQUIRE X509 子句"""
-
-    __slots__ = []
-
-    def __init__(self):
-        pass
 
 
 class RequireList(RequireClause):
@@ -81,8 +80,22 @@ class RequireList(RequireClause):
     __slots__ = ["_require_list"]
 
     def __init__(self, require_list: List[RequireListElement]):
+        """初始化 REQUIRE 列表子句
+        
+        Parameters
+        ----------
+        require_list : List[RequireListElement]
+            REQUIRE 列表元素列表
+        """
         self._require_list = require_list
 
     @property
     def require_list(self) -> List[RequireListElement]:
-        return self._require_list 
+        """获取 REQUIRE 列表元素列表
+        
+        Returns
+        -------
+        List[RequireListElement]
+            REQUIRE 列表元素列表
+        """
+        return self._require_list

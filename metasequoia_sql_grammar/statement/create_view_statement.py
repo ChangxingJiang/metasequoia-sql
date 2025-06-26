@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 CREATE VIEW 语句（create view statement）
 """

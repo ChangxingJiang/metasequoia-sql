@@ -115,15 +115,38 @@ class OperatorDatePlus(Expression):
     __slots__ = ["_left_operand", "_right_operand"]
 
     def __init__(self, left_operand: "TimeInterval", right_operand: Expression):
+        """初始化日期加法运算符
+        
+        Parameters
+        ----------
+        left_operand : TimeInterval
+            左操作数（时间间隔）
+        right_operand : Expression
+            右操作数
+        """
         self._left_operand = left_operand
         self._right_operand = right_operand
 
     @property
     def left_operand(self) -> "TimeInterval":
+        """获取左操作数
+        
+        Returns
+        -------
+        TimeInterval
+            左操作数（时间间隔）
+        """
         return self._left_operand
 
     @property
     def right_operand(self) -> Expression:
+        """获取右操作数
+        
+        Returns
+        -------
+        Expression
+            右操作数
+        """
         return self._right_operand
 
 
@@ -133,15 +156,38 @@ class OperatorPlusDate(Expression):
     __slots__ = ["_left_operand", "_right_operand"]
 
     def __init__(self, left_operand: Expression, right_operand: "TimeInterval"):
+        """初始化加日期运算符
+        
+        Parameters
+        ----------
+        left_operand : Expression
+            左操作数
+        right_operand : TimeInterval
+            右操作数（时间间隔）
+        """
         self._left_operand = left_operand
         self._right_operand = right_operand
 
     @property
     def left_operand(self) -> Expression:
+        """获取左操作数
+        
+        Returns
+        -------
+        Expression
+            左操作数
+        """
         return self._left_operand
 
     @property
     def right_operand(self) -> "TimeInterval":
+        """获取右操作数
+        
+        Returns
+        -------
+        TimeInterval
+            右操作数（时间间隔）
+        """
         return self._right_operand
 
 
@@ -155,15 +201,38 @@ class OperatorMinusDate(Expression):
     __slots__ = ["_left_operand", "_right_operand"]
 
     def __init__(self, left_operand: Expression, right_operand: "TimeInterval"):
+        """初始化减日期运算符
+        
+        Parameters
+        ----------
+        left_operand : Expression
+            左操作数
+        right_operand : TimeInterval
+            右操作数（时间间隔）
+        """
         self._left_operand = left_operand
         self._right_operand = right_operand
 
     @property
     def left_operand(self) -> Expression:
+        """获取左操作数
+        
+        Returns
+        -------
+        Expression
+            左操作数
+        """
         return self._left_operand
 
     @property
     def right_operand(self) -> "TimeInterval":
+        """获取右操作数
+        
+        Returns
+        -------
+        TimeInterval
+            右操作数（时间间隔）
+        """
         return self._right_operand
 
 
@@ -244,14 +313,14 @@ class OperatorNotRegexp(BinaryExpression):
 
 
 class OperatorIsNull(UnaryExpression):
-    """内置函数：IS NULL 关键字
+    """内置函数 IS NULL 关键字
 
     {operand} IS NULL
     """
 
 
 class OperatorIsNotNull(UnaryExpression):
-    """内置函数：IS NOT NULL 关键字
+    """内置函数 IS NOT NULL 关键字
 
     {operand} IS NOT NULL
     """
@@ -271,11 +340,29 @@ class OperatorCompare(BinaryExpression):
                  left_operand: Optional[Expression],
                  right_operand: Optional[Expression],
                  operator: EnumOperatorCompare):
+        """初始化比较运算符
+        
+        Parameters
+        ----------
+        left_operand : Optional[Expression]
+            左操作数
+        right_operand : Optional[Expression]
+            右操作数
+        operator : EnumOperatorCompare
+            比较运算符类型
+        """
         super().__init__(left_operand, right_operand)
         self._operator = operator
 
     @property
     def operator(self) -> EnumOperatorCompare:
+        """获取比较运算符类型
+        
+        Returns
+        -------
+        EnumOperatorCompare
+            比较运算符类型
+        """
         return self._operator
 
 
@@ -285,103 +372,135 @@ class OperatorCompareAllOrAnyBase(Expression):
     __slots__ = ["_operand", "_operator", "_subquery_expression"]
 
     def __init__(self, operand: Expression, operator: EnumOperatorCompare, subquery_expression: "QueryExpression"):
+        """初始化比较 ALL/ANY 运算符基类
+        
+        Parameters
+        ----------
+        operand : Expression
+            操作数
+        operator : EnumOperatorCompare
+            比较运算符类型
+        subquery_expression : QueryExpression
+            子查询表达式
+        """
         self._operand = operand
         self._operator = operator
         self._subquery_expression = subquery_expression
 
     @property
     def operand(self) -> Expression:
+        """获取操作数
+        
+        Returns
+        -------
+        Expression
+            操作数
+        """
         return self._operand
 
     @property
     def operator(self) -> EnumOperatorCompare:
+        """获取比较运算符类型
+        
+        Returns
+        -------
+        EnumOperatorCompare
+            比较运算符类型
+        """
         return self._operator
 
     @property
     def subquery_expression(self) -> "QueryExpression":
+        """获取子查询表达式
+        
+        Returns
+        -------
+        QueryExpression
+            子查询表达式
+        """
         return self._subquery_expression
 
 
 class OperatorCompareAll(OperatorCompareAllOrAnyBase):
-    """内置 compare_operator ALL 运算符（与子查询中的所有值比较）"""
+    """内置 compare_operator ALL 运算符"""
 
 
 class OperatorCompareAny(OperatorCompareAllOrAnyBase):
-    """内置 compare_operator Any 运算符（与子查询中的所有值比较）"""
+    """内置 compare_operator ANY 运算符"""
 
 
 class OperatorOr(BinaryExpression):
-    """内置函数：逻辑或
+    """内置函数：逻辑或（`OR` 关键字）
 
     {left_operand} OR {right_operand}
     """
 
 
 class OperatorXor(BinaryExpression):
-    """内置函数：逻辑异或
+    """内置函数：逻辑异或（`XOR` 关键字）
 
-    {left_operand} OR {right_operand}
+    {left_operand} XOR {right_operand}
     """
 
 
 class OperatorAnd(BinaryExpression):
-    """内置函数：逻辑与
+    """内置函数：逻辑与（`AND` 关键字）
 
     {left_operand} AND {right_operand}
     """
 
 
 class OperatorNot(UnaryExpression):
-    """内置函数：逻辑否
+    """内置函数：逻辑非（`NOT` 关键字）
 
     NOT {operand}
     """
 
 
 class OperatorIsTrue(UnaryExpression):
-    """内置函数：IS TRUE 关键字
+    """内置函数 IS TRUE 关键字
 
     {operand} IS TRUE
     """
 
 
 class OperatorIsNotTrue(UnaryExpression):
-    """内置函数：IS NOT TRUE
+    """内置函数 IS NOT TRUE 关键字
 
     {operand} IS NOT TRUE
     """
 
 
 class OperatorIsFalse(UnaryExpression):
-    """内置函数：IS FALSE
+    """内置函数 IS FALSE 关键字
 
     {operand} IS FALSE
     """
 
 
 class OperatorIsNotFalse(UnaryExpression):
-    """内置函数：IS NOT FALSE
+    """内置函数 IS NOT FALSE 关键字
 
     {operand} IS NOT FALSE
     """
 
 
 class OperatorIsUnknown(UnaryExpression):
-    """内置函数：IS UNKNOWN
+    """内置函数 IS UNKNOWN 关键字
 
     {operand} IS UNKNOWN
     """
 
 
 class OperatorIsNotUnknown(UnaryExpression):
-    """内置函数：IS NOT UNKNOWN
+    """内置函数 IS NOT UNKNOWN 关键字
 
     {operand} IS NOT UNKNOWN
     """
 
 
 class OperatorTruthTransform(UnaryExpression):
-    """内置 ! 运算符（逻辑取反）"""
+    """内置函数：真值变换（临时节点）"""
 
 
 class OperatorCollate(Expression):
@@ -393,22 +512,45 @@ class OperatorCollate(Expression):
     __slots__ = ["_collation_operand", "_collation_name"]
 
     def __init__(self, collation_operand: Expression, collation_name: str):
-        self._collation_operand = collation_operand  # 需要指定排序规则的表达式
-        self._collation_name = collation_name  # 排序规则名称
+        """初始化 COLLATE 运算符
+        
+        Parameters
+        ----------
+        collation_operand : Expression
+            排序操作数
+        collation_name : str
+            排序规则名称
+        """
+        self._collation_operand = collation_operand
+        self._collation_name = collation_name
 
     @property
     def collation_operand(self) -> Expression:
+        """获取排序操作数
+        
+        Returns
+        -------
+        Expression
+            排序操作数
+        """
         return self._collation_operand
 
     @property
     def collation_name(self) -> str:
+        """获取排序规则名称
+        
+        Returns
+        -------
+        str
+            排序规则名称
+        """
         return self._collation_name
 
 
 class OperatorConcat(BinaryExpression):
-    """内置 || 运算符（字符串合并）
+    """内置函数：字符串连接（`||` 运算符）
 
-    left_operand || right_operand
+    {left_operand} || {right_operand}
     """
 
 
@@ -430,25 +572,57 @@ class OperatorMatch(Expression):
     __slots__ = ["_column_list", "_sub_string", "_fulltext_options"]
 
     def __init__(self, column_list: List["Ident"], sub_string: Expression, fulltext_options: FulltextOption):
+        """初始化 MATCH 运算符
+        
+        Parameters
+        ----------
+        column_list : List[Ident]
+            列标识符列表
+        sub_string : Expression
+            子字符串表达式
+        fulltext_options : FulltextOption
+            全文搜索选项
+        """
         self._column_list = column_list
         self._sub_string = sub_string
         self._fulltext_options = fulltext_options
 
     @property
     def column_list(self) -> List["Ident"]:
+        """获取列标识符列表
+        
+        Returns
+        -------
+        List[Ident]
+            列标识符列表
+        """
         return self._column_list
 
     @property
     def sub_string(self) -> Expression:
+        """获取子字符串表达式
+        
+        Returns
+        -------
+        Expression
+            子字符串表达式
+        """
         return self._sub_string
 
     @property
     def fulltext_options(self) -> FulltextOption:
+        """获取全文搜索选项
+        
+        Returns
+        -------
+        FulltextOption
+            全文搜索选项
+        """
         return self._fulltext_options
 
 
 class OperatorBinary(UnaryExpression):
-    """内置 BINARY 运算符"""
+    """内置 BINARY 关键字运算符（指定二进制排序）"""
 
 
 class OperatorJsonSeparator(Expression):
@@ -461,20 +635,52 @@ class OperatorJsonSeparator(Expression):
     __slots__ = ["_expression", "_path", "_is_unquoted"]
 
     def __init__(self, expression: Expression, path: str, is_unquoted: bool):
+        """初始化 JSON 分隔符运算符
+        
+        Parameters
+        ----------
+        expression : Expression
+            表达式
+        path : str
+            JSON 路径
+        is_unquoted : bool
+            是否为无引号类型
+        """
         self._expression = expression
         self._path = path
         self._is_unquoted = is_unquoted
 
     @property
     def expression(self) -> Expression:
+        """获取表达式
+        
+        Returns
+        -------
+        Expression
+            表达式
+        """
         return self._expression
 
     @property
     def path(self) -> str:
+        """获取 JSON 路径
+        
+        Returns
+        -------
+        str
+            JSON 路径
+        """
         return self._path
 
     @property
     def is_unquoted(self) -> bool:
+        """获取是否为无引号类型
+        
+        Returns
+        -------
+        bool
+            是否为无引号类型
+        """
         return self._is_unquoted
 
 
@@ -484,15 +690,38 @@ class OperatorInSubSelect(Expression):
     __slots__ = ["_operand", "_subquery_expression"]
 
     def __init__(self, operand: Expression, subquery_expression: "QueryExpression"):
+        """初始化 IN 子查询运算符
+        
+        Parameters
+        ----------
+        operand : Expression
+            操作数
+        subquery_expression : QueryExpression
+            子查询表达式
+        """
         self._operand = operand
         self._subquery_expression = subquery_expression
 
     @property
     def operand(self) -> Expression:
+        """获取操作数
+        
+        Returns
+        -------
+        Expression
+            操作数
+        """
         return self._operand
 
     @property
     def subquery_expression(self) -> "QueryExpression":
+        """获取子查询表达式
+        
+        Returns
+        -------
+        QueryExpression
+            子查询表达式
+        """
         return self._subquery_expression
 
 
@@ -502,15 +731,38 @@ class OperatorNotInSubSelect(Expression):
     __slots__ = ["_operand", "_subquery_expression"]
 
     def __init__(self, operand: Expression, subquery_expression: "QueryExpression"):
+        """初始化 NOT IN 子查询运算符
+        
+        Parameters
+        ----------
+        operand : Expression
+            操作数
+        subquery_expression : QueryExpression
+            子查询表达式
+        """
         self._operand = operand
         self._subquery_expression = subquery_expression
 
     @property
     def operand(self) -> Expression:
+        """获取操作数
+        
+        Returns
+        -------
+        Expression
+            操作数
+        """
         return self._operand
 
     @property
     def subquery_expression(self) -> "QueryExpression":
+        """获取子查询表达式
+        
+        Returns
+        -------
+        QueryExpression
+            子查询表达式
+        """
         return self._subquery_expression
 
 
@@ -520,15 +772,38 @@ class OperatorInValues(Expression):
     __slots__ = ["_operand", "_value_list"]
 
     def __init__(self, operand: Expression, value_list: List[Expression]):
+        """初始化 IN 值列表运算符
+        
+        Parameters
+        ----------
+        operand : Expression
+            操作数
+        value_list : List[Expression]
+            值列表
+        """
         self._operand = operand
         self._value_list = value_list
 
     @property
     def operand(self) -> Expression:
+        """获取操作数
+        
+        Returns
+        -------
+        Expression
+            操作数
+        """
         return self._operand
 
     @property
     def value_list(self) -> List[Expression]:
+        """获取值列表
+        
+        Returns
+        -------
+        List[Expression]
+            值列表
+        """
         return self._value_list
 
 
@@ -538,13 +813,36 @@ class OperatorNotInValues(Expression):
     __slots__ = ["_operand", "_value_list"]
 
     def __init__(self, operand: Expression, value_list: List[Expression]):
+        """初始化 NOT IN 值列表运算符
+        
+        Parameters
+        ----------
+        operand : Expression
+            操作数
+        value_list : List[Expression]
+            值列表
+        """
         self._operand = operand
         self._value_list = value_list
 
     @property
     def operand(self) -> Expression:
+        """获取操作数
+        
+        Returns
+        -------
+        Expression
+            操作数
+        """
         return self._operand
 
     @property
     def value_list(self) -> List[Expression]:
+        """获取值列表
+        
+        Returns
+        -------
+        List[Expression]
+            值列表
+        """
         return self._value_list
