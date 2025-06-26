@@ -140,6 +140,7 @@ from metasequoia_sql_grammar.statement import select_statement
 from metasequoia_sql_grammar.statement import set_password_statement
 from metasequoia_sql_grammar.statement import set_resource_group_statement
 from metasequoia_sql_grammar.statement import set_role_statement
+from metasequoia_sql_grammar.statement import set_statement
 from metasequoia_sql_grammar.statement import show_statement
 from metasequoia_sql_grammar.statement import shutdown_statement
 from metasequoia_sql_grammar.statement import signal_and_resignal_statement
@@ -434,6 +435,7 @@ def build_grammar():
         set_password_statement,  # SET PASSWORD 语句
         set_resource_group_statement,  # SET RESOURCE GROUP 语句
         set_role_statement,  # SET ROLE 语句
+        set_statement,  # SET 语句
         set_transaction_statement,  # SET TRANSACTION 语句
         show_statement,  # SHOW 语句
         shutdown_statement,  # SHUTDOWN 语句

@@ -601,9 +601,15 @@
 
 #### SET 语句（set statement）
 
-| 水杉解析器语义组名称  | 语义组类型                                | 返回值类型   | MySQL 语义组名称      |
-| --------------------- | ----------------------------------------- | ------------ | --------------------- |
-| `set_expr_or_default` | `SET` 语句中的值表达式或 `DEFAULT` 关键字 | `Expression` | `set_expr_or_default` |
+| 水杉解析器语义组名称                 | 语义组类型                                | 返回值类型             | MySQL 语义组名称                                             |
+| ------------------------------------ | ----------------------------------------- | ---------------------- | ------------------------------------------------------------ |
+| `set_statement`                      | `SET` 语句                                | `SetStatement`         | `set`<br />`start_option_value_list`【包含】<br />`start_option_value_list_following_option_type`【包含】<br />`option_value_list_continued`【包含】 |
+| `option_value_list`                  | `SET` 语句中的选项值的列表                | `List[SetOptionValue]` | `option_value_list`                                          |
+| `option_value`                       | `SET` 语句中的选项值                      | `SetOptionValue`       | `option_value`                                               |
+| `option_value_following_option_type` | `SET` 语句的选项值（有选项类型）          | `SetOptionValue`       | `option_value_following_option_type`                         |
+| `option_value_no_option_type`        | `SET` 语句的选项值（无选项类型）          | `SetOptionValue`       | `option_value_no_option_type`                                |
+| `option_value_by_expr`               | `SET` 语句中通过表达式赋值的值表达式      | `SetVariableValue`     |                                                              |
+| `set_expr_or_default`                | `SET` 语句中的值表达式或 `DEFAULT` 关键字 | `Expression`           | `set_expr_or_default`                                        |
 
 #### SET PASSWORD 语句（set password statement）
 

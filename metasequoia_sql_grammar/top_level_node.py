@@ -315,9 +315,9 @@ SQL_STATEMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["select_statement"]
         ),
-        # ms_parser.create_rule(
-        #     symbols=["set"]  TODO
-        # ),
+        ms_parser.create_rule(
+            symbols=["set_statement"]
+        ),
         ms_parser.create_rule(
             symbols=["set_password_statement"]
         ),

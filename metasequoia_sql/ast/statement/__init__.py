@@ -70,6 +70,7 @@ from metasequoia_sql.ast.statement.select_statement import *
 from metasequoia_sql.ast.statement.set_password_statement import *
 from metasequoia_sql.ast.statement.set_resource_group_statement import *
 from metasequoia_sql.ast.statement.set_role_statement import *
+from metasequoia_sql.ast.statement.set_statement import *
 from metasequoia_sql.ast.statement.set_transaction_statement import *
 from metasequoia_sql.ast.statement.show_statement import *
 from metasequoia_sql.ast.statement.shutdown_statement import *
