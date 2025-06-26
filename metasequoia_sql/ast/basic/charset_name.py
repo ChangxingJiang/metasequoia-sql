@@ -48,13 +48,31 @@ class Charset(Node):
         return self._charset_name
 
     def add_back_binary(self) -> "Charset":
-        """在当前字符集对象的基础上，添加后置的 `BINARY` 关键字，并返回新的字符集对象"""
+        """
+        在当前字符集对象的基础上，添加后置的 `BINARY` 关键字，并返回新的字符集对象
+        
+        该方法会修改字符集类型，如果当前类型为CHARSET_NAME，则转换为CHARSET_NAME_BINARY。
+        
+        Returns
+        -------
+        Charset
+            修改后的字符集对象（返回self以支持链式调用）
+        """
         if self._charset_type == CharsetTypeEnum.CHARSET_NAME:
             self._charset_type = CharsetTypeEnum.CHARSET_NAME_BINARY
         return self
 
     def add_front_binary(self) -> "Charset":
-        """在当前字符集对象的基础上，添加前置的 `BINARY` 关键字，并返回新的字符集对象"""
+        """
+        在当前字符集对象的基础上，添加前置的 `BINARY` 关键字，并返回新的字符集对象
+        
+        该方法会修改字符集类型，如果当前类型为CHARSET_NAME，则转换为BINARY_CHARSET_NAME。
+        
+        Returns
+        -------
+        Charset
+            修改后的字符集对象（返回self以支持链式调用）
+        """
         if self._charset_type == CharsetTypeEnum.CHARSET_NAME:
             self._charset_type = CharsetTypeEnum.BINARY_CHARSET_NAME
         return self

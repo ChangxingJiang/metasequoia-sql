@@ -45,9 +45,25 @@ class Node(ABC):
     __repr__ = __str__
 
     def get_str_value(self) -> Optional[str]:
+        """
+        获取节点的字符串值表示
+        
+        Returns
+        -------
+        Optional[str]
+            如果节点可以表示为字符串，则返回字符串值；否则返回 None
+        """
         return None
 
     def get_decimal_value(self) -> Optional[Decimal]:
+        """
+        获取节点的十进制数值表示
+        
+        Returns
+        -------
+        Optional[Decimal]
+            如果节点可以表示为十进制数，则返回 Decimal 值；否则返回 None
+        """
         return None
 
 
@@ -75,6 +91,14 @@ class UnaryExpression(Expression, ABC):
 
     @property
     def operand(self) -> Optional[Expression]:
+        """
+        获取一元表达式的操作数
+        
+        Returns
+        -------
+        Optional[Expression]
+            一元表达式的操作数，如果不存在则返回 None
+        """
         return self._operand
 
 
@@ -87,10 +111,26 @@ class BinaryExpression(Expression, ABC):
 
     @property
     def left_operand(self) -> Optional[Expression]:
+        """
+        获取二元表达式的左操作数
+        
+        Returns
+        -------
+        Optional[Expression]
+            二元表达式的左操作数，如果不存在则返回 None
+        """
         return self._left_operand
 
     @property
     def right_operand(self) -> Optional[Expression]:
+        """
+        获取二元表达式的右操作数
+        
+        Returns
+        -------
+        Optional[Expression]
+            二元表达式的右操作数，如果不存在则返回 None
+        """
         return self._right_operand
 
 
@@ -107,14 +147,38 @@ class TernaryExpression(Expression, ABC):
 
     @property
     def first_operand(self) -> Optional[Expression]:
+        """
+        获取三元表达式的第一个操作数
+        
+        Returns
+        -------
+        Optional[Expression]
+            三元表达式的第一个操作数，如果不存在则返回 None
+        """
         return self._first_operand
 
     @property
     def second_operand(self) -> Optional[Expression]:
+        """
+        获取三元表达式的第二个操作数
+        
+        Returns
+        -------
+        Optional[Expression]
+            三元表达式的第二个操作数，如果不存在则返回 None
+        """
         return self._second_operand
 
     @property
     def third_operand(self) -> Optional[Expression]:
+        """
+        获取三元表达式的第三个操作数
+        
+        Returns
+        -------
+        Optional[Expression]
+            三元表达式的第三个操作数，如果不存在则返回 None
+        """
         return self._third_operand
 
 
