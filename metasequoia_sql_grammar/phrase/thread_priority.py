@@ -9,6 +9,7 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
     "OPT_THREAD_PRIORITY",
+    "SIGNED_INT_NUM",
 ]
 
 # 可选的线程优先级

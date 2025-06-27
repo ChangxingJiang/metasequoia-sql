@@ -136,7 +136,7 @@ SET_EXPR_OR_DEFAULT = ms_parser.create_group(
             symbols=["expr"]
         ),
         ms_parser.create_rule(
-            symbols=["default"],
+            symbols=[TType.KEYWORD_DEFAULT],
             action=lambda _: ast.DefaultValue()
         ),
         ms_parser.create_rule(

@@ -7,6 +7,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "ALTER_USER_LIST",
     "ALTER_USER",
 ]
 

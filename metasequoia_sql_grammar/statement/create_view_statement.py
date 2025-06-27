@@ -29,7 +29,7 @@ CREATE_VIEW_STATEMENT = ms_parser.create_group(
                 "opt_ident_list_parens",  # 7
                 TType.KEYWORD_AS,  # 8
                 "query_expression",  # 9
-                "opt_check_option"  # 10
+                "alter_view_statement"  # 10
             ],
             action=lambda x: ast.CreateViewStatement(
                 replace=x[1],

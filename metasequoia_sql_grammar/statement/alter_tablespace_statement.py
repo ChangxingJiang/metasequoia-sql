@@ -105,7 +105,7 @@ ALTER_TABLESPACE_OPTION = ms_parser.create_group(
             symbols=["ddl_option_max_size"]
         ),
         ms_parser.create_rule(
-            symbols=["ddl_option_engine"]
+            symbols=["ddl_option_storage_engine"]
         ),
         ms_parser.create_rule(
             symbols=["ddl_option_wait"]

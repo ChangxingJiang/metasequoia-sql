@@ -51,7 +51,7 @@ OPT_DATADIR_SSL = ms_parser.create_group(
     name="opt_datadir_ssl",
     rules=[
         ms_parser.create_rule(
-            symbols=["open_ssl_type"],
+            symbols=["opt_open_ssl_type"],
             action=lambda x: ast.TempDatadirSsl(data_directory=None, open_ssl=x[0])
         ),
         ms_parser.create_rule(
@@ -60,7 +60,7 @@ OPT_DATADIR_SSL = ms_parser.create_group(
                 TType.KEYWORD_DIRECTORY,  # 1
                 "equal",  # 2
                 "text_literal_sys",  # 3
-                "open_ssl_type"  # 4
+                "opt_open_ssl_type"  # 4
             ],
             action=lambda x: ast.TempDatadirSsl(data_directory=x[3], open_ssl=x[4])
         )

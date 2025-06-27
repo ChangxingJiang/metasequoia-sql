@@ -15,6 +15,7 @@ __all__ = [
     "BOOL_EXPR",
     "EXPR",
     "OPT_EXPR",
+    "OPT_PAREN_EXPR_LIST",
     "OPT_EXPR_LIST",
     "EXPR_LIST",
     "UDF_EXPRESSION",

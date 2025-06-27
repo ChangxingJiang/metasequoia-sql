@@ -44,6 +44,8 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "PARENS_OPT_TEXT_LITERAL_SYS_LIST",
+    "OPT_TEXT_LITERAL_SYS_LIST",
     "TEXT_LITERAL_SYS_LIST",
     "TEXT_LITERAL_OR_HEX",
     "TEXT_LITERAL_SYS",

@@ -8,6 +8,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "SET_TRANSACTION_STATEMENT",
     "ISOLATION_LEVEL"
 ]
 

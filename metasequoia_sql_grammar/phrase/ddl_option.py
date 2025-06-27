@@ -452,7 +452,7 @@ CREATE_TABLESPACE_OPTION = ms_parser.create_group(
             symbols=["ddl_option_nodegroup"]
         ),
         ms_parser.create_rule(
-            symbols=["ddl_option_engine"]
+            symbols=["ddl_option_storage_engine"]
         ),
         ms_parser.create_rule(
             symbols=["ddl_option_wait"]
@@ -515,7 +515,7 @@ CREATE_LOGFILE_OPTION = ms_parser.create_group(
             symbols=["ddl_option_nodegroup"]
         ),
         ms_parser.create_rule(
-            symbols=["ddl_option_engine"]
+            symbols=["ddl_option_storage_engine"]
         ),
         ms_parser.create_rule(
             symbols=["ddl_option_wait"]
@@ -622,7 +622,7 @@ DDL_OPTION_TABLESPACE_ENGINE_ATTRIBUTE = ms_parser.create_group(
     name="ddl_option_tablespace_engine_attribute",
     rules=[
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ENGINE_ATTRIBUTE, "opt_equal", "json_attribute"],
+            symbols=[TType.KEYWORD_ENGINE_ATTRIBUTE, "opt_equal", "text_literal_sys"],
             action=lambda x: ast.DdlOptionTablespaceEngineAttribute(value=x[2].get_str_value())
         )
     ]

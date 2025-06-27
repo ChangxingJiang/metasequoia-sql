@@ -32,7 +32,6 @@ ORDER_DIRECTION = ms_parser.create_group(
 )
 
 # 可选的排序方向的 ASC 或 DESC 关键字
-# 对应 MySQL 语义组：opt_ordering_direction
 OPT_ORDER_DIRECTION = ms_parser.create_group(
     name="opt_order_direction",
     rules=[

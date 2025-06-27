@@ -5,7 +5,6 @@
 """
 
 import metasequoia_parser as ms_parser
-
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
 from metasequoia_sql_grammar.basic import charset_name
@@ -81,6 +80,7 @@ from metasequoia_sql_grammar.statement import alter_table_statement
 from metasequoia_sql_grammar.statement import alter_tablespace_statement
 from metasequoia_sql_grammar.statement import alter_undo_tablespace_statement
 from metasequoia_sql_grammar.statement import alter_user_statement
+from metasequoia_sql_grammar.statement import alter_view_statement
 from metasequoia_sql_grammar.statement import analyze_statement
 from metasequoia_sql_grammar.statement import begin_statement
 from metasequoia_sql_grammar.statement import binlog_statement
@@ -386,6 +386,7 @@ def build_grammar():
         alter_tablespace_statement,  # ALTER TABLESPACE 语句
         alter_undo_tablespace_statement,  # ALTER UNDO TABLESPACE 语句
         alter_user_statement,  # ALTER USER 语句
+        alter_view_statement,  # ALTER VIEW 语句
         analyze_statement,  # ANALYZE TABLE 语句
         begin_statement,  # BEGIN 语句
         binlog_statement,  # BINLOG 语句

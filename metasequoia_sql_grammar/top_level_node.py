@@ -340,7 +340,7 @@ SQL_STATEMENT = ms_parser.create_group(
             symbols=["show_binlog_events_statement"]
         ),
         ms_parser.create_rule(
-            symbols=["show_character_set_statement"]
+            symbols=["show_char_set_statement"]
         ),
         ms_parser.create_rule(
             symbols=["show_collation_statement"]

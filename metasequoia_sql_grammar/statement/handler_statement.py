@@ -17,7 +17,7 @@ HANDLER_STATEMENT = ms_parser.create_group(
     rules=[
         # HANDLER table_ident OPEN opt_table_alias
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_HANDLER, "table_identifier", TType.KEYWORD_OPEN, "opt_table_alias"],
+            symbols=[TType.KEYWORD_HANDLER, "identifier", TType.KEYWORD_OPEN, "opt_table_alias"],
             action=lambda x: ast.HandlerOpenStatement(table_ident=x[1], table_alias=x[3])
         ),
         # HANDLER ident CLOSE

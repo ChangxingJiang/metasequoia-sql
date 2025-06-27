@@ -94,7 +94,7 @@ ALTER_COMMAND = ms_parser.create_group(
             action=lambda x: [x[0]]
         ),
         ms_parser.create_rule(
-            symbols=["alter_commands_modifier"],
+            symbols=["alter_command_modifier"],
             action=lambda x: x[0].get_list()
         ),
         ms_parser.create_rule(
@@ -126,7 +126,7 @@ STANDALONE_ALTER_COMMANDS = ms_parser.create_group(
         # ADD PARTITION opt_keyword_no_write_to_binlog '(' part_def_list ')'
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ADD, TType.KEYWORD_PARTITION, "opt_keyword_no_write_to_binlog",
-                     TType.OPERATOR_LPAREN, "part_def_list", TType.OPERATOR_RPAREN],
+                     TType.OPERATOR_LPAREN, "partition_definition_list", TType.OPERATOR_RPAREN],
             action=lambda x: ast.AlterAddPartitionByDefinitionList(no_write_to_binlog=x[2], partition_list=x[4])
         ),
         # ADD PARTITION opt_keyword_no_write_to_binlog PARTITIONS real_ulong_num
@@ -233,7 +233,7 @@ ALTER_LIST_ITEM = ms_parser.create_group(
     rules=[
         # ADD opt_column ident field_definition opt_references opt_place
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ADD, "opt_keyword_column", "ident", "field_definition", "opt_references",
+            symbols=[TType.KEYWORD_ADD, "opt_keyword_column", "ident", "field_definition", "opt_references_definition",
                      "opt_place"],
             action=lambda x: ast.AlterAddColumn(column_name=x[2].get_str_value(), field_definition=x[3], place=x[5])
         ),
@@ -451,7 +451,7 @@ ALTER_ORDER_EXPR = ms_parser.create_group(
     name="alter_order_expr",
     rules=[
         ms_parser.create_rule(
-            symbols=["simple_ident", "opt_ordering_direction"],
+            symbols=["simple_ident", "opt_order_direction"],
             action=lambda x: ast.OrderExpression(column=x[0], direction=x[1])
         )
     ]

@@ -137,12 +137,12 @@ SOURCE_DEF = ms_parser.create_group(
         ),
         # MASTER_PUBLIC_KEY_PATH/SOURCE_PUBLIC_KEY_PATH = TEXT_STRING_sys_nonewline
         ms_parser.create_rule(
-            symbols=["keyword_master_public_key_or_source_public_key", TType.OPERATOR_EQ, "text_literal_sys"],
+            symbols=["keyword_master_public_key_path_or_source_public_key_path", TType.OPERATOR_EQ, "text_literal_sys"],
             action=lambda x: ast.SourcePublicKeyDefinition(x[2].get_str_value())
         ),
         # GET_MASTER_PUBLIC_KEY/GET_SOURCE_PUBLIC_KEY = ulong_num
         ms_parser.create_rule(
-            symbols=["keyword_master_get_source_public_key_or_source_get_source_public_key", TType.OPERATOR_EQ,
+            symbols=["keyword_get_master_public_key_or_get_source_public_key", TType.OPERATOR_EQ,
                      "num_literal_or_hex"],
             action=lambda x: ast.SourceGetSourcePublicKeyDefinition(x[2].value)
         ),
