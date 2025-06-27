@@ -3,15 +3,20 @@
 [![pypi Version](https://img.shields.io/pypi/v/metasequoia-sql.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/metasequoia-sql/)
 [![Downloads](https://static.pepy.tech/personalized-badge/metasequoia-sql?period=total&units=none&left_color=grey&right_color=orange&left_text=Pip%20Downloads)](https://pepy.tech/project/metasequoia-sql)
 
-metasequoia-sql 是一款注重性能的 SQL 语法的解析和分析器，适用于 SQL 的格式化、执行和分析场景，致力于打造性能最高的 Python 版 SQL 解析器。具有如下 3 个主要特性：
+水杉 SQL 解析器是一款致力于高性能的纯 Python 版开源 SQL 解析器，适用于语法检查、血缘分析等场景。
 
-- 词法解析器与语法解析器相互独立，支持插件开发
-- 使用单一状态机实现词法解析，避免大量正则表达式的复杂逻辑
-- 除包含并列关系的节点外（例如 `ORDER BY` 多个字段），抽象语法树为完全的、根据计算优先级嵌套的一元和二元表达式结构
+- 相较于其他纯 Python 的 SQL 解析器，性能极其优异
+- 完美支持 MySQL 8.0 的全部语法，支持常见 Hive 方言
+- 类型标注覆盖所有 AST 节点的所有属性
+- 采用 Python 版本 YACC 定义 SQL 语法，通过水杉解析器生成器生成解析器代码
+- 采用单一状态机实现词法解析
+- 支持表达式解析、字段类型等语法元素解析
 
-metasequoia-sql 包含词法树解析（`lexical` 模块）、语法树解析（`core` 模块）和语法树分析（`analyzer` 模块）等主要功能。
-
-自 0.6.0 版本起，metasequoia-sql 的 public 方法 API 将尽可能支持向前兼容。
+> 水杉系列解析器致力于打造高性能 Python 版编程语言的解析器，其他作品包括：
+>
+> - [metasequoia-parser](https://github.com/ChangxingJiang/metasequoia-parser)：解析器生成器
+> - [metaequoia-shell](https://github.com/ChangxingJiang/metasequoia-shell)：Shell 解析器
+> - [metasequoia-java](https://github.com/ChangxingJiang/metasequoia-java)：Java 解析器
 
 ## 安装方法
 
@@ -19,141 +24,34 @@ metasequoia-sql 包含词法树解析（`lexical` 模块）、语法树解析（
 pip install metasequoia-sql
 ```
 
-## 使用方法
+## 快速开始
 
-### 词法解析
-
-单纯的词法解析，可以应用于 SQL 语句格式化等场景。
-
-将 SQL 语句解析为一个词法节点的列表（demo_101），节点中包含对应的源代码（`source` 属性）以及节点标签（`marks` 属性）。
+将 SQL 语句解析为抽象语法树：
 
 ```python
-from metasequoia_sql_old import FSMMachine
+from metasequoia_sql import LexFSM
+from metasequoia_sql import parse
 
-amt_tree = FSMMachine.parse("SELECT column1, '2' FROM table_1")
-for node in amt_tree:
-    print(node)
+ast = parse(LexFSM("SELECT * FROM table_name"))
 ```
 
-对于有括号的 SQL 语句，会将括号生成一个 `AMTParenthesis` 类型节点，该节点包含一个 `PARENTHESIS`
-标记，括号中的词法节点会被添加到括号节点的 `children` 属性中（demo_102）。
+## 性能分析
 
-```python
-from metasequoia_sql_old import FSMMachine
-
-amt_tree = FSMMachine.parse("SELECT column1, (column2 + 1) * 2 FROM table_1")
-for node in amt_tree:
-    print(node)
-```
-
-### 语法解析
-
-将 SQL 语句解析为一个抽象语法树，返回抽象语法树的根节点。
-
-词法解析支持一次性解析一个语句（demo_201）：
-
-```python
-from metasequoia_sql_old import SQLParser
-
-statement = SQLParser.parse_select_statement("SELECT column1, '2' FROM table_1")
-print(statement)
-```
-
-也支持一次性解析多个语句（demo_202）：
-
-```python
-from metasequoia_sql_old import SQLParser
-
-statements = SQLParser.parse_statements("SELECT column1 FROM table_1; SELECT column2 FROM table_2")
-for statement in statements:
-    print(statement)
-```
-
-此外，也可以解析语句中的某个部分（demo_203）：
-
-```python
-from metasequoia_sql_old import SQLParser
-
-expression = SQLParser.parse_logical_and_level_expression("(`column1` > 2) AND (`column2` > 1)")
-print(expression)
-```
-
-### 应用样例：数据血缘分析
-
-通过基于语法解析器的数据血缘分析工具，可以实现对 SQL 语句的分析。例如：
-
-分析 INSERT 语句的数据血缘。数据血缘分析需要依赖元数据，所以需要根据你的数据源继承 `CreateTableStatementGetter`
-类并提供给数据血缘分析器（demo_301）：
-
-```python
-from metasequoia_sql_old import *
-from metasequoia_sql_old.analyzer import CreateTableStatementGetter
-from metasequoia_sql_old.analyzer.data_linage.table_lineage_analyzer import TableLineageAnalyzer
-
-table_lineage_analyzer = TableLineageAnalyzer(CreateTableStatementGetter(...))
-for statement in SQLParser.parse_statements("your sql file"):
-    if isinstance(statement, ASTInsertSelectStatement):
-        result = table_lineage_analyzer.get_insert_table_lineage(statement)
-```
-
-### 插件样例：MyBatis 插件（暂未完善）
-
-通过重写了语法解析器和词法解析器的插件，可以实现对特殊 SQL 语法的解析。例如：
-
-对 MyBatis 语法进行解析（demo_302）：
-
-```python
-from metasequoia_sql_old.plugins.mybaitis import SQLParserMyBatis
-
-statements = SQLParserMyBatis.parse_statements("SELECT column_1 FROM Shohin "
-                                               "WHERE #{column_2} > 500 "
-                                               "GROUP BY #{column_3}")
-for statement in statements:
-    print(statement)
-```
-
-### 工具样例：SQL on OTS（暂未发布）
-
-通过基于语法解析器的工具，可以实现一些实现 SQL 执行的工具。
-
-## 性能比较
-
-- 测试样本：4482 个脚本，共 19880057 字节（18.96 MB）的 SQL 语句。
-- 测试 Python环境：Python 3.10
-- 测试 CPU：Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
-
-|                 | 解析时间     | 平均解析速度       |
-|-----------------|----------|--------------|
-| metasequoia-sql | 65.28 秒  | 297.4 KB / s |
-| sqlglot         | 182.74 秒 | 106.2 KB / s |
-
-## 基本特性
-
-- 词法解析器与句法解析器分离
-- 使用单一、独立的状态机实现词法解析
-- 除了逻辑并列的场景外，抽象语法树为完全的嵌套二元表达式
+- 待构造测试集进行测试，计划比较对象：sqlglot
 
 ## 参与贡献
 
-单元测试当前不会自动检查）：
+提交 Pull Request 和 Issues 即可。
 
-运行 `scripts/test/test_main.py` 脚本。如果有新增功能，也需要新增对应的单元测试。
+的代码格式化检查命令如下：
 
-pylint 代码质量检查（在 Pull Request 时自动检查）：
-
-```bash
-pylint --max-line-length=120 metasequoia_sql_old
+```shell
+pylint --max-line-length=120 metasequoia_sql metasequoia_sql_grammar
 ```
 
-单元测试覆盖率检查（当前不会自动检查）：
+如果存在 pylint 检查问题，可使用 /.cursur/template 中的提示词通过 Cursor 进行修复。
 
-```bash
-# 将 metasequoia-sql 文件夹添加到 PYTHONPATH，并在 metasequoia-sql 文件夹下执行
-coverage run .\scripts\tests\test_main.py
-coverage report  # 生成文字报告
-coverage html  # 生成 HTML 报告
-```
+## 版本变化
 
-## 版本更新记录
-
-[文档地址](https://github.com/ChangxingJiang/metasequoia-sql/blob/main/docs/%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E8%AE%B0%E5%BD%95.md)
+- 1.0.0：重构词法解析和语法解析，将语法解析由 Python 实现的逻辑解析，替换为通过水杉解析器生成器生成。AST 语义组结构调整，不再向前兼容。
+- 0.6.0：第一款稳定版本。
