@@ -475,13 +475,20 @@ if __name__ == "__main__":
     repository_path = os.path.dirname(os.path.dirname(__file__))
     parser_path = os.path.join(repository_path, "metasequoia_sql", "syntax", "parser.py")
 
+    # 编译
     start_time = time.time()
     parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True)
-    source_code = ms_parser.compiler.compress_compile_lalr1(parser, import_list=[
-        "from metasequoia_sql import ast"
-    ])
     end_time = time.time()
-    print(f"编译完成，耗时：{end_time - start_time:.3f} 秒")
+    compile_time = end_time - start_time
+    print(f"编译完成，耗时：{compile_time:.3f} 秒")
+
+    # 写出
+    start_time = time.time()
     with open(parser_path, "w+", encoding="UTF-8") as file:
-        for row in source_code:
-            file.write(f"{row}\n")
+        ms_parser.compiler.compress_compile_lalr1(file, parser, import_list=[
+            "from metasequoia_sql import ast"
+        ])
+    end_time = time.time()
+    write_time = end_time - start_time
+    print(f"写出完成，耗时：{write_time:.3f} 秒")
+    print(f"累计用时: {compile_time + write_time:.3f} 秒")
