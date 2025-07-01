@@ -477,7 +477,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
     parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True)
-    source_code = ms_parser.compiler.compile_lalr1(parser, import_list=[
+    source_code = ms_parser.compiler.compress_compile_lalr1(parser, import_list=[
         "from metasequoia_sql import ast"
     ])
     end_time = time.time()
