@@ -9,3 +9,14 @@
 
 from metasequoia_sql.lexical import LexFSM
 from metasequoia_sql.syntax import parse
+
+__all__ = [
+    "parse_statement"
+]
+
+
+def parse_statement(sql: str):
+    """
+    解析 SQL 语句
+    """
+    return parse(LexFSM(sql))

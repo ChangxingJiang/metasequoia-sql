@@ -264,15 +264,15 @@ QUERY_EXPRESSION_BODY = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["query_expression_body", TType.KEYWORD_UNION, "union_option", "query_expression_body"],
-            action=lambda x: ast.Union(left_operand=x[0], union_option=x[2], right_operand=x[3])
+            action=lambda x: ast.QueryUnion(left_operand=x[0], union_option=x[2], right_operand=x[3])
         ),
         ms_parser.create_rule(
             symbols=["query_expression_body", TType.KEYWORD_EXCEPT, "union_option", "query_expression_body"],
-            action=lambda x: ast.Except(left_operand=x[0], union_option=x[2], right_operand=x[3])
+            action=lambda x: ast.QueryExcept(left_operand=x[0], union_option=x[2], right_operand=x[3])
         ),
         ms_parser.create_rule(
             symbols=["query_expression_body", TType.KEYWORD_INTERSECT, "union_option", "query_expression_body"],
-            action=lambda x: ast.Intersect(left_operand=x[0], union_option=x[2], right_operand=x[3])
+            action=lambda x: ast.QueryIntersect(left_operand=x[0], union_option=x[2], right_operand=x[3])
         )
     ]
 )

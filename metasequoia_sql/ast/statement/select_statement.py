@@ -3,7 +3,7 @@ SELECT 语句（select statement）
 """
 
 from enum import IntEnum, IntFlag
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, Union
 
 from metasequoia_sql.ast.base import Expression, Node, QueryBody, Statement, Table
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.clause.group_by_clause import GroupByClause
     from metasequoia_sql.ast.clause.over_clause import Window
     from metasequoia_sql.ast.basic.ident import Identifier
-    from metasequoia_sql.ast.expression.general_expression import Row
+    from metasequoia_sql.ast.expression.general_expression import Row, ExpressionWithAlias, TableWild
     from metasequoia_sql.ast.clause.order_by_clause import OrderByClause
     from metasequoia_sql.ast.clause.limit_clause import LimitClause
     from metasequoia_sql.ast.clause.locking_clause import LockingClause
@@ -25,9 +25,9 @@ __all__ = [
     "ExplicitTable",
     "UnionOption",
     "UnionBase",
-    "Union",
-    "Except",
-    "Intersect",
+    "QueryUnion",
+    "QueryExcept",
+    "QueryIntersect",
     "QueryExpression",
     "SelectStatement",
 ]
@@ -57,7 +57,7 @@ class SimpleQuery(QueryBody):
 
     def __init__(self,
                  select_option: SelectOption,
-                 select_item_list: List[Expression],
+                 select_item_list: List[Union["ExpressionWithAlias", "TableWild"]],
                  into_clause: Optional["IntoClause"],
                  from_clause: Optional[List[Table]],
                  where_clause: Optional[Expression],
@@ -90,13 +90,13 @@ class SimpleQuery(QueryBody):
         return self._select_option
 
     @property
-    def select_item_list(self) -> List[Expression]:
+    def select_item_list(self) -> List[Union["ExpressionWithAlias", "TableWild"]]:
         """
         查询字段列表
 
         Returns
         -------
-        List[Expression]
+        List[QueryUnion[ExpressionWithAlias, TableWild]]
             查询字段列表
         """
         return self._select_item_list
@@ -283,15 +283,15 @@ class UnionBase(QueryBody):
         return self._right_operand
 
 
-class Union(UnionBase):
+class QueryUnion(UnionBase):
     """UNION 联合"""
 
 
-class Except(UnionBase):
+class QueryExcept(UnionBase):
     """EXCEPT 联合"""
 
 
-class Intersect(UnionBase):
+class QueryIntersect(UnionBase):
     """INTERSECT 联合"""
 
 
@@ -416,3 +416,12 @@ class SelectStatement(Statement):
             查询表达式
         """
         return self._query_expression
+
+    def _get_query_body(self) -> QueryBody:
+        return self._query_expression.query_body
+
+    def get_select_item(self, idx: int) -> Union["ExpressionWithAlias", "TableWild"]:
+        query_body = self._get_query_body()
+        if not isinstance(query_body, SimpleQuery):
+            raise KeyError(f"Select Statement do not has simple query body")
+        return query_body.select_item_list[idx]
