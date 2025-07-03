@@ -78,7 +78,9 @@ class FuncSumBase(Expression):
 class FuncSumDistinctBase(FuncSumBase):
     """包含可选的 DISTINCT 关键字的聚集函数的基类"""
 
-    __slots__ = ["_param", "_distinct"]
+    __slots__ = (
+        "_distinct"
+    )
 
     def __init__(self, param: Expression, distinct: bool, window_clause: Optional["Window"]):
         """初始化包含 DISTINCT 的聚集函数基类
@@ -213,8 +215,61 @@ class FuncSumCountStar(Expression):
         return self._window_clause
 
 
-class FuncSumCount(FuncSumDistinctBase):
+class FuncSumCount(Expression):
     """聚集函数：count()"""
+
+    __slots__ = (
+        "_distinct",
+        "_param_list",
+        "_window_clause"
+    )
+
+    def __init__(self, distinct: bool, param_list: List[Expression], window_clause: Optional["Window"]):
+        """初始化包含 DISTINCT 的聚集函数基类
+
+        Parameters
+        ----------
+        distinct : bool
+            是否为 DISTINCT
+        param_list : List[Expression]
+            参数表达式的列表
+        window_clause : Optional[Window]
+            窗口子句
+        """
+        self._distinct = distinct
+        self._param_list = param_list
+        self._window_clause = window_clause
+
+    @property
+    def distinct(self) -> bool:
+        """获取是否为 DISTINCT
+
+        Returns
+        -------
+        bool
+            是否为 DISTINCT
+        """
+        return self._distinct
+
+    @property
+    def param_list(self) -> List[Expression]:
+        """获取参数表达式
+        Returns
+        -------
+        List[Expression]
+            参数表达式的列表
+        """
+        return self._param_list
+
+    @property
+    def window_clause(self) -> Optional["Window"]:
+        """获取窗口子句
+        Returns
+        -------
+        Optional[Window]
+            窗口子句
+        """
+        return self._window_clause
 
 
 class FuncSumMin(FuncSumDistinctBase):

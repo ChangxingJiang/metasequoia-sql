@@ -59,9 +59,14 @@ SUM_FUNCTION_EXPRESSION = ms_parser.create_group(
             action=lambda x: ast.FuncSumCountStar(window_clause=x[5])
         ),
         ms_parser.create_rule(
-            symbols=[TType.WORD_COUNT, TType.OPERATOR_LPAREN, "opt_distinct", "in_sum_expr", TType.OPERATOR_RPAREN,
+            symbols=[TType.WORD_COUNT, TType.OPERATOR_LPAREN, "in_sum_expr", TType.OPERATOR_RPAREN,
                      "opt_windowing_clause"],
-            action=lambda x: ast.FuncSumCount(distinct=x[2], param=x[3], window_clause=x[5])
+            action=lambda x: ast.FuncSumCount(distinct=False, param_list=[x[2]], window_clause=x[4])
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.WORD_COUNT, TType.OPERATOR_LPAREN, TType.KEYWORD_DISTINCT, "expr_list",
+                     TType.OPERATOR_RPAREN, "opt_windowing_clause"],
+            action=lambda x: ast.FuncSumCount(distinct=True, param_list=x[3], window_clause=x[5])
         ),
         ms_parser.create_rule(
             symbols=[TType.WORD_MIN, TType.OPERATOR_LPAREN, "opt_distinct", "in_sum_expr", TType.OPERATOR_RPAREN,
