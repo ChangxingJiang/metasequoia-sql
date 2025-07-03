@@ -11,6 +11,7 @@ from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_enum
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
+from metasequoia_sql_grammar.basic import optional_keyword
 from metasequoia_sql_grammar.basic import ident_mysql
 from metasequoia_sql_grammar.basic import literal
 from metasequoia_sql_grammar.basic import param
@@ -298,6 +299,9 @@ def build_grammar():
     )
 
     for module in [
+        # 基础语法元素（basic）
+        optional_keyword,  # 词语组合：可选的关键字
+
         fixed_word,  # 基础元素 - 固定的词语组合
         ident,  # 基础元素 - 标识符
         ident_mysql,  # 基础元素 - 标识符（MySQL 专有）
