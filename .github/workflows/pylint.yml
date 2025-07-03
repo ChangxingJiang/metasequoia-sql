@@ -18,6 +18,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint
+        pip install metasequoia-parser
     - name: Analysing the code with pylint
       run: |
         pylint --max-line-length=120 metasequoia_sql metasequoia_sql_grammar
