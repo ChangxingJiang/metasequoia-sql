@@ -1,0 +1,67 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# MetaSequoia SQL 项目测试规范
+
+## 测试目录结构
+
+- @metasequoia_sql_test/ - 测试用例目录
+  - @common/ - 测试工具函数
+  - @unit_test_basic/ - 单元测试：基础语法元素解析 
+  - @unit_test_expression/ - 单元测试：表达式解析
+  - @unit_test_phrase/ - 单元测试：测试短语解析
+  - @unit_test_clause/ - 单元测试：测试从句解析
+  - @unit_test_statement/ - 单元测试：测试语句解析
+  - @system_test/ - 系统测试
+
+## 单元测试规范
+
+### 文件组织结构
+
+1. 在 @metasequoia_sql_test/ 路径下对应的子目录中添加测试文件
+2. 每个文件对应 @metasequoia_sql_grammar/ - 中的一个文件，文件命名：`test_{语义组文件名}.py`
+3. 每个类对应一个语义组，类命名：`Test{驼峰式的语义组名称}`
+4. 每个方法对应一个备选规则，方法命名：`test_{根据备选规则含义命名}`
+
+### 测试方法
+
+1. 对于表达式类型的语义组，包括在表达式中直接或间接使用的语义组，则通过 `parse_expression` 方法进行解析，样例如下：
+
+```python
+from metasequoia_sql import parse_expression
+node = parse_expression("database_name.table_name.column_name")
+```
+
+2. 对于其他语义组，则需要构造包含该语法元素的语句，通过 `parse_statement` 方法进行解析，然后再从解析出的语句节点中取出对应位置的节点，样例如下：
+
+```python
+from metasequoia_sql import parse_statement
+node = parse_statement("SELECT * FROM table_name")
+```
+
+3. 如果你认为从某个语句节点中提取指定位置节点的操作较为繁琐，则可以将它添加到 @common/ 的工具函数中，你可以在编写单元测试用例时自行创建。
+
+### 验证要求
+
+1. 验证 AST 节点类型
+2. 验证 AST 节点的属性是否满足预期
+
+### 注释规范
+
+1. 在单元测试类注释中，需要注明测试的语义组名称
+2. 在单元测试方法注释中，需要注明测试的备选规则；如果在当前单元测试添加后，其中使用的某些语义组不需要再添加测试，则也需要再方式注释中注明
+
+### SQL 语句中元素的命名规范
+
+1. 测试 SQL 中的列名命名为 `column_name`，如果有多个列名，使用 `column_name_1`、`column_name_2` 等
+2. 测试 SQL 中的表名命名为 `table_name`，如果有多个表名，使用 `table_name_1`、`table_name_2` 等
+3. 测试 SQL 中的数据库名命名为 `database_name`，如果有多个数据库名，使用 `database_name_1`、`database_name_2` 等
+
+### 测试数据复杂度
+
+1. 对于每个备选规则，至少需要提供基本的正确解析测试。
+2. 如果存在可选的组成部分，则需要覆盖包含和不包含该组成部分的两种测试用例。
+3. 如果存在同时允许一个或多个的组成部分，则需要覆盖 1 个和 2 个两种测试用例。
+4. 对于需要添加多个测试用例的情况，每个组成部分都可以在固定其他语法元素的情况下单独构造用例，避免笛卡尔积。
