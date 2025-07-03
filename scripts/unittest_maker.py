@@ -7,15 +7,15 @@ import os
 import subprocess
 from typing import List, Dict
 
-from metasequoia_sql import *
-from metasequoia_sql.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, CurrentSelectClauseUsedQuoteColumn,
-                                      CurrentJoinClauseUsedQuoteColumn, CurrentWhereClauseUsedQuoteColumn,
-                                      CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
-                                      CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
-                                      AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
-                                      CurrentColumnSelectToDirectQuoteHash)
-from metasequoia_sql.analyzer.node import StandardColumn
-from metasequoia_sql.common import ordered_distinct
+from metasequoia_sql_old import *
+from metasequoia_sql_old.analyzer import (QuoteColumn, CurrentUsedQuoteColumn, CurrentSelectClauseUsedQuoteColumn,
+                                          CurrentJoinClauseUsedQuoteColumn, CurrentWhereClauseUsedQuoteColumn,
+                                          CurrentGroupByClauseUsedQuoteColumn, CurrentHavingClauseUsedQuoteColumn,
+                                          CurrentOrderByClauseUsedQuoteColumn, AllUsedQuoteTables,
+                                          AllFromClauseUsedQuoteColumn, AllJoinClauseUsedQuoteColumn,
+                                          CurrentColumnSelectToDirectQuoteHash)
+from metasequoia_sql_old.analyzer.node import StandardColumn
+from metasequoia_sql_old.common import ordered_distinct
 from scripts.demo_sql import sql_basic_tutorial
 
 
@@ -46,10 +46,10 @@ def make_sql_basic_tutorial(force: bool = False):
         file.write("import unittest\n")
         file.write("from typing import List, Dict\n")
         file.write("\n")
-        file.write("from metasequoia_sql import *\n")
-        file.write("from metasequoia_sql.analyzer import *\n")
-        file.write("from metasequoia_sql.analyzer.node import StandardColumn\n")
-        file.write("from metasequoia_sql.common import ordered_distinct\n")
+        file.write("from metasequoia_sql_old import *\n")
+        file.write("from metasequoia_sql_old.analyzer import *\n")
+        file.write("from metasequoia_sql_old.analyzer.node import StandardColumn\n")
+        file.write("from metasequoia_sql_old.common import ordered_distinct\n")
         file.write("from scripts.demo_sql.sql_basic_tutorial import *\n")
         file.write("\n")
         file.write("\n")

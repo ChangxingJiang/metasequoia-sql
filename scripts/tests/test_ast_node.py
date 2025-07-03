@@ -8,7 +8,7 @@ import inspect
 import typing
 import unittest
 
-from metasequoia_sql import node
+from metasequoia_sql_old import node
 
 
 def check_hashable(cls: type, visited: typing.Optional[typing.Set[type]] = None) -> bool:

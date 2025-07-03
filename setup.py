@@ -16,7 +16,7 @@ setup(
     url="https://github.com/ChangxingJiang/metasequoia-sql",
     install_requires=[],
     license="MIT License",
-    packages=[package for package in find_packages() if package.startswith("metasequoia_sql")],
+    packages=[package for package in find_packages() if package.startswith("metasequoia_sql_old")],
     platforms=["all"],
     classifiers=[
         "Intended Audience :: Developers",
