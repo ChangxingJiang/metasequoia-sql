@@ -2,10 +2,10 @@
 函数类型节点
 """
 
-from enum import IntEnum, IntFlag, auto
 from typing import List, Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import BinaryExpression, Expression, TernaryExpression, UnaryExpression
+from metasequoia_sql.ast.enumeration import EnumCompareOperator, EnumFulltextOption
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.ident import Ident
@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.statement.select_statement import QueryExpression
 
 __all__ = [
-    "EnumOperatorCompare",
     "OperatorNegative",
     "OperatorBitNot",
     "OperatorBitOr",
@@ -58,7 +57,7 @@ __all__ = [
     "OperatorTruthTransform",
     "OperatorCollate",
     "OperatorConcat",
-    "FulltextOption",
+    "EnumFulltextOption",
     "OperatorMatch",
     "OperatorBinary",
     "OperatorJsonSeparator",
@@ -67,18 +66,6 @@ __all__ = [
     "OperatorInValues",
     "OperatorNotInValues",
 ]
-
-
-class EnumOperatorCompare(IntEnum):
-    """比较运算符的枚举类"""
-
-    EQ = auto()  # =
-    EQUAL = auto()  # <=>
-    GE = auto()  # >=
-    GT = auto()  # >
-    LE = auto()  # <=
-    LT = auto()  # <
-    NE = auto()  # <> 或 !=
 
 
 class OperatorNegative(UnaryExpression):
@@ -339,7 +326,7 @@ class OperatorCompare(BinaryExpression):
     def __init__(self,
                  left_operand: Optional[Expression],
                  right_operand: Optional[Expression],
-                 operator: EnumOperatorCompare):
+                 operator: EnumCompareOperator):
         """初始化比较运算符
         
         Parameters
@@ -348,19 +335,19 @@ class OperatorCompare(BinaryExpression):
             左操作数
         right_operand : Optional[Expression]
             右操作数
-        operator : EnumOperatorCompare
+        operator : EnumCompareOperator
             比较运算符类型
         """
         super().__init__(left_operand, right_operand)
         self._operator = operator
 
     @property
-    def operator(self) -> EnumOperatorCompare:
+    def operator(self) -> EnumCompareOperator:
         """获取比较运算符类型
         
         Returns
         -------
-        EnumOperatorCompare
+        EnumCompareOperator
             比较运算符类型
         """
         return self._operator
@@ -371,14 +358,14 @@ class OperatorCompareAllOrAnyBase(Expression):
 
     __slots__ = ["_operand", "_operator", "_subquery_expression"]
 
-    def __init__(self, operand: Expression, operator: EnumOperatorCompare, subquery_expression: "QueryExpression"):
+    def __init__(self, operand: Expression, operator: EnumCompareOperator, subquery_expression: "QueryExpression"):
         """初始化比较 ALL/ANY 运算符基类
         
         Parameters
         ----------
         operand : Expression
             操作数
-        operator : EnumOperatorCompare
+        operator : EnumCompareOperator
             比较运算符类型
         subquery_expression : QueryExpression
             子查询表达式
@@ -399,12 +386,12 @@ class OperatorCompareAllOrAnyBase(Expression):
         return self._operand
 
     @property
-    def operator(self) -> EnumOperatorCompare:
+    def operator(self) -> EnumCompareOperator:
         """获取比较运算符类型
         
         Returns
         -------
-        EnumOperatorCompare
+        EnumCompareOperator
             比较运算符类型
         """
         return self._operator
@@ -554,15 +541,6 @@ class OperatorConcat(BinaryExpression):
     """
 
 
-class FulltextOption(IntFlag):
-    """全文本索引选项"""
-
-    DEFAULT = 0
-    IN_NATURAL_LANGUAGE_MODE = 1  # IN NATURAL LANGUAGE MODE
-    WITH_QUERY_EXPANSION = 2  # WITH QUERY EXPANSION
-    IN_BOOLEAN_MODE = 4  # IN BOOLEAN MODE
-
-
 class OperatorMatch(Expression):
     """内置 MATCH 运算符（全文本索引搜索）
 
@@ -571,7 +549,7 @@ class OperatorMatch(Expression):
 
     __slots__ = ["_column_list", "_sub_string", "_fulltext_options"]
 
-    def __init__(self, column_list: List["Ident"], sub_string: Expression, fulltext_options: FulltextOption):
+    def __init__(self, column_list: List["Ident"], sub_string: Expression, fulltext_options: EnumFulltextOption):
         """初始化 MATCH 运算符
         
         Parameters
@@ -580,7 +558,7 @@ class OperatorMatch(Expression):
             列标识符列表
         sub_string : Expression
             子字符串表达式
-        fulltext_options : FulltextOption
+        fulltext_options : EnumFulltextOption
             全文搜索选项
         """
         self._column_list = column_list
@@ -610,12 +588,12 @@ class OperatorMatch(Expression):
         return self._sub_string
 
     @property
-    def fulltext_options(self) -> FulltextOption:
+    def fulltext_options(self) -> EnumFulltextOption:
         """获取全文搜索选项
         
         Returns
         -------
-        FulltextOption
+        EnumFulltextOption
             全文搜索选项
         """
         return self._fulltext_options

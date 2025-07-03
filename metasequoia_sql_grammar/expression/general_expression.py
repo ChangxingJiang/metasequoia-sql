@@ -10,7 +10,6 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "OPERATOR_COMPARE",
     "SIMPLE_EXPR",
     "BINARY_EXPR",
     "PREDICATE_EXPR",
@@ -24,9 +23,6 @@ __all__ = [
     "UDF_EXPR_LIST",
     "OPT_UDF_EXPR_LIST",
     "MATCH_COLUMN_LIST",
-    "OPT_IN_NATURAL_LANGUAGE_MODE",
-    "OPT_WITH_QUERY_EXPANSION",
-    "FULLTEXT_OPTIONS",
     "OPT_KEYWORD_ARRAY",
     "OPT_KEYWORD_INTERVAL",
     "WHEN_LIST",
@@ -37,41 +33,6 @@ __all__ = [
     "SUBQUERY",
     "OPT_DEFAULT_EXPR",
 ]
-
-# 比较运算符
-OPERATOR_COMPARE = ms_parser.create_group(
-    name="operator_compare",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_EQ],
-            action=lambda _: ast.EnumOperatorCompare.EQ
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_LT_EQ_GT],
-            action=lambda _: ast.EnumOperatorCompare.EQUAL
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_GT_EQ],
-            action=lambda _: ast.EnumOperatorCompare.GE
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_GT],
-            action=lambda _: ast.EnumOperatorCompare.GT
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_LT_EQ],
-            action=lambda _: ast.EnumOperatorCompare.LE
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_LT],
-            action=lambda _: ast.EnumOperatorCompare.LT
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.OPERATOR_BANG_EQ],
-            action=lambda _: ast.EnumOperatorCompare.NE
-        ),
-    ]
-)
 
 # 简单表达式
 SIMPLE_EXPR = ms_parser.create_group(
@@ -398,16 +359,16 @@ BOOL_EXPR = ms_parser.create_group(
             sr_priority_as=TType.KEYWORD_IS
         ),
         ms_parser.create_rule(
-            symbols=["bool_expr", "operator_compare", "predicate_expr"],
+            symbols=["bool_expr", "compare_operator", "predicate_expr"],
             action=lambda x: ast.OperatorCompare(left_operand=x[0], right_operand=x[2], operator=x[1])
         ),
         ms_parser.create_rule(
-            symbols=["bool_expr", "operator_compare", TType.KEYWORD_ALL, "subquery"],
+            symbols=["bool_expr", "compare_operator", TType.KEYWORD_ALL, "subquery"],
             action=lambda x: ast.OperatorCompareAll(operand=x[0], operator=x[1], subquery_expression=x[3]),
             sr_priority_as=TType.OPERATOR_EQ
         ),
         ms_parser.create_rule(
-            symbols=["bool_expr", "operator_compare", TType.KEYWORD_ANY, "subquery"],
+            symbols=["bool_expr", "compare_operator", TType.KEYWORD_ANY, "subquery"],
             action=lambda x: ast.OperatorCompareAny(operand=x[0], operator=x[1], subquery_expression=x[3]),
             sr_priority_as=TType.OPERATOR_EQ
         ),
@@ -582,51 +543,6 @@ MATCH_COLUMN_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "simple_ident_list", TType.OPERATOR_RPAREN],
             action=lambda x: x[1]
-        )
-    ]
-)
-
-# 全文本索引可选的 IN NATURAL LANGUAGE MODE 选项
-OPT_IN_NATURAL_LANGUAGE_MODE = ms_parser.create_group(
-    name="opt_in_natural_language_mode",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_IN, TType.KEYWORD_NATURAL, TType.KEYWORD_LANGUAGE, TType.KEYWORD_MODE],
-            action=lambda _: ast.FulltextOption.IN_NATURAL_LANGUAGE_MODE
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: ast.FulltextOption.DEFAULT
-        )
-    ]
-)
-
-# 全文本索引可选的 WITH QUERY EXPANSION 选项
-OPT_WITH_QUERY_EXPANSION = ms_parser.create_group(
-    name="opt_with_query_expansion",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_WITH, TType.KEYWORD_QUERY, TType.KEYWORD_EXPANSION],
-            action=lambda _: ast.FulltextOption.WITH_QUERY_EXPANSION
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: ast.FulltextOption.DEFAULT
-        )
-    ]
-)
-
-# 全文本索引的选项
-FULLTEXT_OPTIONS = ms_parser.create_group(
-    name="fulltext_options",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["opt_in_natural_language_mode", "opt_with_query_expansion"],
-            action=lambda x: x[0] | x[1]
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_IN, TType.KEYWORD_BOOLEAN, TType.KEYWORD_MODE],
-            action=lambda _: ast.FulltextOption.IN_BOOLEAN_MODE
         )
     ]
 )

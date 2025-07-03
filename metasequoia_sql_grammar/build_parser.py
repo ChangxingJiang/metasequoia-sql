@@ -7,6 +7,7 @@
 import metasequoia_parser as ms_parser
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
+from metasequoia_sql_grammar.enumeration import dql_enumeration
 from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_enum
 from metasequoia_sql_grammar.basic import fixed_word
@@ -301,6 +302,9 @@ def build_grammar():
     for module in [
         # 基础语法元素（basic）
         optional_keyword,  # 词语组合：可选的关键字
+
+        # 基础枚举类型（enumeration）
+        dql_enumeration,  # 词语组合：DQL 语句中的枚举类型
 
         fixed_word,  # 基础元素 - 固定的词语组合
         ident,  # 基础元素 - 标识符

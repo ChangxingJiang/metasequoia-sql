@@ -1384,34 +1384,30 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 一般表达式（general expression）
 
-| 水杉解析器语义组名称           | 语义组含义                                       | 返回值类型             | MySQL 语义组名称                                     |
-| ------------------------------ | ------------------------------------------------ | ---------------------- | ---------------------------------------------------- |
-| `operator_compare`             | 比较运算符                                       | `EnumOperatorCompare`  | `comp_op`                                            |
-| `simple_expr`                  | 简单表达式                                       | `Expression`           | `simple_expr`                                        |
-| `binary_expr`                  | 二元表达式                                       | `Expression`           | `bit_expr`                                           |
-| `predicate_expr`               | 谓语表达式                                       | `Expression`           | `predicate`                                          |
-| `bool_expr`                    | 布尔表达式                                       | `Expression`           | `bool_pri`<br />`all_or_any`【包含】                 |
-| `expr`                         | 一般表达式                                       | `Expression`           | `expr`<br />`grouping_expr`                          |
-| `opt_expr`                     | 可选的一般表达式                                 | `Expression`           | `opt_expr`                                           |
-| `opt_paren_expr_list`          | 可选的嵌套括号内可选的逗号分隔的一般表达式列表   | `List[Expression]`     | `opt_paren_expr_list`                                |
-| `opt_expr_list`                | 可选的逗号分隔的一般表达式列表                   | `List[Expression]`     | `opt_expr_list`                                      |
-| `expr_list`                    | 逗号分隔的一般表达式列表                         | `List[Expression]`     | `expr_list`<br />`group_list`                        |
-| `udf_expr`                     | UDF 表达式（自定义函数中的参数）                 | `UdfExpression`        | `udf_expr`                                           |
-| `udf_expr_list`                | 逗号分隔的 UDF 表达式的列表                      | `List[UdfExpression]`  | `udf_expr_list`                                      |
-| `opt_udf_expr_list`            | 可选的逗号分隔的 UDF 表达式的列表                | `List[UdfExpression]`  | `opt_udf_expr_list`                                  |
-| `match_column_list`            | `MATCH` 函数的列名的列表                         | `List[Ident]`          | `ident_list_arg`                                     |
-| `opt_in_natural_language_mode` | 全文本索引可选的 `IN NATURAL LANGUAGE MODE` 选项 | `FulltextOption`       | `opt_natural_language_mode`                          |
-| `opt_with_query_expansion`     | 全文本索引可选的 `WITH QUERY EXPANSION` 选项     | `FulltextOption`       | `opt_query_expansion`                                |
-| `fulltext_options`             | 全文本索引的选项                                 | `FulltextOption`       | `fulltext_options`                                   |
-| `opt_keyword_array`            | 可选的 `ARRAY` 关键字                            | `bool`                 | `opt_array_cast`                                     |
-| `opt_keyword_interval`         | 可选的 `INTERVAL` 关键字                         | `bool`                 | `opt_interval`                                       |
-| `when_list`                    | `CASE` 结构中的 `WHEN` 条件的列表                | `List[WhenItem]`       | `when_list`                                          |
-| `opt_else`                     | `CASE` 结构中可选的 `ELSE` 子句                  | `Optional[Expression]` | `opt_else`                                           |
-| `opt_expr_or_default_list`     | 可选的一般表达式或 `DEFAULT` 关键字的列表        | `List[Expression]`     | `opt_values`                                         |
-| `expr_or_default_list`         | 一般表达式或 `DEFAULT` 关键字的列表              | `List[Expression]`     | `values`                                             |
-| `expr_or_default`              | 一般表达式或 `DEFAULT` 关键字                    | `Expression`           | `expr_or_default`                                    |
-| `subquery`                     | 子查询表达式                                     | `SubQuery`             | `row_subquery`<br />`table_subquery`<br />`subquery` |
-| `opt_default_expr`             | 可选的 `DEFAULT` 关键字引导的表达式              | `Optional[Expression]` | `sp_opt_default`                                     |
+| 水杉解析器语义组名称       | 语义组含义                                     | 返回值类型             | MySQL 语义组名称                                     |
+| -------------------------- | ---------------------------------------------- | ---------------------- | ---------------------------------------------------- |
+| `simple_expr`              | 简单表达式                                     | `Expression`           | `simple_expr`                                        |
+| `binary_expr`              | 二元表达式                                     | `Expression`           | `bit_expr`                                           |
+| `predicate_expr`           | 谓语表达式                                     | `Expression`           | `predicate`                                          |
+| `bool_expr`                | 布尔表达式                                     | `Expression`           | `bool_pri`<br />`all_or_any`【包含】                 |
+| `expr`                     | 一般表达式                                     | `Expression`           | `expr`<br />`grouping_expr`                          |
+| `opt_expr`                 | 可选的一般表达式                               | `Expression`           | `opt_expr`                                           |
+| `opt_paren_expr_list`      | 可选的嵌套括号内可选的逗号分隔的一般表达式列表 | `List[Expression]`     | `opt_paren_expr_list`                                |
+| `opt_expr_list`            | 可选的逗号分隔的一般表达式列表                 | `List[Expression]`     | `opt_expr_list`                                      |
+| `expr_list`                | 逗号分隔的一般表达式列表                       | `List[Expression]`     | `expr_list`<br />`group_list`                        |
+| `udf_expr`                 | UDF 表达式（自定义函数中的参数）               | `UdfExpression`        | `udf_expr`                                           |
+| `udf_expr_list`            | 逗号分隔的 UDF 表达式的列表                    | `List[UdfExpression]`  | `udf_expr_list`                                      |
+| `opt_udf_expr_list`        | 可选的逗号分隔的 UDF 表达式的列表              | `List[UdfExpression]`  | `opt_udf_expr_list`                                  |
+| `match_column_list`        | `MATCH` 函数的列名的列表                       | `List[Ident]`          | `ident_list_arg`                                     |
+| `opt_keyword_array`        | 可选的 `ARRAY` 关键字                          | `bool`                 | `opt_array_cast`                                     |
+| `opt_keyword_interval`     | 可选的 `INTERVAL` 关键字                       | `bool`                 | `opt_interval`                                       |
+| `when_list`                | `CASE` 结构中的 `WHEN` 条件的列表              | `List[WhenItem]`       | `when_list`                                          |
+| `opt_else`                 | `CASE` 结构中可选的 `ELSE` 子句                | `Optional[Expression]` | `opt_else`                                           |
+| `opt_expr_or_default_list` | 可选的一般表达式或 `DEFAULT` 关键字的列表      | `List[Expression]`     | `opt_values`                                         |
+| `expr_or_default_list`     | 一般表达式或 `DEFAULT` 关键字的列表            | `List[Expression]`     | `values`                                             |
+| `expr_or_default`          | 一般表达式或 `DEFAULT` 关键字                  | `Expression`           | `expr_or_default`                                    |
+| `subquery`                 | 子查询表达式                                   | `SubQuery`             | `row_subquery`<br />`table_subquery`<br />`subquery` |
+| `opt_default_expr`         | 可选的 `DEFAULT` 关键字引导的表达式            | `Optional[Expression]` | `sp_opt_default`                                     |
 
 #### 聚集函数表达式（sum function expression）
 
@@ -1530,13 +1526,6 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 | 水杉解析器语义组名称                                         | 语义组类型                                                   | 返回值类型 | MySQL 语义组名称                                   |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------- | -------------------------------------------------- |
-| `opt_keyword_of`                                             | 可选的 `OPT` 关键字                                          | -          | `opt_of`                                           |
-| `opt_keyword_all`                                            | 可选的 `ALL` 关键字                                          | `bool`     | `opt_all`<br />`opt_replica_reset_options`         |
-| `opt_keyword_into`                                           | 可选的 `INTO` 关键字                                         | -          | `opt_INTO`                                         |
-| `opt_keyword_default`                                        | 可选的 `DEFAULT` 关键字                                      | -          | `opt_default`                                      |
-| `opt_keyword_storage`                                        | 可选的 `STORAGE` 关键字                                      | -          | `opt_storage`                                      |
-| `opt_keyword_temporary`                                      | 可选的 `TEMPORARY` 关键字                                    | `bool`     | `opt_temporary`                                    |
-| `opt_keyword_extended`                                       | 可选的 `EXTENDED` 关键字                                     | `bool`     | `opt_extended`                                     |
 | `opt_keyword_if_not_exists`                                  | 可选的 `IF NOT EXISTS` 关键字                                | `bool`     | `opt_if_not_exists`                                |
 | `opt_keyword_if_exists`                                      | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`                                        |
 | `opt_keyword_force`                                          | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`                                        |
