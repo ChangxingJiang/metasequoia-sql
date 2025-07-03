@@ -5,13 +5,22 @@
 import unittest
 
 from metasequoia_sql import parse_expression
-from metasequoia_sql.ast.expression.window_function_expression import (
-    FuncWindowRowNumber, FuncWindowRank, FuncWindowDenseRank,
-    FuncWindowCumeDist, FuncWindowPercentRank, FuncWindowNtile,
-    FuncWindowLead, FuncWindowLag, FuncWindowFirstValue, FuncWindowLastValue,
-    FuncWindowNthValue, FromFirstOrLast, NullTreatment
-)
 from metasequoia_sql.ast.basic.literal import IntLiteral
+from metasequoia_sql.ast.expression.window_function_expression import (
+    FromFirstOrLast,
+    FuncWindowCumeDist,
+    FuncWindowDenseRank,
+    FuncWindowFirstValue,
+    FuncWindowLag,
+    FuncWindowLastValue,
+    FuncWindowLead,
+    FuncWindowNthValue,
+    FuncWindowNtile,
+    FuncWindowPercentRank,
+    FuncWindowRank,
+    FuncWindowRowNumber,
+    NullTreatment
+)
 
 
 class TestWindowFunctionExpression(unittest.TestCase):
@@ -308,7 +317,3 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertEqual(node.from_first_or_last, FromFirstOrLast.FROM_LAST)
         self.assertEqual(node.null_treatment, NullTreatment.IGNORE_NULLS)
         self.assertIsNotNone(node.window_clause)
-
-
-if __name__ == "__main__":
-    unittest.main() 
