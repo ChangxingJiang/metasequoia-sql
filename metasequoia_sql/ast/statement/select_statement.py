@@ -418,10 +418,12 @@ class SelectStatement(Statement):
         return self._query_expression
 
     def _get_query_body(self) -> QueryBody:
+        """返回查询体"""
         return self._query_expression.query_body
 
     def get_select_item(self, idx: int) -> Union["ExpressionWithAlias", "TableWild"]:
+        """返回查询表达式的列表"""
         query_body = self._get_query_body()
         if not isinstance(query_body, SimpleQuery):
-            raise KeyError(f"Select Statement do not has simple query body")
+            raise KeyError("Select Statement do not has simple query body")
         return query_body.select_item_list[idx]

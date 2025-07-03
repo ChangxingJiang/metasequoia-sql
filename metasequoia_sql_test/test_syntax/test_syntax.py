@@ -3,9 +3,11 @@
 """
 
 from metasequoia_sql import LexFSM
-from metasequoia_sql import parse
+from metasequoia_sql import parse_expression
 
 if __name__ == "__main__":
+    print(parse_expression("hello"))
+
     # 标识符
     # print(parse(LexFSM("hello")))
     # print(parse(LexFSM("hello1.`hello2`")))
