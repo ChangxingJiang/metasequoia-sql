@@ -548,11 +548,11 @@ UDF_EXPR_LIST = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["udf_expr_list", TType.OPERATOR_COMMA, "udf_expr"],
-            action=lambda x: ms_parser.template.action.LIST_APPEND_2
+            action=ms_parser.template.action.LIST_APPEND_2
         ),
         ms_parser.create_rule(
             symbols=["udf_expr"],
-            action=lambda x: ms_parser.template.action.LIST_INIT_0
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )

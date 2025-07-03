@@ -50,13 +50,13 @@ FUNCTION_EXPRESSION = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INTERVAL, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
-                     TType.OPERATOR_LPAREN],
+                     TType.OPERATOR_RPAREN],
             action=lambda x: ast.FunctionExpression(function_name="interval", param_list=[x[2], x[4]]),
             sr_priority_as=TType.KEYWORD_INTERVAL
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_INTERVAL, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_COMMA, "expr",
-                     TType.OPERATOR_COMMA, "expr_list", TType.OPERATOR_LPAREN],
+                     TType.OPERATOR_COMMA, "expr_list", TType.OPERATOR_RPAREN],
             action=lambda x: ast.FunctionExpression(function_name="interval", param_list=[x[2]] + [x[4]] + x[6]),
             sr_priority_as=TType.KEYWORD_INTERVAL
         ),

@@ -101,6 +101,17 @@ class FunctionExpression(Expression):
         return FunctionExpression(function_name=function_name, param_list=[param_1, param_2])
 
     @property
+    def schema_name(self) -> Optional[str]:
+        """获取模式名
+
+        Returns
+        -------
+        Optional[str]
+            模式名
+        """
+        return self._schema_name
+
+    @property
     def function_name(self) -> str:
         """获取函数名
         
