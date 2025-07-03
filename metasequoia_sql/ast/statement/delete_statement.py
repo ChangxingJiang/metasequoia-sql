@@ -49,7 +49,7 @@ class DeleteFromStatement(DeleteStatement):
                  where_clause: Optional[Expression],
                  order_by_clause: Optional["OrderByClause"],
                  limit_clause: Optional["LimitClause"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._with_clause = with_clause
         self._options = options
         self._table_name = table_name
@@ -174,7 +174,7 @@ class DeleteColumnFromStatement(DeleteStatement):
                  from_table_list: List[Table],
                  where_clause: Optional[Expression]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._with_clause = with_clause
         self._options = options
         self._wild_table_list = wild_table_list
@@ -260,7 +260,7 @@ class DeleteFromUsingStatement(DeleteStatement):
                  using_table_list: List[Table],
                  where_clause: Optional[Expression]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._with_clause = with_clause
         self._options = options
         self._from_table_list = from_table_list

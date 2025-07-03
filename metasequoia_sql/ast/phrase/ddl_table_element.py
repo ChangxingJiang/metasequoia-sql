@@ -106,7 +106,7 @@ class GeneratedFieldDefinition(FieldDefinition):
                  generated_expression: Expression,
                  stored_attribute: EnumStoredAttribute,
                  attribute_list: List["ColumnAttribute"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         super().__init__(field_type, attribute_list)
         self._collate_charset = collate_charset
         self._generated_always = generated_always
@@ -232,7 +232,7 @@ class ReferencesDefinition(Node):
                  match_clause: EnumReferenceMatch,
                  on_update: EnumReferenceActionOption,
                  on_delete: EnumReferenceActionOption):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._table_ident = table_ident
         self._column_list = column_list
         self._match_clause = match_clause
@@ -516,7 +516,7 @@ class IndexDefinition(TableElement):
                  index_key_list: List["IndexKeyDefinition"],
                  index_options: List["IndexAttribute"]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._index_type = index_type
         self._index_name = index_name
         self._index_structure_type = index_structure_type

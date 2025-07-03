@@ -85,7 +85,7 @@ class UpdateStatement(Statement):
                  order_by_clause: Optional["OrderByClause"],
                  limit_clause: Optional["LimitClause"]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化 UPDATE 语句
 

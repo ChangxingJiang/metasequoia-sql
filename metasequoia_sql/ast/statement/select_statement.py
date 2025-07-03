@@ -66,7 +66,7 @@ class SimpleQuery(QueryBody):
                  window_clause: Optional[List["Window"]],
                  qualify_clause: Optional[Expression]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._select_option = select_option
         self._select_item_list = select_item_list
         self._into_clause = into_clause
@@ -306,7 +306,7 @@ class QueryExpression(Node):
                  order_by_clause: Optional["OrderByClause"],
                  limit_clause: Optional["LimitClause"],
                  locking_clause_list: Optional[List["LockingClause"]] = None):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         if locking_clause_list is None:
             locking_clause_list = []
 

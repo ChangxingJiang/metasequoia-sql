@@ -173,7 +173,7 @@ class CreateUserStatement(Statement):
             account_lock_expire_options: List["AccountLockExpireOption"],
             user_attribute: Optional["UserAttribute"]
     ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._if_not_exists = if_not_exists
         self._user_list = user_list
         self._default_role_clause = default_role_clause

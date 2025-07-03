@@ -85,7 +85,7 @@ class AlterUserStandardStatement(AlterUserStatement):
             account_lock_expire_options: List["AccountLockExpireOption"],
             user_attribute: Optional["UserAttribute"]
     ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         super().__init__(if_exists)
         self._user_list = user_list
         self._require_clause = require_clause

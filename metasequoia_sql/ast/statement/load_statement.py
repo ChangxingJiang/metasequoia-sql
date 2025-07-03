@@ -58,7 +58,7 @@ class LoadStatement(Statement):
                  parallel_count: int,
                  memory_size: int,
                  use_bulk_algorithm: bool):
-        # pylint: disable=R0913,R0914
+        # pylint: disable=R0913,R0914,R0917
         self._data_type = data_type
         self._load_data_lock = load_data_lock
         self._is_local = is_local

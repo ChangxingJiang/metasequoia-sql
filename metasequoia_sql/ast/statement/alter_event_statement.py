@@ -42,7 +42,7 @@ class AlterEventStatement(Statement):
                  event_status: Optional["EnumEventStatusType"],
                  event_comment: Optional[str],
                  process_command: Optional["ProcessCommand"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化 ALTER EVENT 语句
 

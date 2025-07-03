@@ -485,7 +485,7 @@ class GrantPrivilegesStatement(GrantStatement):
     def __init__(self, privileges: List[RoleOrPrivilege], acl_type: "EnumAclType",
                  grant_identifier: GrantIdentifier, users: List["UserName"],
                  with_grant_option: bool, grant_as: Optional["UserName"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化GRANT权限语句节点。
 
@@ -602,7 +602,7 @@ class GrantAllPrivilegesStatement(GrantStatement):
 
     def __init__(self, acl_type: "EnumAclType", grant_identifier: GrantIdentifier,
                  users: List["UserName"], with_grant_option: bool, grant_as: Optional["UserName"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化GRANT ALL PRIVILEGES语句节点。
 
@@ -863,7 +863,7 @@ class RevokePrivilegesStatement(RevokeStatement):
     def __init__(self, if_exists: bool, privileges: List[RoleOrPrivilege],
                  acl_type: "EnumAclType", grant_identifier: GrantIdentifier,
                  users: List["UserName"], ignore_unknown_user: bool):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化REVOKE权限语句节点。
 
@@ -980,7 +980,7 @@ class RevokeAllPrivilegesStatement(RevokeStatement):
 
     def __init__(self, if_exists: bool, acl_type: "EnumAclType",
                  grant_identifier: GrantIdentifier, users: List["UserName"], ignore_unknown_user: bool):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化REVOKE ALL PRIVILEGES语句节点。
 

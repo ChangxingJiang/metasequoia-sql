@@ -196,7 +196,7 @@ class CreateTableStatementAsDefinition(CreateTableStatement):
                  opt_partition_clause: Optional["DdlPartitionByClause"],
                  on_duplicate: "OnDuplicate",
                  opt_query_expression: Optional["QueryExpression"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         super().__init__(temporary, if_not_exists, table_ident)
         self._table_element_list = table_element_list
         self._opt_create_table_option_list = opt_create_table_option_list

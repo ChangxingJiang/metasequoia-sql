@@ -42,7 +42,7 @@ class CreateEventStatement(Statement):
                  event_status: Optional["EnumEventStatusType"],
                  event_comment: Optional[str],
                  event_body: "ProcessCommand"):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化 CREATE EVENT 语句
 

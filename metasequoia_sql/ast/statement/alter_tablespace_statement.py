@@ -36,7 +36,7 @@ class AlterTablespaceStatement(Statement):
                  datafile: Optional[str] = None,
                  target_name: Optional[str] = None,
                  option_list: Optional[List["DdlOption"]] = None):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._tablespace_name = tablespace_name
         self._action_type = action_type  # ADD, DROP, RENAME, ALTER
         self._datafile = datafile

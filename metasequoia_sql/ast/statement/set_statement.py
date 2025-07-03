@@ -1,3 +1,5 @@
+# pylint: disable=R0801
+
 """
 SET 语句（set statement）
 """

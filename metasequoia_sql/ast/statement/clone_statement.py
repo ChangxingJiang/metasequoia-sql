@@ -95,7 +95,7 @@ class CloneInstanceStatement(CloneStatement):
 
     def __init__(self, user: "UserName", port: int, password: str, data_directory: Optional[str],
                  open_ssl: "EnumOpenSslType"):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._user = user
         self._port = port
         self._password = password

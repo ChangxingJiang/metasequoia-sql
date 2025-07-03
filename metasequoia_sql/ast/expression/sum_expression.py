@@ -256,7 +256,7 @@ class FuncSumGroupConcat(Expression):
                  order_by_clause: Optional["OrderByClause"],
                  separator: Optional["StringLiteral"],
                  window_clause: Optional["Window"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """初始化 GROUP_CONCAT 聚集函数
         
         Parameters

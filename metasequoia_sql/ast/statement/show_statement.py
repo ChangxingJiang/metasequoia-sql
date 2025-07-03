@@ -217,7 +217,7 @@ class ShowColumnsStatement(Statement):
                  schema_name: Optional[str],
                  wild: Optional[str] = None,
                  where: Optional[Expression] = None):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._command_type = command_type
         self._table_ident = table_ident
         self._schema_name = schema_name

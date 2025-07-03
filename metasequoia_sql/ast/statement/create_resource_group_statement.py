@@ -41,7 +41,7 @@ class CreateResourceGroupStatement(Statement):
                  vcpu_list: Optional["CpuRange"] = None,
                  priority: Optional["ThreadPriority"] = None,
                  enable_disable: "EnumEnableDisable" = None):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化CREATE RESOURCE GROUP语句节点。
 

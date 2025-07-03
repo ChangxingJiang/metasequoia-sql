@@ -971,7 +971,7 @@ class AlterChangeColumn(AlterCommand):
 
     def __init__(self, old_column_name: str, new_column_name: str, field_definition: "FieldDefinition",
                  place: AlterPlace):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化 CHANGE COLUMN 命令。
 

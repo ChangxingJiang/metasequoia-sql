@@ -42,7 +42,7 @@ class CreateIndexStmt(Statement):
                  alter_lock: Optional["AlterOptionLock"],
                  alter_algorithm: Optional["AlterOptionAlgorithm"]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._index_type = index_type
         self._index_name = index_name
         self._index_structure_type = index_structure_type

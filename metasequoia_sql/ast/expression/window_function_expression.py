@@ -172,7 +172,7 @@ class FuncWindowLeadOrLag(FuncWindowBase):
 
     def __init__(self, param: Expression, offset: Optional[Expression], default_value: Optional[Expression],
                  null_treatment: NullTreatment, window_clause: "Window"):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """初始化 LEAD/LAG 窗口函数基类
         
         Parameters
@@ -306,7 +306,7 @@ class FuncWindowNthValue(FuncWindowBase):
 
     def __init__(self, param_1: Expression, param_2: Expression, from_first_or_last: FromFirstOrLast,
                  null_treatment: NullTreatment, window_clause: "Window"):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """初始化 NTH_VALUE 窗口函数
         
         Parameters

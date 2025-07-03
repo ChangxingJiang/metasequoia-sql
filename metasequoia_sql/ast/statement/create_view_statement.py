@@ -44,7 +44,7 @@ class CreateViewStatement(Statement):
                  query_expression: "QueryExpression",
                  check_option: "EnumViewCheckOption"
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._replace = replace
         self._algorithm = algorithm
         self._definer = definer

@@ -101,7 +101,7 @@ class CreateTriggerStatement(Statement):
                  table_ident: "Identifier",
                  follows_precedes_clause: TriggerFollowsPrecedesClause,
                  trigger_body: "ProcessCommand"):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._definer = definer
         self._if_not_exists = if_not_exists
         self._trigger_name = trigger_name

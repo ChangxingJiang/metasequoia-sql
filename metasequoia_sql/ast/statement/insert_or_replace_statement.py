@@ -189,7 +189,7 @@ class InsertOrReplaceStatement(Node):
                  query_expression: Optional["QueryExpression"],
                  on_duplicate_key_update_list: List["UpdateElement"]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._is_replace = is_replace
         self._dml_option = dml_option
         self._table_name = table_name
@@ -212,7 +212,7 @@ class InsertOrReplaceStatement(Node):
                                 column_alias_list: Optional[List[str]],
                                 on_duplicate_key_update_list: List["UpdateElement"]
                                 ) -> "InsertOrReplaceStatement":
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """构造第 1 种格式的 INSERT 语句"""
         return InsertOrReplaceStatement(
             is_replace=False,
@@ -237,7 +237,7 @@ class InsertOrReplaceStatement(Node):
                              column_alias_list: Optional[List[str]],
                              on_duplicate_key_update_list: List["UpdateElement"]
                              ) -> "InsertOrReplaceStatement":
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """构造第 2 种格式的 INSERT 语句"""
         return InsertOrReplaceStatement(
             is_replace=False,
@@ -260,7 +260,7 @@ class InsertOrReplaceStatement(Node):
                                column_list: List[Expression],
                                query_expression: "QueryExpression",
                                on_duplicate_key_update_list: List["UpdateElement"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """构造第 3 种格式的 INSERT 语句"""
         return InsertOrReplaceStatement(
             is_replace=False,

@@ -165,7 +165,7 @@ class DropIndexStatement(Statement):
                  algorithm: Optional["AlterOptionAlgorithm"],
                  validation: Optional["AlterOptionWithValidation"]
                  ):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._index_name = index_name
         self._table_name = table_name
         self._lock = lock

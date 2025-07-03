@@ -235,7 +235,7 @@ class FieldType(Node):
                  options: Optional[FieldOption] = None,
                  enum_value_list: Optional[List[str]] = None,
                  charset: Optional[Charset] = None):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         """
         初始化字段类型。
 

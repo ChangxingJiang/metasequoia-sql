@@ -157,7 +157,7 @@ class HandlerIndexScanStatement(HandlerStatement):
                  rkey_function: "EnumHandlerRkeyFunction",
                  where_clause: Optional["Expression"],
                  limit_clause: Optional["LimitClause"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._handler_name = handler_name
         self._index_name = index_name
         self._rkey_function = rkey_function
@@ -237,7 +237,7 @@ class HandlerIndexRangeScanStatement(HandlerStatement):
                  values: List["Row"],
                  where_clause: Optional["Expression"],
                  limit_clause: Optional["LimitClause"]):
-        # pylint: disable=R0913
+        # pylint: disable=R0913,R0917
         self._handler_name = handler_name
         self._index_name = index_name
         self._rkey_mode = rkey_mode

@@ -485,6 +485,7 @@ if __name__ == "__main__":
     # 写出
     start_time = time.time()
     with open(parser_path, "w+", encoding="UTF-8") as file:
+        # pylint: disable=E1101
         ms_parser.compiler.compress_compile_lalr1(file, parser, import_list=[
             "from metasequoia_sql import ast"
         ])
