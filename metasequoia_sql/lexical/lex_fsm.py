@@ -34,10 +34,12 @@ class LexFSM(LexicalFSM):
 
     """SQL 词法解析器"""
 
-    def __init__(self, text: str):
+    def __init__(self, text: str, mark: Optional[TType] = None):
         text += "\x00"
         super().__init__(text)
         self.length = len(text)
+
+        self.mark = mark
 
         self.state: LexStates = LexStates.LEX_START  # 当前自动机状态
         self.next_state: LexStates = LexStates.LEX_START  # 下一个 Token 的自动机状态
@@ -47,13 +49,16 @@ class LexFSM(LexicalFSM):
 
     def lex(self) -> Terminal:
         """解析并生成一个终结符"""
+        if self.mark is not None:
+            terminal = Terminal(symbol_id=self.mark, value=None)
+            self.mark = None
+            return terminal
         self.start_idx = self.idx  # 重置当前词语下标
         self.state = self.next_state
         self.next_state = LexStates.LEX_START
         while True:
             if terminal := LEX_ACTION_MAP[self.state](self):
                 return terminal
-
 
 
 def _find_end_mark(fsm: LexFSM, mark: str) -> Optional[str]:
