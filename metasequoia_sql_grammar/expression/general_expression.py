@@ -23,8 +23,6 @@ __all__ = [
     "UDF_EXPR_LIST",
     "OPT_UDF_EXPR_LIST",
     "MATCH_COLUMN_LIST",
-    "OPT_KEYWORD_ARRAY",
-    "OPT_KEYWORD_INTERVAL",
     "WHEN_LIST",
     "OPT_CASE_ELSE",
     "OPT_EXPR_OR_DEFAULT_LIST",
@@ -543,36 +541,6 @@ MATCH_COLUMN_LIST = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.OPERATOR_LPAREN, "simple_ident_list", TType.OPERATOR_RPAREN],
             action=lambda x: x[1]
-        )
-    ]
-)
-
-# 可选的 ARRAY 关键字
-OPT_KEYWORD_ARRAY = ms_parser.create_group(
-    name="opt_keyword_array",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ARRAY],
-            action=lambda _: True
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: False
-        )
-    ]
-)
-
-# 可选的 INTERVAL 关键字
-OPT_KEYWORD_INTERVAL = ms_parser.create_group(
-    name="opt_keyword_interval",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_INTERVAL],
-            action=lambda _: True
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: False
         )
     ]
 )

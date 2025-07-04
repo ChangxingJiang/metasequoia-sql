@@ -8,8 +8,10 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
     "OPT_KEYWORD_ALL",
+    "OPT_KEYWORD_ARRAY",
     "OPT_KEYWORD_DEFAULT",
     "OPT_KEYWORD_EXTENDED",
+    "OPT_KEYWORD_INTERVAL",
     "OPT_KEYWORD_INTO",
     "OPT_KEYWORD_OF",
     "OPT_KEYWORD_STORAGE",
@@ -22,6 +24,21 @@ OPT_KEYWORD_ALL = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALL],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `ARRAY` 关键字
+OPT_KEYWORD_ARRAY = ms_parser.create_group(
+    name="opt_keyword_array",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ARRAY],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(
@@ -48,6 +65,21 @@ OPT_KEYWORD_EXTENDED = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EXTENDED],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `INTERVAL` 关键字
+OPT_KEYWORD_INTERVAL = ms_parser.create_group(
+    name="opt_keyword_interval",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INTERVAL],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(

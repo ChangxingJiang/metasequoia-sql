@@ -1399,8 +1399,6 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `udf_expr_list`            | 逗号分隔的 UDF 表达式的列表                    | `List[UdfExpression]`  | `udf_expr_list`                                      |
 | `opt_udf_expr_list`        | 可选的逗号分隔的 UDF 表达式的列表              | `List[UdfExpression]`  | `opt_udf_expr_list`                                  |
 | `match_column_list`        | `MATCH` 函数的列名的列表                       | `List[Ident]`          | `ident_list_arg`                                     |
-| `opt_keyword_array`        | 可选的 `ARRAY` 关键字                          | `bool`                 | `opt_array_cast`                                     |
-| `opt_keyword_interval`     | 可选的 `INTERVAL` 关键字                       | `bool`                 | `opt_interval`                                       |
 | `when_list`                | `CASE` 结构中的 `WHEN` 条件的列表              | `List[WhenItem]`       | `when_list`                                          |
 | `opt_else`                 | `CASE` 结构中可选的 `ELSE` 子句                | `Optional[Expression]` | `opt_else`                                           |
 | `opt_expr_or_default_list` | 可选的一般表达式或 `DEFAULT` 关键字的列表      | `List[Expression]`     | `opt_values`                                         |
