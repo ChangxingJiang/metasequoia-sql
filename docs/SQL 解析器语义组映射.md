@@ -1418,13 +1418,11 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 窗口函数表达式（window function expression）
 
-| 水杉解析器语义组名称         | 语义组含义                                                   | 返回值类型        | MySQL 语义组名称                                  |
-| ---------------------------- | ------------------------------------------------------------ | ----------------- | ------------------------------------------------- |
-| `stable_integer`             | 在执行过程中为常量的整数（字面值、参数占位符或用户变量）     | `Param`           | `stable_integer`<br />`param_or_var`【超集】      |
-| `opt_from_first_or_last`     | `NTH_VALUE` 窗口函数中的 `FROM FIRST` 子句或 `FROM LAST` 子句 | `FromFirstOrLast` | `opt_from_first_last`                             |
-| `opt_null_treatment`         | 窗口函数中指定 NULL 值处理策略的 `RESPECT NULLS` 或 `IGNORE NULLS` 子句 | `NullTreatment`   | `opt_null_treatment`                              |
-| `opt_lead_or_lag_info`       | LEAD 和 LAG 窗口函数中偏移量及默认值信息                     | `LeadOrLagInfo`   | `opt_lead_lag_info`<br />`opt_ll_default`【包含】 |
-| `window_function_expression` | 窗口函数表达式                                               | `FuncWindowBase`  | `window_func_call`                                |
+| 水杉解析器语义组名称         | 语义组含义                                               | 返回值类型       | MySQL 语义组名称                                  |
+| ---------------------------- | -------------------------------------------------------- | ---------------- | ------------------------------------------------- |
+| `stable_integer`             | 在执行过程中为常量的整数（字面值、参数占位符或用户变量） | `Param`          | `stable_integer`<br />`param_or_var`【超集】      |
+| `opt_lead_or_lag_info`       | LEAD 和 LAG 窗口函数中偏移量及默认值信息                 | `LeadOrLagInfo`  | `opt_lead_lag_info`<br />`opt_ll_default`【包含】 |
+| `window_function_expression` | 窗口函数表达式                                           | `FuncWindowBase` | `window_func_call`                                |
 
 #### 普通函数表达式（function expression）
 

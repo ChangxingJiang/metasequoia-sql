@@ -7,7 +7,7 @@ import unittest
 from metasequoia_sql import parse_expression
 from metasequoia_sql.ast.basic.literal import IntLiteral
 from metasequoia_sql.ast.expression.window_function_expression import (
-    FromFirstOrLast,
+    EnumFromFirstOrLastOption,
     FuncWindowCumeDist,
     FuncWindowDenseRank,
     FuncWindowFirstValue,
@@ -19,7 +19,7 @@ from metasequoia_sql.ast.expression.window_function_expression import (
     FuncWindowPercentRank,
     FuncWindowRank,
     FuncWindowRowNumber,
-    NullTreatment
+    EnumNullTreatmentOption
 )
 
 
@@ -87,7 +87,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param)
         self.assertIsNone(node.offset)
         self.assertIsNone(node.default_value)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_lead_function_with_offset(self):
@@ -101,7 +101,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsInstance(node.offset, IntLiteral)
         self.assertEqual(node.offset.value, 1)
         self.assertIsNone(node.default_value)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_lead_function_with_offset_and_default(self):
@@ -117,7 +117,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.default_value)
         self.assertIsInstance(node.default_value, IntLiteral)
         self.assertEqual(node.default_value.value, 0)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_lead_function_with_respect_nulls(self):
@@ -129,7 +129,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param)
         self.assertIsNone(node.offset)
         self.assertIsNone(node.default_value)
-        self.assertEqual(node.null_treatment, NullTreatment.RESPECT_NULLS)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.RESPECT_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_lead_function_with_ignore_nulls(self):
@@ -141,7 +141,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param)
         self.assertIsNone(node.offset)
         self.assertIsNone(node.default_value)
-        self.assertEqual(node.null_treatment, NullTreatment.IGNORE_NULLS)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.IGNORE_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_lag_function_basic(self):
@@ -153,7 +153,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param)
         self.assertIsNone(node.offset)
         self.assertIsNone(node.default_value)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_lag_function_with_offset(self):
@@ -167,7 +167,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsInstance(node.offset, IntLiteral)
         self.assertEqual(node.offset.value, 2)
         self.assertIsNone(node.default_value)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_lag_function_with_offset_and_default(self):
@@ -183,7 +183,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.default_value)
         self.assertIsInstance(node.default_value, IntLiteral)
         self.assertEqual(node.default_value.value, 1)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_first_value_function_basic(self):
@@ -193,7 +193,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         node = parse_expression("FIRST_VALUE(column_name) OVER ()")
         self.assertIsInstance(node, FuncWindowFirstValue)
         self.assertIsNotNone(node.param)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_first_value_function_with_respect_nulls(self):
@@ -203,7 +203,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         node = parse_expression("FIRST_VALUE(column_name) RESPECT NULLS OVER ()")
         self.assertIsInstance(node, FuncWindowFirstValue)
         self.assertIsNotNone(node.param)
-        self.assertEqual(node.null_treatment, NullTreatment.RESPECT_NULLS)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.RESPECT_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_first_value_function_with_ignore_nulls(self):
@@ -213,7 +213,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         node = parse_expression("FIRST_VALUE(column_name) IGNORE NULLS OVER ()")
         self.assertIsInstance(node, FuncWindowFirstValue)
         self.assertIsNotNone(node.param)
-        self.assertEqual(node.null_treatment, NullTreatment.IGNORE_NULLS)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.IGNORE_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_last_value_function_basic(self):
@@ -223,7 +223,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         node = parse_expression("LAST_VALUE(column_name) OVER ()")
         self.assertIsInstance(node, FuncWindowLastValue)
         self.assertIsNotNone(node.param)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_last_value_function_with_respect_nulls(self):
@@ -233,7 +233,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         node = parse_expression("LAST_VALUE(column_name) RESPECT NULLS OVER ()")
         self.assertIsInstance(node, FuncWindowLastValue)
         self.assertIsNotNone(node.param)
-        self.assertEqual(node.null_treatment, NullTreatment.RESPECT_NULLS)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.RESPECT_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_last_value_function_with_ignore_nulls(self):
@@ -243,7 +243,7 @@ class TestWindowFunctionExpression(unittest.TestCase):
         node = parse_expression("LAST_VALUE(column_name) IGNORE NULLS OVER ()")
         self.assertIsInstance(node, FuncWindowLastValue)
         self.assertIsNotNone(node.param)
-        self.assertEqual(node.null_treatment, NullTreatment.IGNORE_NULLS)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.IGNORE_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_nth_value_function_basic(self):
@@ -256,8 +256,8 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param2)
         self.assertIsInstance(node.param2, IntLiteral)
         self.assertEqual(node.param2.value, 2)
-        self.assertEqual(node.from_first_or_last, FromFirstOrLast.NONE)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.from_first_or_last, EnumFromFirstOrLastOption.NONE)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_nth_value_function_with_from_first(self):
@@ -270,8 +270,8 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param2)
         self.assertIsInstance(node.param2, IntLiteral)
         self.assertEqual(node.param2.value, 3)
-        self.assertEqual(node.from_first_or_last, FromFirstOrLast.FROM_FIRST)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.from_first_or_last, EnumFromFirstOrLastOption.FROM_FIRST)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_nth_value_function_with_from_last(self):
@@ -284,8 +284,8 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param2)
         self.assertIsInstance(node.param2, IntLiteral)
         self.assertEqual(node.param2.value, 1)
-        self.assertEqual(node.from_first_or_last, FromFirstOrLast.FROM_LAST)
-        self.assertEqual(node.null_treatment, NullTreatment.NONE)
+        self.assertEqual(node.from_first_or_last, EnumFromFirstOrLastOption.FROM_LAST)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.NONE)
         self.assertIsNotNone(node.window_clause)
 
     def test_nth_value_function_with_from_first_and_respect_nulls(self):
@@ -299,8 +299,8 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param2)
         self.assertIsInstance(node.param2, IntLiteral)
         self.assertEqual(node.param2.value, 2)
-        self.assertEqual(node.from_first_or_last, FromFirstOrLast.FROM_FIRST)
-        self.assertEqual(node.null_treatment, NullTreatment.RESPECT_NULLS)
+        self.assertEqual(node.from_first_or_last, EnumFromFirstOrLastOption.FROM_FIRST)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.RESPECT_NULLS)
         self.assertIsNotNone(node.window_clause)
 
     def test_nth_value_function_with_from_last_and_ignore_nulls(self):
@@ -314,6 +314,6 @@ class TestWindowFunctionExpression(unittest.TestCase):
         self.assertIsNotNone(node.param2)
         self.assertIsInstance(node.param2, IntLiteral)
         self.assertEqual(node.param2.value, 1)
-        self.assertEqual(node.from_first_or_last, FromFirstOrLast.FROM_LAST)
-        self.assertEqual(node.null_treatment, NullTreatment.IGNORE_NULLS)
+        self.assertEqual(node.from_first_or_last, EnumFromFirstOrLastOption.FROM_LAST)
+        self.assertEqual(node.null_treatment, EnumNullTreatmentOption.IGNORE_NULLS)
         self.assertIsNotNone(node.window_clause)

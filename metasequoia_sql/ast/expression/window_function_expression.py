@@ -2,18 +2,16 @@
 窗口函数表达式（window function expression）
 """
 
-from enum import IntEnum, auto
 from typing import Optional, TYPE_CHECKING
 
 from metasequoia_sql.ast.base import Expression, Node
+from metasequoia_sql.ast.enumeration import EnumFromFirstOrLastOption, EnumNullTreatmentOption
 
 if TYPE_CHECKING:
     from metasequoia_sql.ast.clause import Window
 
 __all__ = [
     # 窗口函数表达式的组成元素
-    "FromFirstOrLast",
-    "NullTreatment",
     "LeadOrLagInfo",
 
     # 窗口函数表达式
@@ -29,22 +27,6 @@ __all__ = [
     "FuncWindowLastValue",
     "FuncWindowNthValue",
 ]
-
-
-class FromFirstOrLast(IntEnum):
-    """NTH_VALUE 窗口函数的 FROM 子句"""
-
-    NONE = auto()  # %empty
-    FROM_FIRST = auto()  # FROM FIRST
-    FROM_LAST = auto()  # FROM LAST
-
-
-class NullTreatment(IntEnum):
-    """窗口函数中指定 NULL 值处理策略的 RESPECT NULLS 或 IGNORE NULLS 子句"""
-
-    NONE = auto()  # %empty
-    RESPECT_NULLS = auto()  # RESPECT NULLS
-    IGNORE_NULLS = auto()  # IGNORE NULLS
 
 
 class LeadOrLagInfo(Node):
@@ -171,7 +153,7 @@ class FuncWindowLeadOrLag(FuncWindowBase):
     __slots__ = ["_param", "_offset", "_default_value", "_null_treatment"]
 
     def __init__(self, param: Expression, offset: Optional[Expression], default_value: Optional[Expression],
-                 null_treatment: NullTreatment, window_clause: "Window"):
+                 null_treatment: EnumNullTreatmentOption, window_clause: "Window"):
         # pylint: disable=R0913,R0917
         """初始化 LEAD/LAG 窗口函数基类
         
@@ -183,7 +165,7 @@ class FuncWindowLeadOrLag(FuncWindowBase):
             偏移量表达式
         default_value : Optional[Expression]
             默认值表达式
-        null_treatment : NullTreatment
+        null_treatment : EnumNullTreatmentOption
             NULL 处理策略
         window_clause : Window
             窗口子句
@@ -228,12 +210,12 @@ class FuncWindowLeadOrLag(FuncWindowBase):
         return self._default_value
 
     @property
-    def null_treatment(self) -> NullTreatment:
+    def null_treatment(self) -> EnumNullTreatmentOption:
         """获取 NULL 处理策略
         
         Returns
         -------
-        NullTreatment
+        EnumNullTreatmentOption
             NULL 处理策略
         """
         return self._null_treatment
@@ -252,14 +234,14 @@ class FuncWindowFirstValueOrLastValue(FuncWindowBase):
 
     __slots__ = ["_param", "_null_treatment"]
 
-    def __init__(self, param: Expression, null_treatment: NullTreatment, window_clause: "Window"):
+    def __init__(self, param: Expression, null_treatment: EnumNullTreatmentOption, window_clause: "Window"):
         """初始化 FIRST_VALUE/LAST_VALUE 窗口函数基类
         
         Parameters
         ----------
         param : Expression
             参数表达式
-        null_treatment : NullTreatment
+        null_treatment : EnumNullTreatmentOption
             NULL 处理策略
         window_clause : Window
             窗口子句
@@ -280,12 +262,12 @@ class FuncWindowFirstValueOrLastValue(FuncWindowBase):
         return self._param
 
     @property
-    def null_treatment(self) -> NullTreatment:
+    def null_treatment(self) -> EnumNullTreatmentOption:
         """获取 NULL 处理策略
         
         Returns
         -------
-        NullTreatment
+        EnumNullTreatmentOption
             NULL 处理策略
         """
         return self._null_treatment
@@ -304,8 +286,8 @@ class FuncWindowNthValue(FuncWindowBase):
 
     __slots__ = ["_param1", "_param2", "_from_first_or_last", "_null_treatment"]
 
-    def __init__(self, param_1: Expression, param_2: Expression, from_first_or_last: FromFirstOrLast,
-                 null_treatment: NullTreatment, window_clause: "Window"):
+    def __init__(self, param_1: Expression, param_2: Expression, from_first_or_last: EnumFromFirstOrLastOption,
+                 null_treatment: EnumNullTreatmentOption, window_clause: "Window"):
         # pylint: disable=R0913,R0917
         """初始化 NTH_VALUE 窗口函数
         
@@ -315,9 +297,9 @@ class FuncWindowNthValue(FuncWindowBase):
             第一个参数表达式
         param_2 : Expression
             第二个参数表达式
-        from_first_or_last : FromFirstOrLast
+        from_first_or_last : EnumFromFirstOrLastOption
             FROM FIRST/LAST 选项
-        null_treatment : NullTreatment
+        null_treatment : EnumNullTreatmentOption
             NULL 处理策略
         window_clause : Window
             窗口子句
@@ -351,23 +333,23 @@ class FuncWindowNthValue(FuncWindowBase):
         return self._param2
 
     @property
-    def from_first_or_last(self) -> FromFirstOrLast:
+    def from_first_or_last(self) -> EnumFromFirstOrLastOption:
         """获取 FROM FIRST/LAST 选项
         
         Returns
         -------
-        FromFirstOrLast
+        EnumFromFirstOrLastOption
             FROM FIRST/LAST 选项
         """
         return self._from_first_or_last
 
     @property
-    def null_treatment(self) -> NullTreatment:
+    def null_treatment(self) -> EnumNullTreatmentOption:
         """获取 NULL 处理策略
         
         Returns
         -------
-        NullTreatment
+        EnumNullTreatmentOption
             NULL 处理策略
         """
         return self._null_treatment

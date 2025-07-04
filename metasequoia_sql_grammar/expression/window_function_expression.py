@@ -9,8 +9,6 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
     "STABLE_INTEGER",
-    "OPT_FROM_FIRST_OR_LAST",
-    "OPT_NULL_TREATMENT",
     "OPT_LEAD_OR_LAG_INFO",
     "WINDOW_FUNCTION_EXPRESSION",
 ]
@@ -30,44 +28,6 @@ STABLE_INTEGER = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["user_variable"]
-        )
-    ]
-)
-
-# NTH_VALUE 窗口函数中的 FROM FIRST 子句或 FROM LAST 子句
-OPT_FROM_FIRST_OR_LAST = ms_parser.create_group(
-    name="opt_from_first_or_last",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: ast.FromFirstOrLast.NONE
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FROM, TType.KEYWORD_FIRST],
-            action=lambda _: ast.FromFirstOrLast.FROM_FIRST
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FROM, TType.KEYWORD_LAST],
-            action=lambda _: ast.FromFirstOrLast.FROM_LAST
-        )
-    ]
-)
-
-# 窗口函数中指定 NULL 值处理策略的 RESPECT NULLS 或 IGNORE NULLS 子句
-OPT_NULL_TREATMENT = ms_parser.create_group(
-    name="opt_null_treatment",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: ast.NullTreatment.NONE
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_RESPECT, TType.KEYWORD_NULLS],
-            action=lambda _: ast.NullTreatment.RESPECT_NULLS
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_IGNORE, TType.KEYWORD_NULLS],
-            action=lambda _: ast.NullTreatment.IGNORE_NULLS
         )
     ]
 )
