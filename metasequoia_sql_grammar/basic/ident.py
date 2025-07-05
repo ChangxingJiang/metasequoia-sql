@@ -204,9 +204,16 @@ TABLE_IDENT_OPT_WILD_LIST = ms_parser.create_group(
 TABLE_IDENT_OPT_WILD = ms_parser.create_group(
     name="table_ident_opt_wild",
     rules=[
+        # 【YACC Rule】在这里不能使用 identifier 语义组，否则将会导致这里的 OPERATOR_DOT 和 identifier 可选的 OPERATOR_DOT 引发冲突
         ms_parser.create_rule(
-            symbols=["identifier", "opt_wild"],
-            action=lambda x: x[0]
+            symbols=["ident", TType.OPERATOR_DOT, "ident", "opt_wild"],
+            action=lambda x: ast.Identifier(schema_name=x[0].get_str_value(),
+                                            object_name=x[2].get_str_value())
+        ),
+        ms_parser.create_rule(
+            symbols=["ident", "opt_wild"],
+            action=lambda x: ast.Identifier(schema_name=None,
+                                            object_name=x[0].get_str_value())
         )
     ]
 )
