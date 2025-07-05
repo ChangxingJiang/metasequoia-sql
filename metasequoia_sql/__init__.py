@@ -9,7 +9,7 @@
 
 from metasequoia_sql import ast
 from metasequoia_sql.lexical import LexFSM
-from metasequoia_sql.syntax import parse
+from metasequoia_sql.syntax import parse, parse_debug
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
@@ -19,23 +19,31 @@ __all__ = [
 ]
 
 
-def parse_statement(sql: str):
+def parse_statement(sql: str, debug: bool = False):
     """解析 SQL 语句
 
     Parameters
     ----------
     sql : str
         SQL 语句
+    debug : bool, default = False
+        是否开启调试模式
     """
+    if debug is True:
+        return parse_debug(LexFSM(sql))
     return parse(LexFSM(sql))
 
 
-def parse_expression(sql: str):
+def parse_expression(sql: str, debug: bool = False):
     """解析 SQL 表达式
 
     Parameters
     ----------
     sql : str
         SQL 表达式
+    debug : bool, default = False
+        是否开启调试模式
     """
+    if debug is True:
+        return parse_debug(LexFSM(sql, mark=TType.GRAMMAR_EXPRESSION))
     return parse(LexFSM(sql, mark=TType.GRAMMAR_EXPRESSION))

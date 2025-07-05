@@ -7,4 +7,4 @@
 屏蔽 pylint E0611：parser 文件将在编译阶段生成
 """
 
-from metasequoia_sql.syntax.parser import parse
+from metasequoia_sql.syntax.parser import parse, parse_debug
