@@ -10,6 +10,7 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
+    "SIMPLE_EXPR_WITHOUT_ASSIGNMENT",
     "SIMPLE_EXPR",
     "BINARY_EXPR",
     "PREDICATE_EXPR",
@@ -32,9 +33,9 @@ __all__ = [
     "OPT_DEFAULT_EXPR",
 ]
 
-# 简单表达式
-SIMPLE_EXPR = ms_parser.create_group(
-    name="simple_expr",
+# 不包含表达式内变量赋值的简单表达式
+SIMPLE_EXPR_WITHOUT_ASSIGNMENT = ms_parser.create_group(
+    name="simple_expr_without_assignment",
     rules=[
         ms_parser.create_rule(
             symbols=["simple_ident"],
@@ -55,9 +56,6 @@ SIMPLE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["system_or_user_variable"]
-        ),
-        ms_parser.create_rule(
-            symbols=["user_variable_assignment"]
         ),
         ms_parser.create_rule(
             symbols=["sum_function_expression"]
@@ -179,8 +177,7 @@ SIMPLE_EXPR = ms_parser.create_group(
             action=lambda x: ast.FunctionExpression(function_name="values", param_list=[x[2]])
         ),
         ms_parser.create_rule(
-            symbols=["time_interval", TType.OPERATOR_PLUS, "expr"],
-            action=lambda x: ast.OperatorDatePlus(left_operand=x[0], right_operand=x[2])
+            symbols=["time_interval"],
         ),
         ms_parser.create_rule(
             symbols=["simple_ident", TType.KEYWORD_JSON_SEPARATOR, "text_literal_sys"],
@@ -189,6 +186,19 @@ SIMPLE_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["simple_ident", TType.KEYWORD_JSON_UNQUOTED_SEPARATOR, "text_literal_sys"],
             action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2].get_str_value(), is_unquoted=True)
+        )
+    ]
+)
+
+# 简单表达式
+SIMPLE_EXPR = ms_parser.create_group(
+    name="simple_expr",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["simple_expr_without_assignment"]
+        ),
+        ms_parser.create_rule(
+            symbols=["user_variable_assignment"]
         )
     ]
 )
@@ -328,7 +338,8 @@ PREDICATE_EXPR = ms_parser.create_group(
             action=lambda x: ast.OperatorLike(first_operand=x[0], second_operand=x[2], third_operand=None)
         ),
         ms_parser.create_rule(
-            symbols=["binary_expr", TType.KEYWORD_LIKE, "simple_expr", TType.KEYWORD_ESCAPE, "simple_expr"],
+            symbols=["binary_expr", TType.KEYWORD_LIKE, "simple_expr_without_assignment", TType.KEYWORD_ESCAPE,
+                     "simple_expr"],
             action=lambda x: ast.OperatorLike(first_operand=x[0], second_operand=x[2], third_operand=x[4]),
             sr_priority_as=TType.KEYWORD_LIKE
         ),
@@ -337,7 +348,8 @@ PREDICATE_EXPR = ms_parser.create_group(
             action=lambda x: ast.OperatorNotLike(first_operand=x[0], second_operand=x[3], third_operand=None)
         ),
         ms_parser.create_rule(
-            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_LIKE, "simple_expr", TType.KEYWORD_ESCAPE,
+            symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_LIKE, "simple_expr_without_assignment",
+                     TType.KEYWORD_ESCAPE,
                      "simple_expr"],
             action=lambda x: ast.OperatorNotLike(first_operand=x[0], second_operand=x[3], third_operand=x[5]),
             sr_priority_as=TType.KEYWORD_LIKE

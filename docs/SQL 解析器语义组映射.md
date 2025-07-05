@@ -1384,28 +1384,29 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 
 #### 一般表达式（general expression）
 
-| 水杉解析器语义组名称       | 语义组含义                                     | 返回值类型             | MySQL 语义组名称                                     |
-| -------------------------- | ---------------------------------------------- | ---------------------- | ---------------------------------------------------- |
-| `simple_expr`              | 简单表达式                                     | `Expression`           | `simple_expr`                                        |
-| `binary_expr`              | 二元表达式                                     | `Expression`           | `bit_expr`                                           |
-| `predicate_expr`           | 谓语表达式                                     | `Expression`           | `predicate`                                          |
-| `bool_expr`                | 布尔表达式                                     | `Expression`           | `bool_pri`<br />`all_or_any`【包含】                 |
-| `expr`                     | 一般表达式                                     | `Expression`           | `expr`<br />`grouping_expr`                          |
-| `opt_expr`                 | 可选的一般表达式                               | `Expression`           | `opt_expr`                                           |
-| `opt_paren_expr_list`      | 可选的嵌套括号内可选的逗号分隔的一般表达式列表 | `List[Expression]`     | `opt_paren_expr_list`                                |
-| `opt_expr_list`            | 可选的逗号分隔的一般表达式列表                 | `List[Expression]`     | `opt_expr_list`                                      |
-| `expr_list`                | 逗号分隔的一般表达式列表                       | `List[Expression]`     | `expr_list`<br />`group_list`                        |
-| `udf_expr`                 | UDF 表达式（自定义函数中的参数）               | `UdfExpression`        | `udf_expr`                                           |
-| `udf_expr_list`            | 逗号分隔的 UDF 表达式的列表                    | `List[UdfExpression]`  | `udf_expr_list`                                      |
-| `opt_udf_expr_list`        | 可选的逗号分隔的 UDF 表达式的列表              | `List[UdfExpression]`  | `opt_udf_expr_list`                                  |
-| `match_column_list`        | `MATCH` 函数的列名的列表                       | `List[Ident]`          | `ident_list_arg`                                     |
-| `when_list`                | `CASE` 结构中的 `WHEN` 条件的列表              | `List[WhenItem]`       | `when_list`                                          |
-| `opt_else`                 | `CASE` 结构中可选的 `ELSE` 子句                | `Optional[Expression]` | `opt_else`                                           |
-| `opt_expr_or_default_list` | 可选的一般表达式或 `DEFAULT` 关键字的列表      | `List[Expression]`     | `opt_values`                                         |
-| `expr_or_default_list`     | 一般表达式或 `DEFAULT` 关键字的列表            | `List[Expression]`     | `values`                                             |
-| `expr_or_default`          | 一般表达式或 `DEFAULT` 关键字                  | `Expression`           | `expr_or_default`                                    |
-| `subquery`                 | 子查询表达式                                   | `SubQuery`             | `row_subquery`<br />`table_subquery`<br />`subquery` |
-| `opt_default_expr`         | 可选的 `DEFAULT` 关键字引导的表达式            | `Optional[Expression]` | `sp_opt_default`                                     |
+| 水杉解析器语义组名称             | 语义组含义                                     | 返回值类型             | MySQL 语义组名称                                     |
+| -------------------------------- | ---------------------------------------------- | ---------------------- | ---------------------------------------------------- |
+| `simple_expr_without_assignment` | 不包含表达式内变量赋值的简单表达式             | `Expression`           |                                                      |
+| `simple_expr`                    | 简单表达式                                     | `Expression`           | `simple_expr`                                        |
+| `binary_expr`                    | 二元表达式                                     | `Expression`           | `bit_expr`                                           |
+| `predicate_expr`                 | 谓语表达式                                     | `Expression`           | `predicate`                                          |
+| `bool_expr`                      | 布尔表达式                                     | `Expression`           | `bool_pri`<br />`all_or_any`【包含】                 |
+| `expr`                           | 一般表达式                                     | `Expression`           | `expr`<br />`grouping_expr`                          |
+| `opt_expr`                       | 可选的一般表达式                               | `Expression`           | `opt_expr`                                           |
+| `opt_paren_expr_list`            | 可选的嵌套括号内可选的逗号分隔的一般表达式列表 | `List[Expression]`     | `opt_paren_expr_list`                                |
+| `opt_expr_list`                  | 可选的逗号分隔的一般表达式列表                 | `List[Expression]`     | `opt_expr_list`                                      |
+| `expr_list`                      | 逗号分隔的一般表达式列表                       | `List[Expression]`     | `expr_list`<br />`group_list`                        |
+| `udf_expr`                       | UDF 表达式（自定义函数中的参数）               | `UdfExpression`        | `udf_expr`                                           |
+| `udf_expr_list`                  | 逗号分隔的 UDF 表达式的列表                    | `List[UdfExpression]`  | `udf_expr_list`                                      |
+| `opt_udf_expr_list`              | 可选的逗号分隔的 UDF 表达式的列表              | `List[UdfExpression]`  | `opt_udf_expr_list`                                  |
+| `match_column_list`              | `MATCH` 函数的列名的列表                       | `List[Ident]`          | `ident_list_arg`                                     |
+| `when_list`                      | `CASE` 结构中的 `WHEN` 条件的列表              | `List[WhenItem]`       | `when_list`                                          |
+| `opt_else`                       | `CASE` 结构中可选的 `ELSE` 子句                | `Optional[Expression]` | `opt_else`                                           |
+| `opt_expr_or_default_list`       | 可选的一般表达式或 `DEFAULT` 关键字的列表      | `List[Expression]`     | `opt_values`                                         |
+| `expr_or_default_list`           | 一般表达式或 `DEFAULT` 关键字的列表            | `List[Expression]`     | `values`                                             |
+| `expr_or_default`                | 一般表达式或 `DEFAULT` 关键字                  | `Expression`           | `expr_or_default`                                    |
+| `subquery`                       | 子查询表达式                                   | `SubQuery`             | `row_subquery`<br />`table_subquery`<br />`subquery` |
+| `opt_default_expr`               | 可选的 `DEFAULT` 关键字引导的表达式            | `Optional[Expression]` | `sp_opt_default`                                     |
 
 #### 聚集函数表达式（sum function expression）
 
@@ -1743,3 +1744,8 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 ## 不兼容 MySQL 的语法
 
 - 不允许在 `SELECT` 语句的最外层添加 `INTO` 子句，仅允许在`FROM` 子句前添加 `INTO` 子句。
+- 不允许在 `simple_expr` 中定义 MySQL 的 `INTERVAL_SYM expr interval '+' expr %prec INTERVAL_SYM` 备选规则
+
+## 不兼容的语法
+
+- 不允许在定义字段别名时，不加 `AS` 地使用 `ESCAPE` 关键字（避免与 `LIKE ... ESCAPE ...` 语法引发冲突）

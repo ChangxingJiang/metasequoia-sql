@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-class TimeInterval(Node):
+class TimeInterval(Expression):
     """时间间隔"""
 
     __slots__ = ["_time_unit", "_time_value"]
