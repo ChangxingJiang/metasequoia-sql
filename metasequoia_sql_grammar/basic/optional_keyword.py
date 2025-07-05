@@ -10,6 +10,7 @@ __all__ = [
     "OPT_KEYWORD_ALL",
     "OPT_KEYWORD_ARRAY",
     "OPT_KEYWORD_AS",
+    "OPT_KEYWORD_COLUMN",
     "OPT_KEYWORD_DEFAULT",
     "OPT_KEYWORD_EXTENDED",
     "OPT_KEYWORD_FORCE",
@@ -64,6 +65,17 @@ OPT_KEYWORD_AS = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AS]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `COLUMN` 关键字
+OPT_KEYWORD_COLUMN = ms_parser.create_group(
+    name="opt_keyword_column",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_COLUMN]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

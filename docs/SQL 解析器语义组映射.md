@@ -1529,7 +1529,6 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_ignore_unknown_user`                            | 可选的 `IGNORE UNKNOWN USER` 关键字组合                      | -          | `opt_ignore_unknown_user`                          |
 | `opt_keyword_convert_xid`                                    | 可选的 `CONVERT XID` 关键字组合                              | `bool`     | `opt_convert_xid`                                  |
 | `opt_keyword_one_phase`                                      | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                                    |
-| `opt_keyword_column`                                         | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                                       |
 | `opt_keyword_on_replace`                                     | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                                     |
 | `opt_keyword_local`                                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                        |
 | `opt_keyword_in_primary_key_order`                           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                                 |

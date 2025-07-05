@@ -20,7 +20,6 @@ __all__ = [
     "OPT_KEYWORD_GRANT_OPTION",
     "OPT_KEYWORD_CONVERT_XID",
     "OPT_KEYWORD_ONE_PHASE",
-    "OPT_KEYWORD_COLUMN",
     "OPT_KEYWORD_ON_REPLACE",
     "OPT_KEYWORD_AND",
     "OPT_KEYWORD_RETAIN_CURRENT_PASSWORD",
@@ -365,19 +364,6 @@ OPT_KEYWORD_GRANT_OPTION = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_WITH, TType.KEYWORD_GRANT, TType.KEYWORD_OPTION],
             action=lambda x: True
-        )
-    ]
-)
-
-# 可选的 `COLUMN` 关键字
-OPT_KEYWORD_COLUMN = ms_parser.create_group(
-    name="opt_keyword_column",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[]
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_COLUMN]
         )
     ]
 )
