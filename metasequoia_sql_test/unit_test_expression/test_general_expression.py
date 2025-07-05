@@ -645,3 +645,126 @@ class TestBoolExpr(TestCase):
         self.assertIsInstance(node.left_operand, ast.Ident)
         self.assertIsInstance(node.right_operand, ast.StringLiteral)
         self.assertEqual(node.operator, ast.EnumCompareOperator.EQ)
+
+
+class TestExpr(TestCase):
+    """测试 expr 语义组
+    
+    测试各种一般表达式的解析，包括逻辑操作符（OR、XOR、AND、NOT）和真值测试操作符（IS TRUE、IS FALSE、IS UNKNOWN）
+    """
+
+    def test_or_operator(self):
+        """测试逻辑或操作符 OR"""
+        node = parse_expression("column_name_1 = 1 OR column_name_2 = 2")
+        self.assertIsInstance(node, ast.OperatorOr)
+        self.assertIsInstance(node.left_operand, ast.OperatorCompare)
+        self.assertIsInstance(node.right_operand, ast.OperatorCompare)
+
+    def test_xor_operator(self):
+        """测试异或操作符 XOR"""
+        node = parse_expression("column_name_1 = 1 XOR column_name_2 = 2")
+        self.assertIsInstance(node, ast.OperatorXor)
+        self.assertIsInstance(node.left_operand, ast.OperatorCompare)
+        self.assertIsInstance(node.right_operand, ast.OperatorCompare)
+
+    def test_and_operator(self):
+        """测试逻辑与操作符 AND"""
+        node = parse_expression("column_name_1 = 1 AND column_name_2 = 2")
+        self.assertIsInstance(node, ast.OperatorAnd)
+        self.assertIsInstance(node.left_operand, ast.OperatorCompare)
+        self.assertIsInstance(node.right_operand, ast.OperatorCompare)
+
+    def test_not_operator(self):
+        """测试逻辑非操作符 NOT"""
+        node = parse_expression("NOT column_name = 1")
+        self.assertIsInstance(node, ast.OperatorNot)
+        self.assertIsInstance(node.operand, ast.OperatorCompare)
+
+    def test_is_true_operator(self):
+        """测试 IS TRUE 操作符"""
+        node = parse_expression("column_name IS TRUE")
+        self.assertIsInstance(node, ast.OperatorIsTrue)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_is_not_true_operator(self):
+        """测试 IS NOT TRUE 操作符"""
+        node = parse_expression("column_name IS NOT TRUE")
+        self.assertIsInstance(node, ast.OperatorIsNotTrue)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_is_false_operator(self):
+        """测试 IS FALSE 操作符"""
+        node = parse_expression("column_name IS FALSE")
+        self.assertIsInstance(node, ast.OperatorIsFalse)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_is_not_false_operator(self):
+        """测试 IS NOT FALSE 操作符"""
+        node = parse_expression("column_name IS NOT FALSE")
+        self.assertIsInstance(node, ast.OperatorIsNotFalse)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_is_unknown_operator(self):
+        """测试 IS UNKNOWN 操作符"""
+        node = parse_expression("column_name IS UNKNOWN")
+        self.assertIsInstance(node, ast.OperatorIsUnknown)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_is_not_unknown_operator(self):
+        """测试 IS NOT UNKNOWN 操作符"""
+        node = parse_expression("column_name IS NOT UNKNOWN")
+        self.assertIsInstance(node, ast.OperatorIsNotUnknown)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_bool_expr_fallback(self):
+        """测试 bool_expr 回退规则"""
+        node = parse_expression("column_name IS NULL")
+        self.assertIsInstance(node, ast.OperatorIsNull)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_complex_logical_expression(self):
+        """测试复杂的逻辑表达式"""
+        node = parse_expression("column_name_1 = 1 AND column_name_2 = 2 OR column_name_3 = 3")
+        self.assertIsInstance(node, ast.OperatorOr)
+        self.assertIsInstance(node.left_operand, ast.OperatorAnd)
+        self.assertIsInstance(node.right_operand, ast.OperatorCompare)
+
+    def test_nested_logical_expression(self):
+        """测试嵌套的逻辑表达式"""
+        node = parse_expression("NOT (column_name_1 = 1 AND column_name_2 = 2)")
+        self.assertIsInstance(node, ast.OperatorNot)
+        self.assertIsInstance(node.operand, ast.OperatorAnd)
+
+    def test_truth_test_with_comparison(self):
+        """测试真值测试与比较操作符的组合"""
+        node = parse_expression("(column_name = 1) IS TRUE")
+        self.assertIsInstance(node, ast.OperatorIsTrue)
+        self.assertIsInstance(node.operand, ast.OperatorCompare)
+
+    def test_multiple_or_operators(self):
+        """测试多个 OR 操作符"""
+        node = parse_expression("column_name_1 = 1 OR column_name_2 = 2 OR column_name_3 = 3")
+        self.assertIsInstance(node, ast.OperatorOr)
+        self.assertIsInstance(node.left_operand, ast.OperatorOr)
+        self.assertIsInstance(node.right_operand, ast.OperatorCompare)
+
+    def test_multiple_and_operators(self):
+        """测试多个 AND 操作符"""
+        node = parse_expression("column_name_1 = 1 AND column_name_2 = 2 AND column_name_3 = 3")
+        self.assertIsInstance(node, ast.OperatorAnd)
+        self.assertIsInstance(node.left_operand, ast.OperatorAnd)
+        self.assertIsInstance(node.right_operand, ast.OperatorCompare)
+
+    def test_expr_with_null_check(self):
+        """测试表达式与 NULL 检查的组合"""
+        node = parse_expression("column_name = 1 OR column_name IS NULL")
+        self.assertIsInstance(node, ast.OperatorOr)
+        self.assertIsInstance(node.left_operand, ast.OperatorCompare)
+        self.assertIsInstance(node.right_operand, ast.OperatorIsNull)
