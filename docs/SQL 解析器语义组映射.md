@@ -1749,3 +1749,4 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 ## 不兼容的语法
 
 - 不允许在定义字段别名时，不加 `AS` 地使用 `ESCAPE` 关键字（避免与 `LIKE ... ESCAPE ...` 语法引发冲突）
+- 不允许在 `{expr1} LIKE {expr2} ESCAPE {expr3}` 语法中的 `expr2` 内使用 `@variable_name := {expr}` 的用户变量赋值方法（避免赋值内的 `ESCAPE` 子句与赋值外的 `ESCAPE` 子句引发冲突）

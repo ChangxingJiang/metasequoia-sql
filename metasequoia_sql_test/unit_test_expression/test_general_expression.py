@@ -538,3 +538,110 @@ class TestPredicateExpr(TestCase):
         self.assertEqual(len(node.value_list), 2)
         self.assertIsInstance(node.value_list[0], ast.StringLiteral)
         self.assertIsInstance(node.value_list[1], ast.StringLiteral)
+
+
+class TestBoolExpr(TestCase):
+    """测试 bool_expr 语义组
+    
+    测试各种布尔表达式的解析，包括 IS NULL、IS NOT NULL、比较操作符、ALL/ANY 子查询等
+    """
+
+    def test_is_null_operator(self):
+        """测试 IS NULL 操作符"""
+        node = parse_expression("column_name IS NULL")
+        self.assertIsInstance(node, ast.OperatorIsNull)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_is_not_null_operator(self):
+        """测试 IS NOT NULL 操作符"""
+        node = parse_expression("column_name IS NOT NULL")
+        self.assertIsInstance(node, ast.OperatorIsNotNull)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operand.get_str_value(), "column_name")
+
+    def test_compare_operator_equal(self):
+        """测试等于比较操作符"""
+        node = parse_expression("column_name_1 = column_name_2")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.EQ)
+
+    def test_compare_operator_not_equal(self):
+        """测试不等于比较操作符"""
+        node = parse_expression("column_name_1 != column_name_2")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.NE)
+
+    def test_compare_operator_less_than(self):
+        """测试小于比较操作符"""
+        node = parse_expression("column_name_1 < column_name_2")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.LT)
+
+    def test_compare_operator_greater_than(self):
+        """测试大于比较操作符"""
+        node = parse_expression("column_name_1 > column_name_2")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.GT)
+
+    def test_compare_operator_less_equal(self):
+        """测试小于等于比较操作符"""
+        node = parse_expression("column_name_1 <= column_name_2")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.LE)
+
+    def test_compare_operator_greater_equal(self):
+        """测试大于等于比较操作符"""
+        node = parse_expression("column_name_1 >= column_name_2")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.GE)
+
+    def test_compare_all_subquery(self):
+        """测试比较操作符与 ALL 子查询"""
+        node = parse_expression("column_name > ALL (SELECT column_name FROM table_name)")
+        self.assertIsInstance(node, ast.OperatorCompareAll)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.GT)
+        self.assertIsInstance(node.subquery_expression, ast.QueryExpression)
+
+    def test_compare_any_subquery(self):
+        """测试比较操作符与 ANY 子查询"""
+        node = parse_expression("column_name > ANY (SELECT column_name FROM table_name)")
+        self.assertIsInstance(node, ast.OperatorCompareAny)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.GT)
+        self.assertIsInstance(node.subquery_expression, ast.QueryExpression)
+
+    def test_predicate_expr_fallback(self):
+        """测试 predicate_expr 回退规则"""
+        node = parse_expression("column_name IN (123, 456)")
+        self.assertIsInstance(node, ast.OperatorInValues)
+        self.assertIsInstance(node.operand, ast.Ident)
+        self.assertEqual(len(node.value_list), 2)
+
+    def test_complex_bool_expression(self):
+        """测试复杂的布尔表达式"""
+        node = parse_expression("column_name_1 = 123 AND column_name_2 IS NOT NULL")
+        self.assertIsInstance(node, ast.OperatorAnd)
+        self.assertIsInstance(node.left_operand, ast.OperatorCompare)
+        self.assertIsInstance(node.right_operand, ast.OperatorIsNotNull)
+
+    def test_bool_expr_with_literal_comparison(self):
+        """测试布尔表达式与字面量比较"""
+        node = parse_expression("column_name = 'test_value'")
+        self.assertIsInstance(node, ast.OperatorCompare)
+        self.assertIsInstance(node.left_operand, ast.Ident)
+        self.assertIsInstance(node.right_operand, ast.StringLiteral)
+        self.assertEqual(node.operator, ast.EnumCompareOperator.EQ)
