@@ -283,10 +283,12 @@ ALTER_DATABASE_OPTION_LIST = ms_parser.create_group(
     name="alter_database_option_list",
     rules=[
         ms_parser.create_rule(
-            symbols=["alter_database_option"]
+            symbols=["alter_database_option_list", "alter_database_option"],
+            action=ms_parser.template.action.LIST_APPEND_1
         ),
         ms_parser.create_rule(
-            symbols=["alter_database_option_list", "alter_database_option"]
+            symbols=["alter_database_option"],
+            action=ms_parser.template.action.LIST_INIT_0
         )
     ]
 )
