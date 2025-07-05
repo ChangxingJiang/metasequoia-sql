@@ -28,12 +28,16 @@ OPT_SELECT_ALIAS = ms_parser.create_group(
     name="opt_select_alias",
     rules=[
         ms_parser.create_rule(
-            symbols=["opt_keyword_as", "ident"],
+            symbols=[TType.KEYWORD_AS, "ident"],
             action=lambda x: x[1].get_str_value()
         ),
         ms_parser.create_rule(
             symbols=["opt_keyword_as", "text_literal_sys"],
             action=lambda x: x[1].get_str_value()
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_alias"],
+            action=lambda x: x[0].get_str_value()
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

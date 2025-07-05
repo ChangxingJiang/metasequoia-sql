@@ -13,14 +13,17 @@ __all__ = [
     "MYSQL_IDENT_KEYWORDS_AMBIGUOUS_2_LABELS",
     "MYSQL_IDENT_KEYWORDS_AMBIGUOUS_3_ROLES",
     "MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES",
+    "IDENT_KEYWORDS_AMBIGUOUS_5_ALIAS",
     "MYSQL_IDENT_KEYWORD",
     "MYSQL_LABEL_KEYWORD",
     "MYSQL_ROLE_KEYWORD",
     "MYSQL_VARIABLE_KEYWORD",
+    "KEYWORD_ALIAS",
     "MYSQL_IDENT",
     "MYSQL_LABEL_IDENT",
     "MYSQL_ROLE_IDENT",
     "MYSQL_VARIABLE_IDENT",
+    "IDENT_ALIAS",
 ]
 
 # [MySQL | Terminal Set] 非保留关键字，可以在任何位置用作未见引号的标识符，而不会引入语法冲突
@@ -113,7 +116,6 @@ MYSQL_TERMINAL_SET_KEYWORDS_UNAMBIGUOUS = {
     TType.KEYWORD_ENUM,
     TType.KEYWORD_ERRORS,
     TType.KEYWORD_ERROR,
-    TType.KEYWORD_ESCAPE,
     TType.KEYWORD_EVENTS,
     TType.KEYWORD_EVERY,
     TType.KEYWORD_EXCHANGE,
@@ -604,6 +606,18 @@ MYSQL_IDENT_KEYWORDS_AMBIGUOUS_4_SYSTEM_VARIABLES = ms_parser.create_group(
     ]
 )
 
+# 保留关键字，不能用作未加 `AS` 关键字的别名
+IDENT_KEYWORDS_AMBIGUOUS_5_ALIAS = ms_parser.create_group(
+    name="ident_keywords_ambiguous_5_alias",
+    rules=[
+        # ESCAPE 关键字：如果未加 `AS` 直接使用，则会导致与 ... LIKE ... ESCAPE ... 语法冲突
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ESCAPE],
+            action=lambda x: ast.Ident(x[0])
+        )
+    ]
+)
+
 # [MySQL | Grammar Group] 非保留关键字，在一般场景下可以直接使用
 # 对应 MySQL 语义组：ident_keyword
 MYSQL_IDENT_KEYWORD = ms_parser.create_group(
@@ -623,6 +637,9 @@ MYSQL_IDENT_KEYWORD = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["ident_keywords_ambiguous_4_system_variables"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_5_alias"]
         )
     ]
 )
@@ -640,6 +657,9 @@ MYSQL_LABEL_KEYWORD = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["ident_keywords_ambiguous_4_system_variables"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_5_alias"]
         )
     ]
 )
@@ -657,6 +677,9 @@ MYSQL_ROLE_KEYWORD = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["ident_keywords_ambiguous_4_system_variables"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_5_alias"]
         )
     ]
 )
@@ -677,6 +700,31 @@ MYSQL_VARIABLE_KEYWORD = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["ident_keywords_ambiguous_3_roles"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_5_alias"]
+        )
+    ]
+)
+
+# 可以未加 `AS` 直接作为别名使用的关键字
+KEYWORD_ALIAS = ms_parser.create_group(
+    name="keyword_alias",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_keywords_unambiguous"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_1_roles_and_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_2_labels"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_3_roles"]
+        ),
+        ms_parser.create_rule(
+            symbols=["ident_keywords_ambiguous_4_system_variables"]
         )
     ]
 )
@@ -732,6 +780,19 @@ MYSQL_VARIABLE_IDENT = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["ident_variable_keyword"]
+        )
+    ]
+)
+
+# 可以未加 `AS` 直接作为别名使用的标识符
+IDENT_ALIAS = ms_parser.create_group(
+    name="ident_alias",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["ident_sys"]
+        ),
+        ms_parser.create_rule(
+            symbols=["keyword_alias"]
         )
     ]
 )
