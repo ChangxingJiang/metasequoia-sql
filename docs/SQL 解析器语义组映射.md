@@ -929,7 +929,6 @@
 | `ddl_partition_by_clause`          | DDL 中的 `PARTITION BY` 子句                         | `DdlPartitionByClause`         | `partition_clause`                                           |
 | `partition_type_definition`        | DDL 的分区类型定义子句                               | `PartitionTypeDefinition`      | `part_type_def`                                              |
 | `opt_key_algorithm`                | 可选的 `ALGORITHM` 关键字引导的指定分区算法子句      | `Optional[IntLiteral]`         | `opt_key_algo`                                               |
-| `opt_keyword_linear`               | 可选的 `linear` 关键字                               | -                              | `opt_linear`                                                 |
 | `opt_num_partitions`               | 可选的 `PARTITIONS` 关键字引导的指定分区数量子句     | `Optional[int]`                | `opt_num_parts`                                              |
 | `opt_subpartition_type_definition` | 可选的子分区的类型定义子句                           | `SubPartitionTypeDefinition`   | `opt_sub_part`                                               |
 | `opt_num_subpartitions`            | 可选的 `SUBPARTITION` 关键字引导的指定子分区数量子句 | `Optional[int]`                | `opt_num_subparts`                                           |
@@ -1076,7 +1075,6 @@
 
 | 水杉解析器语义组名称 | 语义组含义                          | 返回值类型      | MySQL 语义组名称  |
 | -------------------- | ----------------------------------- | --------------- | ----------------- |
-| `opt_keyword_as`     | 可选的 `AS` 关键字                  | -               | `opt_as`          |
 | `opt_select_alias`   | 可选的字段表达式和 UDF 表达式的别名 | `Optional[str]` | `select_alias`    |
 | `opt_table_alias`    | 可选的表表达式的别名                | `Optional[str]` | `opt_table_alias` |
 
