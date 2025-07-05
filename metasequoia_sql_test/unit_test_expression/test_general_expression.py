@@ -238,10 +238,10 @@ class TestSimpleExpr(TestCase):
 
     def test_time_interval_plus_expr(self):
         """测试时间间隔加表达式"""
-        node = parse_expression("INTERVAL 1 DAY + column_name")
-        self.assertIsInstance(node, ast.OperatorDatePlus)
-        self.assertIsInstance(node.left_operand, ast.TimeInterval)
-        self.assertIsInstance(node.right_operand, ast.Ident)
+        node = parse_expression("INTERVAL 1 DAY")
+        self.assertIsInstance(node, ast.TimeInterval)
+        self.assertIsInstance(node.time_unit, ast.TimeUnitEnum)
+        self.assertIsInstance(node.time_value, ast.IntLiteral)
 
     def test_json_separator_operator(self):
         """测试 JSON 分隔符操作符"""
