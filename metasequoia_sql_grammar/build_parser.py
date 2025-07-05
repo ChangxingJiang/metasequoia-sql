@@ -7,14 +7,13 @@
 import metasequoia_parser as ms_parser
 from metasequoia_sql.terminal import SqlTerminalType as TType
 from metasequoia_sql_grammar import top_level_node
-from metasequoia_sql_grammar.enumeration import dql_enumeration
 from metasequoia_sql_grammar.basic import charset_name
 from metasequoia_sql_grammar.basic import fixed_enum
 from metasequoia_sql_grammar.basic import fixed_word
 from metasequoia_sql_grammar.basic import ident
-from metasequoia_sql_grammar.basic import optional_keyword
 from metasequoia_sql_grammar.basic import ident_mysql
 from metasequoia_sql_grammar.basic import literal
+from metasequoia_sql_grammar.basic import optional_keyword
 from metasequoia_sql_grammar.basic import param
 from metasequoia_sql_grammar.basic import time_unit
 from metasequoia_sql_grammar.basic import variable
@@ -36,6 +35,7 @@ from metasequoia_sql_grammar.clause import where_clause
 from metasequoia_sql_grammar.clause import window_clause
 from metasequoia_sql_grammar.clause import window_partition_by_clause
 from metasequoia_sql_grammar.clause import with_clause
+from metasequoia_sql_grammar.enumeration import dql_enumeration
 from metasequoia_sql_grammar.expression import function_expression
 from metasequoia_sql_grammar.expression import general_expression
 from metasequoia_sql_grammar.expression import sum_function_expression
