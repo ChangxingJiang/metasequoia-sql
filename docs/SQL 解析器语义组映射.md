@@ -56,9 +56,10 @@
 
 #### ALTER EVENT 语句（alter event statement）
 
-| 水杉解析器语义组名称    | 语义组类型         | 返回值类型            | MySQL 语义组名称   |
-| ----------------------- | ------------------ | --------------------- | ------------------ |
-| `alter_event_statement` | `ALTER EVENT` 语句 | `AlterEventStatement` | `alter_event_stmt` |
+| 水杉解析器语义组名称            | 语义组类型                                     | 返回值类型                                                   | MySQL 语义组名称                  |
+| ------------------------------- | ---------------------------------------------- | ------------------------------------------------------------ | --------------------------------- |
+| `alter_event_statement`         | `ALTER EVENT` 语句                             | `AlterEventStatement`                                        | `alter_event_stmt`                |
+| `event_on_schedule_on_complete` | `ALTER EVENT` 语句中两个 `ON` 关键字引导的子句 | `Tuple[Optional[ScheduleTimeEvery], Optional[EnumEventCompletionType]]` | `ev_alter_on_schedule_completion` |
 
 #### ALTER FUNCTION 语句（alter function statement）
 
@@ -1195,13 +1196,12 @@
 
 #### 事件调度时间（schedule time）
 
-| 水杉解析器语义组名称   | 语义组含义                              | 返回值类型               | MySQL 语义组名称                                |
-| ---------------------- | --------------------------------------- | ------------------------ | ----------------------------------------------- |
-| `opt_on_schedule_time` | 可选的 `ON SCHEDULE` 引导的事件调度时间 | `Optional[ScheduleTime]` |                                                 |
-| `on_schedule_time`     | `ON SCHEDULE` 引导的事件调度时间        | `ScheduleTime`           | （对应 `ON_SYM SCHEDULE_SYM ev_schedule_time`） |
-| `schedule_time`        | 事件调度时间                            | `ScheduleTime`           | `ev_schedule_time`                              |
-| `opt_schedule_starts`  | 可选的事件开始时间                      | `Optional[Expression]`   | `ev_starts`                                     |
-| `opt_schedule_ends`    | 可选的事件结束时间                      | `Optional[Expression]`   | `ev_ends`                                       |
+| 水杉解析器语义组名称  | 语义组含义                       | 返回值类型             | MySQL 语义组名称                                |
+| --------------------- | -------------------------------- | ---------------------- | ----------------------------------------------- |
+| `on_schedule_time`    | `ON SCHEDULE` 引导的事件调度时间 | `ScheduleTime`         | （对应 `ON_SYM SCHEDULE_SYM ev_schedule_time`） |
+| `schedule_time`       | 事件调度时间                     | `ScheduleTime`         | `ev_schedule_time`                              |
+| `opt_schedule_starts` | 可选的事件开始时间               | `Optional[Expression]` | `ev_starts`                                     |
+| `opt_schedule_ends`   | 可选的事件结束时间               | `Optional[Expression]` | `ev_ends`                                       |
 
 #### 事件属性（event attribute）
 

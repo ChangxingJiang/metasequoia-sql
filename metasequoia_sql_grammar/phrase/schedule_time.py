@@ -8,23 +8,11 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal import SqlTerminalType as TType
 
 __all__ = [
-    "OPT_ON_SCHEDULE_TIME",
     "ON_SCHEDULE_TIME",
     "SCHEDULE_TIME",
     "OPT_SCHEDULE_STARTS",
     "OPT_SCHEDULE_ENDS",
 ]
-
-# 可选的 `ON SCHEDULE` 引导的事件调度时间
-OPT_ON_SCHEDULE_TIME = ms_parser.create_group(
-    name="opt_on_schedule_time",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["on_schedule_time"],
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
-    ]
-)
 
 # `ON SCHEDULE` 引导的事件调度时间
 ON_SCHEDULE_TIME = ms_parser.create_group(

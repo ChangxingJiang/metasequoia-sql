@@ -485,7 +485,7 @@ if __name__ == "__main__":
 
     # 编译
     start_time = time.time()
-    parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True)
+    parser = ms_parser.parser.ParserLALR1(build_grammar(), debug=True, trace_reduce=(2734, 618))
     end_time = time.time()
     compile_time = end_time - start_time
     print(f"编译完成，耗时：{compile_time:.3f} 秒")
