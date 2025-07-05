@@ -12,14 +12,20 @@ __all__ = [
     "OPT_KEYWORD_AS",
     "OPT_KEYWORD_DEFAULT",
     "OPT_KEYWORD_EXTENDED",
+    "OPT_KEYWORD_FORCE",
+    "OPT_KEYWORD_FROM",
+    "OPT_KEYWORD_FULL",
     "OPT_KEYWORD_INNER",
     "OPT_KEYWORD_INTERVAL",
     "OPT_KEYWORD_INTO",
     "OPT_KEYWORD_LINEAR",
     "OPT_KEYWORD_OF",
     "OPT_KEYWORD_OUTER",
+    "OPT_KEYWORD_SAVEPOINT",
     "OPT_KEYWORD_STORAGE",
+    "OPT_KEYWORD_TABLE",
     "OPT_KEYWORD_TEMPORARY",
+    "OPT_KEYWORD_WORK",
 ]
 
 # 可选的 `ALL` 关键字
@@ -80,6 +86,47 @@ OPT_KEYWORD_EXTENDED = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_EXTENDED],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `FORCE` 关键字
+OPT_KEYWORD_FORCE = ms_parser.create_group(
+    name="opt_keyword_force",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FORCE],
+            action=ms_parser.template.action.RETURN_TRUE
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=ms_parser.template.action.RETURN_FALSE
+        )
+    ]
+)
+
+# 可选的 `FROM` 关键字
+OPT_KEYWORD_FROM = ms_parser.create_group(
+    name="opt_keyword_from",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FROM]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `FULL` 关键字
+OPT_KEYWORD_FULL = ms_parser.create_group(
+    name="opt_keyword_full",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_FULL],
             action=ms_parser.template.action.RETURN_TRUE
         ),
         ms_parser.create_rule(
@@ -159,12 +206,34 @@ OPT_KEYWORD_OUTER = ms_parser.create_group(
     ]
 )
 
+# 可选的 `SAVEPOINT` 关键字
+OPT_KEYWORD_SAVEPOINT = ms_parser.create_group(
+    name="opt_keyword_savepoint",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_SAVEPOINT]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
 # 可选的 `STORAGE` 关键字
 OPT_KEYWORD_STORAGE = ms_parser.create_group(
     name="opt_keyword_storage",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_STORAGE]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `TABLE` 关键字
+OPT_KEYWORD_TABLE = ms_parser.create_group(
+    name="opt_keyword_table",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_TABLE]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
@@ -182,5 +251,16 @@ OPT_KEYWORD_TEMPORARY = ms_parser.create_group(
             symbols=[],
             action=ms_parser.template.action.RETURN_FALSE
         )
+    ]
+)
+
+# 可选的 `WORK` 关键字
+OPT_KEYWORD_WORK = ms_parser.create_group(
+    name="opt_keyword_work",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_WORK],
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )

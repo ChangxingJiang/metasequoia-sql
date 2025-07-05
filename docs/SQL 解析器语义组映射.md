@@ -1521,12 +1521,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------- | -------------------------------------------------- |
 | `opt_keyword_if_not_exists`                                  | 可选的 `IF NOT EXISTS` 关键字                                | `bool`     | `opt_if_not_exists`                                |
 | `opt_keyword_if_exists`                                      | 可选的 `IF EXISTS` 关键字                                    | `bool`     | `if_exists`                                        |
-| `opt_keyword_force`                                          | 可选的 `FORCE` 关键字                                        | `bool`     | `opt_force`                                        |
-| `opt_keyword_full`                                           | 可选的 `FULL` 关键字                                         | `bool`     | `opt_full`                                         |
-| `opt_keyword_work`                                           | 可选的 `WORK` 关键字                                         | `bool`     | `opt_work`                                         |
 | `opt_keyword_no_write_to_binlog`                             | 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字          | `bool`     | `opt_no_write_to_binlog`                           |
-| `opt_keyword_table`                                          | 可选的 `TABLE` 关键字                                        | -          | `opt_table`                                        |
-| `opt_keyword_savepoint`                                      | 可选的 `SAVEPOINT` 关键字                                    | -          | `opt_savepoint`                                    |
 | `opt_keyword_value`                                          | 可选的 `VALUE` 关键字                                        | -          | `opt_value`                                        |
 | `opt_keyword_privileges`                                     | 可选的 `PRIVILEGES` 关键字                                   | -          | `opt_privileges`                                   |
 | `opt_keyword_with_admin_option`                              | 可选的 `WITH ADMIN OPTION` 关键字组合                        | -          | `opt_with_admin_option`                            |
@@ -1536,7 +1531,6 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `opt_keyword_one_phase`                                      | 可选的 `ONE PHASE` 关键字组合                                | `bool`     | `opt_one_phase`                                    |
 | `opt_keyword_column`                                         | 可选的 `COLUMN` 关键字                                       | -          | `opt_column`                                       |
 | `opt_keyword_on_replace`                                     | 可选的 `ON REPLACE` 关键字组合                               | `bool`     | `view_replace`                                     |
-| `opt_keyword_from`                                           | 可选的 `FROM` 关键字                                         | -          | `opt_from_keyword`                                 |
 | `opt_keyword_local`                                          | 可选的 `LOCAL` 关键字                                        | `bool`     | `opt_local`                                        |
 | `opt_keyword_in_primary_key_order`                           | 可选的 `IN PRIMARY KEY ORDER` 关键字组合                     | `bool`     | `opt_source_order`                                 |
 | `opt_keyword_and`                                            | 可选的 `AND` 关键字                                          | -          | `opt_and`                                          |

@@ -12,12 +12,7 @@ __all__ = [
     # 可选的关键字
     "OPT_KEYWORD_IF_NOT_EXISTS",
     "OPT_KEYWORD_IF_EXISTS",
-    "OPT_KEYWORD_FORCE",
-    "OPT_KEYWORD_FULL",
-    "OPT_KEYWORD_WORK",
     "OPT_KEYWORD_NO_WRITE_TO_BINLOG",
-    "OPT_KEYWORD_TABLE",
-    "OPT_KEYWORD_SAVEPOINT",
     "OPT_KEYWORD_VALUE",
     "OPT_KEYWORD_PRIVILEGES",
     "OPT_KEYWORD_WITH_ADMIN_OPTION",
@@ -86,7 +81,6 @@ __all__ = [
     "OPT_TO_OR_EQ_OR_AS",
 
     # LOAD 语句相关的固定词语组合
-    "OPT_KEYWORD_FROM",
     "OPT_KEYWORD_LOCAL",
     "OPT_KEYWORD_IN_PRIMARY_KEY_ORDER",
     "KEYWORD_LINES_OR_ROWS",
@@ -206,47 +200,6 @@ OPT_KEYWORD_IF_EXISTS = ms_parser.create_group(
     ]
 )
 
-# 可选的 `FORCE` 关键字
-OPT_KEYWORD_FORCE = ms_parser.create_group(
-    name="opt_keyword_force",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FORCE],
-            action=ms_parser.template.action.RETURN_TRUE
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=ms_parser.template.action.RETURN_FALSE
-        )
-    ]
-)
-
-# 可选的 `FULL` 关键字
-OPT_KEYWORD_FULL = ms_parser.create_group(
-    name="opt_keyword_full",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FULL],
-            action=ms_parser.template.action.RETURN_TRUE
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=ms_parser.template.action.RETURN_FALSE
-        )
-    ]
-)
-
-# 可选的 `WORK` 关键字
-OPT_KEYWORD_WORK = ms_parser.create_group(
-    name="opt_keyword_work",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_WORK],
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
-    ]
-)
-
 # 可选的 `NO_WRITE_TO_BINLOG` 关键字或 `LOCAL` 关键字
 OPT_KEYWORD_NO_WRITE_TO_BINLOG = ms_parser.create_group(
     name="opt_keyword_no_write_to_binlog",
@@ -263,28 +216,6 @@ OPT_KEYWORD_NO_WRITE_TO_BINLOG = ms_parser.create_group(
             symbols=[],
             action=ms_parser.template.action.RETURN_FALSE
         )
-    ]
-)
-
-# 可选的 `TABLE` 关键字
-OPT_KEYWORD_TABLE = ms_parser.create_group(
-    name="opt_keyword_table",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_TABLE]
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
-    ]
-)
-
-# 可选的 `SAVEPOINT` 关键字
-OPT_KEYWORD_SAVEPOINT = ms_parser.create_group(
-    name="opt_keyword_savepoint",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_SAVEPOINT]
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -653,19 +584,6 @@ OPT_TO_OR_EQ_OR_AS = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_AS]
-        )
-    ]
-)
-
-# 可选的 `FROM` 关键字
-OPT_KEYWORD_FROM = ms_parser.create_group(
-    name="opt_keyword_from",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[]
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_FROM]
         )
     ]
 )
