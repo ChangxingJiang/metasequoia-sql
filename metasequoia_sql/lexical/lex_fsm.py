@@ -666,12 +666,16 @@ def lex_at_at_end_action(fsm: LexFSM) -> Terminal:
     return Terminal(symbol_id=TType.IDENT, value=ident_or_keyword)
 
 
-def lex_at_end_action(fsm: LexFSM) -> Terminal:
+def lex_at_end_action(fsm: LexFSM) -> Optional[Terminal]:
     """处理 LEX_AT_END 状态的逻辑，指向元素之后的第 1 个字符"""
     ch = fsm.text[fsm.idx]
     while ch in LEX_HOSTNAME_CHARSET:
         fsm.idx += 1
         ch = fsm.text[fsm.idx]
+    if fsm.idx == fsm.start_idx:
+        # 例如：@'username' —— @ 之后不会字符，则将状态置为 LEX_START，重新尝试匹配终结符
+        fsm.state = LexStates.LEX_START
+        return None
     return Terminal(symbol_id=TType.LEX_HOSTNAME, value=fsm.text[fsm.start_idx: fsm.idx])
 
 
