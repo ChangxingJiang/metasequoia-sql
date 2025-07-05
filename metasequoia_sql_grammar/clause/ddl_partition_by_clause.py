@@ -14,7 +14,6 @@ __all__ = [
     # DDL 的分区类型定义子句
     "PARTITION_TYPE_DEFINITION",
     "OPT_KEY_ALGORITHM",
-    "OPT_KEYWORD_LINEAR",
 
     # `PARTITIONS` 关键字引导的指定分区数量子句
     "OPT_NUM_PARTITIONS",
@@ -111,17 +110,6 @@ OPT_KEY_ALGORITHM = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALGORITHM, TType.OPERATOR_EQ, "int_literal_or_hex"],
             action=lambda x: x[2]
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
-    ]
-)
-
-# 可选的 `linear` 关键字
-OPT_KEYWORD_LINEAR = ms_parser.create_group(
-    name="opt_keyword_linear",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_LINEAR],
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

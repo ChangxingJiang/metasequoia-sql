@@ -1359,8 +1359,6 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `natural_join_type`   | 自然连接的关键字             | `EnumJoinType` | `natural_join_type`   |
 | `inner_join_type`     | 内连接的关键字               | `EnumJoinType` | `inner_join_type`     |
 | `outer_join_type`     | 外关联的关键字               | `EnumJoinType` | `outer_join_type`     |
-| `opt_keyword_inner`   | 可选的 `INNER` 关键字        | -              | `opt_inner`           |
-| `opt_keyword_outer`   | 可选的 `OUTER` 关键字        | -              | `opt_outer`           |
 
 #### 派生表（derived table）
 

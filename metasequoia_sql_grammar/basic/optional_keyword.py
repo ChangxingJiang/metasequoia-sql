@@ -9,11 +9,15 @@ from metasequoia_sql.terminal import SqlTerminalType as TType
 __all__ = [
     "OPT_KEYWORD_ALL",
     "OPT_KEYWORD_ARRAY",
+    "OPT_KEYWORD_AS",
     "OPT_KEYWORD_DEFAULT",
     "OPT_KEYWORD_EXTENDED",
+    "OPT_KEYWORD_INNER",
     "OPT_KEYWORD_INTERVAL",
     "OPT_KEYWORD_INTO",
+    "OPT_KEYWORD_LINEAR",
     "OPT_KEYWORD_OF",
+    "OPT_KEYWORD_OUTER",
     "OPT_KEYWORD_STORAGE",
     "OPT_KEYWORD_TEMPORARY",
 ]
@@ -48,6 +52,17 @@ OPT_KEYWORD_ARRAY = ms_parser.create_group(
     ]
 )
 
+# 可选的 `AS` 关键字
+OPT_KEYWORD_AS = ms_parser.create_group(
+    name="opt_keyword_as",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_AS]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
 # 可选的 `DEFAULT` 关键字
 OPT_KEYWORD_DEFAULT = ms_parser.create_group(
     name="opt_keyword_default",
@@ -71,6 +86,17 @@ OPT_KEYWORD_EXTENDED = ms_parser.create_group(
             symbols=[],
             action=ms_parser.template.action.RETURN_FALSE
         )
+    ]
+)
+
+# 可选的 `INNER` 关键字
+OPT_KEYWORD_INNER = ms_parser.create_group(
+    name="opt_keyword_inner",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_INNER]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
@@ -100,12 +126,34 @@ OPT_KEYWORD_INTO = ms_parser.create_group(
     ]
 )
 
-# 可选的 `OPT` 关键字
+# 可选的 `LINEAR` 关键字
+OPT_KEYWORD_LINEAR = ms_parser.create_group(
+    name="opt_keyword_linear",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_LINEAR],
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `OF` 关键字
 OPT_KEYWORD_OF = ms_parser.create_group(
     name="opt_keyword_of",
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_OF]
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
+    ]
+)
+
+# 可选的 `OUTER` 关键字
+OPT_KEYWORD_OUTER = ms_parser.create_group(
+    name="opt_keyword_outer",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_OUTER]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

@@ -12,8 +12,6 @@ __all__ = [
     "NATURAL_JOIN_TYPE",
     "INNER_JOIN_TYPE",
     "OUTER_JOIN_TYPE",
-    "OPT_KEYWORD_INNER",
-    "OPT_KEYWORD_OUTER",
 ]
 
 # 关联表
@@ -121,27 +119,5 @@ OUTER_JOIN_TYPE = ms_parser.create_group(
             symbols=[TType.KEYWORD_RIGHT, "opt_keyword_outer", TType.KEYWORD_JOIN],
             action=lambda _: ast.EnumJoinType.RIGHT_OUTER_JOIN
         )
-    ]
-)
-
-# 可选的 INNER 关键字
-OPT_KEYWORD_INNER = ms_parser.create_group(
-    name="opt_keyword_inner",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_INNER]
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
-    ]
-)
-
-# 可选的 OUTER 关键字
-OPT_KEYWORD_OUTER = ms_parser.create_group(
-    name="opt_keyword_outer",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_OUTER]
-        ),
-        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
