@@ -44,7 +44,7 @@ SIMPLE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["simple_expr", TType.KEYWORD_COLLATE, "ident_or_text"],
-            action=lambda x: ast.OperatorCollate(collation_operand=x[0], collation_name=x[2]),
+            action=lambda x: ast.OperatorCollate(collation_operand=x[0], collation_name=x[2].get_str_value()),
             sr_priority_as=TType.NEG
         ),
         ms_parser.create_rule(
@@ -135,11 +135,26 @@ SIMPLE_EXPR = ms_parser.create_group(
             action=lambda x: ast.FunctionCast(expression=x[2], cast_type=x[6], at_local=True, is_array_cast=x[7])
         ),
         ms_parser.create_rule(
-            symbols=[TType.WORD_CAST, TType.OPERATOR_LPAREN, "expr", TType.KEYWORD_AT, TType.KEYWORD_TIME,
-                     TType.KEYWORD_ZONE, "opt_keyword_interval", "text_literal_sys", TType.KEYWORD_AS,
-                     TType.KEYWORD_DATETIME, "field_type_param_1", TType.OPERATOR_RPAREN],
-            action=lambda x: ast.FunctionCastAtTimeZone(expression=x[2], is_interval=x[6], time_zone=x[7],
-                                                        precision=x[10].option_1)
+            symbols=[
+                TType.WORD_CAST,  # 0
+                TType.OPERATOR_LPAREN,  # 1
+                "expr",  # 2
+                TType.KEYWORD_AT,  # 3
+                TType.KEYWORD_TIME,  # 4
+                TType.KEYWORD_ZONE,  # 5
+                "opt_keyword_interval",  # 6
+                "text_literal_sys",  # 7
+                TType.KEYWORD_AS,  # 8
+                TType.KEYWORD_DATETIME,  # 9
+                "field_type_param_1",  # 10
+                TType.OPERATOR_RPAREN  # 11
+            ],
+            action=lambda x: ast.FunctionCastAtTimeZone(
+                expression=x[2],
+                is_interval=x[6],
+                time_zone=x[7].get_str_value(),
+                precision=x[10].option_1
+            )
         ),
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_CASE, "opt_expr", "when_list", "opt_else", TType.KEYWORD_END],
@@ -169,11 +184,11 @@ SIMPLE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["simple_ident", TType.KEYWORD_JSON_SEPARATOR, "text_literal_sys"],
-            action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2], is_unquoted=False)
+            action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2].get_str_value(), is_unquoted=False)
         ),
         ms_parser.create_rule(
             symbols=["simple_ident", TType.KEYWORD_JSON_UNQUOTED_SEPARATOR, "text_literal_sys"],
-            action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2], is_unquoted=True)
+            action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2].get_str_value(), is_unquoted=True)
         )
     ]
 )
@@ -189,7 +204,7 @@ BINARY_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.OPERATOR_AMP, "binary_expr"],
-            action=lambda x: ast.OperatorBitOr(left_operand=x[0], right_operand=x[2]),
+            action=lambda x: ast.OperatorBitAnd(left_operand=x[0], right_operand=x[2]),
             sr_priority_as=TType.OPERATOR_AMP
         ),
         ms_parser.create_rule(
@@ -269,7 +284,7 @@ PREDICATE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_IN, "subquery"],
-            action=lambda x: ast.OperatorNotInSubSelect(operand=x[0], subquery_expression=x[2])
+            action=lambda x: ast.OperatorNotInSubSelect(operand=x[0], subquery_expression=x[3])
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr", TType.OPERATOR_RPAREN],
@@ -283,12 +298,12 @@ PREDICATE_EXPR = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr",
                      TType.OPERATOR_RPAREN],
-            action=lambda x: ast.OperatorNotInValues(operand=x[0], value_list=[x[3]])
+            action=lambda x: ast.OperatorNotInValues(operand=x[0], value_list=[x[4]])
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_IN, TType.OPERATOR_LPAREN, "expr",
                      TType.OPERATOR_COMMA, "expr_list", TType.OPERATOR_RPAREN],
-            action=lambda x: ast.OperatorNotInValues(operand=x[0], value_list=[x[3]] + x[5])
+            action=lambda x: ast.OperatorNotInValues(operand=x[0], value_list=[x[4]] + x[6])
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_MEMBER, "opt_keyword_of", TType.OPERATOR_LPAREN, "simple_expr",
@@ -329,11 +344,11 @@ PREDICATE_EXPR = ms_parser.create_group(
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_REGEXP, "binary_expr"],
-            action=lambda x: ast.OperatorRegexp(left_operand=x[0], right_operand=x[1])
+            action=lambda x: ast.OperatorRegexp(left_operand=x[0], right_operand=x[2])
         ),
         ms_parser.create_rule(
             symbols=["binary_expr", TType.KEYWORD_NOT, TType.KEYWORD_REGEXP, "binary_expr"],
-            action=lambda x: ast.OperatorNotRegexp(left_operand=x[0], right_operand=x[2])
+            action=lambda x: ast.OperatorNotRegexp(left_operand=x[0], right_operand=x[3])
         ),
         ms_parser.create_rule(
             symbols=["binary_expr"],

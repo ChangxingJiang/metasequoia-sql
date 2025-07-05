@@ -1605,10 +1605,12 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `ident_keywords_ambiguous_2_labels`（MySQL）           | 非保留关键字，不能用作存储过程标签名称（SP label name）      | `Ident`            | `ident_keywords_ambiguous_2_labels`                          |
 | `ident_keywords_ambiguous_3_roles`（MySQL）            | 非保留关键字，不能用作角色名称（role name）                  | `Ident`            | `ident_keywords_ambiguous_3_roles`                           |
 | `ident_keywords_ambiguous_4_system_variables`（MySQL） | 非保留关键字，不能用作 SET 语句中赋值操作左侧的变量名以及变量前缀 | `Ident`            | `ident_keywords_ambiguous_4_system_variables`                |
+| `ident_keywords_ambiguous_5_alias`                     | 保留关键字，不能用作未加 `AS` 关键字的别名                   | `Ident`            |                                                              |
 | `ident_general_keyword`（MySQL）                       | 非保留关键字，在一般场景下可以直接使用                       | `Ident`            | `ident_keyword`                                              |
 | `ident_label_keyword`（MySQL）                         | 非保留关键字，可以用作存储过程标签名称（label name）         | `Ident`            | `label_keyword`                                              |
 | `ident_role_keyword`（MySQL）                          | 非保留关键字，可以用作角色名称（role name）                  | `Ident`            | `role_keyword`                                               |
 | `ident_variable_keyword`（MySQL）                      | 非保留关键字，可以作为 SET 语句中赋值操作左侧的变量名以及变量前缀 | `Ident`            | `lvalue_keyword`                                             |
+| `keyword_alias`                                        | 可以未加 `AS` 直接作为别名使用的关键字                       | `Ident`            |                                                              |
 | `parens_opt_ident_list`                                | 括号框柱的可选的单个标识符（`ident`）的列表                  | `List[str]`        | `opt_filter_db_list`                                         |
 | `opt_ident_list`                                       | 可选的单个标识符（`ident`）的列表                            | `List[str]`        | `opt_name_list`                                              |
 | `ident_list`                                           | 单个标识符（`ident`）的列表                                  | `List[str]`        | `simple_ident_list`<br />`ident_string_list`<br />`using_list`<br />`reference_list`<br />`name_list`<br />`column_list`<br />`sp_fetch_list`<br />`sp_decl_idents`<br />`filter_db_list` |
@@ -1619,6 +1621,7 @@ SELECT * FROM (t1 CROSS JOIN t2) JOIN t3 ON 1
 | `role_ident`（MySQL）                                  | 表示角色的标识符                                             | `Ident`            | `role_ident`                                                 |
 | `variable_identifier`                                  | 变量名标识符                                                 | `Identifier`       | `lvalue_variable`                                            |
 | `variable_ident`（MySQL）                              | 表示变量名或变量名前缀的标识符                               | `Ident`            | `lvalue_ident`                                               |
+| `ident_alias`                                          | 可以未加 `AS` 直接作为别名使用的标识符                       | `Ident`            |                                                              |
 | `ident_2`                                              | 点分隔的两个标识符（`ident.ident`）                          | `Ident`            | `simple_ident_q`【部分】                                     |
 | `ident_3`                                              | 点分隔的三个标识符（`ident.ident.ident`）                    | `Ident`            | `simple_ident_q`【部分】                                     |
 | `opt_identifier_list`                                  | 可选的通用标识符的列表                                       | `List[Identifier]` | `opt_table_list`                                             |
