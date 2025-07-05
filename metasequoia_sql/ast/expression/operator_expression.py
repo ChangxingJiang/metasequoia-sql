@@ -604,10 +604,10 @@ class OperatorBinary(UnaryExpression):
 
 
 class OperatorJsonSeparator(Expression):
-    """内置 JSON_SEPARATOR 运算符或 JSON_UNQUOTED_SEPARATOR 运算符（提取 Json 元素）
+    """内置 '->' 运算符或 '->>' 运算符（提取 Json 元素）
 
-    expression JSON_SEPARATOR path
-    expression JSON_UNQUOTED_SEPARATOR path
+    expression '->' path
+    expression '->>' path
     """
 
     __slots__ = ["_expression", "_path", "_is_unquoted"]

@@ -180,11 +180,11 @@ SIMPLE_EXPR_WITHOUT_ASSIGNMENT = ms_parser.create_group(
             symbols=["time_interval"],
         ),
         ms_parser.create_rule(
-            symbols=["simple_ident", TType.KEYWORD_JSON_SEPARATOR, "text_literal_sys"],
+            symbols=["simple_ident", TType.OPERATOR_SUB_GT, "text_literal_sys"],
             action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2].get_str_value(), is_unquoted=False)
         ),
         ms_parser.create_rule(
-            symbols=["simple_ident", TType.KEYWORD_JSON_UNQUOTED_SEPARATOR, "text_literal_sys"],
+            symbols=["simple_ident", TType.OPERATOR_SUB_GT_GT, "text_literal_sys"],
             action=lambda x: ast.OperatorJsonSeparator(expression=x[0], path=x[2].get_str_value(), is_unquoted=True)
         )
     ]

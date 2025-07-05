@@ -378,8 +378,6 @@ class SqlTerminalType(ms_parser.symbol.TerminalType):
     KEYWORD_ITERATE = enum.auto()  # reserved keyword
     KEYWORD_JOIN = enum.auto()  # reserved keyword : SQL-2003-R
     KEYWORD_JSON = enum.auto()  # keyword : MYSQL
-    KEYWORD_JSON_SEPARATOR = enum.auto()  # keyword : MYSQL
-    KEYWORD_JSON_UNQUOTED_SEPARATOR = enum.auto()  # keyword : MYSQL (MySQL 8.0)
     KEYWORD_JSON_TABLE = enum.auto()  # reserved keyword : SQL-2016-R (MySQL 8.0)
     KEYWORD_JSON_VALUE = enum.auto()  # keyword : SQL-2016-R (MySQL 8.0)
     KEYWORD_KEY = enum.auto()  # reserved keyword : SQL-2003-N

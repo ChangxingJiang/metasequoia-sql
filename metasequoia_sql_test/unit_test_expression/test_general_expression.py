@@ -245,7 +245,7 @@ class TestSimpleExpr(TestCase):
 
     def test_json_separator_operator(self):
         """测试 JSON 分隔符操作符"""
-        node = parse_expression("column_name JSON_SEPARATOR '$.path'")
+        node = parse_expression("column_name -> '$.path'")
         self.assertIsInstance(node, ast.OperatorJsonSeparator)
         self.assertIsInstance(node.expression, ast.Ident)
         self.assertEqual(node.path, "$.path")
@@ -253,7 +253,7 @@ class TestSimpleExpr(TestCase):
 
     def test_json_unquoted_separator_operator(self):
         """测试 JSON 非引号分隔符操作符"""
-        node = parse_expression("column_name JSON_UNQUOTED_SEPARATOR '$.path'")
+        node = parse_expression("column_name ->> '$.path'")
         self.assertIsInstance(node, ast.OperatorJsonSeparator)
         self.assertIsInstance(node.expression, ast.Ident)
         self.assertEqual(node.path, "$.path")
