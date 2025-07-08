@@ -25,7 +25,7 @@ ALTER_TABLESPACE_STATEMENT = ms_parser.create_group(
             symbols=[TType.KEYWORD_ALTER, TType.KEYWORD_TABLESPACE, "ident", TType.KEYWORD_ADD, "datafile",
                      "opt_alter_tablespace_option_list"],
             action=lambda x: ast.AlterTablespaceStatement(
-                tablespace_name=x[2],
+                tablespace_name=x[2].get_str_value(),
                 action_type=ast.EnumAlterTablespaceActionType.ADD,
                 datafile=x[4],
                 option_list=x[5]
@@ -36,7 +36,7 @@ ALTER_TABLESPACE_STATEMENT = ms_parser.create_group(
             symbols=[TType.KEYWORD_ALTER, TType.KEYWORD_TABLESPACE, "ident", TType.KEYWORD_DROP, "datafile",
                      "opt_alter_tablespace_option_list"],
             action=lambda x: ast.AlterTablespaceStatement(
-                tablespace_name=x[2],
+                tablespace_name=x[2].get_str_value(),
                 action_type=ast.EnumAlterTablespaceActionType.DROP,
                 datafile=x[4],
                 option_list=x[5]
@@ -47,16 +47,16 @@ ALTER_TABLESPACE_STATEMENT = ms_parser.create_group(
             symbols=[TType.KEYWORD_ALTER, TType.KEYWORD_TABLESPACE, "ident", TType.KEYWORD_RENAME, TType.KEYWORD_TO,
                      "ident"],
             action=lambda x: ast.AlterTablespaceStatement(
-                tablespace_name=x[2],
+                tablespace_name=x[2].get_str_value(),
                 action_type=ast.EnumAlterTablespaceActionType.RENAME,
-                target_name=x[5]
+                target_name=x[5].get_str_value()
             )
         ),
         # ALTER TABLESPACE name alter_tablespace_option_list
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_ALTER, TType.KEYWORD_TABLESPACE, "ident", "alter_tablespace_option_list"],
             action=lambda x: ast.AlterTablespaceStatement(
-                tablespace_name=x[2],
+                tablespace_name=x[2].get_str_value(),
                 action_type=ast.EnumAlterTablespaceActionType.ALTER,
                 option_list=x[3]
             )
