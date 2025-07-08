@@ -29,5 +29,5 @@
 
 | 水杉解析器语义组名称  | 语义组类型                                  | 返回值类型               | MySQL 语义组名称         |
 | --------------------- | ------------------------------------------- | ------------------------ | ------------------------ |
-| `order_direction`     | 指定排序方向的 `ASC` 或 `DESC` 关键字       | `EnumOrderDirectionType` | `ordering_direction`     |
 | `opt_order_direction` | 可选的指定排序方向的 `ASC` 或 `DESC` 关键字 | `EnumOrderDirectionType` | `opt_ordering_direction` |
+| `order_direction`     | 指定排序方向的 `ASC` 或 `DESC` 关键字       | `EnumOrderDirectionType` | `ordering_direction`     |
