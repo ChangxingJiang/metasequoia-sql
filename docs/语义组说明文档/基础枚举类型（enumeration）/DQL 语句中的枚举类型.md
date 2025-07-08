@@ -24,3 +24,10 @@
 | 水杉解析器语义组名称 | 语义组含义                                                   | 返回值类型                | MySQL 语义组名称     |
 | -------------------- | ------------------------------------------------------------ | ------------------------- | -------------------- |
 | `opt_null_treatment` | 窗口函数中指定 NULL 值处理策略的 `RESPECT NULLS` 或 `IGNORE NULLS` 子句 | `EnumNullTreatmentOption` | `opt_null_treatment` |
+
+##### 排序方向类型
+
+| 水杉解析器语义组名称  | 语义组类型                                  | 返回值类型               | MySQL 语义组名称         |
+| --------------------- | ------------------------------------------- | ------------------------ | ------------------------ |
+| `order_direction`     | 指定排序方向的 `ASC` 或 `DESC` 关键字       | `EnumOrderDirectionType` | `ordering_direction`     |
+| `opt_order_direction` | 可选的指定排序方向的 `ASC` 或 `DESC` 关键字 | `EnumOrderDirectionType` | `opt_ordering_direction` |

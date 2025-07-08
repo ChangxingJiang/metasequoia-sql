@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from metasequoia_sql.ast.basic.charset_name import Charset
     from metasequoia_sql.ast.basic.ident import Identifier
     from metasequoia_sql.ast.phrase.ddl_index_attribute import EnumIndexStructureType
-    from metasequoia_sql.ast.clause.order_by_clause import EnumOrderDirection
+    from metasequoia_sql.ast.clause.order_by_clause import EnumOrderDirectionType
     from metasequoia_sql.ast.phrase.ddl_index_attribute import IndexAttribute
 
 __all__ = [
@@ -397,7 +397,7 @@ class IndexKeyDefinition(Node):
                  column_name: Optional[str],
                  index_length: Optional[int],
                  expression: Optional[Expression],
-                 order_direction: "EnumOrderDirection"):
+                 order_direction: "EnumOrderDirectionType"):
         self._column_name = column_name
         self._index_length = index_length
         self._expression = expression
@@ -405,7 +405,7 @@ class IndexKeyDefinition(Node):
 
     @staticmethod
     def create_by_column(column_name: str, index_length: Optional[int],
-                         order_direction: "EnumOrderDirection") -> "IndexKeyDefinition":
+                         order_direction: "EnumOrderDirectionType") -> "IndexKeyDefinition":
         """通过字段名称创建索引键定义。
         
         Parameters
@@ -414,7 +414,7 @@ class IndexKeyDefinition(Node):
             字段名称
         index_length : Optional[int]
             索引长度
-        order_direction : EnumOrderDirection
+        order_direction : EnumOrderDirectionType
             排序方向
             
         Returns
@@ -426,14 +426,14 @@ class IndexKeyDefinition(Node):
 
     @staticmethod
     def create_by_expression(expression: Expression,
-                             order_direction: "EnumOrderDirection") -> "IndexKeyDefinition":
+                             order_direction: "EnumOrderDirectionType") -> "IndexKeyDefinition":
         """通过表达式创建索引键定义。
         
         Parameters
         ----------
         expression : Expression
             表达式
-        order_direction : EnumOrderDirection
+        order_direction : EnumOrderDirectionType
             排序方向
             
         Returns
@@ -477,12 +477,12 @@ class IndexKeyDefinition(Node):
         return self._expression
 
     @property
-    def order_direction(self) -> "EnumOrderDirection":
+    def order_direction(self) -> "EnumOrderDirectionType":
         """获取排序方向。
         
         Returns
         -------
-        EnumOrderDirection
+        EnumOrderDirectionType
             排序方向
         """
         return self._order_direction

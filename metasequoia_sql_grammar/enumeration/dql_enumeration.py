@@ -19,8 +19,12 @@ __all__ = [
     # 窗口函数的窗口方向选项
     "OPT_FROM_FIRST_OR_LAST",
 
-    # 窗口函数的 NULL 处理选项
+    # 窗口函数的空值处理选项
     "OPT_NULL_TREATMENT",
+
+    # 排序方向类型
+    "OPT_ORDER_DIRECTION",
+    "ORDER_DIRECTION",
 ]
 
 # 比较运算符
@@ -137,6 +141,35 @@ OPT_NULL_TREATMENT = ms_parser.create_group(
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_IGNORE, TType.KEYWORD_NULLS],
             action=lambda _: ast.EnumNullTreatmentOption.IGNORE_NULLS
+        )
+    ]
+)
+
+# 可选的指定排序方向的 ASC 或 DESC 关键字
+OPT_ORDER_DIRECTION = ms_parser.create_group(
+    name="opt_order_direction",
+    rules=[
+        ms_parser.create_rule(
+            symbols=["order_direction"]
+        ),
+        ms_parser.create_rule(
+            symbols=[],
+            action=lambda _: ast.EnumOrderDirectionType.DEFAULT
+        )
+    ]
+)
+
+# 指定排序方向的 ASC 或 DESC 关键字
+ORDER_DIRECTION = ms_parser.create_group(
+    name="order_direction",
+    rules=[
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_ASC],
+            action=lambda _: ast.EnumOrderDirectionType.ASC
+        ),
+        ms_parser.create_rule(
+            symbols=[TType.KEYWORD_DESC],
+            action=lambda _: ast.EnumOrderDirectionType.DESC
         )
     ]
 )

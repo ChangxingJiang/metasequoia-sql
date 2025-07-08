@@ -8,42 +8,10 @@ from metasequoia_sql import ast
 from metasequoia_sql.terminal.terminal_type import SqlTerminalType as TType
 
 __all__ = [
-    "ORDER_DIRECTION",
-    "OPT_ORDER_DIRECTION",
     "ORDER_EXPR",
     "ORDER_BY_LIST",
     "OPT_ORDER_BY_CLAUSE",
 ]
-
-# 排序方向的 ASC 或 DESC 关键字
-# 对应 MySQL 语义组：ordering_direction
-ORDER_DIRECTION = ms_parser.create_group(
-    name="order_direction",
-    rules=[
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_ASC],
-            action=lambda _: ast.EnumOrderDirection.ASC
-        ),
-        ms_parser.create_rule(
-            symbols=[TType.KEYWORD_DESC],
-            action=lambda _: ast.EnumOrderDirection.DESC
-        )
-    ]
-)
-
-# 可选的排序方向的 ASC 或 DESC 关键字
-OPT_ORDER_DIRECTION = ms_parser.create_group(
-    name="opt_order_direction",
-    rules=[
-        ms_parser.create_rule(
-            symbols=["order_direction"]
-        ),
-        ms_parser.create_rule(
-            symbols=[],
-            action=lambda _: ast.EnumOrderDirection.DEFAULT
-        )
-    ]
-)
 
 # 排序表达式
 # 对应 MySQL 语义组：order_expr

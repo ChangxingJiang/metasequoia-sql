@@ -846,13 +846,11 @@
 
 #### ORDER BY 子句（order by clause）
 
-| 水杉解析器语义组名称  | 语义组类型                                  | 返回值类型                | MySQL 语义组名称                                             |
-| --------------------- | ------------------------------------------- | ------------------------- | ------------------------------------------------------------ |
-| `order_direction`     | 指定排序方向的 `ASC` 或 `DESC` 关键字       | `EnumOrderDirection`      | `ordering_direction`                                         |
-| `opt_order_direction` | 可选的指定排序方向的 `ASC` 或 `DESC` 关键字 | `EnumOrderDirection`      | `opt_ordering_direction`                                     |
-| `order_expr`          | 指定排序条件及方向的表达式                  | `OrderExpression`         | `order_expr`                                                 |
-| `order_by_list`       | 指定排序条件及方向的表达式的列表            | `OrderClause`             | `order_list`<br />`gorder_list`                              |
-| `opt_order_by_clause` | 可选的 `ORDER BY` 子句                      | `Optional[OrderByClause]` | `opt_order_clause`<br />`order_clause`<br />`opt_window_order_by_clause`<br />`opt_gorder_clause` |
+| 水杉解析器语义组名称  | 语义组类型                       | 返回值类型                | MySQL 语义组名称                                             |
+| --------------------- | -------------------------------- | ------------------------- | ------------------------------------------------------------ |
+| `order_expr`          | 指定排序条件及方向的表达式       | `OrderExpression`         | `order_expr`                                                 |
+| `order_by_list`       | 指定排序条件及方向的表达式的列表 | `OrderClause`             | `order_list`<br />`gorder_list`                              |
+| `opt_order_by_clause` | 可选的 `ORDER BY` 子句           | `Optional[OrderByClause]` | `opt_order_clause`<br />`order_clause`<br />`opt_window_order_by_clause`<br />`opt_gorder_clause` |
 
 #### OVER 子句（over clause）
 

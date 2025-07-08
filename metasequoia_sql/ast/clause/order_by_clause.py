@@ -2,25 +2,15 @@
 ORDER BY 语句节点
 """
 
-from enum import IntEnum, auto
 from typing import List
 
-from metasequoia_sql.ast.base import Expression
-from metasequoia_sql.ast.base import Node
+from metasequoia_sql.ast.base import Expression, Node
+from metasequoia_sql.ast.enumeration import EnumOrderDirectionType
 
 __all__ = [
-    "EnumOrderDirection",
     "OrderExpression",
     "OrderByClause",
 ]
-
-
-class EnumOrderDirection(IntEnum):
-    """排序方向"""
-
-    ASC = auto()  # 升序
-    DESC = auto()  # 降序
-    DEFAULT = auto()  # 没有明确指定排序方向
 
 
 class OrderExpression(Node):
@@ -28,14 +18,14 @@ class OrderExpression(Node):
 
     __slots__ = ["_column", "_direction"]
 
-    def __init__(self, column: Expression, direction: EnumOrderDirection):
+    def __init__(self, column: Expression, direction: EnumOrderDirectionType):
         """初始化排序字段
         
         Parameters
         ----------
         column : Expression
             排序列表达式
-        direction : EnumOrderDirection
+        direction : EnumOrderDirectionType
             排序方向
         """
         self._column = column
@@ -53,12 +43,12 @@ class OrderExpression(Node):
         return self._column
 
     @property
-    def direction(self) -> EnumOrderDirection:
+    def direction(self) -> EnumOrderDirectionType:
         """获取排序方向
         
         Returns
         -------
-        EnumOrderDirection
+        EnumOrderDirectionType
             排序方向
         """
         return self._direction
