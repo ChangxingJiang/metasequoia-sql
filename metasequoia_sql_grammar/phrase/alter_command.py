@@ -53,8 +53,8 @@ STANDALONE_ALTER_TABLE_ACTION = ms_parser.create_group(
             action=lambda x: [x[0]]
         ),
         ms_parser.create_rule(
-            symbols=["alter_command_modifier_list", "standalone_alter_commands"],
-            action=lambda x: x[0].get_list() + [x[1]]
+            symbols=["alter_command_modifier_list",TType.OPERATOR_COMMA, "standalone_alter_commands"],
+            action=lambda x: x[0].get_list() + [x[2]]
         ),
     ]
 )
@@ -76,7 +76,7 @@ ALTER_COMMAND_LIST = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=["alter_command_list", TType.OPERATOR_COMMA, "alter_command"],
-            action=lambda x: x[0].extend(x[2])
+            action=lambda x: x[0] + x[2]
         ),
         ms_parser.create_rule(
             symbols=["alter_command"],

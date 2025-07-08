@@ -560,16 +560,20 @@ OPT_TO_OR_EQ_OR_AS = ms_parser.create_group(
     name="opt_to_or_eq_or_as",
     rules=[
         ms_parser.create_rule(
-            symbols=[]
+            symbols=[],
+            action=lambda _: None
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_TO]
+            symbols=[TType.KEYWORD_TO],
+            action=lambda _: None
         ),
         ms_parser.create_rule(
-            symbols=[TType.OPERATOR_EQ]
+            symbols=[TType.OPERATOR_EQ],
+            action=lambda _: None
         ),
         ms_parser.create_rule(
-            symbols=[TType.KEYWORD_AS]
+            symbols=[TType.KEYWORD_AS],
+            action=lambda _: None
         )
     ]
 )

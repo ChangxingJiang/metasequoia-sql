@@ -630,7 +630,7 @@ class DdlPartitionByClause(Node):
     def __init__(self,
                  partition_type: PartitionTypeDefinition,
                  num_partitions: Optional[int],
-                 subpartition_type: SubPartitionTypeDefinition,
+                 subpartition_type: Optional[SubPartitionTypeDefinition],
                  partition_list: List[PartitionDefinition]
                  ):
         """初始化 DDL 中的 PARTITION BY 子句
@@ -674,7 +674,7 @@ class DdlPartitionByClause(Node):
         return self._num_partitions
 
     @property
-    def subpartition_type(self) -> SubPartitionTypeDefinition:
+    def subpartition_type(self) -> Optional[SubPartitionTypeDefinition]:
         """获取子分区类型定义
         
         Returns

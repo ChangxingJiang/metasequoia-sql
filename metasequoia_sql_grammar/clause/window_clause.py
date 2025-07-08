@@ -19,7 +19,7 @@ OPT_WINDOW_CLAUSE = ms_parser.create_group(
     rules=[
         ms_parser.create_rule(
             symbols=[TType.KEYWORD_WINDOW, "window_definition_list"],
-            action=lambda x: x[2]
+            action=lambda x: x[1]
         ),
         ms_parser.template.rule.EMPTY_RETURN_NULL
     ]

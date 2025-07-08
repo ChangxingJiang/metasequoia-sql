@@ -142,7 +142,8 @@ OPT_SUBPARTITION_TYPE_DEFINITION = ms_parser.create_group(
                      "opt_num_subpartitions"],
             action=lambda x: ast.SubPartitionTypeDefinitionByKey(key_algorithm=x[4], column_list=x[6],
                                                                  partition_num=x[8])
-        )
+        ),
+        ms_parser.template.rule.EMPTY_RETURN_NULL
     ]
 )
 
