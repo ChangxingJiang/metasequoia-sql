@@ -28,7 +28,7 @@ ALTER_VIEW_STATEMENT = ms_parser.create_group(
                 "opt_ident_list_parens",  # 6
                 TType.KEYWORD_AS,  # 7
                 "query_expression",  # 8
-                "alter_view_statement"  # 9
+                "opt_view_check_option"  # 9
             ],
             action=lambda x: ast.AlterViewStatement(
                 algorithm=x[1],

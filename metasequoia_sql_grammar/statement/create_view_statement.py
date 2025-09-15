@@ -13,13 +13,13 @@ __all__ = [
     "CREATE_VIEW_STATEMENT"
 ]
 
-# `ALTER VIEW` 语句
+# `CREATE VIEW` 语句
 CREATE_VIEW_STATEMENT = ms_parser.create_group(
     name="create_view_statement",
     rules=[
         ms_parser.create_rule(
             symbols=[
-                TType.KEYWORD_ALTER,  # 0
+                TType.KEYWORD_CREATE,  # 0
                 "opt_keyword_on_replace",  # 1
                 "opt_view_algorithm_type",  # 2
                 "opt_definer_clause",  # 3
@@ -29,7 +29,7 @@ CREATE_VIEW_STATEMENT = ms_parser.create_group(
                 "opt_ident_list_parens",  # 7
                 TType.KEYWORD_AS,  # 8
                 "query_expression",  # 9
-                "alter_view_statement"  # 10
+                "opt_view_check_option"  # 10
             ],
             action=lambda x: ast.CreateViewStatement(
                 replace=x[1],
